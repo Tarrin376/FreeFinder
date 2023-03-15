@@ -1,0 +1,94 @@
+// This is your Prisma schema file,
+// learn more about it in the docs: https://pris.ly/d/prisma-schema
+
+generator client {
+    provider = "prisma-client-js"
+}
+
+datasource db {
+    provider = "postgresql"
+    url      = env("DATABASE_URL")
+}
+
+model User {
+    userID        String      @id @default(uuid())
+    username      String      @unique
+    hash          String
+    country       String
+    memberDate    DateTime    @default(now())
+    status        UserStatus
+    profilePicURL String      @default("")
+    email         String      @unique
+    seller        Seller?
+    savedPosts    SavedPost[]
+    reviews       Review[]
+    orders        Order[]
+}
+
+model Seller {
+    sellerID    String   @id @default(uuid())
+    user        User     @relation(fields: [userID], references: [userID])
+    userID      String   @unique
+    rating      Float
+    reviews     Review[]
+    orders      Order[]
+    posts       Post[]
+    description String
+}
+
+model SavedPost {
+    post   Post   @relation(fields: [postID], references: [postID])
+    postID String
+    user   User   @relation(fields: [userID], references: [userID])
+    userID String
+
+    @@id([userID, postID])
+}
+
+model Post {
+    postID          String      @id @default(uuid())
+    savedPosts      SavedPost[]
+    orders          Order[]
+    postedBy        Seller      @relation(fields: [sellerID], references: [sellerID])
+    sellerID        String
+    about           String
+    createdAt       DateTime    @default(now())
+    thumbnailPicURL String?
+    title           String
+    startingPrice   Decimal     @db.Money
+}
+
+model Review {
+    reviewID   String   @id @default(uuid())
+    seller     Seller   @relation(fields: [sellerID], references: [sellerID])
+    sellerID   String
+    reviewer   User     @relation(fields: [reviewerID], references: [userID])
+    reviewerID String
+    reviewBody String
+    createdAt  DateTime @default(now())
+    rating     Float
+}
+
+model Order {
+    orderID     String      @id @default(uuid())
+    customer    User        @relation(fields: [customerID], references: [userID])
+    customerID  String
+    seller      Seller      @relation(fields: [sellerID], references: [sellerID])
+    sellerID    String
+    post        Post        @relation(fields: [postID], references: [postID])
+    postID      String
+    createdAt   DateTime    @default(now())
+    orderAmount Decimal     @db.Money
+    status      OrderStatus
+}
+
+enum UserStatus {
+    ONLINE
+    OFFLINE
+}
+
+enum OrderStatus {
+    COMPLETED
+    PENDING
+    CANCELLED
+}

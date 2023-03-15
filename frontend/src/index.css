@@ -1,0 +1,50 @@
+@tailwind base;
+@tailwind components;
+@tailwind utilities;
+
+@layer components {
+    .btn-primary {
+        @apply transition ease-in-out duration-200 font-medium rounded-[8px] px-6 h-10;
+    }
+    .nav-item {
+        @apply transition ease-linear duration-100 hover:text-main-red cursor-pointer font-medium;
+    }
+    .search-bar {
+        @apply border border-light-gray rounded-[8px] p-3 w-full drop-shadow-search-bar 
+        bg-main-white block placeholder-search-text focus:outline-none focus:outline-2
+        focus:outline-offset-0 focus:outline-main-black;
+    }
+    .invalid-input {
+        @apply focus:outline-2 focus:!outline-invalid-input-red focus:border-transparent border-b border-invalid-input-red bg-[#FFF7F6]
+    }
+    .invalid-button {
+        @apply btn-primary !bg-[#575757] hover:!bg-[#575757] cursor-not-allowed text-[#E0E0E0] opacity-80;
+    }
+    .action-btn {
+        @apply bg-[#36BF54] text-main-white hover:bg-[#45B65E];
+    }
+    .profile-menu-element {
+        @apply text-main-white whitespace-nowrap hover:bg-main-black-hover bg-main-black p-3 pt-1 pb-1 text-left text-[14px];
+    }
+    .settings-selection {
+        @apply border-b-[3px] border-b-main-black font-semibold text-main-black cursor-pointer pb-4;
+    }
+    .settings-unselected {
+        @apply pb-4 text-main-black cursor-pointer;
+    }
+    .loading {
+        @apply animate-pulse bg-[#D4D4D4];
+    }
+    .main-btn {
+        @apply btn-primary bg-main-black text-main-white hover:bg-main-red w-full h-12 flex items-center justify-center gap-2;
+    }
+}
+
+@layer base {
+    * {
+        @apply box-border font-roboto text-main-black;
+    }
+    .page {
+        @apply max-w-screen-xxl m-auto px-16;
+    }
+}
