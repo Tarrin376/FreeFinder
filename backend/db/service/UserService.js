@@ -7,7 +7,7 @@ const prisma = new PrismaClient();
 const cloudinary = pkg.v2;
 
 cloudinary.config({
-    cloud_name: "darfjne84",
+    cloud_name: env.CLOUD_NAME,
     api_secret: env.API_SECRET,
     api_key: env.API_KEY
 });
