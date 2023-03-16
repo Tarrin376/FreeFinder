@@ -132,12 +132,12 @@ function SignUp({ setLogIn, setSignUp, setAccountCreated }: SignUpProps) {
 
                 <LoadingButton
                     loading={loading} text="Create Account" loadingText="Checking details" 
-                    callback={createAccount} styles={!isValidForm() ? "invalid-button" : ""} 
-                    disabled={!isValidForm()} 
+                    callback={createAccount} styles={!isValidForm() ? "invalid-button main-btn" : "main-btn"} 
+                    disabled={!isValidForm()} loadingColour="bg-main-black"
                 />
                 
                 <p className="mt-6 text-side-text-gray text-[15px]">Already have an account? 
-                    <span className="text-main-red ml-2 cursor-pointer hover:text-main-black" onClick={openLogIn}>
+                    <span className="text-main-purple ml-2 cursor-pointer hover:text-main-black" onClick={openLogIn}>
                         Log In
                     </span>
                 </p>

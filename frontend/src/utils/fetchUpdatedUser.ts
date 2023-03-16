@@ -13,7 +13,7 @@ export async function fetchUpdatedUser(username: string, updatedData: IUser, pro
                 throw new Error(response.status)
             }
         }
-        catch (e) {
+        catch (err) {
             throw new Error("Failed to upload image");
         }
     }
@@ -36,7 +36,7 @@ export async function fetchUpdatedUser(username: string, updatedData: IUser, pro
 }
 
 async function updatePhoto(username: string, profilePic: string | unknown) : Promise<any> {
-    const response = await fetch(`user/profile/update/${username}`, {
+    const response = await fetch(`user/update/profile/${username}`, {
         method: 'PUT',
         body: JSON.stringify({ profilePic }),
         headers: {

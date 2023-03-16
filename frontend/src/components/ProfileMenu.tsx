@@ -18,7 +18,10 @@ function ProfileMenu({ userContext, setSettingsPopUp }: ProfileMenuProps) {
     async function toggleStatus(): Promise<void> {
         setDisabled(true);
         const toggledStatus: string = userContext.userData.status === 'ONLINE' ? 'OFFLINE' : 'ONLINE';
-        const updated: Promise<UpdateResponse> = fetchUpdatedUser(userContext.userData.username, {...userContext.userData, status: toggledStatus});
+        const updated: Promise<UpdateResponse> = fetchUpdatedUser(userContext.userData.username, {
+            ...userContext.userData, 
+            status: toggledStatus
+        });
         
         updated.then((response) => {
             if (response.userData && response.message === "success") {
@@ -41,7 +44,7 @@ function ProfileMenu({ userContext, setSettingsPopUp }: ProfileMenuProps) {
         <div className="flex gap-4 items-center">
             <div>
                 <p className="text-right text-[14px]">{userContext.userData.username}</p>
-                <p className="text-right text-main-red text-[14px]">{userContext.userData.email}</p>
+                <p className="text-right text-main-purple text-[14px]">{userContext.userData.email}</p>
             </div>
             <div className="cursor-pointer relative">
                 <div onClick={() => setNavProfileDropdown(true)}>

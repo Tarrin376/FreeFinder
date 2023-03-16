@@ -17,8 +17,8 @@ interface ProfilePicAndStatusProps {
     setLoading?: React.Dispatch<React.SetStateAction<boolean>>
 }
 
-function ProfilePicAndStatus({ profilePicURL, profileStatus, statusStyles, imgStyles, showEdit, setErrorMessage, loading, setLoading }
-    : ProfilePicAndStatusProps) {
+function ProfilePicAndStatus({ profilePicURL, profileStatus, statusStyles, imgStyles, showEdit,
+    setErrorMessage, loading, setLoading }: ProfilePicAndStatusProps) {
 
     const inputFileRef = useRef<HTMLInputElement>(null);
     const userContext: IUserContext = useContext(UserContext);

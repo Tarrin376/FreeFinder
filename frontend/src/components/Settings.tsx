@@ -8,6 +8,8 @@ import { emailPattern } from "./SignUp";
 import LoadingButton from "./LoadingButton";
 import { fetchUpdatedUser } from "../utils/fetchUpdatedUser";
 import { UpdateResponse } from "../utils/fetchUpdatedUser";
+import { initialState } from "../context/UserContext";
+import { actionSuccessful } from "../utils/actionSuccessful";
 
 interface SettingsProps {
     setSettingsPopUp: React.Dispatch<React.SetStateAction<boolean>>,
@@ -17,7 +19,8 @@ interface SettingsProps {
 enum Options {
     details,
     profile,
-    password
+    password,
+    dangerZone
 }
 
 function Settings({ setSettingsPopUp, userContext }: SettingsProps) {
@@ -39,9 +42,9 @@ function Settings({ setSettingsPopUp, userContext }: SettingsProps) {
                     setErrorMessage={setErrorMessage} loading={loading} setLoading={setLoading} />
                 </div>
                 <div>
-                    <p>Username: <span className="text-main-red">{userContext.userData.username}</span></p>
-                    <p>Country: <span className="text-main-red">{userContext.userData.country}</span></p>
-                    <p>Email: <span className="text-main-red">{userContext.userData.email}</span></p>
+                    <p>Username: <span className="text-main-purple">{userContext.userData.username}</span></p>
+                    <p>Country: <span className="text-main-purple">{userContext.userData.country}</span></p>
+                    <p>Email: <span className="text-main-purple">{userContext.userData.email}</span></p>
                 </div>
             </div>
             <div className="mt-9 mb-5">
@@ -52,11 +55,14 @@ function Settings({ setSettingsPopUp, userContext }: SettingsProps) {
                     onClick={() => updateOption(Options.profile)}>Profile</li>
                     <li className={option === Options.password ? "settings-selection" : "settings-unselected"}
                     onClick={() => updateOption(Options.password)}>Password</li>
+                    <li className={option === Options.dangerZone ? "settings-selection" : "settings-unselected"}
+                    onClick={() => updateOption(Options.dangerZone)}>Danger Zone</li>
                 </ul>
             </div>
             {option === Options.details && <MyDetails userContext={userContext} />}
             {option === Options.profile && <Profile userContext={userContext} />}
             {option === Options.password && <Password userContext={userContext} />}
+            {option === Options.dangerZone && <DangerZone userContext={userContext} setSettingsPopUp={setSettingsPopUp} />}
         </PopUpWrapper>
     );
 }
@@ -68,6 +74,7 @@ function MyDetails({ userContext } : { userContext: IUserContext }) {
     const [validSecond, setValidSecond] = useState<boolean>(false);
     const [errorMessage, setErrorMessage] = useState<string>("");
     const [loading, setLoading] = useState<boolean>(false);
+    const [completed, setCompleted] = useState<boolean>(false);
 
     function emailChangeHandler(input: string, setValid: React.Dispatch<React.SetStateAction<boolean>>,
         setEmail: React.Dispatch<React.SetStateAction<string>>): void {
@@ -81,10 +88,15 @@ function MyDetails({ userContext } : { userContext: IUserContext }) {
     async function updateDetails(): Promise<void> {
         try {
             setLoading(true);
-            const updated: UpdateResponse = await fetchUpdatedUser(userContext.userData.username, { ...userContext.userData, email: firstEmail });
+            const updated: UpdateResponse = await fetchUpdatedUser(userContext.userData.username, { 
+                ...userContext.userData, 
+                email: firstEmail 
+            });
+            
             if (updated.message === "success" && updated.userData) {
                 userContext.setUserData(updated.userData);
                 setErrorMessage("");
+                actionSuccessful(setCompleted);
             } else {
                 setErrorMessage(updated.message);
             }
@@ -98,7 +110,7 @@ function MyDetails({ userContext } : { userContext: IUserContext }) {
     }
 
     return (
-        <div>
+        <>
             <h1 className="text-[23px]">My Details</h1>
             <p className="text-side-text-gray mt-1 pb-4 border-b border-b-nav-search-gray mb-7">Change your details</p>
             <div className="flex flex-col gap-4">
@@ -117,12 +129,13 @@ function MyDetails({ userContext } : { userContext: IUserContext }) {
                     onChange={(e) => emailChangeHandler(e.target.value, setValidSecond, setSecondEmail)} />
                 </div>
                 <LoadingButton 
-                    loading={loading} text="Update Details" loadingText="Checking details" 
-                    callback={updateDetails} styles={(!validFirst || !validSecond || firstEmail !== secondEmail) ? "invalid-button mt-3" : "mt-3"}
-                    disabled={!validFirst || !validSecond || firstEmail !== secondEmail}
+                    loading={loading} text="Update Details" loadingText="Checking details..." 
+                    callback={updateDetails} styles={(!validFirst || !validSecond || firstEmail !== secondEmail) ? "invalid-button mt-3 main-btn" : "main-btn mt-3"}
+                    disabled={!validFirst || !validSecond || firstEmail !== secondEmail} loadingColour="bg-main-black"
+                    completed={completed} completedText="Details updated successfully"
                 />
             </div>
-        </div>
+        </>
     );
 }
 
@@ -131,14 +144,21 @@ function Profile({  userContext }: { userContext: IUserContext }) {
     const [loading, setLoading] = useState<boolean>(false);
     const [errorMessage, setErrorMessage] = useState<string>("");
     const country = useRef<HTMLSelectElement>(null);
+    const [completed, setCompleted] = useState<boolean>(false);
     
     async function updateProfile(): Promise<void> {
         try {
             setLoading(true);
-            const updated: UpdateResponse = await fetchUpdatedUser(userContext.userData.username, { ...userContext.userData, username, country: country.current!.value });
+            const updated: UpdateResponse = await fetchUpdatedUser(userContext.userData.username, { 
+                ...userContext.userData, 
+                username, 
+                country: country.current!.value 
+            });
+
             if (updated.message === "success" && updated.userData) {
                 userContext.setUserData(updated.userData);
                 setErrorMessage("");
+                actionSuccessful(setCompleted);
             } else {
                 setErrorMessage(updated.message);
             }
@@ -152,7 +172,7 @@ function Profile({  userContext }: { userContext: IUserContext }) {
     }
 
     return (
-        <div>
+        <>
             <h1 className="text-[23px]">Profile</h1>
             <p className="text-side-text-gray mt-1 pb-4 border-b border-b-nav-search-gray">Customize your profile</p>
             <div className="flex mt-7 flex-col gap-4">
@@ -167,12 +187,13 @@ function Profile({  userContext }: { userContext: IUserContext }) {
                     <CountriesDropdown country={country} selected={userContext.userData.country} />
                 </div>
                 <LoadingButton 
-                    loading={loading} text="Update Details" loadingText="Checking details" 
-                    callback={updateProfile} styles={username === "" ? "invalid-button mt-3" : "mt-3"}
-                    disabled={username === ""}
+                    loading={loading} text="Update Profile" loadingText="Checking username..." 
+                    callback={updateProfile} styles={username === "" ? "invalid-button main-btn mt-3" : "mt-3 main-btn"}
+                    disabled={username === ""} loadingColour="bg-main-black" completed={completed} 
+                    completedText="Profile updated successfully"
                 />
             </div>
-        </div>
+        </>
     )
 }
 
@@ -186,15 +207,43 @@ function Password({ userContext }: { userContext: IUserContext }) {
     const [validConfirmNewPass, setValidConfirmNewPass] = useState<boolean>(false);
     const [validCurrentPass, setValidCurrentPass] = useState<boolean>(false);
     const [loading, setLoading] = useState<boolean>(false);
+    const [completed, setCompleted] = useState<boolean>(false);
 
     async function updatePassword(): Promise<void> {
         setLoading(true);
 
         const passwordMatch = await checkPasswordMatch();
         if (!passwordMatch) {
-            setLoading(false);
             setErrorMessage("The current password you provided does not match your password.");
+            setLoading(false);
             return;
+        }
+
+        try {
+            const updatePassword = await fetch(`user/update/password/${userContext.userData.username}`, {
+                method: 'PUT',
+                body: JSON.stringify({ password: newPass }),
+                headers: {
+                    'Accept': 'application/json',
+                    'Content-Type': 'application/json',
+                }
+            }).then((res) => {
+                return res.json();
+            });
+
+            if (updatePassword.message === "success") {
+                setCompleted(true);
+                setErrorMessage("");
+                actionSuccessful(setCompleted);
+            } else {
+                setErrorMessage(updatePassword.message);
+            }
+        }
+        catch (err: any) {
+            setErrorMessage(err.message);
+        }
+        finally {
+            setLoading(false);
         }
     }
 
@@ -217,8 +266,8 @@ function Password({ userContext }: { userContext: IUserContext }) {
                 return false;
             }
         }
-        catch (e: any) {
-            setErrorMessage(e.message);
+        catch (err: any) {
+            setErrorMessage(err.message);
             return false;
         }
     }
@@ -238,7 +287,7 @@ function Password({ userContext }: { userContext: IUserContext }) {
     }
 
     return (
-        <div>
+        <>
             <h1 className="text-[23px]">Password</h1>
             <p className="text-side-text-gray mt-1 pb-4 border-b border-b-nav-search-gray">
                 Please enter your current password to change your password
@@ -264,13 +313,60 @@ function Password({ userContext }: { userContext: IUserContext }) {
                     onChange={(e) => setPass(e.target.value, setValidConfirmNewPass, setConfirmNewPass)} />
                 </div>
                 <LoadingButton 
-                    loading={loading} text="Update Details" loadingText="Checking password" 
-                    callback={updatePassword} styles={!checkInputs() ? "invalid-button mt-3" : "mt-3"}
-                    disabled={!checkInputs()}
+                    loading={loading} text="Update Details" loadingText="Checking password..." 
+                    callback={updatePassword} styles={!checkInputs() ? "invalid-button mt-3 main-btn" : "mt-3 main-btn"}
+                    disabled={!checkInputs()} loadingColour="bg-main-black" completed={completed} 
+                    completedText="Password updated successfully"
                 />
             </div>
-        </div>
+        </>
     )
+}
+
+function DangerZone({ userContext, setSettingsPopUp }: { userContext: IUserContext, 
+    setSettingsPopUp: React.Dispatch<React.SetStateAction<boolean>> }) {
+
+    const [loading, setLoading] = useState<boolean>(false);
+    const [errorMessage, setErrorMessage] = useState<string>("");
+
+    async function deleteAccount(): Promise<void> {
+        setLoading(true);
+
+        try {
+            const deleteUser = await fetch(`/user/deleteUser/${userContext.userData.username}`, { method: 'DELETE' })
+            .then((res) => {
+                return res.json();
+            });
+
+            if (deleteUser.message === "success") {
+                userContext.setUserData(initialState.userData);
+                setSettingsPopUp(false);
+            } else {
+                setErrorMessage(deleteUser.message);
+            }
+        }
+        catch(err: any) {
+            setErrorMessage(err.message);
+        }
+        finally {
+            setLoading(false);
+        }
+    }
+
+    return (
+        <>
+            {errorMessage !== "" && <ErrorMessage message={errorMessage} title="Failed to delete account" />}
+            <h1 className="text-[23px] text-[#B00020]">Delete account</h1>
+            <p className="text-side-text-gray mt-1 pb-4">
+                Once you delete your account, there is no going back. Please be certain.
+            </p>
+            <LoadingButton 
+                loading={loading} text="Delete account" loadingText="Deleting account..." 
+                callback={deleteAccount} disabled={false} styles={"bg-[#B00020] text-main-white hover:bg-[#c10002]"}
+                loadingColour="bg-main-purple"
+            />
+        </>
+    );
 }
 
 export default Settings;

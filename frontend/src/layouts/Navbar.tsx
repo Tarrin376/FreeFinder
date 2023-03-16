@@ -35,7 +35,7 @@ function Navbar() {
             <nav className="px-5 py-5 border-b border-b-light-gray bg-main-white">
                 <div className="max-w-screen-xxl m-auto flex gap-8 items-center">
                     <div className="flex xl:gap-16 lg:gap-12 items-center justify-between">
-                        <div className="text-main-red text-2xl">FreeFinder</div>
+                        <div className="text-main-purple text-2xl">FreeFinder</div>
                         <ul className="flex items-center xl:gap-11 lg:gap-9 xl:ml-14 lg:ml-5">
                             <li className="nav-item">Browse</li>
                             <li className="nav-item">Orders</li>

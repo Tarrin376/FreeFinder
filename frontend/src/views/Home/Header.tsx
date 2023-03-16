@@ -2,7 +2,7 @@
 function Header() {
     return (
         <div className="mt-24">
-            <h1 className="text-main-red text-[39px] mb-4">
+            <h1 className="text-main-purple text-[39px] mb-4">
                 Find the best freelance jobs
             </h1>
             <p className="max-w-[570px] mb-7">

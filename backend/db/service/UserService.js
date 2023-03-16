@@ -15,7 +15,8 @@ cloudinary.config({
 export async function updateProfilePictureHandler(username, file) {
     const upload = cloudinary.uploader.upload(file, { public_id: `FreeFinder/ProfilePictures/${username}` });
 
-    const success = await upload.then((data) => data).catch((err) => {
+    const success = await upload.then((data) => data)
+    .catch((err) => {
         throw err;
     });
 
@@ -25,8 +26,25 @@ export async function updateProfilePictureHandler(username, file) {
             data: { profilePicURL: success.secure_url }
         });
     }
-    catch (e) {
-        throw e;
+    catch (err) {
+        throw err;
+    }
+    finally {
+        await prisma.$disconnect();
+    }
+}
+
+export async function updatePasswordHandler(username, password) {
+    const hash = await bcrypt.hash(password, 10);
+    
+    try {
+        await prisma.user.update({
+            where: { username: username },
+            data: { hash: hash }
+        });
+    }
+    catch (err) {
+        throw err;
     }
     finally {
         await prisma.$disconnect();
@@ -45,13 +63,13 @@ export async function addUserHandler(userData) {
             }
         });
     }
-    catch (e) {
+    catch (err) {
         if (e instanceof Prisma.PrismaClientKnownRequestError) {
             if (e.code === 'P2002') {
                 throw new Error("There already exists a user with this username or email address.");
             }
         }
-        throw e;
+        throw err;
     }
     finally {
         await prisma.$disconnect();
@@ -91,8 +109,8 @@ export async function findUserHandler(usernameOrEmail, password) {
             return filtered;
         }
     }
-    catch (e) {
-        throw e;
+    catch (err) {
+        throw err;
     }
     finally {
         await prisma.$disconnect();
@@ -109,13 +127,25 @@ export async function updateUserHandler(username, data) {
         const {hash, password, ...res} = updated;
         return res;
     }
-    catch (e) {
-        if (e instanceof Prisma.PrismaClientKnownRequestError) {
-            if (e.code === 'P2002') {
+    catch (err) {
+        if (err instanceof Prisma.PrismaClientKnownRequestError) {
+            if (err.code === 'P2002') {
                 throw new Error("There already exists a user with this username or email address.");
             }
         }
-        throw e;
+        throw err;
+    }
+    finally {
+        await prisma.$disconnect();
+    }
+}
+
+export async function deleteUserHandler(username) {
+    try {
+        await prisma.user.delete({ where: { username: username } });
+    }
+    catch (err) {
+        throw err;
     }
     finally {
         await prisma.$disconnect();

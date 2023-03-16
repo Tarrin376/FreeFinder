@@ -48,8 +48,8 @@ function LogIn({ setLogIn, setSignUp }: LogInProps) {
                 setErrorMessage(user.error);
             }
         }
-        catch (e: any) {
-            setErrorMessage(e.message);
+        catch (err: any) {
+            setErrorMessage(err.message);
         }
         finally {
             setLoading(false);
@@ -66,9 +66,12 @@ function LogIn({ setLogIn, setSignUp }: LogInProps) {
                     <input type="text" placeholder="Your email or username" className="search-bar" onChange={(e) => setUsernameOrEmail(e.target.value)} />
                     <input type="password" placeholder="Password" className="search-bar" onChange={(e) => setPassword(e.target.value)} />
                 </div>
-                <LoadingButton loading={loading} text="Login" loadingText="Checking details" callback={logInAttempt} disabled={false} />
+                <LoadingButton 
+                    loading={loading} text="Login" loadingText="Checking details" 
+                    callback={logInAttempt} disabled={false} styles={"main-btn"} loadingColour="bg-main-black"
+                />
                 <p className="mt-6 text-side-text-gray text-[15px]">Dont yet have an account? 
-                    <span className="text-main-red ml-2 cursor-pointer hover:text-main-black" onClick={openSignUp}>
+                    <span className="text-main-purple ml-2 cursor-pointer hover:text-main-black" onClick={openSignUp}>
                         Sign Up
                     </span>
                 </p>

@@ -4,11 +4,11 @@ module.exports = {
   theme: {
     extend: {
         colors: {
-            'main-red': '#F00C3C',
+            'main-purple': '#714cfe',
+            'main-purple-hover': '#7f5efe',
             'main-white': '#fafafa',
             'light-gray': '#DDDDDD',
             'nav-search-gray': '#cdcdcd',
-            'main-purple-hover': '#731EEE',
             'very-light-gray': '#EBEBEB',
             'very-light-gray-hover': '#E6E6E6',
             'main-black': '#212121',

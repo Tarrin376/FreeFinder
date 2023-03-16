@@ -6,15 +6,21 @@ interface LoadingButtonProps {
     loadingText: string,
     callback: (e: React.MouseEvent<HTMLButtonElement>) => Promise<any>,
     styles?: string,
-    disabled: boolean
+    disabled: boolean,
+    loadingColour: string,
+    completed?: boolean,
+    completedText?: string
 }
 
-function LoadingButton({ loading, text, loadingText, callback, styles, disabled }: LoadingButtonProps) {
+function LoadingButton({ loading, text, loadingText, callback, styles, disabled, 
+    loadingColour, completed, completedText }: LoadingButtonProps) {
+
     return (
-        <button type="submit" className={`main-btn ${styles} ${loading ? 'cursor-not-allowed hover:!bg-main-black' : ''}`}
-        onClick={callback} disabled={loading || disabled}>
+        <button type="submit" className={`loading-btn ${styles} ${loading ? `cursor-not-allowed hover:!${loadingColour}` 
+        : `${completed ? "hover:!bg-[#36BF54] bg-[#36BF54] !text-main-white" : ""}`}`}
+        onClick={callback} disabled={loading || disabled || completed}>
             {loading && <img src={LoadingIcon} className="w-9" alt="loading" />}
-            {loading ? loadingText : text}
+            {loading ? loadingText : completed ? completedText : text}
         </button>
     );
 }

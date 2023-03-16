@@ -1,5 +1,6 @@
 import PopUpWrapper from "../layouts/PopUpWrapper";
 import { useState } from 'react';
+import LoadingButton from "./LoadingButton";
 
 const MAX_PRICE: number = 2500;
 
@@ -11,9 +12,11 @@ function PostService({ setPostService }: PostServiceProps) {
     const [startingPrice, setStartingPrice] = useState<number>(0);
     const [title, setTitle] = useState<string>("");
     const [about, setAbout] = useState<string>("");
+    const [loading, setLoading] = useState<boolean>(false);
 
-    function post(e: React.MouseEvent<HTMLButtonElement>): void {
-        e.preventDefault();
+    async function createPost(e: React.MouseEvent<HTMLButtonElement>): Promise<void> {
+        setLoading(true);
+        
     }
 
     function validInputs(): boolean {
@@ -44,12 +47,12 @@ function PostService({ setPostService }: PostServiceProps) {
             <input type="text" className="search-bar mb-4" placeholder="Enter title" onChange={(e) => setTitle(e.target.value)} />
             <p className="mb-1">Write about section</p>
             <textarea placeholder="Write about your service here" className="w-full search-bar mb-6" 
-            onChange={(e) => setAbout(e.target.value)} rows={5}></textarea>
-            <div className="flex items-center justify-between gap-2">
-                <p className="text-side-text-gray text-[15px]">Your about section must be at most 1500 characters</p>
-                <button className={`w-[220px] ${!validInputs() ? "invalid-button" : "btn-primary action-btn"}`} 
-                type="submit" onClick={post} disabled={!validInputs()}>Post your service!</button>
-            </div>
+            onChange={(e) => setAbout(e.target.value)} rows={5} maxLength={1500}></textarea>
+            <LoadingButton
+                loading={loading} text="Post your service" loadingText="Creating post..."
+                callback={createPost} styles={`max-w-[220px] ml-auto ${!validInputs() ? "invalid-button" : "btn-primary action-btn"}`}
+                disabled={false} loadingColour="bg-[#36BF54]"
+            />
         </PopUpWrapper>
     );
 }
