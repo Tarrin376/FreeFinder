@@ -35,37 +35,38 @@ function SignUp({ setLogIn, setSignUp, setAccountCreated }: SignUpProps) {
             return;
         }
 
-        setLoading(true);
-        const addAttempt = await fetch('/user/createUser', {
-            method: 'POST',
-            body: JSON.stringify({ 
-                email: form.emailFirst, 
-                username: form.username, 
-                password: form.password,
-                country: country.current.value
-            }),
-            headers: {
-                'Accept': 'application/json',
-                'Content-Type': 'application/json'
+        try {
+            setLoading(true);
+            const addAttempt = await fetch('/user/createUser', {
+                method: 'POST',
+                body: JSON.stringify({ 
+                    email: form.emailFirst, 
+                    username: form.username, 
+                    password: form.password,
+                    country: country.current.value
+                }),
+                headers: {
+                    'Accept': 'application/json',
+                    'Content-Type': 'application/json'
+                }
+            }).then((res) => {
+                return res.json();
+            });
+            
+            if (addAttempt.status === "success") {
+                setAccountCreated(true);
+                setSignUp(false);
+                setErrorMessage("");
+            } else {
+                setErrorMessage(addAttempt.status);
             }
-        })
-        .then((res) => {
-            return res.json();
-        })
-        .catch(() => {
-            setErrorMessage(`An unexpected error occured when trying to create your account. 
-            Make sure you are connected to the internet and try again.`);
-        });
-
-        if (addAttempt.status === 200) {
-            setAccountCreated(true);
-            setSignUp(false);
-            setErrorMessage("");
-        } else {
-            setErrorMessage(addAttempt.message);
         }
-
-        setLoading(false);
+        catch (e: any) {
+            setErrorMessage(e.message);
+        }
+        finally {
+            setLoading(false);
+        }
     }
 
     function openLogIn(): void {

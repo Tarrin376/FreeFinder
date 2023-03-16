@@ -1,5 +1,3 @@
-const defaultTheme = require('tailwindcss/defaultTheme');
-
 /** @type {import('tailwindcss').Config} */
 module.exports = {
   content: ["./src/**/*.{jsx,tsx}"],
@@ -25,9 +23,6 @@ module.exports = {
         boxShadow: {
             'pop-up': '0px 4px 5px 0px rgba(0, 0, 0, 0.2), 0px 3px 14px 3px rgba(0, 0, 0, 0.12), 0px 8px 10px 1px rgba(0, 0, 0, 0.14)'
         },
-        fontFamily: {
-            roboto: ['"Open Sans"', ...defaultTheme.fontFamily.sans]
-        }
     },
     screens: {
         sm: '480px',

@@ -12,10 +12,14 @@ interface ProfilePicAndStatusProps {
     statusStyles?: string,
     imgStyles?: string,
     showEdit?: boolean,
-    setErrorMessage?: React.Dispatch<React.SetStateAction<string>>
+    setErrorMessage?: React.Dispatch<React.SetStateAction<string>>,
+    loading?: boolean,
+    setLoading?: React.Dispatch<React.SetStateAction<boolean>>
 }
 
-function ProfilePicAndStatus({ profilePicURL, profileStatus, statusStyles, imgStyles, showEdit, setErrorMessage }: ProfilePicAndStatusProps) {
+function ProfilePicAndStatus({ profilePicURL, profileStatus, statusStyles, imgStyles, showEdit, setErrorMessage, loading, setLoading }
+    : ProfilePicAndStatusProps) {
+
     const inputFileRef = useRef<HTMLInputElement>(null);
     const userContext: IUserContext = useContext(UserContext);
     const [profileDropdown, setProfileDropdown] = useState<boolean>(false);
@@ -33,21 +37,37 @@ function ProfilePicAndStatus({ profilePicURL, profileStatus, statusStyles, imgSt
 
         const updated: Promise<UpdateResponse> = fetchUpdatedUser(userContext.userData.username, {...userContext.userData}, profile);
         updated.then((response) => {
-            if (response.status === 200 && response.userData) {
+            if (response.message === "success" && response.userData) {
                 userContext.setUserData(response.userData);
+                setErrorMessage("");
             } else {
                 setErrorMessage(response.message);
             }
+
+            if (setLoading) {
+                setLoading(false);
+            }
         }).catch((err) => {
             setErrorMessage(err.message);
+            if (setLoading) {
+                setLoading(false);
+            }
         });
     }
 
     function removePhoto(): void {
+        if (setLoading) {
+            setLoading(true);
+        }
+        
         updatePhoto("");
     }
 
     async function uploadPhoto(): Promise<void> {
+        if (setLoading) {
+            setLoading(true);
+        }
+      
         const base64Str = await new Promise((resolve, _) => {
             const reader = new FileReader();
             reader.onloadend = () => resolve(reader.result);
@@ -59,20 +79,20 @@ function ProfilePicAndStatus({ profilePicURL, profileStatus, statusStyles, imgSt
 
     return (
         <>
-            <div className={profileStatus === 'ONLINE' ? `before:w-4 before:h-4 before:bg-green-500 before:absolute before:top-[33px] 
-            before:left-[3px] before:border-2 before:border-main-white before:content[''] before:rounded-full ${statusStyles}`
-            : `before:w-4 before:h-4 before:bg-[#FF9800] before:absolute before:top-[33px] before:left-[3px] before:border-2 
-            before:border-main-white before:content[''] before:rounded-full ${statusStyles}`}>
+            <div className={loading ? '' : `${profileStatus === 'ONLINE' ? 'before:bg-green-500' : 'before:bg-[#FF9800]'} before:w-4 before:h-4 
+            before:absolute before:top-[33px] before:left-[3px] before:border-2 before:border-main-white before:content[''] before:rounded-full ${statusStyles}`}>
+                {loading ? <div className={`w-12 h-12 rounded-full border-2 border-[#ced1da] loading ${imgStyles}`}></div> : 
                 <img src={profilePicURL === "" ? BlankProfile : profilePicURL} alt="profile pic" 
-                className={`w-12 h-12 rounded-full border-2 border-main-black ${imgStyles}`} />
-                {showEdit &&
+                className={`w-12 h-12 rounded-full border-2 border-[#ced1da]  ${imgStyles}`} />}
+                {showEdit && !loading &&
                     <>
                         <button className="flex gap-1 items-center absolute text-xs top-[60px] right-0 bg-main-black hover:bg-main-black-hover btn-primary p-1 px-2 h-fit cursor-pointer"
                         onClick={() => setProfileDropdown(true)}>
                             <img src={EditIcon} alt="edit" className="w-4 h-4" />
                             <p className="text-main-white">Edit</p>
                         </button>
-                        {profileDropdown && <OutsideClickHandler onOutsideClick={() => setProfileDropdown(false)}>
+                        {profileDropdown && 
+                        <OutsideClickHandler onOutsideClick={() => setProfileDropdown(false)}>
                             <div className="absolute bg-main-black right-0 mt-2 flex flex-col rounded-[8px] overflow-hidden">
                                 <p className="text-main-white text-xs whitespace-nowrap cursor-pointer hover:bg-main-black-hover 
                                 profile-menu-element pt-2 pb-2" onClick={triggerUpload}>

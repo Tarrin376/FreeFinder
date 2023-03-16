@@ -35,11 +35,10 @@ export async function updateProfilePictureHandler(username, file) {
 
 export async function addUserHandler(userData) {
     try {
-        const saltRounds = 10;
         await prisma.user.create({
             data: {
                 username: userData.username,
-                hash: await bcrypt.hash(userData.password, saltRounds),
+                hash: await bcrypt.hash(userData.password, 10),
                 country: userData.country,
                 email: userData.email,
                 status: 'ONLINE',
@@ -81,7 +80,7 @@ export async function findUserHandler(usernameOrEmail, password) {
         });
         
         if (!res) {
-            throw new Error("Email provided doesn't have any account linked to it. Ensure that you have entered it correctly.");
+            throw new Error("Email or username provided doesn't have any account linked to it.");
         }
 
         const passwordMatch = await bcrypt.compare(password, res.hash);
@@ -113,7 +112,7 @@ export async function updateUserHandler(username, data) {
     catch (e) {
         if (e instanceof Prisma.PrismaClientKnownRequestError) {
             if (e.code === 'P2002') {
-                throw new Error("There already exists a user with this email address.");
+                throw new Error("There already exists a user with this username or email address.");
             }
         }
         throw e;

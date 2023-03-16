@@ -1,14 +1,21 @@
 import { IUser } from "../models/IUser";
 
-export type UpdateResponse = {
-    status: number, 
+export interface UpdateResponse {
     message: string, 
     userData?: IUser
 }
 
 export async function fetchUpdatedUser(username: string, updatedData: IUser, profilePic?: string | unknown): Promise<UpdateResponse> {
     if (profilePic) {
-        await updatePhoto(username, profilePic);
+        try {
+            const response = await updatePhoto(username, profilePic);
+            if (response.status !== "success") {
+                throw new Error(response.status)
+            }
+        }
+        catch (e) {
+            throw new Error("Failed to upload image");
+        }
     }
     
     const updated: UpdateResponse = await fetch(`/user/update/${username}`, {
@@ -22,21 +29,26 @@ export async function fetchUpdatedUser(username: string, updatedData: IUser, pro
         return res.json();
     }).catch((err) => {
         if (err instanceof SyntaxError) throw new Error("File size is too large");
-        else throw new Error(err);
+        else throw err;
     });
 
     return updated;
 }
 
-async function updatePhoto(username: string, profilePic: string | unknown) : Promise<void> {
-    await fetch(`user/profile/update/${username}`, {
+async function updatePhoto(username: string, profilePic: string | unknown) : Promise<any> {
+    const response = await fetch(`user/profile/update/${username}`, {
         method: 'PUT',
         body: JSON.stringify({ profilePic }),
         headers: {
             'Accept': 'application/json',
             'Content-Type': 'application/json'
         }
-    }).catch((err) => {
+    }).then((res) => {
+        return res.json();
+    })
+    .catch((err) => {
         throw err;
     });
+
+    return response;
 }

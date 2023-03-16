@@ -24,34 +24,35 @@ function LogIn({ setLogIn, setSignUp }: LogInProps) {
     async function logInAttempt(e: React.MouseEvent<HTMLButtonElement>): Promise<void> {
         e.preventDefault();
         if (usernameOrEmail === "" || password === "") {
-            setErrorMessage("Please fill in both boxes to sign into your account");
+            setErrorMessage("Please fill in both inputs to sign into your account");
             return;
         }
 
-        setLoading(true);
-        const findUserAttempt = await fetch(`/user/findUser/${usernameOrEmail}`, {
-            method: 'POST',
-            body: JSON.stringify({ password: password }),
-            headers: {
-                'Accept': 'application/json',
-                'Content-Type': 'application/json'
-            }
-        })
-        .then((res) => {
-            return res.json();
-        })
-        .catch(() => {
-            setErrorMessage(`An unexpected error occured when trying to create your account. 
-            Make sure you are connected to the internet and try again.`);
-        });
+        try {
+            setLoading(true);
+            const response = await fetch(`/user/findUser/${usernameOrEmail}`, {
+                method: 'POST',
+                body: JSON.stringify({ password: password }),
+                headers: {
+                    'Accept': 'application/json',
+                    'Content-Type': 'application/json'
+                }
+            });
 
-        setLoading(false);
-        if (findUserAttempt.status === 200 && findUserAttempt.data) {
-            findUserAttempt.data.memberDate = new Date(findUserAttempt.data.memberDate);
-            userContext.setUserData(findUserAttempt.data);
-            setLogIn(false);
-        } else {
-            setErrorMessage(findUserAttempt.message);
+            const user = await response.json();
+            if (user.userData) {
+                user.userData.memberDate = new Date(user.userData.memberDate);
+                userContext.setUserData(user.userData);
+                setLogIn(false);
+            } else {
+                setErrorMessage(user.error);
+            }
+        }
+        catch (e: any) {
+            setErrorMessage(e.message);
+        }
+        finally {
+            setLoading(false);
         }
     }
 

@@ -3,40 +3,39 @@ import { addUserHandler, findUserHandler, updateUserHandler, updateProfilePictur
 export async function updateProfilePicture(req, res) {
     try {
         await updateProfilePictureHandler(req.params.username, req.body.profilePic);
-        res.status(200);
-        res.send("success");
+        res.json({ status: "success" });
     }
     catch (e) {
-        throw e;
+        res.json({ status: e.message });
     }
 }
 
 export async function addUser(req, res) {
     try {
         await addUserHandler(req.body);
-        res.json({ status: 200, message: "success" });
+        res.json({ status: "success" });
     }
     catch (e) {
-        res.json({ status: 400, message: e.message });
+        res.json({ status: e.message });
     }
 }
 
 export async function findUser(req, res) {
     try {
         const user = await findUserHandler(req.params.usernameOrEmail, req.body.password);
-        res.json({ status: 200, message: "success", data: user });
+        res.json({ userData: user });
     }
     catch (e) {
-        res.json({ status: 400, message: e.message });
+        res.json({ error: e.message });
     }
 }
 
 export async function updateUser(req, res) {
     try {
         const updated = await updateUserHandler(req.params.username, req.body);
-        res.json({ status: 200, message: "success", userData: updated });
+        res.json({ message: "success", userData: updated });
     }
     catch (e) {
-        res.json({ status: 400, message: e.message });
+        res.json({ message: e.message });
     }
 }

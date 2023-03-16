@@ -21,7 +21,7 @@ function ProfileMenu({ userContext, setSettingsPopUp }: ProfileMenuProps) {
         const updated: Promise<UpdateResponse> = fetchUpdatedUser(userContext.userData.username, {...userContext.userData, status: toggledStatus});
         
         updated.then((response) => {
-            if (response.userData && response.status === 200) {
+            if (response.userData && response.message === "success") {
                 userContext.setUserData({...response.userData});
             }
         });

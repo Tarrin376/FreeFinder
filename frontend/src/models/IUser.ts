@@ -5,5 +5,5 @@ export interface IUser {
     email: string,
     status: string,
     userID: string,
-    memberDate: Date
+    memberDate: Date,
 }

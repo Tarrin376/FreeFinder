@@ -33,7 +33,7 @@
         @apply pb-4 text-main-black cursor-pointer;
     }
     .loading {
-        @apply animate-pulse bg-[#D4D4D4];
+        @apply animate-pulse bg-[#ced1da];
     }
     .main-btn {
         @apply btn-primary bg-main-black text-main-white hover:bg-main-red w-full h-12 flex items-center justify-center gap-2;
@@ -42,7 +42,7 @@
 
 @layer base {
     * {
-        @apply box-border font-roboto text-main-black;
+        @apply box-border text-main-black;
     }
     .page {
         @apply max-w-screen-xxl m-auto px-16;
