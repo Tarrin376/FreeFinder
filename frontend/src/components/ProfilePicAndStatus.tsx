@@ -78,36 +78,34 @@ function ProfilePicAndStatus({ profilePicURL, profileStatus, statusStyles, imgSt
     }
 
     return (
-        <>
-            <div className={loading ? '' : `${profileStatus === 'ONLINE' ? 'before:bg-green-500' : 'before:bg-[#FF9800]'} before:w-4 before:h-4 
-            before:absolute before:top-[33px] before:left-[3px] before:border-2 before:border-main-white before:content[''] before:rounded-full ${statusStyles}`}>
-                {loading ? <div className={`w-12 h-12 rounded-full border-2 border-[#ced1da] loading ${imgStyles}`}></div> : 
-                <img src={profilePicURL === "" ? BlankProfile : profilePicURL} alt="profile pic" 
-                className={`w-12 h-12 rounded-full border-2 border-[#ced1da]  ${imgStyles}`} />}
-                {showEdit && !loading &&
-                    <>
-                        <button className="flex gap-1 items-center absolute text-xs top-[60px] right-0 bg-main-black hover:bg-main-black-hover btn-primary p-1 px-2 h-fit cursor-pointer"
-                        onClick={() => setProfileDropdown(true)}>
-                            <img src={EditIcon} alt="edit" className="w-4 h-4" />
-                            <p className="text-main-white">Edit</p>
-                        </button>
-                        {profileDropdown && 
-                        <OutsideClickHandler onOutsideClick={() => setProfileDropdown(false)}>
-                            <div className="absolute bg-main-black right-0 mt-2 flex flex-col rounded-[8px] overflow-hidden">
-                                <p className="text-main-white text-xs whitespace-nowrap cursor-pointer hover:bg-main-black-hover 
-                                profile-menu-element pt-2 pb-2" onClick={triggerUpload}>
-                                    Upload a photo...
-                                </p>
-                                <p className="text-main-white text-xs whitespace-nowrap cursor-pointer hover:bg-main-black-hover 
-                                profile-menu-element pb-2 pt-2 border-t border-t-[#3E3E3E]" onClick={removePhoto}>
-                                    Remove photo
-                                </p>
-                                <input type='file' id='file' ref={inputFileRef} className="hidden" onChange={uploadPhoto} />
-                            </div>
-                        </OutsideClickHandler>}
-                    </>}
-            </div>
-        </>
+        <div className={loading ? '' : `${profileStatus === 'ONLINE' ? 'before:bg-green-500' : 'before:bg-[#FF9800]'} before:w-4 before:h-4 
+        before:absolute before:top-[33px] before:left-[3px] before:border-2 before:border-main-white before:content[''] before:rounded-full ${statusStyles}`}>
+            {loading ? <div className={`w-12 h-12 rounded-full border-2 loading ${imgStyles}`}></div> : 
+            <img src={profilePicURL === "" ? BlankProfile : profilePicURL} alt="profile pic" 
+            className={`w-12 h-12 rounded-full ${imgStyles}`} />}
+            {showEdit && !loading &&
+                <>
+                    <button className="flex gap-1 items-center absolute text-xs top-[60px] right-0 bg-main-black hover:bg-main-black-hover btn-primary p-1 px-2 h-fit cursor-pointer"
+                    onClick={() => setProfileDropdown(true)}>
+                        <img src={EditIcon} alt="edit" className="w-4 h-4" />
+                        <p className="text-main-white">Edit</p>
+                    </button>
+                    {profileDropdown && 
+                    <OutsideClickHandler onOutsideClick={() => setProfileDropdown(false)}>
+                        <div className="absolute bg-main-black right-0 mt-2 flex flex-col rounded-[8px] overflow-hidden">
+                            <p className="text-main-white text-xs whitespace-nowrap cursor-pointer hover:bg-main-black-hover 
+                            profile-menu-element pt-2 pb-2" onClick={triggerUpload}>
+                                Upload a photo...
+                            </p>
+                            <p className="text-main-white text-xs whitespace-nowrap cursor-pointer hover:bg-main-black-hover 
+                            profile-menu-element pb-2 pt-2 border-t border-t-[#3E3E3E]" onClick={removePhoto}>
+                                Remove photo
+                            </p>
+                            <input type='file' id='file' ref={inputFileRef} className="hidden" onChange={uploadPhoto} />
+                        </div>
+                    </OutsideClickHandler>}
+                </>}
+        </div>
     );
 }
 

@@ -1,6 +1,9 @@
 import PopUpWrapper from "../layouts/PopUpWrapper";
-import { useState } from 'react';
+import { useState, useContext } from 'react';
 import LoadingButton from "./LoadingButton";
+import { UserContext } from "../context/UserContext";
+import { IUserContext } from "../context/UserContext";
+import ErrorMessage from "./ErrorMessage";
 
 const MAX_PRICE: number = 2500;
 
@@ -13,10 +16,41 @@ function PostService({ setPostService }: PostServiceProps) {
     const [title, setTitle] = useState<string>("");
     const [about, setAbout] = useState<string>("");
     const [loading, setLoading] = useState<boolean>(false);
+    const userContext: IUserContext = useContext(UserContext);
+    const [errorMessage, setErrorMessage] = useState<string>("");
 
-    async function createPost(e: React.MouseEvent<HTMLButtonElement>): Promise<void> {
+    async function createPost(): Promise<void> {
         setLoading(true);
         
+        try {
+            const create = await fetch(`/post/createPost/${userContext.userData.userID}`, {
+                method: 'POST',
+                body: JSON.stringify({
+                    about: about,
+                    title: title,
+                    startingPrice: startingPrice
+                }),
+                headers: {
+                    'Content-Type': 'application/json',
+                    'Accept': 'application/json'
+                }
+            }).then((res) => {
+                return res.json();
+            });
+
+            if (create.message === "success") {
+                setErrorMessage("");
+                setPostService(false);
+            } else {
+                setErrorMessage(create.message);
+            }
+        }
+        catch (err: any) {
+            setErrorMessage(err.message);
+        }
+        finally {
+            setLoading(false);
+        }
     }
 
     function validInputs(): boolean {
@@ -37,6 +71,7 @@ function PostService({ setPostService }: PostServiceProps) {
     return (
         <PopUpWrapper setIsOpen={setPostService}>
             <h1 className="text-[26px] mb-4">Post a service</h1>
+            {errorMessage !== "" && <ErrorMessage message={errorMessage} title={"Unable to create post."} />}
             <h2 className="mb-2">Starting price (minimum of £10)</h2>
             <div className="flex items-center search-bar mb-4">
                 <p className="select-none">£</p>

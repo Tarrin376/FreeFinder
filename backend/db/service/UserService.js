@@ -85,16 +85,6 @@ export async function findUserHandler(usernameOrEmail, password) {
                     { username: usernameOrEmail }
                 ],
             },
-            select: {
-                username: true,
-                country: true,
-                profilePicURL: true,
-                email: true,
-                hash: true,
-                status: true,
-                userID: true,
-                memberDate: true
-            }
         });
         
         if (!res) {

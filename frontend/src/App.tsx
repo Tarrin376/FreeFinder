@@ -4,6 +4,7 @@ import { BrowserRouter, Routes, Route } from 'react-router-dom';
 import UserProvider from './context/UserContext';
 import SavedServicesPage from './views/SavedServices/SavedServicesPage';
 import ErrorPage from './views/Error/ErrorPage';
+import MyPostsPage from './views/MyPosts/MyPostsPage';
 
 function App() {
     return (
@@ -14,6 +15,7 @@ function App() {
                         <Route path="/" element={<Navbar />}>
                             <Route index element={<HomePage />} />
                             <Route path="saved/:username?" element={<SavedServicesPage />} />
+                            <Route path="posts/:username?" element={<MyPostsPage />} />
                             <Route path="*" element={<ErrorPage />} />
                         </Route>
                     </Routes>

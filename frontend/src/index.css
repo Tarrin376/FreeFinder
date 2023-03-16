@@ -15,7 +15,7 @@
         focus:outline-offset-0 focus:outline-main-black;
     }
     .invalid-input {
-        @apply focus:outline-2 focus:!outline-invalid-input-red focus:border-transparent border-b border-invalid-input-red bg-[#FFF7F6]
+        @apply focus:outline-2 focus:!outline-error-red focus:border-transparent border-b border-error-red bg-[#FFF7F6]
     }
     .invalid-button {
         @apply btn-primary !bg-[#575757] hover:!bg-[#575757] cursor-not-allowed text-[#E0E0E0] opacity-80;
@@ -33,7 +33,7 @@
         @apply pb-4 text-main-black cursor-pointer;
     }
     .loading {
-        @apply animate-pulse bg-[#ced1da];
+        @apply animate-pulse bg-[#D4DDE8];
     }
     .main-btn {
         @apply bg-main-black text-main-white hover:bg-main-purple w-full !h-12 loading-btn;

@@ -14,14 +14,14 @@ module.exports = {
             'main-black': '#212121',
             'search-text': '#606163',
             'side-text-gray': '#7B7B7B',
-            'invalid-input-red': '#C11103',
-            'main-black-hover': 'rgba(51, 51, 51, 1)'
+            'main-black-hover': 'rgba(51, 51, 51, 1)',
+            'error-red': '#B00020'
         },
         dropShadow: {
             'search-bar': '0px 0px 1px #DDDDDD',
         },
         boxShadow: {
-            'pop-up': '0px 4px 5px 0px rgba(0, 0, 0, 0.2), 0px 3px 14px 3px rgba(0, 0, 0, 0.12), 0px 8px 10px 1px rgba(0, 0, 0, 0.14)'
+            'pop-up': '0px 4px 5px 0px rgba(0, 0, 0, 0.2), 0px 3px 14px 3px rgba(0, 0, 0, 0.12), 0px 8px 10px 1px rgba(0, 0, 0, 0.14)',
         },
     },
     screens: {
