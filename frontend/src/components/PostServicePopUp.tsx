@@ -4,14 +4,19 @@ import LoadingButton from "./LoadingButton";
 import { UserContext } from "../context/UserContext";
 import { IUserContext } from "../context/UserContext";
 import ErrorMessage from "./ErrorMessage";
+import { IPost } from "../models/IPost";
 
 const MAX_PRICE: number = 2500;
 
 interface PostServiceProps {
-    setPostService: React.Dispatch<React.SetStateAction<boolean>>
+    setPostService: React.Dispatch<React.SetStateAction<boolean>>,
+    setUserPosts: React.Dispatch<React.SetStateAction<IPost[]>>,
+    cursor: React.MutableRefObject<string>,
+    setReachedBottom: React.Dispatch<React.SetStateAction<boolean>>,
+    setNextPage: React.Dispatch<React.SetStateAction<boolean>>,
 }
 
-function PostService({ setPostService }: PostServiceProps) {
+function PostServicePopUp({ setPostService, setUserPosts, cursor, setReachedBottom, setNextPage }: PostServiceProps) {
     const [startingPrice, setStartingPrice] = useState<number>(0);
     const [title, setTitle] = useState<string>("");
     const [about, setAbout] = useState<string>("");
@@ -26,8 +31,8 @@ function PostService({ setPostService }: PostServiceProps) {
             const create = await fetch(`/post/createPost/${userContext.userData.userID}`, {
                 method: 'POST',
                 body: JSON.stringify({
-                    about: about,
-                    title: title,
+                    about: about.trim(),
+                    title: title.trim(),
                     startingPrice: startingPrice
                 }),
                 headers: {
@@ -41,6 +46,10 @@ function PostService({ setPostService }: PostServiceProps) {
             if (create.message === "success") {
                 setErrorMessage("");
                 setPostService(false);
+                cursor.current = "HEAD";
+                setUserPosts([]);
+                setNextPage((state) => !state);
+                setReachedBottom(false);
             } else {
                 setErrorMessage(create.message);
             }
@@ -54,7 +63,7 @@ function PostService({ setPostService }: PostServiceProps) {
     }
 
     function validInputs(): boolean {
-        return title.length > 0 && about.length > 0 && startingPrice > 0;
+        return title.trim().length > 0 && about.trim().length > 0 && startingPrice > 0;
     }
 
     function updateStartingPrice(e: React.ChangeEvent<HTMLInputElement>): void {
@@ -79,7 +88,7 @@ function PostService({ setPostService }: PostServiceProps) {
                 focus:outline-none placeholder-search-text text-main-black bg-transparent ml-3" onChange={(e) => updateStartingPrice(e)} />
             </div>
             <p className="mb-1">Title</p>
-            <input type="text" className="search-bar mb-4" placeholder="Enter title" onChange={(e) => setTitle(e.target.value)} />
+            <input type="text" className="search-bar mb-4" maxLength={38} placeholder="Enter title" onChange={(e) => setTitle(e.target.value)} />
             <p className="mb-1">Write about section</p>
             <textarea placeholder="Write about your service here" className="w-full search-bar mb-6" 
             onChange={(e) => setAbout(e.target.value)} rows={5} maxLength={1500}></textarea>
@@ -92,4 +101,4 @@ function PostService({ setPostService }: PostServiceProps) {
     );
 }
 
-export default PostService;
+export default PostServicePopUp;

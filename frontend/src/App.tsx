@@ -9,18 +9,16 @@ import MyPostsPage from './views/MyPosts/MyPostsPage';
 function App() {
     return (
         <UserProvider>
-            <div className="bg-[#F6F6F6] min-h-screen">
-                <BrowserRouter>
-                    <Routes>
-                        <Route path="/" element={<Navbar />}>
-                            <Route index element={<HomePage />} />
-                            <Route path="saved/:username?" element={<SavedServicesPage />} />
-                            <Route path="posts/:username?" element={<MyPostsPage />} />
-                            <Route path="*" element={<ErrorPage />} />
-                        </Route>
-                    </Routes>
-                </BrowserRouter>
-            </div>
+            <BrowserRouter>
+                <Routes>
+                    <Route path="/" element={<Navbar />}>
+                        <Route index element={<HomePage />} />
+                        <Route path="saved/:username?" element={<SavedServicesPage />} />
+                        <Route path="posts/:username?" element={<MyPostsPage />} />
+                        <Route path="*" element={<ErrorPage />} />
+                    </Route>
+                </Routes>
+            </BrowserRouter>
         </UserProvider>
     );
 }

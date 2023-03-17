@@ -33,7 +33,7 @@
         @apply pb-4 text-main-black cursor-pointer;
     }
     .loading {
-        @apply animate-pulse bg-[#D4DDE8];
+        @apply animate-pulse bg-[#c4ceda];
     }
     .main-btn {
         @apply bg-main-black text-main-white hover:bg-main-purple w-full !h-12 loading-btn;
@@ -48,6 +48,6 @@
         @apply box-border text-main-black;
     }
     .page {
-        @apply max-w-screen-xxl m-auto px-16;
+        @apply max-w-screen-xxl m-auto px-16 min-h-[calc(100vh-90px)] bg-[#F6F6F6] pt-14;
     }
 }

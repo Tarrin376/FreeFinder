@@ -14,7 +14,7 @@ function SavedServicesPage() {
 
     return (
         <div className="page">
-            <h1 className="mt-14 text-3xl mb-11">My Saved Services</h1>
+            <h1 className="text-3xl mb-11">My Saved Services</h1>
             <div className="flex justify-between w-full items-center">
                 <input type="text" placeholder="Search by term or seller" className="search-bar max-w-[27.5rem]" />
                 <div className="flex items-center gap-4">
