@@ -5,7 +5,6 @@ import { findSeller } from './SellerService.js';
 export async function createPostHandler(postData, userID) {
     try {
         const seller = await findSeller(userID);
-        
         await prisma.post.create({
             data: {
                 sellerID: seller.sellerID,

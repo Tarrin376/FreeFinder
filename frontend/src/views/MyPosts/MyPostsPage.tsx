@@ -25,7 +25,7 @@ function MyPostsPage() {
             setPostService(true);
         }
     }
-
+    
     return (
         <>
             {postService && 

@@ -1,4 +1,4 @@
-import { ISeller } from "./ISeller"
+import { ISeller } from "./ISeller";
 
 export interface IUser {
     username: string,

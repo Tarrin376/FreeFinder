@@ -8,18 +8,20 @@ import MyPostsPage from './views/MyPosts/MyPostsPage';
 
 function App() {
     return (
-        <UserProvider>
-            <BrowserRouter>
-                <Routes>
-                    <Route path="/" element={<Navbar />}>
-                        <Route index element={<HomePage />} />
-                        <Route path="saved/:username?" element={<SavedServicesPage />} />
-                        <Route path="posts/:username?" element={<MyPostsPage />} />
-                        <Route path="*" element={<ErrorPage />} />
-                    </Route>
-                </Routes>
-            </BrowserRouter>
-        </UserProvider>
+        <div className="bg-[#F6F6F6]">
+            <UserProvider>
+                <BrowserRouter>
+                    <Routes>
+                        <Route path="/" element={<Navbar />}>
+                            <Route index element={<HomePage />} />
+                            <Route path="saved/:username?" element={<SavedServicesPage />} />
+                            <Route path="posts/:username?" element={<MyPostsPage />} />
+                            <Route path="*" element={<ErrorPage />} />
+                        </Route>
+                    </Routes>
+                </BrowserRouter>
+            </UserProvider>
+        </div>
     );
 }
 

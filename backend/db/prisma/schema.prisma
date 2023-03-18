@@ -27,7 +27,7 @@ model User {
 
 model Seller {
     sellerID    String   @id @default(uuid())
-    user        User     @relation(fields: [userID], references: [userID])
+    user        User     @relation(fields: [userID], references: [userID], onDelete: Cascade)
     userID      String   @unique
     rating      Float
     reviews     Review[]
@@ -37,9 +37,9 @@ model Seller {
 }
 
 model SavedPost {
-    post   Post   @relation(fields: [postID], references: [postID])
+    post   Post   @relation(fields: [postID], references: [postID], onDelete: Cascade)
     postID String
-    user   User   @relation(fields: [userID], references: [userID])
+    user   User   @relation(fields: [userID], references: [userID], onDelete: Cascade)
     userID String
 
     @@id([userID, postID])
@@ -49,7 +49,7 @@ model Post {
     postID          String      @id @default(uuid())
     savedPosts      SavedPost[]
     orders          Order[]
-    postedBy        Seller      @relation(fields: [sellerID], references: [sellerID])
+    postedBy        Seller      @relation(fields: [sellerID], references: [sellerID], onDelete: Cascade)
     sellerID        String
     about           String
     createdAt       DateTime    @default(now())
@@ -62,7 +62,7 @@ model Review {
     reviewID   String   @id @default(uuid())
     seller     Seller   @relation(fields: [sellerID], references: [sellerID])
     sellerID   String
-    reviewer   User     @relation(fields: [reviewerID], references: [userID])
+    reviewer   User     @relation(fields: [reviewerID], references: [userID], onDelete: Cascade)
     reviewerID String
     reviewBody String
     createdAt  DateTime @default(now())
@@ -71,7 +71,7 @@ model Review {
 
 model Order {
     orderID     String      @id @default(uuid())
-    customer    User        @relation(fields: [customerID], references: [userID])
+    customer    User        @relation(fields: [customerID], references: [userID], onDelete: Cascade)
     customerID  String
     seller      Seller      @relation(fields: [sellerID], references: [sellerID])
     sellerID    String

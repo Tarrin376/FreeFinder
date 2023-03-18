@@ -93,11 +93,6 @@ export async function findUserHandler(usernameOrEmail, password) {
                         sellerID: true
                     }
                 },
-                savedPosts: {
-                    select: {
-                        postID: true
-                    }
-                }
             }
         });
         
@@ -122,7 +117,7 @@ export async function findUserHandler(usernameOrEmail, password) {
 }
 
 export async function updateUserHandler(username, data) {
-    const {seller, savedPosts, ...res} = data;
+    const {seller, ...res} = data;
     const mainUserData = res;
     
     try {
@@ -137,11 +132,6 @@ export async function updateUserHandler(username, data) {
                         sellerID: true
                     }
                 },
-                savedPosts: {
-                    select: {
-                        postID: true
-                    }
-                }
             }
         });
 

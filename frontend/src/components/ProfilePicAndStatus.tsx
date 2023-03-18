@@ -80,9 +80,9 @@ function ProfilePicAndStatus({ profilePicURL, profileStatus, statusStyles, imgSt
     return (
         <div className={loading ? '' : `${profileStatus === 'ONLINE' ? 'before:bg-green-500' : 'before:bg-[#FF9800]'} before:w-4 before:h-4 
         before:absolute before:top-[33px] before:left-[3px] before:border-2 before:border-main-white before:content[''] before:rounded-full ${statusStyles}`}>
-            {loading ? <div className={`w-12 h-12 rounded-full border-2 loading ${imgStyles}`}></div> : 
+            {loading ? <div className={`w-12 h-12 rounded-full loading ${imgStyles}`}></div> : 
             <img src={profilePicURL === "" ? BlankProfile : profilePicURL} alt="profile pic" 
-            className={`w-12 h-12 rounded-full ${imgStyles}`} />}
+            className={`w-12 h-12 rounded-full ${imgStyles} border border-b-nav-search-gray`} />}
             {showEdit && !loading &&
                 <>
                     <button className="flex gap-1 items-center absolute text-xs top-[60px] right-0 bg-main-black hover:bg-main-black-hover btn-primary p-1 px-2 h-fit cursor-pointer"
