@@ -3,7 +3,7 @@ import bcrypt from 'bcrypt';
 import { env } from 'process';
 import pkg from 'cloudinary';
 
-const prisma = new PrismaClient();
+export const prisma = new PrismaClient();
 const cloudinary = pkg.v2;
 
 cloudinary.config({
@@ -85,6 +85,20 @@ export async function findUserHandler(usernameOrEmail, password) {
                     { username: usernameOrEmail }
                 ],
             },
+            include: {
+                seller: {
+                    select: {
+                        description: true,
+                        rating: true,
+                        sellerID: true
+                    }
+                },
+                savedPosts: {
+                    select: {
+                        postID: true
+                    }
+                }
+            }
         });
         
         if (!res) {

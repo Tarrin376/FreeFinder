@@ -40,9 +40,12 @@ function LogIn({ setLogIn, setSignUp }: LogInProps) {
             });
 
             const user = await response.json();
-            if (user.userData) {
-                user.userData.memberDate = new Date(user.userData.memberDate);
-                userContext.setUserData(user.userData);
+            const {savedPosts, ...userData} = user.userData;
+            localStorage.setItem('bundle-saved-posts', JSON.stringify(savedPosts));
+
+            if (userData) {
+                userData.memberDate = new Date(userData.memberDate);
+                userContext.setUserData(userData);
                 setLogIn(false);
             } else {
                 setErrorMessage(user.error);

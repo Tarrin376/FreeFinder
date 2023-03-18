@@ -7,7 +7,7 @@ import
     deleteUserHandler,
     updatePasswordHandler
 } 
-from '../service/UserService.js';
+from '../services/UserService.js';
 
 export async function updateProfilePicture(req, res) {
     try {

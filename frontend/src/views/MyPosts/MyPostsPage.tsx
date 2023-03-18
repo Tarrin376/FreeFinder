@@ -60,7 +60,7 @@ function MyPostsPage() {
         try {
             setLoading(true);
             setTimeout(() => {
-                fetchPosts(userContext.userData.userID, setUserPosts, cursor.current)
+                fetchPosts(`/post/sellerPosts/${userContext.userData.userID}/${cursor}`, setUserPosts)
                 .then((next) => {
                     if (next === cursor.current) setReachedBottom(true);
                     else cursor.current = next;
@@ -111,6 +111,8 @@ function MyPostsPage() {
                                     startingPrice={post.startingPrice} title={post.title}
                                     sellerName={userContext.userData.username}
                                     key={post.postID} profilePicURL={userContext.userData.profilePicURL}
+                                    sellerRating={userContext.userData.seller.rating} userID={userContext.userData.userID}
+                                    postID={post.postID}
                                 />
                             );
                         })}

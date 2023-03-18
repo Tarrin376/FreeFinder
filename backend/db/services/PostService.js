@@ -1,6 +1,7 @@
-import { PrismaClient, Prisma } from '@prisma/client';
+import { Prisma } from '@prisma/client';
+import { prisma } from './UserService.js';
+import { findSeller } from './SellerService.js';
 
-const prisma = new PrismaClient();
 const takeAmount = 10;
 
 export async function createPostHandler(postData, userID) {
@@ -19,37 +20,8 @@ export async function createPostHandler(postData, userID) {
     catch (err) {
         throw err;
     }
-}
-
-async function findSeller(userID) {
-    try {
-        const seller = await prisma.seller.findUnique({ where: { userID: userID } });
-        if (!seller) {
-            const newSeller = await createSeller(userID);
-            return newSeller;
-        } else {
-            return seller;
-        }
-    }
-    catch (err) {
-        throw err;
-    }
-}
-
-async function createSeller(userID) {
-    try {
-        const seller = await prisma.seller.create({
-            data: {
-                userID: userID,
-                rating: 0,
-                description: ""
-            }
-        });
-
-        return seller;
-    }
-    catch (err) {
-        throw err;
+    finally {
+        await prisma.$disconnect();
     }
 }
 
@@ -65,15 +37,18 @@ export async function sellerPostsHandler(userID, cursor) {
             throw new Error("You currently have no posts");
         }
 
-        if (cursor === "HEAD") return firstQueryPostResults(seller.sellerID);
-        else return secondQueryPostResults(seller.sellerID, cursor);
+        if (cursor === "HEAD") return firstQueryMyPosts(seller.sellerID);
+        else return secondQueryMyPosts(seller.sellerID, cursor);
     }
     catch (err) {
         throw err;
     }
+    finally {
+        await prisma.$disconnect();
+    }
 }
 
-export async function firstQueryPostResults(sellerID) {
+export async function firstQueryMyPosts(sellerID) {
     const posts = await prisma.post.findMany({
         take: takeAmount,
         where: { sellerID: sellerID },
@@ -84,11 +59,12 @@ export async function firstQueryPostResults(sellerID) {
         return { posts: [] };
     }
 
+    await prisma.$disconnect();
     const lastRes = posts[Math.min(takeAmount - 1, posts.length - 1)];
     return { posts, cursor: lastRes.postID };
 }
 
-export async function secondQueryPostResults(sellerID, cursor) {
+export async function secondQueryMyPosts(sellerID, cursor) {
     const posts = await prisma.post.findMany({
         skip: 1,
         take: takeAmount,
@@ -101,6 +77,29 @@ export async function secondQueryPostResults(sellerID, cursor) {
         return { posts: [] };
     }
 
+    await prisma.$disconnect();
     const lastRes = posts[Math.min(takeAmount - 1, posts.length - 1)];
     return { posts, cursor: lastRes.postID };
+}
+
+export async function savePostHandler(postID, userID) {
+    try {
+        await prisma.savedPost.create({
+            data: {
+                userID: userID,
+                postID: postID
+            }
+        });
+    }
+    catch (err) {
+        if (err instanceof Prisma.PrismaClientKnownRequestError) {
+            if (err.code === 'P2002') {
+                throw new Error("Post already added");
+            }
+        }
+        throw err;
+    }
+    finally {
+        await prisma.$disconnect();
+    }
 }

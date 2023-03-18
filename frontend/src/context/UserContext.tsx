@@ -14,7 +14,12 @@ export const initialState: IUserContext = {
         email: "",
         status: "ONLINE",
         userID: "",
-        memberDate: new Date()
+        memberDate: new Date(),
+        seller: {
+            description: "",
+            rating: 0,
+            sellerID: "",
+        }
     },
     setUserData: (_: IUser) => {}
 }
