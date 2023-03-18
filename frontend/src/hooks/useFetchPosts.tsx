@@ -1,16 +1,15 @@
-import { useEffect, useState, useRef } from 'react';
+import { useEffect, useState } from 'react';
 import { IUserContext } from '../context/UserContext';
 import { useNavigate } from 'react-router-dom';
 import { fetchPosts } from '../utils/fetchPosts';
 import { IPost } from '../models/IPost';
 
-export function useFetchPosts(pageRef: React.RefObject<HTMLDivElement>, userContext: IUserContext, url: string) {
+export function useFetchPosts(pageRef: React.RefObject<HTMLDivElement>, userContext: IUserContext, url: string, nextPage: boolean,
+    setNextPage: React.Dispatch<React.SetStateAction<boolean>>, cursor: React.MutableRefObject<string>) {
     const [reachedBottom, setReachedBottom] = useState<boolean>(false);
-    const [nextPage, setNextPage] = useState<boolean>(false);
     const [loading, setLoading] = useState<boolean>(false);
     const [errorMessage, setErrorMessage] = useState<string>("");
     const [posts, setPosts] = useState<IPost[]>([]);
-    const cursor = useRef<string>("HEAD");
     const navigate = useNavigate();
 
     function loadMoreContent(): void {
@@ -43,7 +42,7 @@ export function useFetchPosts(pageRef: React.RefObject<HTMLDivElement>, userCont
         try {
             setLoading(true);
             setTimeout(() => {
-                fetchPosts(url, setPosts)
+                fetchPosts(`${url}/${cursor.current}`, setPosts)
                 .then((next) => {
                     if (next === cursor.current) setReachedBottom(true);
                     else cursor.current = next;
@@ -58,7 +57,14 @@ export function useFetchPosts(pageRef: React.RefObject<HTMLDivElement>, userCont
         catch(err: any) {
             setErrorMessage(err.message);
         }
-    }, [nextPage, url]);
+    }, [nextPage, url, cursor]);
 
-    return { posts, errorMessage, loading };
+    return { 
+        posts, 
+        errorMessage, 
+        loading, 
+        setReachedBottom, 
+        setNextPage,
+        setPosts, 
+    };
 }

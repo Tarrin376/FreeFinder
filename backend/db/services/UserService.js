@@ -122,10 +122,27 @@ export async function findUserHandler(usernameOrEmail, password) {
 }
 
 export async function updateUserHandler(username, data) {
+    const {seller, savedPosts, ...res} = data;
+    const mainUserData = res;
+    
     try {
         const updated = await prisma.user.update({
             where: { username: username },
-            data: { ...data },
+            data: { ...mainUserData },
+            include: {
+                seller: {
+                    select: {
+                        description: true,
+                        rating: true,
+                        sellerID: true
+                    }
+                },
+                savedPosts: {
+                    select: {
+                        postID: true
+                    }
+                }
+            }
         });
 
         const {hash, password, ...res} = updated;

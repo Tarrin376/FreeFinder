@@ -3,15 +3,6 @@ import { useEffect, useContext } from 'react';
 import { UserContext } from '../../context/UserContext';
 
 function SavedServicesPage() {
-    const navigate = useNavigate();
-    const userContext = useContext(UserContext);
-
-    useEffect(() => {
-        if (userContext.userData.username === "") {
-            navigate("/");
-        }
-    });
-
     return (
         <div className="page">
             <h1 className="text-3xl mb-11">My Saved Services</h1>

@@ -47,10 +47,7 @@ function Post({ createdAt, startingPrice, title, sellerName, profilePicURL, sell
             });
 
             if (response.message === "success") {
-                const saved = localStorage.getItem('bundle-saved-posts');
-                if (saved) {
-                    localStorage.setItem('bundle-saved-posts', {...JSON.parse(saved), postID });
-                }
+                console.log("success");
             } else {
                 console.log(response.message);
             }

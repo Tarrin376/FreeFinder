@@ -11,7 +11,7 @@ const MAX_PRICE: number = 2500;
 interface PostServiceProps {
     setPostService: React.Dispatch<React.SetStateAction<boolean>>,
     setUserPosts: React.Dispatch<React.SetStateAction<IPost[]>>,
-    cursor: React.MutableRefObject<string>,
+    cursor:  React.MutableRefObject<string>,
     setReachedBottom: React.Dispatch<React.SetStateAction<boolean>>,
     setNextPage: React.Dispatch<React.SetStateAction<boolean>>,
 }
