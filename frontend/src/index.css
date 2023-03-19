@@ -33,7 +33,7 @@
         @apply pb-4 text-main-black cursor-pointer;
     }
     .loading {
-        @apply animate-pulse bg-[#c4ceda];
+        @apply animate-pulse bg-light-gray;
     }
     .main-btn {
         @apply bg-main-black text-main-white hover:bg-main-purple w-full !h-12 loading-btn;

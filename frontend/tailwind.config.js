@@ -13,18 +13,19 @@ module.exports = {
             'very-light-gray-hover': '#E6E6E6',
             'main-black': '#212121',
             'search-text': '#606163',
-            'side-text-gray': '#7B7B7B',
+            'side-text-gray': '#879198',
             'main-black-hover': 'rgba(51, 51, 51, 1)',
             'error-red': '#B00020',
-            'pop-up-bg': 'rgba(149, 149, 149, 0.13)',
-            'rating-text': 'rgba(255, 194, 0, 1)'
+            'pop-up-bg': 'rgba(149, 149, 149, 0.10)',
+            'rating-text': 'rgba(255, 194, 0, 1)',
+            'main-white-hover': '#f8f8f8'
         },
         dropShadow: {
             'search-bar': '0px 0px 1px #DDDDDD',
         },
         boxShadow: {
-            'pop-up': '0px 4px 5px 0px rgba(0, 0, 0, 0.2), 0px 3px 14px 3px rgba(0, 0, 0, 0.12), 0px 8px 10px 1px rgba(0, 0, 0, 0.14)',
-            'post': '0px 0px 12px -6px rgba(0, 0, 0, 0.72)'
+            'pop-up': '0px 0px 1px 0px rgba(0, 0, 0, 0.17), 0px 0px 14px 3px rgba(0, 0, 0, 0.12), 0px 8px 10px 0px rgba(0, 0, 0, 0.14)',
+            'post': '0px 3px 10px -7px rgba(0, 0, 0, 0.42)'
         },
     },
     screens: {
@@ -35,5 +36,7 @@ module.exports = {
         xxl: '1700px'
     },
   },
-  plugins: [],
+  plugins: [
+    require('tailwind-scrollbar-hide')
+  ],
 }

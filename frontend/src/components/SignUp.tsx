@@ -105,9 +105,8 @@ function SignUp({ setLogIn, setSignUp, setAccountCreated }: SignUpProps) {
     }
 
     return (
-        <PopUpWrapper setIsOpen={setSignUp}>
+        <PopUpWrapper setIsOpen={setSignUp} title={"Let's create your new account"} styles={"!mb-5"}>
             <form>
-                <h1 className="text-[26px] mb-2">Let's create your new account</h1>
                 <p className="mb-6 text-side-text-gray text-[15px]">Signing up for FreeFinder is fast and 100% free!</p>
                 {errorMessage !== "" && <ErrorMessage message={errorMessage} title={"Account creation failed."} />}
                 <div className="flex gap-3 flex-col mb-8">

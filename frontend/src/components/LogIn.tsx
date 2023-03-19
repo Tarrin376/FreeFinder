@@ -58,9 +58,8 @@ function LogIn({ setLogIn, setSignUp }: LogInProps) {
     }
 
     return (
-        <PopUpWrapper setIsOpen={setLogIn}>
+        <PopUpWrapper setIsOpen={setLogIn} title={"Welcome back!"} styles={"!mb-5"}>
             <form>
-                <h1 className="text-[26px] mb-2">Welcome back!</h1>
                 <p className="mb-6 text-side-text-gray text-[15px]">Enter your details below</p>
                 {errorMessage !== "" && <ErrorMessage message={errorMessage} title={"There was a problem signing in."} />}
                 <div className="flex gap-3 flex-col mb-8">

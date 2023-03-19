@@ -33,7 +33,7 @@ function Settings({ setSettingsPopUp, userContext }: SettingsProps) {
     }
 
     return (
-        <PopUpWrapper setIsOpen={setSettingsPopUp}>
+        <PopUpWrapper setIsOpen={setSettingsPopUp} title={"Settings"}>
             {errorMessage !== "" && <ErrorMessage message={errorMessage} title={"Unable to upload image"} />}
             <div className="flex gap-5">
                 <div className="relative">

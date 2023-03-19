@@ -41,7 +41,7 @@ function MyPostsPage() {
                     </div>
                     <div className="flex items-center gap-4">
                         <p>Sort by</p>
-                        <select className="p-2 bg-main-white rounded-[8px] border border-nav-search-gray cursor-pointer" ref={sortByDropdownRef}>
+                        <select className="p-2 bg-main-white rounded-[8px] border-2 border-light-gray cursor-pointer" ref={sortByDropdownRef}>
                             <option>recent</option>
                             <option>Seller rating</option>
                             <option>date posted</option>
