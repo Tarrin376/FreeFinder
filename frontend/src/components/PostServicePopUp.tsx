@@ -28,12 +28,13 @@ function PostServicePopUp({ setPostService, setUserPosts, cursor, setReachedBott
         setLoading(true);
         
         try {
-            const create = await fetch(`/post/createPost/${userContext.userData.userID}`, {
+            const create = await fetch(`/post/createPost`, {
                 method: 'POST',
                 body: JSON.stringify({
                     about: about.trim(),
                     title: title.trim(),
-                    startingPrice: startingPrice
+                    startingPrice: startingPrice,
+                    userID: userContext.userData.userID
                 }),
                 headers: {
                     'Content-Type': 'application/json',
@@ -81,6 +82,8 @@ function PostServicePopUp({ setPostService, setUserPosts, cursor, setReachedBott
         <PopUpWrapper setIsOpen={setPostService}>
             <h1 className="text-[26px] mb-4">Post a service</h1>
             {errorMessage !== "" && <ErrorMessage message={errorMessage} title={"Unable to create post."} />}
+            <h2 className="mb-2">Upload images for post slideshow (5 maximum)</h2>
+
             <h2 className="mb-2">Starting price (minimum of £10)</h2>
             <div className="flex items-center search-bar mb-4">
                 <p className="select-none">£</p>

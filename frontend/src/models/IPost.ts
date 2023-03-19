@@ -1,4 +1,3 @@
-
 export interface IPost {
     about: string,
     createdAt: Date,
@@ -6,5 +5,15 @@ export interface IPost {
     sellerID: string,
     startingPrice: string,
     thumbnailPicURL: string | null,
-    title: string
+    title: string,
+    postedBy: {
+        description: string,
+        rating: number,
+        numReviews: number,
+        user: {
+            profilePicURL: string,
+            status: string,
+            username: string,
+        }
+    }
 }

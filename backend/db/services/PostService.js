@@ -43,3 +43,7 @@ export async function savePostHandler(postID, userID) {
         await prisma.$disconnect();
     }
 }
+
+export async function getSavedPostsHandler(userID) {
+    
+}

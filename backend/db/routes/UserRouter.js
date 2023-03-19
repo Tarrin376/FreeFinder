@@ -14,10 +14,10 @@ const userRouter = Router();
 userRouter.post('/createUser', addUser);
 userRouter.post('/findUser/:usernameOrEmail', findUser);
 
-userRouter.put('/update/:username', updateUser);
-userRouter.put('/update/profile/:username', updateProfilePicture);
-userRouter.put('/update/password/:username', updatePassword);
+userRouter.put('/update', updateUser);
+userRouter.put('/update/profile', updateProfilePicture);
+userRouter.put('/update/password', updatePassword);
 
-userRouter.delete('/deleteUser/:username', deleteUser);
+userRouter.delete('/deleteUser', deleteUser);
 
 export default userRouter;

@@ -15,11 +15,6 @@ export const initialState: IUserContext = {
         status: "ONLINE",
         userID: "",
         memberDate: new Date(),
-        seller: {
-            description: "",
-            rating: 0,
-            sellerID: "",
-        },
     },
     setUserData: (_: IUser) => {}
 }

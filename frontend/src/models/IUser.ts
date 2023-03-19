@@ -1,5 +1,3 @@
-import { ISeller } from "./ISeller";
-
 export interface IUser {
     username: string,
     country: string,
@@ -8,5 +6,4 @@ export interface IUser {
     status: string,
     userID: string,
     memberDate: Date,
-    seller: ISeller
 }

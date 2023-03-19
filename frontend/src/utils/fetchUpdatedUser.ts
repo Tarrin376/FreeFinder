@@ -8,7 +8,7 @@ export interface UpdateResponse {
 export async function fetchUpdatedUser(username: string, updatedData: IUser, profilePic?: string | unknown): Promise<UpdateResponse> {
     if (profilePic) {
         try {
-            const response = await updatePhoto(username, profilePic);
+            const response = await updatePhoto(updatedData.userID, profilePic);
             if (response.status !== "success") {
                 throw new Error(response.status)
             }
@@ -18,9 +18,12 @@ export async function fetchUpdatedUser(username: string, updatedData: IUser, pro
         }
     }
     
-    const updated: UpdateResponse = await fetch(`/user/update/${username}`, {
+    const updated: UpdateResponse = await fetch(`/user/update`, {
         method: 'PUT',
-        body: JSON.stringify({ ...updatedData, profilePicURL: profilePic }),
+        body: JSON.stringify({
+            ...updatedData,
+            profilePicURL: profilePic
+        }),
         headers: {
             'Content-Type': 'application/json',
             'Accept': 'application/json'
@@ -35,10 +38,13 @@ export async function fetchUpdatedUser(username: string, updatedData: IUser, pro
     return updated;
 }
 
-async function updatePhoto(username: string, profilePic: string | unknown) : Promise<any> {
-    const response = await fetch(`/user/update/profile/${username}`, {
+async function updatePhoto(userID: string, profilePic: string | unknown) : Promise<any> {
+    const response = await fetch(`/user/update/profile`, {
         method: 'PUT',
-        body: JSON.stringify({ profilePic }),
+        body: JSON.stringify({ 
+            userID: userID,
+            profilePic 
+        }),
         headers: {
             'Accept': 'application/json',
             'Content-Type': 'application/json'

@@ -5,6 +5,7 @@ import UserProvider from './context/UserContext';
 import SavedServicesPage from './views/SavedServices/SavedServicesPage';
 import ErrorPage from './views/Error/ErrorPage';
 import MyPostsPage from './views/MyPosts/MyPostsPage';
+import PostPage from './views/Post/PostPage';
 
 function App() {
     return (
@@ -16,6 +17,7 @@ function App() {
                             <Route index element={<HomePage />} />
                             <Route path="saved/:username?" element={<SavedServicesPage />} />
                             <Route path="posts/:username?" element={<MyPostsPage />} />
+                            <Route path="posts/:username/:postID" element={<PostPage />} />
                             <Route path="*" element={<ErrorPage />} />
                         </Route>
                     </Routes>

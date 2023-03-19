@@ -11,7 +11,7 @@ from '../services/UserService.js';
 
 export async function updateProfilePicture(req, res) {
     try {
-        await updateProfilePictureHandler(req.params.username, req.body.profilePic);
+        await updateProfilePictureHandler(req.body.userID, req.body.profilePic);
         res.json({ status: "success" });
     }
     catch (err) {
@@ -41,7 +41,7 @@ export async function findUser(req, res) {
 
 export async function updateUser(req, res) {
     try {
-        const updated = await updateUserHandler(req.params.username, req.body);
+        const updated = await updateUserHandler(req.body);
         res.json({ message: "success", userData: updated });
     }
     catch (err) {
@@ -51,7 +51,7 @@ export async function updateUser(req, res) {
 
 export async function deleteUser(req, res) {
     try {
-        await deleteUserHandler(req.params.username);
+        await deleteUserHandler(req.body.userID);
         res.json({ message: "success" });
     }
     catch (err) {
@@ -61,7 +61,7 @@ export async function deleteUser(req, res) {
 
 export async function updatePassword(req, res) {
     try {
-        await updatePasswordHandler(req.params.username, req.body.password);
+        await updatePasswordHandler(req.body.userID, req.body.password);
         res.json({ message: "success" });
     }
     catch (err) {

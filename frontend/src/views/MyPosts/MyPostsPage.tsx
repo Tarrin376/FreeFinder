@@ -2,10 +2,8 @@ import PostServicePopUp from '../../components/PostServicePopUp';
 import { useState, useContext, useRef } from 'react';
 import { UserContext } from '../../context/UserContext';
 import { IUserContext } from '../../context/UserContext';
-import Post from '../../components/Post';
-import { IPost } from '../../models/IPost';
-import PostLoading from '../../components/PostLoading';
 import { useFetchPosts } from '../../hooks/useFetchPosts';
+import Posts from '../../components/Posts';
 
 function MyPostsPage() {
     const [postService, setPostService] = useState<boolean>(false);
@@ -51,23 +49,7 @@ function MyPostsPage() {
                     </div>
                 </div>
                 {posts.errorMessage !== "" && <h1 className="text-3xl">{posts.errorMessage}</h1>}
-                <div className="flex flex-col gap-7 items-center pb-11">
-                    <div className="flex items-center gap-[30px] flex-wrap pb-11 w-full">
-                        {posts.posts.map((post: IPost) => {
-                            return (
-                                <Post 
-                                    createdAt={new Date(post.createdAt)} 
-                                    startingPrice={post.startingPrice} title={post.title}
-                                    sellerName={userContext.userData.username}
-                                    key={post.postID} profilePicURL={userContext.userData.profilePicURL}
-                                    sellerRating={userContext.userData.seller.rating} userID={userContext.userData.userID}
-                                    postID={post.postID}
-                                />
-                            );
-                        })}
-                        {posts.loading && new Array(10).fill(<PostLoading />)}
-                    </div>
-                </div>
+                <Posts posts={posts.posts} loading={posts.loading} userID={userContext.userData.userID} />
             </div>
         </>
     )

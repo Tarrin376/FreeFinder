@@ -1,8 +1,8 @@
 import { useEffect, useState } from 'react';
 import { IUserContext } from '../context/UserContext';
-import { useNavigate } from 'react-router-dom';
 import { fetchPosts } from '../utils/fetchPosts';
 import { IPost } from '../models/IPost';
+import { useScrollEvent } from './useScrollEvent';
 
 export function useFetchPosts(pageRef: React.RefObject<HTMLDivElement>, userContext: IUserContext, url: string, nextPage: boolean,
     setNextPage: React.Dispatch<React.SetStateAction<boolean>>, cursor: React.MutableRefObject<string>) {
@@ -10,33 +10,8 @@ export function useFetchPosts(pageRef: React.RefObject<HTMLDivElement>, userCont
     const [loading, setLoading] = useState<boolean>(false);
     const [errorMessage, setErrorMessage] = useState<string>("");
     const [posts, setPosts] = useState<IPost[]>([]);
-    const navigate = useNavigate();
 
-    function loadMoreContent(): void {
-        let documentHeight = document.body.scrollHeight;
-        let currentScroll = window.scrollY + window.innerHeight;
-
-        if (currentScroll >= documentHeight && !reachedBottom && !loading) {
-            setNextPage((state) => !state);
-        }
-    }
-
-    useEffect(() => {
-        if (userContext.userData.username === "") {
-            navigate("/");
-        }
-
-        if (pageRef && pageRef.current) {
-            pageRef.current.addEventListener('wheel', loadMoreContent);
-        }
-
-        const cur = pageRef.current;
-        return () => {
-            if (pageRef && cur) {
-                cur.removeEventListener('wheel', loadMoreContent);
-            }
-        }
-    });
+    useScrollEvent(userContext, pageRef, loading, reachedBottom, setNextPage);
 
     useEffect(() => {
         try {

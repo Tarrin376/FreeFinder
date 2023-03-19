@@ -12,8 +12,8 @@ cloudinary.config({
     api_key: env.API_KEY
 });
 
-export async function updateProfilePictureHandler(username, file) {
-    const upload = cloudinary.uploader.upload(file, { public_id: `FreeFinder/ProfilePictures/${username}` });
+export async function updateProfilePictureHandler(userID, file) {
+    const upload = cloudinary.uploader.upload(file, { public_id: `FreeFinder/ProfilePictures/${userID}` });
 
     const success = await upload.then((data) => data)
     .catch((err) => {
@@ -22,7 +22,7 @@ export async function updateProfilePictureHandler(username, file) {
 
     try {
         await prisma.user.update({
-            where: { username: username },
+            where: { userID: userID },
             data: { profilePicURL: success.secure_url }
         });
     }
@@ -34,16 +34,21 @@ export async function updateProfilePictureHandler(username, file) {
     }
 }
 
-export async function updatePasswordHandler(username, password) {
+export async function updatePasswordHandler(userID, password) {
     const hash = await bcrypt.hash(password, 10);
     
     try {
         await prisma.user.update({
-            where: { username: username },
+            where: { userID: userID },
             data: { hash: hash }
         });
     }
     catch (err) {
+        if (err instanceof Prisma.PrismaClientKnownRequestError) {
+            if (err.code === 'P2025') {
+                throw new Error("User could not be found.");
+            }
+        }
         throw err;
     }
     finally {
@@ -64,8 +69,8 @@ export async function addUserHandler(userData) {
         });
     }
     catch (err) {
-        if (e instanceof Prisma.PrismaClientKnownRequestError) {
-            if (e.code === 'P2002') {
+        if (err instanceof Prisma.PrismaClientKnownRequestError) {
+            if (err.code === 'P2002') {
                 throw new Error("There already exists a user with this username or email address.");
             }
         }
@@ -116,13 +121,13 @@ export async function findUserHandler(usernameOrEmail, password) {
     }
 }
 
-export async function updateUserHandler(username, data) {
+export async function updateUserHandler(data) {
     const {seller, ...res} = data;
     const mainUserData = res;
     
     try {
         const updated = await prisma.user.update({
-            where: { username: username },
+            where: { userID: mainUserData.userID },
             data: { ...mainUserData },
             include: {
                 seller: {
@@ -151,9 +156,9 @@ export async function updateUserHandler(username, data) {
     }
 }
 
-export async function deleteUserHandler(username) {
+export async function deleteUserHandler(userID) {
     try {
-        await prisma.user.delete({ where: { username: username } });
+        await prisma.user.delete({ where: { userID: userID } });
     }
     catch (err) {
         throw err;

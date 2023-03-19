@@ -68,7 +68,23 @@ export async function firstQuerySellerPosts(sellerID) {
     const posts = await prisma.post.findMany({
         take: takeAmount,
         where: { sellerID: sellerID },
-        orderBy: { createdAt: 'desc' }
+        orderBy: { createdAt: 'desc' },
+        include: { 
+            postedBy: {
+                select: {
+                    user: {
+                        select: {
+                            profilePicURL: true,
+                            status: true,
+                            username: true,
+                        }
+                    },
+                    rating: true,
+                    description: true,
+                    numReviews: true
+                }
+            }
+        }
     });
 
     if (posts.length === 0) {
@@ -86,7 +102,23 @@ export async function secondQuerySellerPosts(sellerID, cursor) {
         take: takeAmount,
         cursor: { postID: cursor },
         where: { sellerID: sellerID },
-        orderBy: { createdAt: 'desc' }
+        orderBy: { createdAt: 'desc' },
+        include: { 
+            postedBy: {
+                select: {
+                    user: {
+                        select: {
+                            profilePicURL: true,
+                            status: true,
+                            username: true,
+                        }
+                    },
+                    rating: true,
+                    description: true,
+                    numReviews: true
+                }
+            }
+        }
     });
 
     if (posts.length === 0) {

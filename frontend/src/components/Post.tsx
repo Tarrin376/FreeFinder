@@ -1,26 +1,18 @@
-import SaveIcon from '../assets/save-instagram.png';
+import NotSavedIcon from '../assets/not-saved.png';
+import SavedIcon from '../assets/saved.png';
 import StarIcon from '../assets/star.png';
 import { useState } from 'react';
-import BlankProfile from '../assets/blank.jpg';
+import { IPost } from '../models/IPost';
+import ProfilePicAndStatus from './ProfilePicAndStatus';
+import { useNavigate } from 'react-router-dom';
 
-interface PostProps {
-    createdAt: Date,
-    startingPrice: string,
-    title: string,
-    sellerName: string,
-    profilePicURL: string,
-    sellerRating: number,
-    userID: string,
-    postID: string
-}
-
-function Post({ createdAt, startingPrice, title, sellerName, profilePicURL, sellerRating, userID, postID }: PostProps) {
+function Post({ sellerInfo, userID }: { sellerInfo: IPost, userID: string }) {
     const [saved, setSaved] = useState<boolean>(false);
     const [errorSaving, setErrorSaving] = useState<boolean>(false);
+    const seconds = getSeconds();
+    const navigate = useNavigate();
 
     function getTimePosted(): string {
-        const seconds: number = Math.floor((new Date().getTime() - createdAt.getTime()) / 1000);
-
         if (seconds < 60) {
             return `Posted ${seconds} ${seconds !== 1 ? 'seconds' : 'second'} ago`;
         } else if (seconds < 60 * 60) {
@@ -35,6 +27,11 @@ function Post({ createdAt, startingPrice, title, sellerName, profilePicURL, sell
         }
     }
 
+    function getSeconds(): number {
+        const createdAtDate = new Date(sellerInfo.createdAt);
+        return Math.floor((new Date().getTime() - createdAtDate.getTime()) / 1000);
+    }
+
     function showSaveMessage(setState: React.Dispatch<React.SetStateAction<boolean>>) {
         setState(true);
         setTimeout(() => {
@@ -42,9 +39,13 @@ function Post({ createdAt, startingPrice, title, sellerName, profilePicURL, sell
         }, 2000);
     }
 
+    function redirectToPost() {
+        navigate(`/posts/${sellerInfo.postedBy.user.username}/${sellerInfo.postID}`);
+    }
+
     async function savePost(): Promise<void> {
         try {
-            if (saved) {
+            if (saved || errorSaving) {
                 return;
             }
             
@@ -52,7 +53,7 @@ function Post({ createdAt, startingPrice, title, sellerName, profilePicURL, sell
                 method: 'POST',
                 body: JSON.stringify({
                     userID: userID,
-                    postID: postID
+                    postID: sellerInfo.postID
                 }),
                 headers: {
                     'Accept': 'application/json',
@@ -77,31 +78,40 @@ function Post({ createdAt, startingPrice, title, sellerName, profilePicURL, sell
         <div className="bg-main-white w-[290px] rounded-[8px] border border-light-gray shadow-post">
             <div className="w-full h-[200px] bg-black rounded-t-[8px]"></div>
             <div className="p-4">
-                <div className="flex items-center mt-1 mb-2 gap-3">
-                    <img className="w-12 h-12 rounded-full border border-b-nav-search-gray" src={profilePicURL === "" ? BlankProfile : profilePicURL} alt="profile" />
+                <div className="flex items-center mt-1 mb-2 gap-3 relative">
+                    <ProfilePicAndStatus 
+                        profilePicURL={sellerInfo.postedBy.user.profilePicURL} 
+                        profileStatus={sellerInfo.postedBy.user.status}
+                        statusStyles='before:left-[30px]'
+                    />
                     <div>
                         <p className="font-semibold">
-                            {sellerName} 
-                            <span className="btn-primary action-btn rounded-[12px] px-[9px] text-[14px] ml-[10px] select-none cursor-pointer hover:!bg-main-purple">
+                            {sellerInfo.postedBy.user.username} 
+                            {seconds < 60 * 60 * 24 && 
+                            <span className={`btn-primary action-btn rounded-[12px] px-[9px] text-[14px] ml-[10px] 
+                            select-none cursor-pointer hover:!bg-main-purple relative hover:after:content-["<24hrs"] 
+                            hover:after:absolute hover:after:bg-main-black hover:after:text-main-white hover:after:px-[9px] hover:after:rounded-[12px]
+                            hover:after:bottom-[0px] hover:after:text-[14px] hover:after:left-[55px]`}>
                                 New
-                            </span>
+                            </span>}
                         </p>
                         <div className="flex items-center gap-[7px]">
                             <img src={StarIcon} className="w-[17px] h-[17px]" alt="star" />
-                            <p className="text-[15px] text-rating-text font-bold">{sellerRating}</p>
-                            <p className="text-side-text-gray text-[15px]">(1.2k+)</p>
+                            <p className="text-[15px] text-rating-text font-bold">{sellerInfo.postedBy.rating}</p>
+                            <p className="text-side-text-gray text-[15px]">({sellerInfo.postedBy.numReviews} reviews)</p>
                         </div>
                     </div>
                 </div>
                 <p className="text-side-text-gray text-[15px] mb-1">{getTimePosted()}</p>
-                <h3 className="text-[18px] font-semibold nav-item pb-3 border-b border-b-light-gray leading-6 h-[60px] break-words">{title}</h3>
+                <h3 className="text-[18px] font-semibold nav-item pb-3 border-b 
+                border-b-light-gray leading-6 h-[60px] break-words" onClick={redirectToPost}>{sellerInfo.title}</h3>
                 <div className="mt-4 flex items-center justify-between relative">
-                    <p className="py-[2px] px-3 border border-nav-search-gray rounded-[17px] w-fit">Starting at: £{startingPrice}</p>
+                    <p className="py-[2px] px-3 border border-nav-search-gray rounded-[17px] w-fit">Starting at: £{sellerInfo.startingPrice}</p>
                     <div className={`transition ease-linear duration-100 ${saved ? `before:absolute before:top-[33px] before:right-0 
                     before:content-["saved"] before:text-[15px] before:bg-main-black before:text-main-white before:p-1 before:px-2 before:rounded-[8px]` 
                     : errorSaving ? `before:absolute before:top-[33px] before:right-0 
                     before:content-["removed"] before:text-[15px] before:bg-error-red before:text-main-white before:p-1 before:px-2 before:rounded-[8px]` : ``}`}>
-                        <img src={SaveIcon} className="w-[25px] h-[25px] cursor-pointer" alt="save" onClick={savePost} />
+                        <img src={NotSavedIcon} className="w-[25px] h-[25px] cursor-pointer" alt="save" onClick={savePost} />
                     </div>
                 </div>
             </div>

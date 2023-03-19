@@ -220,9 +220,12 @@ function Password({ userContext }: { userContext: IUserContext }) {
         }
 
         try {
-            const updatePassword = await fetch(`user/update/password/${userContext.userData.username}`, {
+            const updatePassword = await fetch("user/update/password", {
                 method: 'PUT',
-                body: JSON.stringify({ password: newPass }),
+                body: JSON.stringify({
+                    userID: userContext.userData.userID,
+                    password: newPass 
+                }),
                 headers: {
                     'Accept': 'application/json',
                     'Content-Type': 'application/json',
@@ -333,7 +336,16 @@ function DangerZone({ userContext, setSettingsPopUp }: { userContext: IUserConte
         setLoading(true);
 
         try {
-            const deleteUser = await fetch(`/user/deleteUser/${userContext.userData.username}`, { method: 'DELETE' })
+            const deleteUser = await fetch(`/user/deleteUser`, { 
+                method: 'DELETE',
+                body: JSON.stringify({
+                    userID: userContext.userData.userID
+                }),
+                headers: {
+                    'Accept': 'application/json',
+                    'Content-Type': 'application/json'
+                }
+            })
             .then((res) => {
                 return res.json();
             });

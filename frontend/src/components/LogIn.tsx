@@ -1,7 +1,7 @@
 import PopUpWrapper from "../layouts/PopUpWrapper";
 import { useState, useContext } from 'react';
 import ErrorMessage from "./ErrorMessage";
-import { IUserContext, UserContext, initialState } from "../context/UserContext";
+import { IUserContext, UserContext } from "../context/UserContext";
 import LoadingButton from "./LoadingButton";
 
 interface LogInProps {
@@ -43,7 +43,6 @@ function LogIn({ setLogIn, setSignUp }: LogInProps) {
             if (user.userData) {
                 const {seller, ...userData} = user.userData;
                 userData.memberDate = new Date(userData.memberDate);
-                userData.seller = !userData.seller ? {...initialState.userData.seller} : userData.seller;
                 userContext.setUserData(userData);
                 setLogIn(false);
             } else {
