@@ -25,7 +25,7 @@ function ProfileMenu({ userContext, setSettingsPopUp }: ProfileMenuProps) {
         
         updated.then((response) => {
             if (response.userData && response.message === "success") {
-                userContext.setUserData({...response.userData});
+                userContext.setUserData({ ...response.userData });
             }
         });
 
@@ -37,6 +37,7 @@ function ProfileMenu({ userContext, setSettingsPopUp }: ProfileMenuProps) {
     }
 
     function openSettings(): void {
+        setNavProfileDropdown(false);
         setSettingsPopUp(true);
     }
 

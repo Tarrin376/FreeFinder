@@ -7,9 +7,9 @@ export const prisma = new PrismaClient();
 const cloudinary = pkg.v2;
 
 cloudinary.config({
-    cloud_name: env.CLOUD_NAME,
-    api_secret: env.API_SECRET,
-    api_key: env.API_KEY
+    cloud_name: env.CLOUDINARY_CLOUD_NAME,
+    api_secret: env.CLOUDINARY_API_SECRET,
+    api_key: env.CLOUDINARY_API_KEY
 });
 
 export async function updateProfilePictureHandler(userID, file) {

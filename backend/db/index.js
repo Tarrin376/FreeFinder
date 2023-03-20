@@ -5,14 +5,22 @@ import sellerRouter from './routes/SellerRouter.js';
 
 const app = express();
 const PORT = 8000;
+const router = express.Router();
 
 app.use(json());
 app.use(express.urlencoded({ extended: false }));
+app.all('/api*', requireAuthentication);
+app.use('/api', router);
 
-app.use('/user', userRouter);
-app.use('/post', postRouter);
-app.use('/seller', sellerRouter);
+router.use('/user', userRouter);
+router.use('/post', postRouter);
+router.use('/seller', sellerRouter);
 
 app.listen(PORT, () => {
     console.log(`Server is listening on port ${PORT}`);
 });
+
+function requireAuthentication(req, res, next) {
+    console.log("hello");
+    next();
+}
