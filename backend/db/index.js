@@ -2,9 +2,10 @@ import express, { json } from 'express';
 import userRouter from './routes/UserRouter.js';
 import postRouter from './routes/PostRouter.js';
 import sellerRouter from './routes/SellerRouter.js';
+import { env } from 'process';
 
 const app = express();
-const PORT = 8000;
+const PORT = env.PORT || 8000;
 const router = express.Router();
 
 app.use(json());
