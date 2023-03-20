@@ -40,7 +40,7 @@ function Post({ sellerInfo, userID }: { sellerInfo: IPost, userID: string }) {
     }
 
     function redirectToPost() {
-        navigate(`/posts/${sellerInfo.postedBy.user.username}/${sellerInfo.postID}`);
+        navigate(`/posts/${sellerInfo.postID}`);
     }
 
     async function savePost(): Promise<void> {

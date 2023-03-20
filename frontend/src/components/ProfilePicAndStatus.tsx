@@ -101,7 +101,7 @@ function ProfilePicAndStatus({ profilePicURL, profileStatus, statusStyles, imgSt
                             profile-menu-element pb-2 pt-2 border-t border-t-[#3E3E3E]" onClick={removePhoto}>
                                 Remove photo
                             </p>
-                            <input type='file' id='file' ref={inputFileRef} className="hidden" onChange={uploadPhoto} />
+                            <input type='file' ref={inputFileRef} className="hidden" onChange={uploadPhoto} />
                         </div>
                     </OutsideClickHandler>}
                 </>}

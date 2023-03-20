@@ -14,7 +14,7 @@ function PopUpWrapper({ children, setIsOpen, title, styles } : PopUpWrapperProps
     }
 
     return (
-        <div className="absolute top-0 w-full h-full z-10 bg-pop-up-bg">
+        <div className="fixed top-0 w-full h-full z-10 bg-pop-up-bg">
             <OutsideClickHandler onOutsideClick={closePopUp}>
                 <div className="bg-main-white absolute p-9 rounded-[8px] shadow-pop-up left-[50%] top-[50%] translate-x-[-50%] 
                 translate-y-[-50%] max-w-[540px] w-[95%] overflow-y-scroll max-h-[92%] scrollbar-hide">
