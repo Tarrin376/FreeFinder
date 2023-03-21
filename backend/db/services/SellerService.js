@@ -14,7 +14,11 @@ export async function findSeller(userID) {
         }
     }
     catch (err) {
-        throw err;
+        if (err instanceof Prisma.PrismaClientUnknownRequestError) {
+            throw new Error("Something went wrong when trying to process your request. Please try again.");
+        } else {
+            throw err;
+        }
     }
     finally {
         await prisma.$disconnect();
@@ -34,7 +38,11 @@ async function createSeller(userID) {
         return seller;
     }
     catch (err) {
-        throw err;
+        if (err instanceof Prisma.PrismaClientUnknownRequestError) {
+            throw new Error("Something went wrong when trying to process your request. Please try again.");
+        } else {
+            throw err;
+        }
     }
     finally {
         await prisma.$disconnect();
@@ -57,7 +65,11 @@ export async function sellerPostsHandler(userID, cursor) {
         else return secondQuerySellerPosts(seller.sellerID, cursor);
     }
     catch (err) {
-        throw err;
+        if (err instanceof Prisma.PrismaClientUnknownRequestError) {
+            throw new Error("Something went wrong when trying to process your request. Please try again.");
+        } else {
+            throw err;
+        }
     }
     finally {
         await prisma.$disconnect();
@@ -65,67 +77,90 @@ export async function sellerPostsHandler(userID, cursor) {
 }
 
 export async function firstQuerySellerPosts(sellerID) {
-    const posts = await prisma.post.findMany({
-        take: takeAmount,
-        where: { sellerID: sellerID },
-        orderBy: { createdAt: 'desc' },
-        include: { 
-            postedBy: {
-                select: {
-                    user: {
-                        select: {
-                            profilePicURL: true,
-                            status: true,
-                            username: true,
-                        }
-                    },
-                    rating: true,
-                    description: true,
-                    numReviews: true
+    try {
+        const posts = await prisma.post.findMany({
+            take: takeAmount,
+            where: { sellerID: sellerID },
+            orderBy: { createdAt: 'desc' },
+            include: { 
+                postedBy: {
+                    select: {
+                        user: {
+                            select: {
+                                profilePicURL: true,
+                                status: true,
+                                username: true,
+                            }
+                        },
+                        rating: true,
+                        description: true,
+                        numReviews: true
+                    }
                 }
             }
+        });
+
+        if (posts.length === 0) {
+            return { posts: [] };
         }
-    });
-
-    if (posts.length === 0) {
-        return { posts: [] };
+    
+        await prisma.$disconnect();
+        const lastRes = posts[Math.min(takeAmount - 1, posts.length - 1)];
+        return { posts, cursor: lastRes.postID };
     }
-
-    await prisma.$disconnect();
-    const lastRes = posts[Math.min(takeAmount - 1, posts.length - 1)];
-    return { posts, cursor: lastRes.postID };
+    catch (err) {
+        if (err instanceof Prisma.PrismaClientUnknownRequestError) {
+            throw new Error("Something went wrong when trying to process your request. Please try again.");
+        } else {
+            throw err;
+        }
+    }
+    finally {
+        await prisma.$disconnect();
+    }
 }
 
 export async function secondQuerySellerPosts(sellerID, cursor) {
-    const posts = await prisma.post.findMany({
-        skip: 1,
-        take: takeAmount,
-        cursor: { postID: cursor },
-        where: { sellerID: sellerID },
-        orderBy: { createdAt: 'desc' },
-        include: { 
-            postedBy: {
-                select: {
-                    user: {
-                        select: {
-                            profilePicURL: true,
-                            status: true,
-                            username: true,
-                        }
-                    },
-                    rating: true,
-                    description: true,
-                    numReviews: true
+    try {
+        const posts = await prisma.post.findMany({
+            skip: 1,
+            take: takeAmount,
+            cursor: { postID: cursor },
+            where: { sellerID: sellerID },
+            orderBy: { createdAt: 'desc' },
+            include: { 
+                postedBy: {
+                    select: {
+                        user: {
+                            select: {
+                                profilePicURL: true,
+                                status: true,
+                                username: true,
+                            }
+                        },
+                        rating: true,
+                        description: true,
+                        numReviews: true
+                    }
                 }
             }
+        });
+
+        if (posts.length === 0) {
+            return { posts: [] };
         }
-    });
 
-    if (posts.length === 0) {
-        return { posts: [] };
+        const lastRes = posts[Math.min(takeAmount - 1, posts.length - 1)];
+        return { posts, cursor: lastRes.postID };
     }
-
-    await prisma.$disconnect();
-    const lastRes = posts[Math.min(takeAmount - 1, posts.length - 1)];
-    return { posts, cursor: lastRes.postID };
+    catch (err) {
+        if (err instanceof Prisma.PrismaClientUnknownRequestError) {
+            throw new Error("Something went wrong when trying to process your request. Please try again.");
+        } else {
+            throw err;
+        }
+    }
+    finally {
+        await prisma.$disconnect();
+    }
 }

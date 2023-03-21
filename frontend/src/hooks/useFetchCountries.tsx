@@ -2,13 +2,12 @@ import { useEffect, useState } from 'react';
 
 export type Country = {
     flag: string,
-    name: {
-        common: string
-    }
+    name: { common: string }
 }
 
 export function useFetchCountries(): Country[] {
     const [countries, setCountries] = useState<Country[]>([]);
+    const [errorMessage, setErrorMessage] = useState<string>("");
 
     useEffect(() => {
         const data: Promise<Country[]> = fetch('https://restcountries.com/v3.1/all')
@@ -21,13 +20,15 @@ export function useFetchCountries(): Country[] {
                 }
             };
         }))
-        .catch((err) => {
-
+        .catch((err: any) => {
+            setErrorMessage(err.message);
         });
 
-        data.then((resp) => {
-            resp.sort((a, b) => a.name.common > b.name.common ? 1 : -1);
-            setCountries(resp);
+        data.then((countries) => {
+            if (countries) {
+                countries.sort((a, b) => a.name.common > b.name.common ? 1 : -1);
+                setCountries(countries);
+            }
         });
     }, []);
 

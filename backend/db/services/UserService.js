@@ -14,7 +14,7 @@ cloudinary.config({
 
 export async function updateProfilePictureHandler(userID, file) {
     const upload = cloudinary.uploader.upload(file, { public_id: `FreeFinder/ProfilePictures/${userID}` });
-
+    
     const success = await upload.then((data) => data)
     .catch((err) => {
         throw err;
@@ -27,7 +27,11 @@ export async function updateProfilePictureHandler(userID, file) {
         });
     }
     catch (err) {
-        throw err;
+        if (err instanceof Prisma.PrismaClientUnknownRequestError) {
+            throw new Error("Something went wrong when trying to process your request. Please try again.");
+        } else {
+            throw err;
+        }
     }
     finally {
         await prisma.$disconnect();
@@ -48,8 +52,11 @@ export async function updatePasswordHandler(userID, password) {
             if (err.code === 'P2025') {
                 throw new Error("User could not be found.");
             }
+        } else if (err instanceof Prisma.PrismaClientUnknownRequestError) {
+            throw new Error("Something went wrong when trying to process your request. Please try again.");
+        } else {
+            throw err;
         }
-        throw err;
     }
     finally {
         await prisma.$disconnect();
@@ -73,8 +80,11 @@ export async function addUserHandler(userData) {
             if (err.code === 'P2002') {
                 throw new Error("There already exists a user with this username or email address.");
             }
+        } else if (err instanceof Prisma.PrismaClientUnknownRequestError) {
+            throw new Error("Something went wrong when trying to process your request. Please try again.");
+        } else {
+            throw err;
         }
-        throw err;
     }
     finally {
         await prisma.$disconnect();
@@ -114,7 +124,11 @@ export async function findUserHandler(usernameOrEmail, password) {
         }
     }
     catch (err) {
-        throw err;
+        if (err instanceof Prisma.PrismaClientUnknownRequestError) {
+            throw new Error("Something went wrong when trying to process your request. Please try again.");
+        } else {
+            throw err;
+        }
     }
     finally {
         await prisma.$disconnect();
@@ -123,12 +137,12 @@ export async function findUserHandler(usernameOrEmail, password) {
 
 export async function updateUserHandler(data) {
     const {seller, ...res} = data;
-    const mainUserData = res;
+    const userData = res;
     
     try {
         const updated = await prisma.user.update({
-            where: { userID: mainUserData.userID },
-            data: { ...mainUserData },
+            where: { userID: userData.userID },
+            data: { ...userData },
             include: {
                 seller: {
                     select: {
@@ -148,8 +162,11 @@ export async function updateUserHandler(data) {
             if (err.code === 'P2002') {
                 throw new Error("There already exists a user with this username or email address.");
             }
+        } else if (err instanceof Prisma.PrismaClientUnknownRequestError) {
+            throw new Error("Something went wrong when trying to process your request. Please try again.");
+        } else {
+            throw err;
         }
-        throw err;
     }
     finally {
         await prisma.$disconnect();
@@ -161,7 +178,11 @@ export async function deleteUserHandler(userID) {
         await prisma.user.delete({ where: { userID: userID } });
     }
     catch (err) {
-        throw err;
+        if (err instanceof Prisma.PrismaClientUnknownRequestError) {
+            throw new Error("Something went wrong when trying to process your request. Please try again.");
+        } else {
+            throw err;
+        }
     }
     finally {
         await prisma.$disconnect();

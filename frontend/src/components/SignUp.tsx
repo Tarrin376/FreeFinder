@@ -31,13 +31,13 @@ function SignUp({ setLogIn, setSignUp, setAccountCreated }: SignUpProps) {
 
     async function createAccount(e: React.MouseEvent<HTMLButtonElement>): Promise<void> {
         e.preventDefault();
-        if (!country || !country.current || loading) {
+        if (!country.current || !country.current!.value || loading) {
             return;
         }
 
         try {
             setLoading(true);
-            const addAttempt = await fetch('/user/createUser', {
+            const response = await fetch('/user/createUser', {
                 method: 'POST',
                 body: JSON.stringify({ 
                     email: form.emailFirst, 
@@ -49,16 +49,20 @@ function SignUp({ setLogIn, setSignUp, setAccountCreated }: SignUpProps) {
                     'Accept': 'application/json',
                     'Content-Type': 'application/json'
                 }
-            }).then((res) => {
-                return res.json();
             });
-            
-            if (addAttempt.status === "success") {
-                setAccountCreated(true);
-                setSignUp(false);
-                setErrorMessage("");
+
+            if (response.status !== 500) {
+                const addAttempt = await response.json();
+                if (addAttempt.status === "success") {
+                    setAccountCreated(true);
+                    setSignUp(false);
+                    setErrorMessage("");
+                } else {
+                    setErrorMessage(addAttempt.status);
+                }
             } else {
-                setErrorMessage(addAttempt.status);
+                setErrorMessage(`Looks like we are having trouble on our end. Please try again later. 
+                (Error code: ${response.status})`);
             }
         }
         catch (e: any) {

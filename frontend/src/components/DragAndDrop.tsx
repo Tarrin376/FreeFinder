@@ -35,7 +35,7 @@ function DragAndDrop({ children, handleDrop }: { children?: React.ReactNode, han
         setDragging(false);
 
         if (e.dataTransfer.files && e.dataTransfer.files.length > 0) {
-            handleDrop(e.dataTransfer.files[0]);
+            handleDrop(e.dataTransfer.files);
             counter.current = 0;
         }
     }

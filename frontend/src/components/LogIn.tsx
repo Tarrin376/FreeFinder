@@ -39,14 +39,19 @@ function LogIn({ setLogIn, setSignUp }: LogInProps) {
                 }
             });
 
-            const user = await response.json();
-            if (user.userData) {
-                const {seller, ...userData} = user.userData;
-                userData.memberDate = new Date(userData.memberDate);
-                userContext.setUserData(userData);
-                setLogIn(false);
+            if (response.status !== 500) {
+                const user = await response.json();
+                if (!user.error) {
+                    const {seller, ...userData} = user.userData;
+                    userData.memberDate = new Date(userData.memberDate);
+                    userContext.setUserData(userData);
+                    setLogIn(false);
+                } else {
+                    setErrorMessage(user.error);
+                }
             } else {
-                setErrorMessage(user.error);
+                setErrorMessage(`Looks like we are having trouble on our end. Please try again later. 
+                (Error code: ${response.status})`);
             }
         }
         catch (err: any) {

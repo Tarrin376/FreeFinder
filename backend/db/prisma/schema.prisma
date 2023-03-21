@@ -47,23 +47,29 @@ model SavedPost {
 }
 
 model Post {
-    postID          String      @id @default(uuid())
-    savedPosts      SavedPost[]
-    orders          Order[]
-    postedBy        Seller      @relation(fields: [sellerID], references: [sellerID], onDelete: Cascade)
-    sellerID        String
-    about           String
-    createdAt       DateTime    @default(now())
-    thumbnailPicURL String?
-    title           String
-    startingPrice   Decimal     @db.Money
+    postID        String      @id @default(uuid())
+    savedPosts    SavedPost[]
+    orders        Order[]
+    postedBy      Seller      @relation(fields: [sellerID], references: [sellerID], onDelete: Cascade)
+    sellerID      String
+    about         String
+    createdAt     DateTime    @default(now())
+    title         String
+    startingPrice Decimal     @db.Money
+    images        PostImage[] @relation("Images")
+}
+
+model PostImage {
+    imageID String @id @default(uuid())
+    post    Post   @relation("Images", fields: [postID], references: [postID], onDelete: Cascade)
+    postID  String
 }
 
 model Review {
     reviewID   String   @id @default(uuid())
     seller     Seller   @relation(fields: [sellerID], references: [sellerID])
     sellerID   String
-    reviewer   User     @relation(fields: [reviewerID], references: [userID], onDelete: Cascade)
+    reviewer   User     @relation(fields: [reviewerID], references: [userID])
     reviewerID String
     reviewBody String
     createdAt  DateTime @default(now())
@@ -72,7 +78,7 @@ model Review {
 
 model Order {
     orderID     String      @id @default(uuid())
-    customer    User        @relation(fields: [customerID], references: [userID], onDelete: Cascade)
+    customer    User        @relation(fields: [customerID], references: [userID])
     customerID  String
     seller      Seller      @relation(fields: [sellerID], references: [sellerID])
     sellerID    String

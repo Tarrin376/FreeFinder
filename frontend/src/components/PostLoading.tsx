@@ -20,7 +20,7 @@ function PostLoading() {
                 </div>
             </div>
         </div>
-    )
+    );
 }
 
 export default PostLoading;

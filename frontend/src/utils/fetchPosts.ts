@@ -2,14 +2,19 @@ import { IPost } from "../models/IPost";
 
 export async function fetchPosts(url: string, setPosts: React.Dispatch<React.SetStateAction<IPost[]>>): Promise<string> {
     try {
-        const getPosts = await fetch(url);
-        const res = await getPosts.json();
+        const response = await fetch(url);
 
-        if (res.message === "success") {
-            setPosts((state) => [...state, ...res.posts]);
-            return res.cursor;
+        if (response.status !== 500) {
+            const responseData = await response.json();
+            if (responseData.message === "success") {
+                setPosts((state) => [...state, ...responseData.posts]);
+                return responseData.cursor;
+            } else {
+                throw new Error(responseData.message);
+            }
         } else {
-            throw new Error(res.message);
+            throw new Error(`Looks like we are having trouble on our end. Please try again later. 
+            (Error code: ${response.status})`);
         }
     }
     catch (err: any) {

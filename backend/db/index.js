@@ -22,6 +22,5 @@ app.listen(PORT, () => {
 });
 
 function requireAuthentication(req, res, next) {
-    console.log("hello");
     next();
 }

@@ -15,7 +15,11 @@ export async function createPostHandler(postData, userID) {
         });
     }
     catch (err) {
-        throw err;
+        if (err instanceof Prisma.PrismaClientUnknownRequestError) {
+            throw new Error("Something went wrong when trying to process your request. Please try again.");
+        } else {
+            throw err;
+        }
     }
     finally {
         await prisma.$disconnect();
@@ -36,8 +40,11 @@ export async function savePostHandler(postID, userID) {
             if (err.code === 'P2002') {
                 throw new Error("Post already added");
             }
+        } else if (err instanceof Prisma.PrismaClientUnknownRequestError) {
+            throw new Error("Something went wrong when trying to process your request. Please try again.");
+        } else {
+            throw err;
         }
-        throw err;
     }
     finally {
         await prisma.$disconnect();

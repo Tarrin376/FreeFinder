@@ -5,12 +5,18 @@ import { useState } from 'react';
 import { IPost } from '../models/IPost';
 import ProfilePicAndStatus from './ProfilePicAndStatus';
 import { useNavigate } from 'react-router-dom';
+import { actionSuccessful } from '../utils/actionSuccessful';
 
-function Post({ sellerInfo, userID }: { sellerInfo: IPost, userID: string }) {
-    const [saved, setSaved] = useState<boolean>(false);
-    const [errorSaving, setErrorSaving] = useState<boolean>(false);
+interface PostProps {
+    postInfo: IPost,
+    userID: string
+}
+
+function Post({ postInfo, userID }: PostProps) {
     const seconds = getSeconds();
     const navigate = useNavigate();
+    const [saveErrorMessage, setSaveErrorMessage] = useState<string>("");
+    const [saveSuccessMessage, setSaveSuccessMessage] = useState<string>("");
 
     function getTimePosted(): string {
         if (seconds < 60) {
@@ -28,45 +34,37 @@ function Post({ sellerInfo, userID }: { sellerInfo: IPost, userID: string }) {
     }
 
     function getSeconds(): number {
-        const createdAtDate = new Date(sellerInfo.createdAt);
+        const createdAtDate: Date = new Date(postInfo.createdAt);
         return Math.floor((new Date().getTime() - createdAtDate.getTime()) / 1000);
     }
 
-    function showSaveMessage(setState: React.Dispatch<React.SetStateAction<boolean>>) {
-        setState(true);
-        setTimeout(() => {
-            setState(false);
-        }, 2000);
-    }
-
-    function redirectToPost() {
-        navigate(`/posts/${sellerInfo.postID}`);
+    function redirectToPost(): void {
+        navigate(`/posts/${postInfo.postID}`);
     }
 
     async function savePost(): Promise<void> {
         try {
-            if (saved || errorSaving) {
-                return;
-            }
-            
             const response = await fetch('/post/savePost', {
                 method: 'POST',
                 body: JSON.stringify({
                     userID: userID,
-                    postID: sellerInfo.postID
+                    postID: postInfo.postID
                 }),
                 headers: {
                     'Accept': 'application/json',
                     'Content-Type': 'application/json'
-                }
-            }).then((res) => {
-                return res.json();
+                } 
             });
 
-            if (response.message === "success") {
-                showSaveMessage(setSaved);
+            if (response.status !== 500) {
+                const data = await response.json();
+                if (data.message === "success") {
+                    
+                } else {
+                    
+                }
             } else {
-                showSaveMessage(setErrorSaving);
+
             }
         }
         catch (err) {
@@ -80,13 +78,13 @@ function Post({ sellerInfo, userID }: { sellerInfo: IPost, userID: string }) {
             <div className="p-4">
                 <div className="flex items-center mt-1 mb-2 gap-3 relative">
                     <ProfilePicAndStatus 
-                        profilePicURL={sellerInfo.postedBy.user.profilePicURL} 
-                        profileStatus={sellerInfo.postedBy.user.status}
+                        profilePicURL={postInfo.postedBy.user.profilePicURL} 
+                        profileStatus={postInfo.postedBy.user.status}
                         statusStyles='before:left-[30px]'
                     />
                     <div>
                         <p className="font-semibold">
-                            {sellerInfo.postedBy.user.username} 
+                            {postInfo.postedBy.user.username} 
                             {seconds < 60 * 60 * 24 && 
                             <span className={`btn-primary action-btn rounded-[12px] px-[9px] text-[14px] ml-[10px] 
                             select-none cursor-pointer hover:!bg-main-purple relative hover:after:content-["<24hrs"] 
@@ -97,22 +95,17 @@ function Post({ sellerInfo, userID }: { sellerInfo: IPost, userID: string }) {
                         </p>
                         <div className="flex items-center gap-[7px]">
                             <img src={StarIcon} className="w-[17px] h-[17px]" alt="star" />
-                            <p className="text-[15px] text-rating-text font-bold">{sellerInfo.postedBy.rating}</p>
-                            <p className="text-side-text-gray text-[15px]">({sellerInfo.postedBy.numReviews} reviews)</p>
+                            <p className="text-[15px] text-rating-text font-bold">{postInfo.postedBy.rating}</p>
+                            <p className="text-side-text-gray text-[15px]">({postInfo.postedBy.numReviews} reviews)</p>
                         </div>
                     </div>
                 </div>
                 <p className="text-side-text-gray text-[15px] mb-1">{getTimePosted()}</p>
                 <h3 className="text-[18px] font-semibold nav-item pb-3 border-b 
-                border-b-light-gray leading-6 h-[60px] break-words" onClick={redirectToPost}>{sellerInfo.title}</h3>
+                border-b-light-gray leading-6 h-[60px] break-words" onClick={redirectToPost}>{postInfo.title}</h3>
                 <div className="mt-4 flex items-center justify-between relative">
-                    <p className="py-[2px] px-3 border border-nav-search-gray rounded-[17px] w-fit">Starting at: £{sellerInfo.startingPrice}</p>
-                    <div className={`transition ease-linear duration-100 ${saved ? `before:absolute before:top-[33px] before:right-0 
-                    before:content-["saved"] before:text-[15px] before:bg-main-black before:text-main-white before:p-1 before:px-2 before:rounded-[8px]` 
-                    : errorSaving ? `before:absolute before:top-[33px] before:right-0 
-                    before:content-["removed"] before:text-[15px] before:bg-error-red before:text-main-white before:p-1 before:px-2 before:rounded-[8px]` : ``}`}>
-                        <img src={NotSavedIcon} className="w-[25px] h-[25px] cursor-pointer" alt="save" onClick={savePost} />
-                    </div>
+                    <p className="py-[2px] px-3 border border-nav-search-gray rounded-[17px] w-fit">Starting at: £{postInfo.startingPrice}</p>
+                    <img src={NotSavedIcon} className="w-[25px] h-[25px] cursor-pointer" alt="save" onClick={savePost} />
                 </div>
             </div>
         </div>

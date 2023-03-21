@@ -18,7 +18,7 @@ function ProfileMenu({ userContext, setSettingsPopUp }: ProfileMenuProps) {
     async function toggleStatus(): Promise<void> {
         setDisabled(true);
         const toggledStatus: string = userContext.userData.status === 'ONLINE' ? 'OFFLINE' : 'ONLINE';
-        const updated: Promise<UpdateResponse> = fetchUpdatedUser(userContext.userData.username, {
+        const updated: Promise<UpdateResponse> = fetchUpdatedUser({
             ...userContext.userData, 
             status: toggledStatus
         });

@@ -11,6 +11,7 @@ import PNGIcon from '../assets/png.png';
 import JPGIcon from '../assets/jpg.png';
 
 const MAX_PRICE: number = 2500;
+const MAX_FILE_UPLOADS: number = 20;
 
 interface PostServiceProps {
     setPostService: React.Dispatch<React.SetStateAction<boolean>>,
@@ -20,23 +21,27 @@ interface PostServiceProps {
     cursor:  React.MutableRefObject<string>
 }
 
-interface PostDetailsProps extends PostServiceProps {
+interface PostDetailsProps {
+    setPostService: React.Dispatch<React.SetStateAction<boolean>>,
     setSection: React.Dispatch<React.SetStateAction<Sections>>,
     setAbout: React.Dispatch<React.SetStateAction<string>>,
-    setTitle: React.Dispatch<React.SetStateAction<string>>,
-    setStartingPrice: React.Dispatch<React.SetStateAction<number>>,
-    setUploadedFiles: React.Dispatch<React.SetStateAction<File[]>>,
-    about: string,
-    title: string,
-    startingPrice: number,
-    uploadedFiles: File[]
+    setTitle: React.Dispatch<React.SetStateAction<string>>, 
+    setStartingPrice: React.Dispatch<React.SetStateAction<number>>, 
+    createPost: (e: React.MouseEvent<HTMLButtonElement, MouseEvent>) => Promise<any>,
+    about: string
+    title: string
+    startingPrice: number
+    errorMessage: string
+    loading: boolean
 }
 
 interface UploadPostFilesProps {
     setPostService: React.Dispatch<React.SetStateAction<boolean>>,
     setSection: React.Dispatch<React.SetStateAction<Sections>>,
     setUploadedFiles: React.Dispatch<React.SetStateAction<File[]>>,
-    uploadedFiles: File[]
+    setThumbnailFile: React.Dispatch<React.SetStateAction<File | undefined>>,
+    uploadedFiles: File[],
+    thumbnailFile: File | undefined
 }
 
 enum Sections {
@@ -50,6 +55,54 @@ function PostServicePopUp({ setPostService, setUserPosts, cursor, setReachedBott
     const [title, setTitle] = useState<string>("");
     const [about, setAbout] = useState<string>("");
     const [uploadedFiles, setUploadedFiles] = useState<File[]>([]);
+    const [thumbnailFile, setThumbnailFile] = useState<File | undefined>();
+    const [loading, setLoading] = useState<boolean>(false);
+    const [errorMessage, setErrorMessage] = useState<string>("");
+
+    const userContext: IUserContext = useContext(UserContext);
+
+    async function createPost(): Promise<void> {
+        setLoading(true);
+        
+        try {
+            const response = await fetch(`/post/createPost`, {
+                method: 'POST',
+                body: JSON.stringify({
+                    about: about.trim(),
+                    title: title.trim(),
+                    startingPrice: startingPrice,
+                    userID: userContext.userData.userID
+                }),
+                headers: {
+                    'Content-Type': 'application/json',
+                    'Accept': 'application/json'
+                }
+            });
+
+            if (response.status !== 500) {
+                const responseData = await response.json();
+                if (responseData.message === "success") {
+                    setErrorMessage("");
+                    setPostService(false);
+                    cursor.current = "HEAD";
+                    setUserPosts([]);
+                    setNextPage((state) => !state);
+                    setReachedBottom(false);
+                } else {
+                    setErrorMessage(responseData.message);
+                }
+            } else {
+                setErrorMessage(`Looks like we are having trouble on our end. Please try again later. 
+                (Error code: ${response.status})`);
+            }
+        }
+        catch (err: any) {
+            setErrorMessage(err.message);
+        }
+        finally {
+            setLoading(false);
+        }
+    }
 
     if (section === Sections.UploadFiles) {
         return (
@@ -57,56 +110,78 @@ function PostServicePopUp({ setPostService, setUserPosts, cursor, setReachedBott
                 setPostService={setPostService} 
                 setSection={setSection}
                 uploadedFiles={uploadedFiles} 
-                setUploadedFiles={setUploadedFiles} 
+                setUploadedFiles={setUploadedFiles}
+                thumbnailFile={thumbnailFile}
+                setThumbnailFile={setThumbnailFile}
             />
         );
     } else {
         return (
             <PostDetails 
-                setPostService={setPostService} setUserPosts={setUserPosts} 
-                cursor={cursor} setReachedBottom={setReachedBottom} 
-                setNextPage={setNextPage} setSection={setSection}
-                about={about} setAbout={setAbout} 
-                title={title} setTitle={setTitle}
-                startingPrice={startingPrice} setStartingPrice={setStartingPrice}
-                uploadedFiles={uploadedFiles} setUploadedFiles={setUploadedFiles} 
+                setPostService={setPostService}
+                setSection={setSection}
+                setAbout={setAbout}
+                setTitle={setTitle}
+                setStartingPrice={setStartingPrice}
+                about={about}
+                title={title}
+                startingPrice={startingPrice}
+                errorMessage={errorMessage}
+                loading={loading}
+                createPost={createPost}
             />
         );
     }
 }
 
-function UploadPostFiles({ setPostService, setSection, uploadedFiles, setUploadedFiles }: UploadPostFilesProps) {
-    const [errorMessage, setErrorMessage] = useState<string>("");
+function UploadPostFiles({ setPostService, setSection, uploadedFiles, setUploadedFiles, thumbnailFile, setThumbnailFile }: UploadPostFilesProps) {
     const inputFileRef = useRef<HTMLInputElement>(null);
 
-    function handleDrop(file: File) {
-        if (uploadedFiles.length === 20) {
-            setErrorMessage("You have reached your maximum limit of 20 images. If you would like to upload this image, please delete an image from your list.");
-        } else if (file.type !== "image/jpeg" && file.type !== "image/png") {
-            setErrorMessage("This image is not in the list of supported formats. Please change the format of the image or upload something else.");
+    function checkFile(file: File): boolean {
+        if (file.type !== "image/jpeg" && file.type !== "image/png") {
+            return false;
         } else if (file.size > 26214400) {
-            setErrorMessage("The file size of this image is too large, please compress this image or upload something else.");
+            return false;
         } else {
-            setUploadedFiles((state) => [...state, file]);
-            setErrorMessage("");
+            return true;
         }
     }
 
-    function uploadFile() {
-        if (inputFileRef.current) {
-            setUploadedFiles((state) => [...state, inputFileRef.current!.files![0]]);
+    function handleDrop(files: FileList): void {
+        let filesToAdd: number = Math.min(MAX_FILE_UPLOADS - uploadedFiles.length, files.length);
+        const uploaded: File[] = [];
+        let index = 0;
+
+        while (index < files.length && filesToAdd > 0) {
+            const validFile: boolean = checkFile(files[index]);
+            if (validFile) {
+                uploaded.push(files[index]);
+                filesToAdd--;
+            }
+            index++;
+        }
+
+        setUploadedFiles((state) => [...state, ...uploaded]);
+    }
+
+    function uploadFile(): void {
+        if (inputFileRef.current && inputFileRef.current.files) {
+            handleDrop(inputFileRef.current.files);
         }
     }
 
-    function triggerFileUpload() {
+    function triggerFileUpload(): void {
         if (inputFileRef.current) {
             inputFileRef.current.click();
         }
     }
 
+    function updateThumbnail(file: File) {
+        setThumbnailFile(file);
+    }
+
     return (
         <PopUpWrapper setIsOpen={setPostService} title={"Upload files"}>
-            {errorMessage !== "" && <ErrorMessage message={errorMessage} title={"Unable to upload image"} />}
             <DragAndDrop handleDrop={handleDrop}>
                 <div className="absolute top-[50%] left-[50%] translate-x-[-50%] translate-y-[-50%]">
                     <img src={Storage} className="block m-auto w-[50px] h-[50px] mb-3" alt="storage" />
@@ -120,10 +195,19 @@ function UploadPostFiles({ setPostService, setSection, uploadedFiles, setUploade
                 <p className="text-side-text-gray">Supported formats: PNG, JPG</p>
                 <p className="text-side-text-gray">Maximum size: 25MB</p>
             </div>
+            <p className="text-side-text-gray mt-3">Files uploaded:
+                <span className={uploadedFiles.length === MAX_FILE_UPLOADS ? 'text-error-red' : 'text-[#36BF54]'}>
+                    {` ${uploadedFiles.length} / ${MAX_FILE_UPLOADS}`}
+                </span>
+            </p>
             <div className="max-h-[250px] overflow-scroll mt-6 flex flex-col gap-[15px] scrollbar-hide">
-                {uploadedFiles.map((file: File) => {
+                {[thumbnailFile, ...uploadedFiles.filter((x) => x !== thumbnailFile)].map((file: File | undefined, index: number) => {
+                    if (!file) {
+                        return null;
+                    }
+
                     return (
-                        <div className="px-5 py-3 rounded-[8px] bg-[#f0f2f3] flex justify-between gap-[18px] items-center">
+                        <div key={index} className="px-5 py-3 rounded-[8px] bg-[#f0f2f3] flex justify-between gap-[18px] items-center">
                             <div>
                                 <div className="flex items-center gap-3 mb-2">
                                     <img src={file.type === "image/jpeg" ? JPGIcon : PNGIcon} alt="file type" className="w-[32px] h-[32px]" />
@@ -131,12 +215,22 @@ function UploadPostFiles({ setPostService, setSection, uploadedFiles, setUploade
                                 </div>
                                 <p className="text-side-text-gray text-[15px]">You can download this file to verify that it is the correct one.</p>
                             </div>
-                            <a href={URL.createObjectURL(file)} download={file.name}>
-                                <button className="bg-main-white border-2 border-light-gray btn-primary w-[110px] px-3 font-semibold
-                              hover:bg-main-white-hover">
-                                    Download
-                                </button>
-                            </a>
+                            <div>
+                                <a href={URL.createObjectURL(file)} className="block mb-2" download={file.name}>
+                                    <button className="bg-main-white border-2 border-light-gray btn-primary w-[140px] px-3 font-semibold
+                                hover:bg-main-white-hover">
+                                        Download
+                                    </button>
+                                </a>
+                                {file !== thumbnailFile ?
+                                <button className="bg-[#212121cc] btn-primary w-[140px] px-3 font-semibold
+                                hover:bg-main-black text-main-white" onClick={() => updateThumbnail(file)}>
+                                    Set Thumbnail
+                                </button> :
+                                <button className="action-btn btn-primary w-[140px] px-3 font-semibold">
+                                    Thumbnail
+                                </button>}
+                            </div>
                         </div>
                     );
                 })}
@@ -159,7 +253,7 @@ function UploadPostFiles({ setPostService, setSection, uploadedFiles, setUploade
                 <div className="flex gap-3">
                     <input type='file' ref={inputFileRef} className="hidden" onChange={uploadFile} />
                     <button className="bg-main-white border-2 border-light-gray btn-primary w-[110px] px-3 font-semibold
-                    hover:bg-main-white-hover">
+                    hover:bg-main-white-hover" onClick={() => setPostService(false)}>
                         Cancel
                     </button>
                     <button className="btn-primary bg-main-purple hover:bg-main-purple-hover text-main-white w-[110px] px-3"
@@ -172,51 +266,8 @@ function UploadPostFiles({ setPostService, setSection, uploadedFiles, setUploade
     )
 }
 
-function PostDetails({ setPostService, setUserPosts, cursor, setReachedBottom, setNextPage, setSection,
-    about, setAbout, title, setTitle, startingPrice, setStartingPrice }: PostDetailsProps) {
-    const [loading, setLoading] = useState<boolean>(false);
-    const userContext: IUserContext = useContext(UserContext);
-    const [errorMessage, setErrorMessage] = useState<string>("");
-
-    async function createPost(): Promise<void> {
-        setLoading(true);
-        
-        try {
-            const create = await fetch(`/post/createPost`, {
-                method: 'POST',
-                body: JSON.stringify({
-                    about: about.trim(),
-                    title: title.trim(),
-                    startingPrice: startingPrice,
-                    userID: userContext.userData.userID
-                }),
-                headers: {
-                    'Content-Type': 'application/json',
-                    'Accept': 'application/json'
-                }
-            }).then((res) => {
-                return res.json();
-            });
-
-            if (create.message === "success") {
-                setErrorMessage("");
-                setPostService(false);
-                cursor.current = "HEAD";
-                setUserPosts([]);
-                setNextPage((state) => !state);
-                setReachedBottom(false);
-            } else {
-                setErrorMessage(create.message);
-            }
-        }
-        catch (err: any) {
-            setErrorMessage(err.message);
-        }
-        finally {
-            setLoading(false);
-        }
-    }
-
+function PostDetails({ setPostService, setSection, about, setAbout, title, setTitle, startingPrice, 
+    setStartingPrice, errorMessage, loading, createPost }: PostDetailsProps) {
     function validInputs(): boolean {
         return title.trim().length > 0 && about.trim().length > 0 && startingPrice > 0;
     }

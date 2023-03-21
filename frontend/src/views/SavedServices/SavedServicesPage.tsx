@@ -1,7 +1,3 @@
-import { useNavigate } from 'react-router-dom';
-import { useEffect, useContext } from 'react';
-import { UserContext } from '../../context/UserContext';
-
 function SavedServicesPage() {
     return (
         <div className="page">

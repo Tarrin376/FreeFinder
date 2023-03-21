@@ -88,7 +88,7 @@ function MyDetails({ userContext } : { userContext: IUserContext }) {
     async function updateDetails(): Promise<void> {
         try {
             setLoading(true);
-            const updated: UpdateResponse = await fetchUpdatedUser(userContext.userData.username, { 
+            const updated: UpdateResponse = await fetchUpdatedUser({ 
                 ...userContext.userData, 
                 email: firstEmail 
             });
@@ -96,7 +96,7 @@ function MyDetails({ userContext } : { userContext: IUserContext }) {
             if (updated.message === "success" && updated.userData) {
                 userContext.setUserData(updated.userData);
                 setErrorMessage("");
-                actionSuccessful(setCompleted);
+                actionSuccessful(setCompleted, true, false);
             } else {
                 setErrorMessage(updated.message);
             }
@@ -148,8 +148,12 @@ function Profile({  userContext }: { userContext: IUserContext }) {
     
     async function updateProfile(): Promise<void> {
         try {
+            if (!country.current || !country.current!.value) {
+                return;
+            }
+
             setLoading(true);
-            const updated: UpdateResponse = await fetchUpdatedUser(userContext.userData.username, { 
+            const updated: UpdateResponse = await fetchUpdatedUser({ 
                 ...userContext.userData, 
                 username, 
                 country: country.current!.value 
@@ -158,7 +162,7 @@ function Profile({  userContext }: { userContext: IUserContext }) {
             if (updated.message === "success" && updated.userData) {
                 userContext.setUserData(updated.userData);
                 setErrorMessage("");
-                actionSuccessful(setCompleted);
+                actionSuccessful(setCompleted, true, false);
             } else {
                 setErrorMessage(updated.message);
             }
@@ -220,7 +224,7 @@ function Password({ userContext }: { userContext: IUserContext }) {
         }
 
         try {
-            const updatePassword = await fetch("user/update/password", {
+            const response = await fetch("user/update/password", {
                 method: 'PUT',
                 body: JSON.stringify({
                     userID: userContext.userData.userID,
@@ -230,16 +234,20 @@ function Password({ userContext }: { userContext: IUserContext }) {
                     'Accept': 'application/json',
                     'Content-Type': 'application/json',
                 }
-            }).then((res) => {
-                return res.json();
             });
-
-            if (updatePassword.message === "success") {
-                setCompleted(true);
-                setErrorMessage("");
-                actionSuccessful(setCompleted);
+            
+            if (response.status !== 500) {
+                const updatedPassword = await response.json();
+                if (updatedPassword.message === "success") {
+                    setCompleted(true);
+                    setErrorMessage("");
+                    actionSuccessful(setCompleted, true, false);
+                } else {
+                    setErrorMessage(updatedPassword.message);
+                }
             } else {
-                setErrorMessage(updatePassword.message);
+                setErrorMessage(`Looks like we are having trouble on our end. Please try again later. 
+                (Error code: ${response.status})`);
             }
         }
         catch (err: any) {
@@ -261,11 +269,17 @@ function Password({ userContext }: { userContext: IUserContext }) {
                 }
             });
 
-            const user = await response.json();
-            if (user.userData) {
-                return true;
+            if (response.status !== 500) {
+                const user = await response.json();
+                if (user.userData) {
+                    return true;
+                } else {
+                    if (user.error) setErrorMessage(user.error);
+                    return false;
+                }
             } else {
-                if (user.error) setErrorMessage(user.error);
+                setErrorMessage(`Looks like we are having trouble on our end. Please try again later. 
+                (Error code: ${response.status})`);
                 return false;
             }
         }
@@ -279,7 +293,7 @@ function Password({ userContext }: { userContext: IUserContext }) {
         return validCurrentPass && validNewPass && validConfirmNewPass && newPass === confirmNewPass;
     }
 
-    function setPass(pass: string, setValid: React.Dispatch<React.SetStateAction<boolean>>, 
+    function updatePass(pass: string, setValid: React.Dispatch<React.SetStateAction<boolean>>, 
     setPass: React.Dispatch<React.SetStateAction<string>>): void {
         setPass(pass);
         if (pass.length >= 8) {
@@ -301,19 +315,19 @@ function Password({ userContext }: { userContext: IUserContext }) {
                     <p className="mb-2">Current password</p>
                     <input type="password" className={`search-bar ${validCurrentPass || currentPass === "" ? '' : 'invalid-input'}`}
                     placeholder="Enter your current password"
-                    onChange={(e) => setPass(e.target.value, setValidCurrentPass, setCurrentPass)} />
+                    onChange={(e) => updatePass(e.target.value, setValidCurrentPass, setCurrentPass)} />
                 </div>
                 <div>
                     <p className="mb-2">New password</p>
                     <input type="password" className={`search-bar ${validNewPass || newPass === "" ? '' : 'invalid-input'}`} 
                     placeholder="Enter your new password"
-                    onChange={(e) => setPass(e.target.value, setValidNewPass, setNewPass)} />
+                    onChange={(e) => updatePass(e.target.value, setValidNewPass, setNewPass)} />
                 </div>
                 <div>
                     <p className="mb-2">Confirm new password</p>
                     <input type="password" className={`search-bar ${validConfirmNewPass || confirmNewPass === "" ? '' : 'invalid-input'}`} 
                     placeholder="Re-enter your new password"
-                    onChange={(e) => setPass(e.target.value, setValidConfirmNewPass, setConfirmNewPass)} />
+                    onChange={(e) => updatePass(e.target.value, setValidConfirmNewPass, setConfirmNewPass)} />
                 </div>
                 <LoadingButton 
                     loading={loading} text="Update Details" loadingText="Checking password..." 
@@ -336,7 +350,7 @@ function DangerZone({ userContext, setSettingsPopUp }: { userContext: IUserConte
         setLoading(true);
 
         try {
-            const deleteUser = await fetch(`/user/deleteUser`, { 
+            const response = await fetch(`/user/deleteUser`, { 
                 method: 'DELETE',
                 body: JSON.stringify({
                     userID: userContext.userData.userID
@@ -345,16 +359,19 @@ function DangerZone({ userContext, setSettingsPopUp }: { userContext: IUserConte
                     'Accept': 'application/json',
                     'Content-Type': 'application/json'
                 }
-            })
-            .then((res) => {
-                return res.json();
             });
 
-            if (deleteUser.message === "success") {
-                userContext.setUserData(initialState.userData);
-                setSettingsPopUp(false);
+            if (response.status !== 500) {
+                const deletedUser = await response.json();
+                if (deletedUser.message === "success") {
+                    userContext.setUserData(initialState.userData);
+                    setSettingsPopUp(false);
+                } else {
+                    setErrorMessage(deletedUser.message);
+                }
             } else {
-                setErrorMessage(deleteUser.message);
+                setErrorMessage(`Looks like we are having trouble on our end. Please try again later. 
+                (Error code: ${response.status})`);
             }
         }
         catch(err: any) {

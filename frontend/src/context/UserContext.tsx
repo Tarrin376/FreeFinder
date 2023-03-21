@@ -22,7 +22,7 @@ export const initialState: IUserContext = {
 export const UserContext = createContext<IUserContext>(initialState);
 
 function UserProvider({ children }: { children?: React.ReactNode }) {
-    const [userData, setUserData] = useState<IUser>({...initialState.userData});
+    const [userData, setUserData] = useState<IUser>({ ...initialState.userData });
 
     return (
         <UserContext.Provider value={{userData, setUserData}}>

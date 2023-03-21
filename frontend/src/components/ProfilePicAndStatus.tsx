@@ -5,6 +5,7 @@ import { IUserContext, UserContext } from '../context/UserContext';
 import { fetchUpdatedUser } from '../utils/fetchUpdatedUser';
 import { UpdateResponse } from '../utils/fetchUpdatedUser';
 import OutsideClickHandler from 'react-outside-click-handler';
+import { parseImage } from '../utils/parseImage';
 
 interface ProfilePicAndStatusProps {
     profilePicURL: string, 
@@ -35,7 +36,7 @@ function ProfilePicAndStatus({ profilePicURL, profileStatus, statusStyles, imgSt
             return;
         }
 
-        const updated: Promise<UpdateResponse> = fetchUpdatedUser(userContext.userData.username, {...userContext.userData}, profile);
+        const updated: Promise<UpdateResponse> = fetchUpdatedUser({...userContext.userData}, profile);
         updated.then((response) => {
             if (response.message === "success" && response.userData) {
                 userContext.setUserData(response.userData);
@@ -63,17 +64,12 @@ function ProfilePicAndStatus({ profilePicURL, profileStatus, statusStyles, imgSt
         updatePhoto("");
     }
 
-    async function uploadPhoto(): Promise<void> {
+    async function uploadPhoto(file: File): Promise<void> {
         if (setLoading) {
             setLoading(true);
         }
-      
-        const base64Str = await new Promise((resolve, _) => {
-            const reader = new FileReader();
-            reader.onloadend = () => resolve(reader.result);
-            reader.readAsDataURL(inputFileRef!.current!.files![0]);
-        });
-
+        
+        const base64Str = await parseImage(file);
         updatePhoto(base64Str);
     }
 
@@ -101,7 +97,7 @@ function ProfilePicAndStatus({ profilePicURL, profileStatus, statusStyles, imgSt
                             profile-menu-element pb-2 pt-2 border-t border-t-[#3E3E3E]" onClick={removePhoto}>
                                 Remove photo
                             </p>
-                            <input type='file' ref={inputFileRef} className="hidden" onChange={uploadPhoto} />
+                            <input type='file' ref={inputFileRef} className="hidden" onChange={() => uploadPhoto(inputFileRef!.current!.files![0])} />
                         </div>
                     </OutsideClickHandler>}
                 </>}

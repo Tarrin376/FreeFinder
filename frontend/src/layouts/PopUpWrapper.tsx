@@ -22,7 +22,6 @@ function PopUpWrapper({ children, setIsOpen, title, styles } : PopUpWrapperProps
                         <h1 className="text-[26px]">{title}</h1>
                         <img src={CloseIcon} className="w-4 h-4 cursor-pointer" onClick={closePopUp} alt="close" />
                     </div>
-                    
                     {children}
                 </div>
             </OutsideClickHandler>
