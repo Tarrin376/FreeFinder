@@ -17,7 +17,7 @@ function App() {
                             <Route index element={<HomePage />} />
                             <Route path="saved/:username?" element={<SavedServicesPage />} />
                             <Route path="myPosts/:username?" element={<MyPostsPage />} />
-                            <Route path="posts/:postID" element={<PostPage />} />
+                            <Route path="posts/" element={<PostPage />} />
                             <Route path="*" element={<ErrorPage />} />
                         </Route>
                     </Routes>

@@ -51,6 +51,37 @@ export async function savePostHandler(postID, userID) {
     }
 }
 
-export async function getSavedPostsHandler(userID) {
-    
+export async function getPostHandler(postID) {
+    try {
+        const postData = await prisma.post.findUnique({
+            where: {
+                postID: postID
+            },
+            include: {
+                postedBy: {
+                    include: {
+                        user: {
+                            select: {
+                                username: true,
+                                country: true,
+                                memberDate: true,
+                                status: true,
+                                profilePicURL: true,
+                            }
+                        },
+                    },
+                }
+            }
+        });
+
+        const { ...post } = postData;
+        const { userID, sellerID, ...postedBy } = postData.postedBy;
+        return { ...post, postedBy };
+    }
+    catch (err) {
+        throw err;
+    }
+    finally {
+        prisma.$disconnect;
+    }
 }

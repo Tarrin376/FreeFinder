@@ -56,13 +56,6 @@ model Post {
     createdAt     DateTime    @default(now())
     title         String
     startingPrice Decimal     @db.Money
-    images        PostImage[] @relation("Images")
-}
-
-model PostImage {
-    imageID String @id @default(uuid())
-    post    Post   @relation("Images", fields: [postID], references: [postID], onDelete: Cascade)
-    postID  String
 }
 
 model Review {

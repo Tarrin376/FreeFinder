@@ -2,45 +2,22 @@ import NotSavedIcon from '../assets/not-saved.png';
 import SavedIcon from '../assets/saved.png';
 import StarIcon from '../assets/star.png';
 import { useState } from 'react';
-import { IPost } from '../models/IPost';
+import { IListing } from '../models/IListing';
 import ProfilePicAndStatus from './ProfilePicAndStatus';
 import { useNavigate } from 'react-router-dom';
-import { actionSuccessful } from '../utils/actionSuccessful';
+import { Link } from 'react-router-dom';
+import { getTimePosted, getSeconds } from '../utils/getTimePosted';
 
 interface PostProps {
-    postInfo: IPost,
+    postInfo: IListing,
     userID: string
 }
 
 function Post({ postInfo, userID }: PostProps) {
-    const seconds = getSeconds();
     const navigate = useNavigate();
     const [saveErrorMessage, setSaveErrorMessage] = useState<string>("");
     const [saveSuccessMessage, setSaveSuccessMessage] = useState<string>("");
-
-    function getTimePosted(): string {
-        if (seconds < 60) {
-            return `Posted ${seconds} ${seconds !== 1 ? 'seconds' : 'second'} ago`;
-        } else if (seconds < 60 * 60) {
-            const minutes = Math.floor(seconds / 60);
-            return `Posted ${minutes} ${minutes !== 1 ? 'minutes' : 'minute'} ago`;
-        } else if (seconds < 60 * 60 * 24) {
-            const hours = Math.floor(seconds / 60 / 60);
-            return `Posted ${hours} ${hours !== 1 ? 'hours' : 'hour'} ago`;
-        } else {
-            const days = Math.floor(seconds / 60 / 60 / 24);
-            return `Posted ${days} ${days !== 1 ? 'days' : 'day'} ago`;
-        }
-    }
-
-    function getSeconds(): number {
-        const createdAtDate: Date = new Date(postInfo.createdAt);
-        return Math.floor((new Date().getTime() - createdAtDate.getTime()) / 1000);
-    }
-
-    function redirectToPost(): void {
-        navigate(`/posts/${postInfo.postID}`);
-    }
+    const seconds = getSeconds(postInfo.createdAt);
 
     async function savePost(): Promise<void> {
         try {
@@ -100,9 +77,13 @@ function Post({ postInfo, userID }: PostProps) {
                         </div>
                     </div>
                 </div>
-                <p className="text-side-text-gray text-[15px] mb-1">{getTimePosted()}</p>
+                <p className="text-side-text-gray text-[15px] mb-1">{getTimePosted(postInfo.createdAt)}</p>
                 <h3 className="text-[18px] font-semibold nav-item pb-3 border-b 
-                border-b-light-gray leading-6 h-[60px] break-words" onClick={redirectToPost}>{postInfo.title}</h3>
+                border-b-light-gray leading-6 h-[60px] break-words">
+                    <Link to={{ pathname: "/posts/", search: `?id=${postInfo.postID}` }}>
+                        {postInfo.title}
+                    </Link>
+                </h3>
                 <div className="mt-4 flex items-center justify-between relative">
                     <p className="py-[2px] px-3 border border-nav-search-gray rounded-[17px] w-fit">Starting at: £{postInfo.startingPrice}</p>
                     <img src={NotSavedIcon} className="w-[25px] h-[25px] cursor-pointer" alt="save" onClick={savePost} />

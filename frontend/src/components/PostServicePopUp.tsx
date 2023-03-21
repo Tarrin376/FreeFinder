@@ -4,7 +4,7 @@ import LoadingButton from "./LoadingButton";
 import { UserContext } from "../context/UserContext";
 import { IUserContext } from "../context/UserContext";
 import ErrorMessage from "./ErrorMessage";
-import { IPost } from "../models/IPost";
+import { IListing } from "../models/IListing";
 import DragAndDrop from "./DragAndDrop";
 import Storage from '../assets/storage.png';
 import PNGIcon from '../assets/png.png';
@@ -15,7 +15,7 @@ const MAX_FILE_UPLOADS: number = 20;
 
 interface PostServiceProps {
     setPostService: React.Dispatch<React.SetStateAction<boolean>>,
-    setUserPosts: React.Dispatch<React.SetStateAction<IPost[]>>,
+    setUserPosts: React.Dispatch<React.SetStateAction<IListing[]>>,
     setReachedBottom: React.Dispatch<React.SetStateAction<boolean>>,
     setNextPage: React.Dispatch<React.SetStateAction<boolean>>,
     cursor:  React.MutableRefObject<string>

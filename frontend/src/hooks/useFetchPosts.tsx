@@ -1,7 +1,7 @@
 import { useEffect, useState } from 'react';
 import { IUserContext } from '../context/UserContext';
 import { fetchPosts } from '../utils/fetchPosts';
-import { IPost } from '../models/IPost';
+import { IListing } from '../models/IListing';
 import { useScrollEvent } from './useScrollEvent';
 
 export function useFetchPosts(pageRef: React.RefObject<HTMLDivElement>, userContext: IUserContext, url: string, nextPage: boolean,
@@ -9,7 +9,7 @@ export function useFetchPosts(pageRef: React.RefObject<HTMLDivElement>, userCont
     const [reachedBottom, setReachedBottom] = useState<boolean>(false);
     const [loading, setLoading] = useState<boolean>(false);
     const [errorMessage, setErrorMessage] = useState<string>("");
-    const [posts, setPosts] = useState<IPost[]>([]);
+    const [posts, setPosts] = useState<IListing[]>([]);
 
     useScrollEvent(userContext, pageRef, loading, reachedBottom, setNextPage);
 

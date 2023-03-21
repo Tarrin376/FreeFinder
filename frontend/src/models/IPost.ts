@@ -1,18 +1,20 @@
 export interface IPost {
-    about: string,
-    createdAt: Date,
     postID: string,
     sellerID: string,
-    startingPrice: string,
+    about: string,
+    createdAt: Date,
     title: string,
+    startingPrice: string,
     postedBy: {
-        description: string,
         rating: number,
+        description: string,
         numReviews: number,
         user: {
-            profilePicURL: string,
-            status: string,
             username: string,
+            country: string,
+            memberDate: Date,
+            status: string,
+            profilePicURL: string,
         }
     }
 }

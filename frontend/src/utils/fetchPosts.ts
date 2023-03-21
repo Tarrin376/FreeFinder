@@ -1,6 +1,6 @@
-import { IPost } from "../models/IPost";
+import { IListing } from "../models/IListing";
 
-export async function fetchPosts(url: string, setPosts: React.Dispatch<React.SetStateAction<IPost[]>>): Promise<string> {
+export async function fetchPosts(url: string, setPosts: React.Dispatch<React.SetStateAction<IListing[]>>): Promise<string> {
     try {
         const response = await fetch(url);
 
