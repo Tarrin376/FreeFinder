@@ -12,7 +12,7 @@ module.exports = {
             'very-light-gray': '#EBEBEB',
             'very-light-gray-hover': '#E6E6E6',
             'main-black': '#212121',
-            'search-text': '#606163',
+            'paragraph-text': '#4b4b4b',
             'side-text-gray': '#879198',
             'main-black-hover': 'rgba(51, 51, 51, 1)',
             'error-red': '#B00020',
@@ -25,7 +25,8 @@ module.exports = {
         },
         boxShadow: {
             'pop-up': '0px 0px 1px 0px rgba(0, 0, 0, 0.17), 0px 0px 14px 3px rgba(0, 0, 0, 0.12), 0px 8px 10px 0px rgba(0, 0, 0, 0.14)',
-            'post': '0px 3px 10px -7px rgba(0, 0, 0, 0.42)'
+            'post': '0px 3px 10px -7px rgba(0, 0, 0, 0.42)',
+            'profile-page-container': '0px 1px 8px -6px rgba(0, 0, 0, 0.62)'
         },
     },
     screens: {

@@ -63,10 +63,8 @@ function Post({ postInfo, userID }: PostProps) {
                         <p className="font-semibold">
                             {postInfo.postedBy.user.username} 
                             {seconds < 60 * 60 * 24 && 
-                            <span className={`btn-primary action-btn rounded-[12px] px-[9px] text-[14px] ml-[10px] 
-                            select-none cursor-pointer hover:!bg-main-purple relative hover:after:content-["<24hrs"] 
-                            hover:after:absolute hover:after:bg-main-black hover:after:text-main-white hover:after:px-[9px] hover:after:rounded-[12px]
-                            hover:after:bottom-[0px] hover:after:text-[14px] hover:after:left-[55px]`}>
+                            <span className="btn-primary action-btn rounded-[12px] px-[9px] text-[14px] ml-[10px] 
+                            select-none cursor-pointer">
                                 New
                             </span>}
                         </p>
@@ -80,7 +78,7 @@ function Post({ postInfo, userID }: PostProps) {
                 <p className="text-side-text-gray text-[15px] mb-1">{getTimePosted(postInfo.createdAt)}</p>
                 <h3 className="text-[18px] font-semibold nav-item pb-3 border-b 
                 border-b-light-gray leading-6 h-[60px] break-words">
-                    <Link to={{ pathname: "/posts/", search: `?id=${postInfo.postID}` }}>
+                    <Link to={{ pathname: `/${postInfo.postedBy.user.username}/`, search: `?id=${postInfo.postID}` }}>
                         {postInfo.title}
                     </Link>
                 </h3>

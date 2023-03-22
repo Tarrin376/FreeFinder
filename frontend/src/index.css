@@ -7,11 +7,11 @@
         @apply transition ease-in-out duration-200 font-medium rounded-[8px] px-6 h-10;
     }
     .nav-item {
-        @apply transition ease-linear duration-100 hover:text-main-purple cursor-pointer font-medium;
+        @apply transition ease-linear duration-100 hover:text-main-purple cursor-pointer;
     }
     .search-bar {
         @apply border border-light-gray rounded-[8px] p-3 w-full drop-shadow-search-bar 
-        bg-main-white block placeholder-search-text focus:outline-none focus:outline-2
+        bg-main-white block placeholder-paragraph-text focus:outline-none focus:outline-2
         focus:outline-offset-0 focus:outline-main-black;
     }
     .invalid-input {
@@ -48,6 +48,6 @@
         @apply box-border text-main-black;
     }
     .page {
-        @apply max-w-screen-xxl m-auto px-16 min-h-[calc(100vh-90px)] bg-[#F6F6F6] pt-14;
+        @apply max-w-screen-xxl m-auto px-16 min-h-[calc(100vh-90px)] bg-[#F6F6F6] py-14;
     }
 }

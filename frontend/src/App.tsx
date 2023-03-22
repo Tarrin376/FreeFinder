@@ -15,9 +15,9 @@ function App() {
                     <Routes>
                         <Route path="/" element={<Navbar />}>
                             <Route index element={<HomePage />} />
-                            <Route path="saved/:username?" element={<SavedServicesPage />} />
-                            <Route path="myPosts/:username?" element={<MyPostsPage />} />
-                            <Route path="posts/" element={<PostPage />} />
+                            <Route path=":username/saved" element={<SavedServicesPage />} />
+                            <Route path=":username/my-posts" element={<MyPostsPage />} />
+                            <Route path=":username/" element={<PostPage />} />
                             <Route path="*" element={<ErrorPage />} />
                         </Route>
                     </Routes>
