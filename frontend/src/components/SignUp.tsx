@@ -37,7 +37,7 @@ function SignUp({ setLogIn, setSignUp, setAccountCreated }: SignUpProps) {
 
         try {
             setLoading(true);
-            const response = await fetch('/user/createUser', {
+            const response = await fetch('/users/create', {
                 method: 'POST',
                 body: JSON.stringify({ 
                     email: form.emailFirst, 

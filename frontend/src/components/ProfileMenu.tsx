@@ -52,20 +52,21 @@ function ProfileMenu({ userContext, setSettingsPopUp }: ProfileMenuProps) {
                     <ProfilePicAndStatus profilePicURL={userContext.userData.profilePicURL} profileStatus={userContext.userData.status} />
                 </div>
                 <OutsideClickHandler onOutsideClick={() => setNavProfileDropdown(false)}>
-                    {navProfileDropdown && <ul className="absolute bg-main-black mt-2 border-nav-search-gray border rounded-[11px] right-0 overflow-hidden">
+                    {navProfileDropdown && <ul className="absolute bg-main-black mt-2 border-nav-search-gray border rounded-[11px] right-0 z-10 overflow-hidden">
                         <div className="border-b border-[#3E3E3E]">
                             <p className="whitespace-nowrap p-3 pt-1 pb-1 cursor-default select-none profile-menu-element hover:bg-main-black">
                                 Signed in as: <b className="text-main-white">{userContext.userData.username}</b>
                             </p>
                         </div>
                         <div className="border-b border-[#3E3E3E] flex flex-col">
-                            <li className="profile-menu-element" onClick={openSettings}>Settings</li>
+                            <p className="profile-menu-element" onClick={openSettings}>Settings</p>
+                            <p className="profile-menu-element" onClick={openSettings}>Modify seller profile</p>
                             <button className="profile-menu-element" onClick={toggleStatus} disabled={disabled}>
                                 Appear {userContext.userData.status === 'ONLINE' ? 'offline': 'online'}
                             </button>
                         </div>
                         <div className="flex flex-col">
-                            <li className="profile-menu-element rounded-bl-[11px] rounded-br-[11px]" onClick={logOut}>Log out</li>
+                            <p className="profile-menu-element rounded-bl-[11px] rounded-br-[11px]" onClick={logOut}>Log out</p>
                         </div>
                     </ul>}
                 </OutsideClickHandler>

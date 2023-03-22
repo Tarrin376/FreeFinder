@@ -11,13 +11,13 @@ import
 
 const userRouter = Router();
 
-userRouter.post('/createUser', addUser);
-userRouter.post('/findUser/:usernameOrEmail', findUser);
+userRouter.post('/create', addUser);
+userRouter.post('/find/:user', findUser);
 
 userRouter.put('/update', updateUser);
 userRouter.put('/update/profile', updateProfilePicture);
-userRouter.put('/update/password', updatePassword);
+userRouter.put('/update/profile/password', updatePassword);
 
-userRouter.delete('/deleteUser', deleteUser);
+userRouter.delete('/delete', deleteUser);
 
 export default userRouter;

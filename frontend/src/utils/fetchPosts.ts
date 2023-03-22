@@ -1,8 +1,15 @@
 import { IListing } from "../models/IListing";
 
-export async function fetchPosts(url: string, setPosts: React.Dispatch<React.SetStateAction<IListing[]>>): Promise<string> {
+export async function fetchPosts(url: string, userID: string, setPosts: React.Dispatch<React.SetStateAction<IListing[]>>): Promise<string> {
     try {
-        const response = await fetch(url);
+        const response = await fetch(url, {
+            method: 'POST',
+            body: JSON.stringify({ userID }),
+            headers: {
+                'Accept': 'application/json',
+                'Content-Type': 'application/json'
+            }
+        });
 
         if (response.status !== 500) {
             const responseData = await response.json();

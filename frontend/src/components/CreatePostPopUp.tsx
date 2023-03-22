@@ -9,9 +9,11 @@ import DragAndDrop from "./DragAndDrop";
 import Storage from '../assets/storage.png';
 import PNGIcon from '../assets/png.png';
 import JPGIcon from '../assets/jpg.png';
+import { categories } from "../utils/jobCategories";
 
 const MAX_PRICE: number = 2500;
 const MAX_FILE_UPLOADS: number = 20;
+const MAX_FILE_BYTES = 26214400;
 
 interface PostServiceProps {
     setPostService: React.Dispatch<React.SetStateAction<boolean>>,
@@ -32,7 +34,7 @@ interface PostDetailsProps {
     title: string
     startingPrice: number
     errorMessage: string
-    loading: boolean
+    loading: boolean,
 }
 
 interface UploadPostFilesProps {
@@ -49,7 +51,7 @@ enum Sections {
     UploadFiles
 }
 
-function PostServicePopUp({ setPostService, setUserPosts, cursor, setReachedBottom, setNextPage }: PostServiceProps) {
+function CreatePostPopUp({ setPostService, setUserPosts, cursor, setReachedBottom, setNextPage }: PostServiceProps) {
     const [section, setSection] = useState<Sections>(Sections.UploadFiles);
     const [startingPrice, setStartingPrice] = useState<number>(10);
     const [title, setTitle] = useState<string>("");
@@ -65,7 +67,7 @@ function PostServicePopUp({ setPostService, setUserPosts, cursor, setReachedBott
         setLoading(true);
         
         try {
-            const response = await fetch(`/post/createPost`, {
+            const response = await fetch(`/posts/create`, {
                 method: 'POST',
                 body: JSON.stringify({
                     about: about.trim(),
@@ -118,16 +120,11 @@ function PostServicePopUp({ setPostService, setUserPosts, cursor, setReachedBott
     } else {
         return (
             <PostDetails 
-                setPostService={setPostService}
-                setSection={setSection}
-                setAbout={setAbout}
-                setTitle={setTitle}
-                setStartingPrice={setStartingPrice}
-                about={about}
-                title={title}
-                startingPrice={startingPrice}
-                errorMessage={errorMessage}
-                loading={loading}
+                setPostService={setPostService} setSection={setSection}
+                setAbout={setAbout} setTitle={setTitle}
+                setStartingPrice={setStartingPrice} about={about}
+                title={title} startingPrice={startingPrice}
+                errorMessage={errorMessage} loading={loading}
                 createPost={createPost}
             />
         );
@@ -138,13 +135,7 @@ function UploadPostFiles({ setPostService, setSection, uploadedFiles, setUploade
     const inputFileRef = useRef<HTMLInputElement>(null);
 
     function checkFile(file: File): boolean {
-        if (file.type !== "image/jpeg" && file.type !== "image/png") {
-            return false;
-        } else if (file.size > 26214400) {
-            return false;
-        } else {
-            return true;
-        }
+        return (file.type === "image/jpeg" || file.type === "image/png") && file.size > MAX_FILE_BYTES;
     }
 
     function handleDrop(files: FileList): void {
@@ -158,6 +149,7 @@ function UploadPostFiles({ setPostService, setSection, uploadedFiles, setUploade
                 uploaded.push(files[index]);
                 filesToAdd--;
             }
+
             index++;
         }
 
@@ -237,7 +229,8 @@ function UploadPostFiles({ setPostService, setSection, uploadedFiles, setUploade
             </div>
             <div className="mt-[35px] flex items-center justify-between">
                 <div className="flex items-center gap-2 cursor-pointer">
-                    <svg fill="#879198" width="15px" height="15px" version="1.1" id="Capa_1" xmlns="http://www.w3.org/2000/svg" xmlnsXlink="http://www.w3.org/1999/xlink" 
+                    <svg fill="#879198" width="15px" height="15px" version="1.1" id="Capa_1" xmlns="http://www.w3.org/2000/svg" 
+                    xmlnsXlink="http://www.w3.org/1999/xlink" 
                     viewBox="0 0 416.979 416.979" xmlSpace="preserve">
                         <g id="SVGRepo_bgCarrier" strokeWidth="0"></g>
                         <g id="SVGRepo_tracerCarrier" strokeLinecap="round" strokeLinejoin="round"></g>
@@ -286,16 +279,20 @@ function PostDetails({ setPostService, setSection, about, setAbout, title, setTi
     return (
         <PopUpWrapper setIsOpen={setPostService} title={"Enter post details"}>
             {errorMessage !== "" && <ErrorMessage message={errorMessage} title={"Unable to create post."} />}
+            <h2 className="mb-2">What category does your service fall under?</h2>
+            <select className="p-2 search-bar cursor-pointer mb-4">
+                {Object.keys(categories).map((category) => <option>{category}</option>)}
+            </select>
             <h2 className="mb-2">Starting price (£10 - £2500)</h2>
             <div className="flex items-center search-bar mb-4">
                 <p className="select-none">£</p>
                 <input type="number" step=".01" min={1} max={2500} defaultValue={startingPrice} className="w-full h-full 
                 focus:outline-none placeholder-search-text text-main-black bg-transparent ml-3" onChange={(e) => updateStartingPrice(e)} />
             </div>
-            <p className="mb-1">Title</p>
+            <h2 className="mb-2">Title</h2>
             <input type="text" className="search-bar mb-4" value={title} 
-            maxLength={38} placeholder="Enter title" onChange={(e) => setTitle(e.target.value)} />
-            <p className="mb-1">Write about section</p>
+            maxLength={100} placeholder="Enter title" onChange={(e) => setTitle(e.target.value)} />
+            <h2 className="mb-2">Write about section</h2>
             <textarea placeholder="Write about your service here" className="w-full search-bar mb-6" value={about}
             onChange={(e) => setAbout(e.target.value)} rows={5} maxLength={1500}></textarea>
             <div className="flex justify-end gap-3 mt-[35px]">
@@ -313,4 +310,4 @@ function PostDetails({ setPostService, setSection, about, setAbout, title, setTi
     );
 }
 
-export default PostServicePopUp;
+export default CreatePostPopUp;

@@ -1,6 +1,6 @@
 import { IListing } from "../models/IListing";
 import Post from "./Post";
-import PostLoading from "./PostLoading";
+import PostSkeleton from "../skeletons/PostSkeleton";
 
 interface PostsProps {
     posts: IListing[],
@@ -17,7 +17,7 @@ function Posts({ posts, loading, userID }: PostsProps) {
                         <Post postInfo={post} userID={userID} key={post.postID} />
                     );
                 })}
-                {loading && new Array(10).fill(<PostLoading />)}
+                {loading && new Array(10).fill(<PostSkeleton />)}
             </div>
         </div>
     );

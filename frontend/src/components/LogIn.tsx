@@ -30,7 +30,7 @@ function LogIn({ setLogIn, setSignUp }: LogInProps) {
 
         try {
             setLoading(true);
-            const response = await fetch(`/user/findUser/${usernameOrEmail}`, {
+            const response = await fetch(`/users/find/${usernameOrEmail}`, {
                 method: 'POST',
                 body: JSON.stringify({ password: password }),
                 headers: {

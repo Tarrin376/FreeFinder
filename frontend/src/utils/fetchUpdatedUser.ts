@@ -19,7 +19,7 @@ export async function fetchUpdatedUser(updatedData: IUser, profilePic?: string |
     }
     
     try {
-        const response = await fetch(`/user/update`, {
+        const response = await fetch(`/users/update`, {
             method: 'PUT',
             body: JSON.stringify({
                 ...updatedData,
@@ -47,7 +47,7 @@ export async function fetchUpdatedUser(updatedData: IUser, profilePic?: string |
 
 async function updateProfilePic(userID: string, profilePic: string | unknown) : Promise<any> {
     try {
-        const response = await fetch(`/user/update/profile`, {
+        const response = await fetch(`/users/update/profile`, {
             method: 'PUT',
             body: JSON.stringify({ 
                 userID: userID,

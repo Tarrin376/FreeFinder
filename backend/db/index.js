@@ -13,9 +13,9 @@ app.use(express.urlencoded({ extended: false }));
 app.all('/api*', requireAuthentication);
 app.use('/api', router);
 
-router.use('/user', userRouter);
-router.use('/post', postRouter);
-router.use('/seller', sellerRouter);
+router.use('/users', userRouter);
+router.use('/posts', postRouter);
+router.use('/sellers', sellerRouter);
 
 app.listen(PORT, () => {
     console.log(`Server is listening on port ${PORT}`);

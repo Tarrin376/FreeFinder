@@ -1,4 +1,4 @@
-import PostServicePopUp from '../../components/PostServicePopUp';
+import CreatePostPopUp from '../../components/CreatePostPopUp';
 import { useState, useContext, useRef } from 'react';
 import { UserContext } from '../../context/UserContext';
 import { IUserContext } from '../../context/UserContext';
@@ -13,7 +13,7 @@ function MyPostsPage() {
 
     const cursor = useRef<string>("HEAD");
     const [nextPage, setNextPage] = useState<boolean>(false);
-    const url = `/seller/posts/${userContext.userData.userID}`;
+    const url = "/sellers/posts";
     const posts = useFetchPosts(pageRef, userContext, url, nextPage, setNextPage, cursor);
 
     function openPostService(): void {
@@ -27,7 +27,7 @@ function MyPostsPage() {
     return (
         <>
             {postService && 
-            <PostServicePopUp 
+            <CreatePostPopUp 
                 setPostService={setPostService} setUserPosts={posts.setPosts} 
                 cursor={cursor} setReachedBottom={posts.setReachedBottom} setNextPage={setNextPage}
             />}

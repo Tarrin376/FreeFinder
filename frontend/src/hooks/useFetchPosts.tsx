@@ -17,7 +17,7 @@ export function useFetchPosts(pageRef: React.RefObject<HTMLDivElement>, userCont
         try {
             setLoading(true);
             setTimeout(() => {
-                fetchPosts(`${url}/${cursor.current}`, setPosts)
+                fetchPosts(`${url}/${cursor.current}`, userContext.userData.userID, setPosts)
                 .then((next) => {
                     if (next === cursor.current) setReachedBottom(true);
                     else cursor.current = next;
@@ -27,7 +27,7 @@ export function useFetchPosts(pageRef: React.RefObject<HTMLDivElement>, userCont
                     setErrorMessage(err.message);
                     setLoading(false);
                 });
-            }, 2000);
+            }, 1000);
         }
         catch(err: any) {
             setErrorMessage(err.message);

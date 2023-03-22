@@ -31,7 +31,7 @@ export async function addUser(req, res) {
 
 export async function findUser(req, res) {
     try {
-        const user = await findUserHandler(req.params.usernameOrEmail, req.body.password);
+        const user = await findUserHandler(req.params.user, req.body.password);
         res.json({ userData: user });
     }
     catch (err) {

@@ -224,7 +224,7 @@ function Password({ userContext }: { userContext: IUserContext }) {
         }
 
         try {
-            const response = await fetch("user/update/password", {
+            const response = await fetch("update/profile/password", {
                 method: 'PUT',
                 body: JSON.stringify({
                     userID: userContext.userData.userID,
@@ -260,7 +260,7 @@ function Password({ userContext }: { userContext: IUserContext }) {
 
     async function checkPasswordMatch(): Promise<boolean> {
         try {
-            const response = await fetch(`/user/findUser/${userContext.userData.username}`, {
+            const response = await fetch(`/users/find/${userContext.userData.username}`, {
                 method: 'POST',
                 body: JSON.stringify({ password: currentPass }),
                 headers: {
@@ -350,7 +350,7 @@ function DangerZone({ userContext, setSettingsPopUp }: { userContext: IUserConte
         setLoading(true);
 
         try {
-            const response = await fetch(`/user/deleteUser`, { 
+            const response = await fetch(`/users/delete`, { 
                 method: 'DELETE',
                 body: JSON.stringify({
                     userID: userContext.userData.userID
