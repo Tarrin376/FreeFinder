@@ -2,9 +2,9 @@ import OutsideClickHandler from 'react-outside-click-handler';
 import CloseIcon from '../assets/close.png';
 
 interface PopUpWrapperProps {
-    children?: React.ReactNode,
     setIsOpen: React.Dispatch<React.SetStateAction<boolean>>,
     title: string,
+    children?: React.ReactNode,
     styles?: string
 }
 

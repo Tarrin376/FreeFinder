@@ -6,7 +6,8 @@ import AccountCreated from '../components/AccountCreated';
 import { IUserContext, UserContext } from '../context/UserContext';
 import { Outlet, Link } from 'react-router-dom';
 import ProfileMenu from '../components/ProfileMenu';
-import Settings from '../components/Settings';
+import AccountSettings from '../views/AccountSettings/AccountSettings';
+import SellerProfile from '../components/SellerProfile';
 
 function Navbar() {
     const [signUp, setSignUp] = useState<boolean>(false);
@@ -14,13 +15,15 @@ function Navbar() {
     const [accountCreated, setAccountCreated] = useState<boolean>(false);
     const userContext = useContext<IUserContext>(UserContext);
     const [settingsPopUp, setSettingsPopUp] = useState<boolean>(false);
+    const [sellerProfilePopUp, setSellerProfilePopUp] = useState<boolean>(false);
     
     return (
         <>
-            {settingsPopUp && <Settings setSettingsPopUp={setSettingsPopUp} userContext={userContext} />}
+            {settingsPopUp && <AccountSettings setSettingsPopUp={setSettingsPopUp} userContext={userContext} />}
             {signUp && <SignUp setSignUp={setSignUp} setLogIn={setLogIn} setAccountCreated={setAccountCreated} />}
             {logIn && <LogIn setLogIn={setLogIn} setSignUp={setSignUp} />}
             {accountCreated && <AccountCreated setAccountCreated={setAccountCreated} />}
+            {sellerProfilePopUp && <SellerProfile setSellerProfilePopUp={setSellerProfilePopUp} />}
             <nav className="px-5 h-[90px] border-b border-b-light-gray bg-white">
                 <div className="max-w-screen-xxl m-auto h-full flex gap-8 items-center">
                     <div className="flex xl:gap-16 lg:gap-12 items-center justify-between">
@@ -45,7 +48,11 @@ function Navbar() {
                     <div className="flex ml-auto gap-4 items-center">
                         {userContext.userData.username === "" ? 
                         <AccountOptions setLogIn={setLogIn} setSignUp={setSignUp} /> :
-                        <ProfileMenu userContext={userContext} setSettingsPopUp={setSettingsPopUp} />}
+                        <ProfileMenu 
+                            userContext={userContext} 
+                            setSettingsPopUp={setSettingsPopUp} 
+                            setSellerProfilePopUp={setSellerProfilePopUp}
+                         />}
                     </div>
                 </div>
             </nav>

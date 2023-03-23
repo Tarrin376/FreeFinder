@@ -20,7 +20,6 @@ function AboutSeller({ postData }: { postData: PostPage }) {
                 <h3 className="text-xl mb-2">Description</h3>
                 <p className="text-paragraph-text">
                     {postData.postedBy.description}
-                    f msfdkmg dk hmdfkmg dgkmfdg mdfkm gdfmg dfkg mdfkg mdfg kmdfg kdmfg kdfmg kdfmg dfkmg dfkgm dfkg mdfk gmdfkg mfdk gfdkg kfdg kmdfkg dfkmg kdmf gkmdfk mgdf mkg
                 </p>
             </div>
             <div className="pb-4 pt-4">
@@ -36,7 +35,7 @@ function AboutSeller({ postData }: { postData: PostPage }) {
                 </div>
             </div>
             <button className="btn-primary w-[100%] h-[45px] bg-main-purple hover:bg-main-purple-hover text-main-white mb-3 mt-1">
-                Contact
+                Contact Seller
             </button>
             <button className="btn-primary w-[100%] h-[45px] bg-very-light-gray text-main-black hover:bg-very-light-gray-hover">
                 {`Reviews (${postData.postedBy.numReviews})`}

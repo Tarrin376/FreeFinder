@@ -5,9 +5,9 @@ interface LoadingButtonProps {
     text: string
     loadingText: string,
     callback: (e: React.MouseEvent<HTMLButtonElement>) => Promise<any>,
-    styles?: string,
     disabled: boolean,
     loadingColour: string,
+    styles?: string,
     completed?: boolean,
     completedText?: string
 }

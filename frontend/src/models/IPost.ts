@@ -1,4 +1,4 @@
-export interface IListing {
+export interface IPost {
     about: string,
     createdAt: Date,
     postID: string,

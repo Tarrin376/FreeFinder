@@ -1,4 +1,4 @@
-import CreatePostPopUp from '../../components/CreatePostPopUp';
+import CreatePost from '../CreatePost/CreatePost';
 import { useState, useContext, useRef } from 'react';
 import { UserContext } from '../../context/UserContext';
 import { IUserContext } from '../../context/UserContext';
@@ -26,7 +26,7 @@ function MyPostsView() {
     return (
         <>
             {postService && 
-            <CreatePostPopUp 
+            <CreatePost 
                 setPostService={setPostService} setUserPosts={posts.setPosts} 
                 cursor={cursor} setReachedBottom={posts.setReachedBottom} setNextPage={setNextPage}
             />}
@@ -34,7 +34,7 @@ function MyPostsView() {
                 <h1 className="text-3xl mb-11">My Posts</h1>
                 <div className="flex justify-between w-full items-center mb-11">
                     <div className="flex gap-5 w-[35rem] items-stretch">
-                        <input type="text" placeholder="Search by term" className="search-bar flex-grow" />
+                        <input type="text" placeholder="Search for post" className="search-bar flex-grow" />
                         <button onClick={openPostService} className="btn-primary text-main-white bg-main-purple w-60 h-[50px] 
                         hover:bg-main-purple-hover">Create new post</button>
                     </div>
@@ -47,7 +47,7 @@ function MyPostsView() {
                         </select>
                     </div>
                 </div>
-                {posts.errorMessage !== "" && <h1 className="text-3xl">{posts.errorMessage}</h1>}
+                {posts.errorMessage !== "" && !posts.loading && <h1 className="text-3xl">{posts.errorMessage}</h1>}
                 <Posts posts={posts.posts} loading={posts.loading} userID={userContext.userData.userID} />
             </div>
         </>

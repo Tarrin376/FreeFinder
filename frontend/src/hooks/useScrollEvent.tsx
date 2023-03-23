@@ -1,5 +1,4 @@
 import { useEffect } from "react";
-import { IUserContext } from "../context/UserContext";
 import { useNavigate } from "react-router-dom";
 
 export function useScrollEvent(username: string, pageRef: React.RefObject<HTMLDivElement>, loading: boolean, 

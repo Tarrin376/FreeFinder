@@ -1,3 +1,5 @@
+const defaultTheme = require('tailwindcss/defaultTheme');
+
 /** @type {import('tailwindcss').Config} */
 module.exports = {
   content: ["./src/**/*.{jsx,tsx}"],
@@ -6,7 +8,7 @@ module.exports = {
         colors: {
             'main-purple': '#714cfe',
             'main-purple-hover': '#7f5efe',
-            'main-white': '#fafafa',
+            'main-white': '#fdfdfd',
             'light-gray': '#DDDDDD',
             'nav-search-gray': '#cdcdcd',
             'very-light-gray': '#EBEBEB',
@@ -17,7 +19,6 @@ module.exports = {
             'main-black-hover': 'rgba(51, 51, 51, 1)',
             'error-red': '#B00020',
             'pop-up-bg': 'rgba(149, 149, 149, 0.10)',
-            'rating-text': 'rgba(255, 194, 0, 1)',
             'main-white-hover': '#f8f8f8'
         },
         dropShadow: {
@@ -28,6 +29,9 @@ module.exports = {
             'post': '0px 3px 10px -7px rgba(0, 0, 0, 0.42)',
             'profile-page-container': '0px 1px 8px -6px rgba(0, 0, 0, 0.62)'
         },
+        fontFamily: {
+            railway: ['"Nunito Sans"', ...defaultTheme.fontFamily.sans]
+        }
     },
     screens: {
         sm: '480px',

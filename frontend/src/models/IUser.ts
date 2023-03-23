@@ -6,4 +6,9 @@ export interface IUser {
     status: string,
     userID: string,
     memberDate: Date,
+    seller: {
+        description: string,
+        rating: number,
+        sellerID: string
+    }
 }

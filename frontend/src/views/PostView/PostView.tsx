@@ -42,7 +42,7 @@ function PostView() {
             <div className="w-[70%]">
                 <header>
                     <p className="text-main-purple mb-2">Website design</p>
-                    <h1 className="text-3xl mb-4 max-w-[80%] font-semibold">{postData.title}</h1>
+                    <h1 className="text-3xl mb-4 max-w-[80%]">{postData.title}</h1>
                     <div className="flex gap-3 items-center">
                         <div className="relative">
                             <ProfilePicAndStatus 
@@ -54,9 +54,9 @@ function PostView() {
                         </div>
                         <div>
                             <div className="flex items-center gap-[7px]">
-                                <p className="font-semibold nav-item">{postData.postedBy.user.username}</p>
-                                <img src={StarIcon} className="w-[17px] h-[17px]" alt="star" />
-                                <p className="text-[15px] text-rating-text font-bold">{postData.postedBy.rating}</p>
+                                <p className="nav-item text-main-black">{postData.postedBy.user.username}</p>
+                                <img src={StarIcon} className="w-[15px] h-[15px]" alt="star" />
+                                <p className="text-[15px] text-main-black">{postData.postedBy.rating}</p>
                             </div>
                             <p className="text-side-text-gray text-[15px]">{getTimePosted(postData.createdAt)}</p>
                         </div>
@@ -67,7 +67,7 @@ function PostView() {
                     </div>
                 </header>
                 <div className="flex justify-between mt-8 items-center">
-                    <h2 className="text-2xl">{`${postData.postedBy.user.username}'s most popular reviews`}</h2>
+                    <h2 className="text-2xl">{`${postData.postedBy.user.username}'s pinned reviews`}</h2>
                     <p className="text-main-purple underline nav-item hover:text-main-black">See all reviews</p>
                 </div>
                 <div className="mt-4 flex gap-5">

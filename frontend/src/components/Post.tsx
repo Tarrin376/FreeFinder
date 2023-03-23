@@ -1,13 +1,13 @@
 import StarIcon from '../assets/star.png';
 import { useState } from 'react';
-import { IListing } from '../models/IListing';
+import { IPost } from '../models/IPost';
 import ProfilePicAndStatus from './ProfilePicAndStatus';
 import { Link } from 'react-router-dom';
 import { getTimePosted, getSeconds } from '../utils/getTimePosted';
 import { actionSuccessful } from '../utils/actionSuccessful';
 
 interface PostProps {
-    postInfo: IListing,
+    postInfo: IPost,
     userID: string
 }
 
@@ -73,7 +73,7 @@ function Post({ postInfo, userID }: PostProps) {
                         statusStyles='before:left-[30px]'
                     />
                     <div>
-                        <p className="font-semibold">
+                        <p>
                             {postInfo.postedBy.user.username} 
                             {seconds < 60 * 60 * 24 && 
                             <span className="btn-primary action-btn rounded-[12px] px-[9px] text-[14px] ml-[10px] 
@@ -82,22 +82,22 @@ function Post({ postInfo, userID }: PostProps) {
                             </span>}
                         </p>
                         <div className="flex items-center gap-[7px]">
-                            <img src={StarIcon} className="w-[17px] h-[17px]" alt="star" />
-                            <p className="text-[15px] text-rating-text font-bold">{postInfo.postedBy.rating}</p>
+                            <img src={StarIcon} className="w-[15px] h-[15px] mb-[2px]" alt="star" />
+                            <p className="text-[15px] text-main-black">{postInfo.postedBy.rating}</p>
                             <p className="text-side-text-gray text-[15px]">({postInfo.postedBy.numReviews} reviews)</p>
                         </div>
                     </div>
                 </div>
                 <p className="text-side-text-gray text-[15px] mb-1">{getTimePosted(postInfo.createdAt)}</p>
                 <div className="pb-3 border-b border-b-very-light-gray">
-                    <p className="text-[18px] font-semibold nav-item leading-6 overflow-hidden text-ellipsis line-clamp-2">
+                    <p className="text-[17px] nav-item leading-6 overflow-hidden text-ellipsis line-clamp-2">
                         <Link to={{ pathname: `/${postInfo.postedBy.user.username}/`, search: `?id=${postInfo.postID}` }}>
                             {postInfo.title}
                         </Link>
                     </p>
                 </div>
-                <div className="mt-2 flex items-center justify-between relative">
-                    <p className="">Starting at: <span className="font-semibold underline">£{postInfo.startingPrice}</span></p>
+                <div className="mt-2 flex items-center justify-between relative underline">
+                    <p className="">Starting at: <span className="font-semibold">£{postInfo.startingPrice}</span></p>
                 </div>
             </div>
         </div>

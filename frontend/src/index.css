@@ -27,7 +27,7 @@
         @apply text-main-white whitespace-nowrap hover:bg-main-black-hover bg-main-black p-3 pt-1 pb-1 text-left text-[14px];
     }
     .settings-selection {
-        @apply border-b-[3px] border-b-main-black font-semibold text-main-black cursor-pointer pb-4;
+        @apply border-b-[3px] border-b-main-black text-main-black cursor-pointer pb-4;
     }
     .settings-unselected {
         @apply pb-4 text-main-black cursor-pointer;
@@ -45,7 +45,7 @@
 
 @layer base {
     * {
-        @apply box-border text-main-black;
+        @apply box-border text-main-black font-railway;
     }
     .page {
         @apply max-w-screen-xxl m-auto px-16 min-h-[calc(100vh-90px)] bg-[#fdfdfd] py-14;

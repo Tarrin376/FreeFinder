@@ -8,10 +8,11 @@ import OutsideClickHandler from "react-outside-click-handler";
 
 interface ProfileMenuProps {
     userContext: IUserContext,
-    setSettingsPopUp: React.Dispatch<React.SetStateAction<boolean>>
+    setSettingsPopUp: React.Dispatch<React.SetStateAction<boolean>>,
+    setSellerProfilePopUp: React.Dispatch<React.SetStateAction<boolean>>
 }
 
-function ProfileMenu({ userContext, setSettingsPopUp }: ProfileMenuProps) {
+function ProfileMenu({ userContext, setSettingsPopUp, setSellerProfilePopUp }: ProfileMenuProps) {
     const [disabled, setDisabled] = useState<boolean>(false);
     const [navProfileDropdown, setNavProfileDropdown] = useState<boolean>(false);
 
@@ -41,6 +42,11 @@ function ProfileMenu({ userContext, setSettingsPopUp }: ProfileMenuProps) {
         setSettingsPopUp(true);
     }
 
+    function openSellerProfile(): void {
+        setNavProfileDropdown(false);
+        setSellerProfilePopUp(true);
+    }
+
     return (
         <div className="flex gap-4 items-center">
             <div>
@@ -59,8 +65,8 @@ function ProfileMenu({ userContext, setSettingsPopUp }: ProfileMenuProps) {
                             </p>
                         </div>
                         <div className="border-b border-[#3E3E3E] flex flex-col">
-                            <p className="profile-menu-element" onClick={openSettings}>Settings</p>
-                            <p className="profile-menu-element" onClick={openSettings}>Modify seller profile</p>
+                            <p className="profile-menu-element" onClick={openSettings}>Account Settings</p>
+                            <p className="profile-menu-element" onClick={openSellerProfile}>Update seller profile</p>
                             <button className="profile-menu-element" onClick={toggleStatus} disabled={disabled}>
                                 Appear {userContext.userData.status === 'ONLINE' ? 'offline': 'online'}
                             </button>

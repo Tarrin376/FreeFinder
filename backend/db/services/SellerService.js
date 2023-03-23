@@ -163,3 +163,29 @@ export async function secondQuerySellerPosts(sellerID, cursor) {
         await prisma.$disconnect();
     }
 }
+
+export async function updateSellerDetailsHandler(sellerDetails) {
+    try {
+        const updatedDetails = await prisma.seller.update({
+            where: {
+                userID: sellerDetails.userID
+            },
+            data: {
+                description: sellerDetails.description
+            },
+            select: {
+                sellerID: true,
+                description: true,
+                rating: true,
+            }
+        });
+
+        return updatedDetails
+    }
+    catch (err) {
+        throw err;
+    }
+    finally {
+        await prisma.$disconnect();
+    }
+}

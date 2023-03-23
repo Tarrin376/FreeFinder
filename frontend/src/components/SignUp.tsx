@@ -5,12 +5,6 @@ import CountriesDropdown from "./CountriesDropdown";
 import LoadingButton from "./LoadingButton";
 import { SignUpForm } from "../types/SignUpForm";
 
-interface SignUpProps {
-    setLogIn: React.Dispatch<React.SetStateAction<boolean>>,
-    setSignUp: React.Dispatch<React.SetStateAction<boolean>>,
-    setAccountCreated: React.Dispatch<React.SetStateAction<boolean>>
-}
-
 export const emailPattern: RegExp = new RegExp("[a-z0-9]+@[a-zA-Z]+[.][a-z]+$");
 
 const initialFormValues: SignUpForm = {
@@ -22,6 +16,12 @@ const initialFormValues: SignUpForm = {
     validEmailSecond: false,
     validUsername: false,
     validPassword: false
+}
+
+interface SignUpProps {
+    setLogIn: React.Dispatch<React.SetStateAction<boolean>>,
+    setSignUp: React.Dispatch<React.SetStateAction<boolean>>,
+    setAccountCreated: React.Dispatch<React.SetStateAction<boolean>>
 }
 
 function SignUp({ setLogIn, setSignUp, setAccountCreated }: SignUpProps) {
