@@ -4,6 +4,7 @@ import postRouter from './routes/PostRouter.js';
 import sellerRouter from './routes/SellerRouter.js';
 import { env } from 'process';
 
+export const paginationLimit = 10;
 const app = express();
 const PORT = env.PORT || 8000;
 const router = express.Router();

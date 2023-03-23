@@ -6,7 +6,8 @@ import
     updateUser, 
     updateProfilePicture, 
     deleteUser,
-    updatePassword
+    updatePassword,
+    getSavedPosts
 } from '../controllers/UserController.js';
 
 const userRouter = Router();
@@ -17,6 +18,7 @@ userRouter.post('/find/:user', findUser);
 userRouter.put('/update', updateUser);
 userRouter.put('/update/profile', updateProfilePicture);
 userRouter.put('/update/profile/password', updatePassword);
+userRouter.post('/saved', getSavedPosts);
 
 userRouter.delete('/delete', deleteUser);
 

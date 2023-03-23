@@ -1,7 +1,6 @@
 import { prisma } from "./UserService.js";
 import { Prisma } from '@prisma/client';
-
-const takeAmount = 10;
+import { paginationLimit } from "../index.js";
 
 export async function findSeller(userID) {
     try {
@@ -79,9 +78,8 @@ export async function sellerPostsHandler(sellerUserID, cursor) {
 export async function firstQuerySellerPosts(sellerID) {
     try {
         const posts = await prisma.post.findMany({
-            take: takeAmount,
+            take: paginationLimit,
             where: { sellerID: sellerID },
-            orderBy: { createdAt: 'desc' },
             include: { 
                 postedBy: {
                     select: {
@@ -104,8 +102,12 @@ export async function firstQuerySellerPosts(sellerID) {
             return { posts: [] };
         }
         
-        const minNum = Math.min(takeAmount - 1, posts.length - 1);
-        return { posts, cursor: posts[minNum].postID, last: minNum < takeAmount - 1 };
+        const minNum = Math.min(paginationLimit - 1, posts.length - 1);
+        return { 
+            posts, 
+            cursor: posts[minNum].postID, 
+            last: minNum < paginationLimit - 1 
+        };
     }
     catch (err) {
         if (err instanceof Prisma.PrismaClientUnknownRequestError) {
@@ -123,10 +125,13 @@ export async function secondQuerySellerPosts(sellerID, cursor) {
     try {
         const posts = await prisma.post.findMany({
             skip: 1,
-            take: takeAmount,
-            cursor: { postID: cursor },
-            where: { sellerID: sellerID },
-            orderBy: { createdAt: 'desc' },
+            take: paginationLimit,
+            cursor: { 
+                postID: cursor 
+            },
+            where: { 
+                sellerID: sellerID 
+            },
             include: { 
                 postedBy: {
                     select: {
@@ -149,8 +154,12 @@ export async function secondQuerySellerPosts(sellerID, cursor) {
             return { posts: [] };
         }
 
-        const minNum = Math.min(takeAmount - 1, posts.length - 1);
-        return { posts, cursor: posts[minNum].postID, last: minNum < takeAmount - 1 };
+        const minNum = Math.min(paginationLimit - 1, posts.length - 1);
+        return { 
+            posts, 
+            cursor: posts[minNum].postID, 
+            last: minNum < paginationLimit - 1
+        };
     }
     catch (err) {
         if (err instanceof Prisma.PrismaClientUnknownRequestError) {

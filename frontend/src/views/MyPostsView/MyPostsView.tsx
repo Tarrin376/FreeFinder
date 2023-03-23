@@ -1,13 +1,12 @@
 import CreatePost from '../CreatePost/CreatePost';
 import { useState, useContext, useRef } from 'react';
 import { UserContext } from '../../context/UserContext';
-import { IUserContext } from '../../context/UserContext';
 import { useFetchPosts } from '../../hooks/useFetchPosts';
 import Posts from '../../components/Posts';
 
 function MyPostsView() {
     const [postService, setPostService] = useState<boolean>(false);
-    const userContext: IUserContext = useContext(UserContext);
+    const userContext = useContext(UserContext);
     const sortByDropdownRef = useRef<HTMLSelectElement>(null);
     const pageRef = useRef<HTMLDivElement>(null);
 

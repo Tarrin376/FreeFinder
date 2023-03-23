@@ -5,7 +5,8 @@ import
     updateUserHandler, 
     updateProfilePictureHandler, 
     deleteUserHandler,
-    updatePasswordHandler
+    updatePasswordHandler,
+    getSavedPostsHandler
 } 
 from '../services/UserService.js';
 
@@ -66,5 +67,15 @@ export async function updatePassword(req, res) {
     }
     catch (err) {
         res.json({ message: err.message });
+    }
+}
+
+export async function getSavedPosts(req, res) {
+    try {
+        const saved = await getSavedPostsHandler(req.body.userID);
+        res.json({ message: "success", ...saved });
+    }
+    catch (err) {
+        res.json({ message: err.message});
     }
 }

@@ -1,4 +1,5 @@
 import { PrismaClient, Prisma } from '@prisma/client';
+import { paginationLimit } from '../index.js';
 import bcrypt from 'bcrypt';
 import { env } from 'process';
 import pkg from 'cloudinary';
@@ -176,6 +177,132 @@ export async function updateUserHandler(data) {
 export async function deleteUserHandler(userID) {
     try {
         await prisma.user.delete({ where: { userID: userID } });
+    }
+    catch (err) {
+        if (err instanceof Prisma.PrismaClientUnknownRequestError) {
+            throw new Error("Something went wrong when trying to process your request. Please try again.");
+        } else {
+            throw err;
+        }
+    }
+    finally {
+        await prisma.$disconnect();
+    }
+}
+
+export async function getSavedPostsHandler(userID, cursor) {
+    cursor = "HEAD";
+    try {
+        if (cursor === "HEAD") return firstQuerySavedPosts(userID);
+        else return secondQuerySavedPosts(userID, cursor);
+    }
+    catch (err) {
+        if (err instanceof Prisma.PrismaClientUnknownRequestError) {
+            throw new Error("Something went wrong when trying to process your request. Please try again.");
+        } else {
+            throw err;
+        }
+    }
+    finally {
+        await prisma.$disconnect();
+    }
+}
+
+export async function firstQuerySavedPosts(userID) {
+    try {
+        const saved = await prisma.savedPost.findMany({
+            take: paginationLimit,
+            where: {
+                userID: userID
+            },
+            select: {
+                post: {
+                    include: {
+                        postedBy: {
+                            select: {
+                                user: {
+                                    select: {
+                                        profilePicURL: true,
+                                        status: true,
+                                        username: true,
+                                        userID: true,
+                                    }
+                                },
+                                rating: true,
+                                description: true,
+                                numReviews: true
+                            }
+                        }
+                    }
+                }
+            }
+        });
+
+        const minNum = Math.min(paginationLimit - 1, saved.length - 1);
+        const PID = saved[minNum].post.postID;
+        const UID = saved[minNum].post.postedBy.user.userID;
+
+        return { 
+            saved, 
+            cursor: { PID, UID },
+            last: minNum < paginationLimit - 1 
+        };
+    }
+    catch (err) {
+        if (err instanceof Prisma.PrismaClientUnknownRequestError) {
+            throw new Error("Something went wrong when trying to process your request. Please try again.");
+        } else {
+            throw err;
+        }
+    }
+    finally {
+        await prisma.$disconnect();
+    }
+}
+
+export async function secondQuerySavedPosts(userID, cursor) {
+    try {
+        const saved = await prisma.savedPost.findMany({
+            skip: 1,
+            cursor: { 
+                userID_postID: cursor
+            },
+            take: paginationLimit,
+            where: {
+                userID: userID
+            },
+            select: {
+                post: {
+                    include: {
+                        postedBy: {
+                            select: {
+                                user: {
+                                    select: {
+                                        profilePicURL: true,
+                                        status: true,
+                                        username: true,
+                                        userID: true,
+                                    }
+                                },
+                                rating: true,
+                                description: true,
+                                numReviews: true
+                            }
+                        }
+                    }
+                }
+            }
+        });
+
+        const minNum = Math.min(paginationLimit - 1, saved.length - 1);
+        const PID = saved[minNum].post.postID;
+        const UID = saved[minNum].post.postedBy.user.userID;
+
+        return { 
+            saved, 
+            cursor: { PID, UID },
+            last: minNum < paginationLimit - 1
+        };
     }
     catch (err) {
         if (err instanceof Prisma.PrismaClientUnknownRequestError) {
