@@ -191,9 +191,8 @@ export async function deleteUserHandler(userID) {
 }
 
 export async function getSavedPostsHandler(userID, cursor) {
-    cursor = "HEAD";
     try {
-        if (cursor === "HEAD") return firstQuerySavedPosts(userID);
+        if (!cursor) return firstQuerySavedPosts(userID);
         else return secondQuerySavedPosts(userID, cursor);
     }
     catch (err) {
@@ -241,10 +240,11 @@ export async function firstQuerySavedPosts(userID) {
         const minNum = Math.min(paginationLimit - 1, saved.length - 1);
         const PID = saved[minNum].post.postID;
         const UID = saved[minNum].post.postedBy.user.userID;
+        const posts = saved.map((cur) => cur.post);
 
         return { 
-            saved, 
-            cursor: { PID, UID },
+            posts, 
+            cursor: { userID: UID, postID: PID },
             last: minNum < paginationLimit - 1 
         };
     }
@@ -265,7 +265,10 @@ export async function secondQuerySavedPosts(userID, cursor) {
         const saved = await prisma.savedPost.findMany({
             skip: 1,
             cursor: { 
-                userID_postID: cursor
+                userID_postID: {
+                    userID: cursor.userID,
+                    postID: cursor.postID
+                }
             },
             take: paginationLimit,
             where: {
@@ -297,10 +300,11 @@ export async function secondQuerySavedPosts(userID, cursor) {
         const minNum = Math.min(paginationLimit - 1, saved.length - 1);
         const PID = saved[minNum].post.postID;
         const UID = saved[minNum].post.postedBy.user.userID;
+        const posts = saved.map((cur) => cur.post);
 
         return { 
-            saved, 
-            cursor: { PID, UID },
+            posts, 
+            cursor: { userID: UID, postID: PID },
             last: minNum < paginationLimit - 1
         };
     }

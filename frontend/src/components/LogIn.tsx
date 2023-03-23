@@ -42,9 +42,8 @@ function LogIn({ setLogIn, setSignUp }: LogInProps) {
             if (response.status !== 500) {
                 const user = await response.json();
                 if (!user.error) {
-                    const {seller, ...userData} = user.userData;
-                    userData.memberDate = new Date(userData.memberDate);
-                    userContext.setUserData(userData);
+                    user.userData.memberDate = new Date(user.userData.memberDate);
+                    userContext.setUserData(user.userData);
                     setLogIn(false);
                 } else {
                     setErrorMessage(user.error);

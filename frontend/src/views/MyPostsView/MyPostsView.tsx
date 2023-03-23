@@ -3,16 +3,20 @@ import { useState, useContext, useRef } from 'react';
 import { UserContext } from '../../context/UserContext';
 import { useFetchPosts } from '../../hooks/useFetchPosts';
 import Posts from '../../components/Posts';
+import SortBy from '../../components/SortBy';
+import { sortByParams } from '../../components/SortBy';
 
 function MyPostsView() {
     const [postService, setPostService] = useState<boolean>(false);
     const userContext = useContext(UserContext);
-    const sortByDropdownRef = useRef<HTMLSelectElement>(null);
+    const [sortBy, setSortBy] = useState<string>(sortByParams[0]);
     const pageRef = useRef<HTMLDivElement>(null);
 
+    const URL = `/sellers/posts?sort=${sortBy}`;
     const cursor = useRef<string>("HEAD");
+    
     const [nextPage, setNextPage] = useState<boolean>(false);
-    const posts = useFetchPosts(pageRef, userContext.userData.userID, userContext.userData.username, "/sellers/posts", nextPage, setNextPage, cursor);
+    const posts = useFetchPosts(pageRef, userContext.userData.userID, userContext.userData.username, URL, nextPage, setNextPage, cursor);
 
     function openPostService(): void {
         if (userContext.userData.username === "") {
@@ -21,7 +25,7 @@ function MyPostsView() {
             setPostService(true);
         }
     }
-    
+
     return (
         <>
             {postService && 
@@ -39,11 +43,10 @@ function MyPostsView() {
                     </div>
                     <div className="flex items-center gap-4">
                         <p>Sort by</p>
-                        <select className="p-2 bg-main-white rounded-[8px] border-2 border-light-gray cursor-pointer" ref={sortByDropdownRef}>
-                            <option>recent</option>
-                            <option>Seller rating</option>
-                            <option>date posted</option>
-                        </select>
+                        <SortBy 
+                            cursor={cursor} setPosts={posts.setPosts} 
+                            setReachedBottom={posts.setReachedBottom} setSortBy={setSortBy} 
+                        />
                     </div>
                 </div>
                 {posts.errorMessage !== "" && !posts.loading && <h1 className="text-3xl">{posts.errorMessage}</h1>}

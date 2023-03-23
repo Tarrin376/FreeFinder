@@ -72,8 +72,8 @@ export async function updatePassword(req, res) {
 
 export async function getSavedPosts(req, res) {
     try {
-        const saved = await getSavedPostsHandler(req.body.userID);
-        res.json({ message: "success", ...saved });
+        const saved = await getSavedPostsHandler(req.body.userID, req.body.cursor);
+        res.json({ ...saved, message: "success" });
     }
     catch (err) {
         res.json({ message: err.message});

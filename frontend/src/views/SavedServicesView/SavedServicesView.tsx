@@ -3,18 +3,23 @@ import { UserContext } from '../../context/UserContext';
 import { useFetchPosts } from '../../hooks/useFetchPosts';
 import Posts from '../../components/Posts';
 
+type savedServicesCPK = {
+    userID: string,
+    postID: string
+}
+
 function SavedServicesView() {
     const userContext = useContext(UserContext);
     const sortByDropdownRef = useRef<HTMLSelectElement>(null);
     const pageRef = useRef<HTMLDivElement>(null);
 
-    const cursor = useRef<string>("HEAD");
+    const cursor = useRef<savedServicesCPK>(null);
     const [nextPage, setNextPage] = useState<boolean>(false);
-    const posts = useFetchPosts(pageRef, userContext.userData.userID, userContext.userData.username, "/sellers/posts", nextPage, setNextPage, cursor);
+    const posts = useFetchPosts(pageRef, userContext.userData.userID, userContext.userData.username, "/users/saved", nextPage, setNextPage, cursor);
 
     return (
-        <div className="page">
-            <h1 className="text-3xl mb-11">My Posts</h1>
+        <div className="page" ref={pageRef}>
+            <h1 className="text-3xl mb-11">My Saved Services</h1>
             <div className="flex justify-between w-full items-center mb-11">
                 <div className="flex gap-5 w-[35rem] items-stretch">
                     <input type="text" placeholder="Search for post" className="search-bar flex-grow" />

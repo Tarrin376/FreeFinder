@@ -3,7 +3,7 @@ import { findSellerPosts, updateSellerDetails } from '../controllers/SellerContr
 
 const sellerRouter = Router();
 
-sellerRouter.post('/posts/:cursor', findSellerPosts);
+sellerRouter.post('/posts', findSellerPosts);
 sellerRouter.put('/update', updateSellerDetails);
 
 export default sellerRouter;

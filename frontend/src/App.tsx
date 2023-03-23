@@ -15,7 +15,7 @@ function App() {
                     <Routes>
                         <Route path="/" element={<Navbar />}>
                             <Route index element={<HomeView />} />
-                            <Route path=":username?/saved" element={<SavedServicesView />} />
+                            <Route path=":username?/saved-services" element={<SavedServicesView />} />
                             <Route path=":username?/my-posts" element={<MyPostsView />} />
                             <Route path=":username/" element={<PostView />} />
                             <Route path="*" element={<ErrorView />} />

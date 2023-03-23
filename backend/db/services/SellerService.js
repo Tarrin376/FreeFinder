@@ -48,7 +48,8 @@ async function createSeller(userID) {
     }
 }
 
-export async function sellerPostsHandler(sellerUserID, cursor) {
+export async function sellerPostsHandler(sellerUserID, cursor, sortBy) {
+    console.log(sortBy);
     try {
         const seller = await prisma.seller.findUnique({ 
             where: { 
@@ -80,6 +81,11 @@ export async function firstQuerySellerPosts(sellerID) {
         const posts = await prisma.post.findMany({
             take: paginationLimit,
             where: { sellerID: sellerID },
+            orderBy: {
+                postedBy: {
+                    rating: 'desc'
+                }
+            },
             include: { 
                 postedBy: {
                     select: {
@@ -93,7 +99,7 @@ export async function firstQuerySellerPosts(sellerID) {
                         rating: true,
                         description: true,
                         numReviews: true
-                    }
+                    },
                 }
             }
         });
@@ -147,7 +153,7 @@ export async function secondQuerySellerPosts(sellerID, cursor) {
                         numReviews: true
                     }
                 }
-            }
+            },
         });
 
         if (posts.length === 0) {

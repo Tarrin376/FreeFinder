@@ -31,7 +31,7 @@ function Navbar() {
                         <ul className="flex items-center xl:gap-11 lg:gap-9 xl:ml-14 lg:ml-5">
                             <li className="nav-item">Browse</li>
                             <li className="nav-item">Orders</li>
-                            <Link to={`${userContext.userData.username}/saved`}>
+                            <Link to={`${userContext.userData.username}/saved-services`}>
                                 <li className="nav-item">Saved Services</li>
                             </Link>
                             <Link to={`${userContext.userData.username}/my-posts`}>

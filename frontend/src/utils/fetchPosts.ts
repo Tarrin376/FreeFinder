@@ -5,11 +5,14 @@ type fetchPostsRes = {
     last: boolean
 }
 
-export async function fetchPosts(url: string, sellerUserID: string, setPosts: React.Dispatch<React.SetStateAction<IPost[]>>): Promise<fetchPostsRes> {
+export async function fetchPosts(URL: string, sellerUserID: string, setPosts: React.Dispatch<React.SetStateAction<IPost[]>>, cursor: any): Promise<fetchPostsRes> {
     try {
-        const response = await fetch(url, {
+        const response = await fetch(URL, {
             method: 'POST',
-            body: JSON.stringify({ userID: sellerUserID }),
+            body: JSON.stringify({ 
+                userID: sellerUserID,
+                cursor
+            }),
             headers: {
                 'Accept': 'application/json',
                 'Content-Type': 'application/json'
