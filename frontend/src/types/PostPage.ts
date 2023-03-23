@@ -1,4 +1,4 @@
-export interface IPost {
+export type PostPage = {
     postID: string,
     sellerID: string,
     about: string,

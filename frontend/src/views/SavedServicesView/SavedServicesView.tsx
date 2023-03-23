@@ -1,4 +1,4 @@
-function SavedServicesPage() {
+function SavedServicesView() {
     return (
         <div className="page">
             <h1 className="text-3xl mb-11">My Saved Services</h1>
@@ -17,4 +17,4 @@ function SavedServicesPage() {
     )
 }
 
-export default SavedServicesPage;
+export default SavedServicesView;

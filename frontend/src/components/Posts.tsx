@@ -11,7 +11,7 @@ interface PostsProps {
 function Posts({ posts, loading, userID }: PostsProps) {
     return (
         <div className="flex flex-col gap-7 items-center pb-11">
-            <div className="flex items-center gap-[30px] flex-wrap pb-11 w-full">
+            <div className="flex gap-[30px] items-start flex-wrap pb-11 w-full">
                 {posts.map((post: IListing) => {
                     return (
                         <Post postInfo={post} userID={userID} key={post.postID} />

@@ -88,8 +88,8 @@ function CreatePostPopUp({ setPostService, setUserPosts, cursor, setReachedBotto
                     setPostService(false);
                     cursor.current = "HEAD";
                     setUserPosts([]);
-                    setNextPage((state) => !state);
                     setReachedBottom(false);
+                    setNextPage((state) => !state);
                 } else {
                     setErrorMessage(responseData.message);
                 }
@@ -135,7 +135,7 @@ function UploadPostFiles({ setPostService, setSection, uploadedFiles, setUploade
     const inputFileRef = useRef<HTMLInputElement>(null);
 
     function checkFile(file: File): boolean {
-        return (file.type === "image/jpeg" || file.type === "image/png") && file.size > MAX_FILE_BYTES;
+        return (file.type === "image/jpeg" || file.type === "image/png") && file.size <= MAX_FILE_BYTES;
     }
 
     function handleDrop(files: FileList): void {
@@ -193,7 +193,7 @@ function UploadPostFiles({ setPostService, setSection, uploadedFiles, setUploade
                 </span>
             </p>
             <div className="max-h-[250px] overflow-scroll mt-6 flex flex-col gap-[15px] scrollbar-hide">
-                {[thumbnailFile, ...uploadedFiles.filter((x) => x !== thumbnailFile)].map((file: File | undefined, index: number) => {
+                {uploadedFiles.map((file: File | undefined, index: number) => {
                     if (!file) {
                         return null;
                     }

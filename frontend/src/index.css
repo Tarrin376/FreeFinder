@@ -48,6 +48,6 @@
         @apply box-border text-main-black;
     }
     .page {
-        @apply max-w-screen-xxl m-auto px-16 min-h-[calc(100vh-90px)] bg-[#F6F6F6] py-14;
+        @apply max-w-screen-xxl m-auto px-16 min-h-[calc(100vh-90px)] bg-[#fdfdfd] py-14;
     }
 }

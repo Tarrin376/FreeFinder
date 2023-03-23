@@ -1,6 +1,6 @@
 import Header from './Header';
 
-function HomePage() {
+function HomeView() {
     return (
         <div className="page">
             <Header />
@@ -8,4 +8,4 @@ function HomePage() {
     )
 }
 
-export default HomePage;
+export default HomeView;

@@ -1,26 +1,25 @@
 import { useEffect, useState } from 'react';
-import { IUserContext } from '../context/UserContext';
 import { fetchPosts } from '../utils/fetchPosts';
 import { IListing } from '../models/IListing';
 import { useScrollEvent } from './useScrollEvent';
 
-export function useFetchPosts(pageRef: React.RefObject<HTMLDivElement>, userContext: IUserContext, url: string, nextPage: boolean,
+export function useFetchPosts(pageRef: React.RefObject<HTMLDivElement>, sellerUserID: string, username: string, url: string, nextPage: boolean,
     setNextPage: React.Dispatch<React.SetStateAction<boolean>>, cursor: React.MutableRefObject<string>) {
     const [reachedBottom, setReachedBottom] = useState<boolean>(false);
     const [loading, setLoading] = useState<boolean>(false);
     const [errorMessage, setErrorMessage] = useState<string>("");
     const [posts, setPosts] = useState<IListing[]>([]);
 
-    useScrollEvent(userContext, pageRef, loading, reachedBottom, setNextPage);
+    useScrollEvent(username, pageRef, loading, reachedBottom, setNextPage);
 
     useEffect(() => {
         try {
             setLoading(true);
             setTimeout(() => {
-                fetchPosts(`${url}/${cursor.current}`, userContext.userData.userID, setPosts)
-                .then((next) => {
-                    if (next === cursor.current) setReachedBottom(true);
-                    else cursor.current = next;
+                fetchPosts(`${url}/${cursor.current}`, sellerUserID, setPosts)
+                .then((res) => {
+                    if (res.last) setReachedBottom(true);
+                    else cursor.current = res.cursor;
                     setErrorMessage("");
                     setLoading(false);
                 }).catch((err: any) => { 
@@ -32,7 +31,7 @@ export function useFetchPosts(pageRef: React.RefObject<HTMLDivElement>, userCont
         catch(err: any) {
             setErrorMessage(err.message);
         }
-    }, [nextPage, url, cursor]);
+    }, [nextPage, url, cursor, sellerUserID]);
 
     return { 
         posts, 

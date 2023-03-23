@@ -1,10 +1,15 @@
 import { IListing } from "../models/IListing";
 
-export async function fetchPosts(url: string, userID: string, setPosts: React.Dispatch<React.SetStateAction<IListing[]>>): Promise<string> {
+type fetchPostsRes = {
+    cursor: string,
+    last: boolean
+}
+
+export async function fetchPosts(url: string, sellerUserID: string, setPosts: React.Dispatch<React.SetStateAction<IListing[]>>): Promise<fetchPostsRes> {
     try {
         const response = await fetch(url, {
             method: 'POST',
-            body: JSON.stringify({ userID }),
+            body: JSON.stringify({ userID: sellerUserID }),
             headers: {
                 'Accept': 'application/json',
                 'Content-Type': 'application/json'
@@ -15,7 +20,7 @@ export async function fetchPosts(url: string, userID: string, setPosts: React.Di
             const responseData = await response.json();
             if (responseData.message === "success") {
                 setPosts((state) => [...state, ...responseData.posts]);
-                return responseData.cursor;
+                return { cursor: responseData.cursor, last: responseData.last };
             } else {
                 throw new Error(responseData.message);
             }

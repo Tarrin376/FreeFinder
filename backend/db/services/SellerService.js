@@ -49,11 +49,11 @@ async function createSeller(userID) {
     }
 }
 
-export async function sellerPostsHandler(userID, cursor) {
+export async function sellerPostsHandler(sellerUserID, cursor) {
     try {
         const seller = await prisma.seller.findUnique({ 
             where: { 
-                userID: userID
+                userID: sellerUserID
             }
         });
 
@@ -103,10 +103,9 @@ export async function firstQuerySellerPosts(sellerID) {
         if (posts.length === 0) {
             return { posts: [] };
         }
-    
-        await prisma.$disconnect();
-        const lastRes = posts[Math.min(takeAmount - 1, posts.length - 1)];
-        return { posts, cursor: lastRes.postID };
+        
+        const minNum = Math.min(takeAmount - 1, posts.length - 1);
+        return { posts, cursor: posts[minNum].postID, last: minNum < takeAmount - 1 };
     }
     catch (err) {
         if (err instanceof Prisma.PrismaClientUnknownRequestError) {
@@ -150,8 +149,8 @@ export async function secondQuerySellerPosts(sellerID, cursor) {
             return { posts: [] };
         }
 
-        const lastRes = posts[Math.min(takeAmount - 1, posts.length - 1)];
-        return { posts, cursor: lastRes.postID };
+        const minNum = Math.min(takeAmount - 1, posts.length - 1);
+        return { posts, cursor: posts[minNum].postID, last: minNum < takeAmount - 1 };
     }
     catch (err) {
         if (err instanceof Prisma.PrismaClientUnknownRequestError) {

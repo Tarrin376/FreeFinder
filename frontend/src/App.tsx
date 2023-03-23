@@ -1,11 +1,11 @@
-import HomePage from './views/Home/HomePage';
+import HomeView from './views/HomeView/HomeView';
 import Navbar from './layouts/Navbar';
 import { BrowserRouter, Routes, Route } from 'react-router-dom';
 import UserProvider from './context/UserContext';
-import SavedServicesPage from './views/SavedServices/SavedServicesPage';
-import ErrorPage from './views/Error/ErrorPage';
-import MyPostsPage from './views/MyPosts/MyPostsPage';
-import PostPage from './views/Post/PostPage';
+import SavedServicesView from './views/SavedServicesView/SavedServicesView';
+import ErrorView from './views/ErrorView/ErrorView';
+import MyPostsView from './views/MyPostsView/MyPostsView';
+import PostView from './views/PostView/PostView';
 
 function App() {
     return (
@@ -14,11 +14,11 @@ function App() {
                 <BrowserRouter>
                     <Routes>
                         <Route path="/" element={<Navbar />}>
-                            <Route index element={<HomePage />} />
-                            <Route path=":username?/saved" element={<SavedServicesPage />} />
-                            <Route path=":username?/my-posts" element={<MyPostsPage />} />
-                            <Route path=":username/" element={<PostPage />} />
-                            <Route path="*" element={<ErrorPage />} />
+                            <Route index element={<HomeView />} />
+                            <Route path=":username?/saved" element={<SavedServicesView />} />
+                            <Route path=":username?/my-posts" element={<MyPostsView />} />
+                            <Route path=":username/" element={<PostView />} />
+                            <Route path="*" element={<ErrorView />} />
                         </Route>
                     </Routes>
                 </BrowserRouter>

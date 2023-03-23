@@ -5,7 +5,7 @@ import { IUserContext } from '../../context/UserContext';
 import { useFetchPosts } from '../../hooks/useFetchPosts';
 import Posts from '../../components/Posts';
 
-function MyPostsPage() {
+function MyPostsView() {
     const [postService, setPostService] = useState<boolean>(false);
     const userContext: IUserContext = useContext(UserContext);
     const sortByDropdownRef = useRef<HTMLSelectElement>(null);
@@ -13,8 +13,7 @@ function MyPostsPage() {
 
     const cursor = useRef<string>("HEAD");
     const [nextPage, setNextPage] = useState<boolean>(false);
-    const url = "/sellers/posts";
-    const posts = useFetchPosts(pageRef, userContext, url, nextPage, setNextPage, cursor);
+    const posts = useFetchPosts(pageRef, userContext.userData.userID, userContext.userData.username, "/sellers/posts", nextPage, setNextPage, cursor);
 
     function openPostService(): void {
         if (userContext.userData.username === "") {
@@ -55,4 +54,4 @@ function MyPostsPage() {
     )
 }
 
-export default MyPostsPage;
+export default MyPostsView;

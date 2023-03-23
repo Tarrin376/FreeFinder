@@ -1,9 +1,5 @@
 import { useEffect, useState } from 'react';
-
-export type Country = {
-    flag: string,
-    name: { common: string }
-}
+import { Country } from '../types/Country';
 
 export function useFetchCountries(): Country[] {
     const [countries, setCountries] = useState<Country[]>([]);

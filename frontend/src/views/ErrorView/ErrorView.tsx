@@ -1,6 +1,6 @@
 import { Link } from "react-router-dom";
 
-function ErrorPage() {
+function ErrorView() {
     return (
         <div className="page">
             <h1 className="text-[80px] mt-24">404</h1>
@@ -14,4 +14,4 @@ function ErrorPage() {
     )
 }
 
-export default ErrorPage;
+export default ErrorView;

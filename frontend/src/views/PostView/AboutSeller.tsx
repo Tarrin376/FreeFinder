@@ -1,9 +1,9 @@
 import ProfilePicAndStatus from "../../components/ProfilePicAndStatus";
-import { IPost } from "../../models/IPost";
+import { PostPage } from "../../types/PostPage";
 import LocationIcon from '../../assets/location-sign-svgrepo-com(2).svg';
 import UserIcon from '../../assets/user-icon-svgrepo-com.svg';
 
-function AboutSeller({ postData }: { postData: IPost }) {
+function AboutSeller({ postData }: { postData: PostPage }) {
     return (
         <section className=" bg-main-white rounded-[8px] border border-gray-300 shadow-profile-page-container p-4">
             <div className="border-b border-b-light-gray pb-4 relative">

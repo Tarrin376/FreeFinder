@@ -1,6 +1,6 @@
 import { useLocation } from "react-router-dom";
 import { useEffect, useState } from 'react';
-import { IPost } from "../../models/IPost";
+import { PostPage } from "../../types/PostPage";
 import ProfilePicAndStatus from "../../components/ProfilePicAndStatus";
 import StarIcon from '../../assets/star.png';
 import { getTimePosted } from "../../utils/getTimePosted";
@@ -9,9 +9,9 @@ import VisitorsAlsoViewed from "./VisitorsAlsoViewed";
 import Review from "./Reviews";
 import PostPageSkeleton from '../../skeletons/PostPageSkeleton';
 
-function PostPage() {
+function PostView() {
     const location = useLocation();
-    const [postData, setPostData] = useState<IPost>();
+    const [postData, setPostData] = useState<PostPage>();
     
     useEffect(() => {
         (async () => {
@@ -87,4 +87,4 @@ function PostPage() {
     );
 }
 
-export default PostPage;
+export default PostView;

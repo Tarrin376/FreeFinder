@@ -2,7 +2,7 @@ import { useEffect } from "react";
 import { IUserContext } from "../context/UserContext";
 import { useNavigate } from "react-router-dom";
 
-export function useScrollEvent(userContext: IUserContext, pageRef: React.RefObject<HTMLDivElement>, loading: boolean, 
+export function useScrollEvent(username: string, pageRef: React.RefObject<HTMLDivElement>, loading: boolean, 
     reachedBottom: boolean, setNextPage: React.Dispatch<React.SetStateAction<boolean>>) {
     const navigate = useNavigate();
 
@@ -10,13 +10,13 @@ export function useScrollEvent(userContext: IUserContext, pageRef: React.RefObje
         let documentHeight = document.body.scrollHeight;
         let currentScroll = window.scrollY + window.innerHeight;
 
-        if (currentScroll >= documentHeight && !reachedBottom && !loading) {
+        if (currentScroll + 200 >= documentHeight && !reachedBottom && !loading) {
             setNextPage((state) => !state);
         }
     }
 
     useEffect(() => {
-        if (userContext.userData.username === "") {
+        if (username === "") {
             navigate("/");
         }
 

@@ -3,6 +3,7 @@ import { useState, useRef } from 'react';
 import ErrorMessage from "./ErrorMessage";
 import CountriesDropdown from "./CountriesDropdown";
 import LoadingButton from "./LoadingButton";
+import { SignUpForm } from "../types/SignUpForm";
 
 interface SignUpProps {
     setLogIn: React.Dispatch<React.SetStateAction<boolean>>,
@@ -12,7 +13,7 @@ interface SignUpProps {
 
 export const emailPattern: RegExp = new RegExp("[a-z0-9]+@[a-zA-Z]+[.][a-z]+$");
 
-const initialFormValues = {
+const initialFormValues: SignUpForm = {
     emailFirst: "",
     emailSecond: "",
     username: "",
@@ -24,7 +25,7 @@ const initialFormValues = {
 }
 
 function SignUp({ setLogIn, setSignUp, setAccountCreated }: SignUpProps) {
-    const [form, setForm] = useState(initialFormValues);
+    const [form, setForm] = useState<SignUpForm>(initialFormValues);
     const [errorMessage, setErrorMessage] = useState<string>("");
     const country = useRef<HTMLSelectElement>(null);
     const [loading, setLoading] = useState<boolean>(false);

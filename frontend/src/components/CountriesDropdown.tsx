@@ -1,5 +1,5 @@
 import { useFetchCountries } from "../hooks/useFetchCountries";
-import { Country } from "../hooks/useFetchCountries";
+import { Country } from '../types/Country';
 
 interface CountriesDropdownProps {
     country: React.RefObject<HTMLSelectElement>, 
