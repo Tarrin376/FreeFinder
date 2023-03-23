@@ -9,7 +9,7 @@ import PostView from './views/PostView/PostView';
 
 function App() {
     return (
-        <div className="bg-[#F6F6F6]">
+        <div className="bg-[#fdfdfd]">
             <UserProvider>
                 <BrowserRouter>
                     <Routes>
