@@ -69,8 +69,8 @@ model Review {
     reviewBody String
     createdAt  DateTime @default(now())
     rating     Float
-    Post       Post?    @relation(fields: [postPostID], references: [postID])
-    postPostID String?
+    Post       Post?    @relation(fields: [postID], references: [postID])
+    postID     String?
 }
 
 model Order {
