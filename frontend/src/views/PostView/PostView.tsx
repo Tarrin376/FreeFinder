@@ -57,6 +57,7 @@ function PostView() {
                                 <p className="nav-item text-main-black">{postData.postedBy.user.username}</p>
                                 <img src={StarIcon} className="w-[15px] h-[15px]" alt="star" />
                                 <p className="text-[15px] text-main-black">{postData.postedBy.rating}</p>
+                                <p className="text-[15px] text-side-text-gray">({postData.postedBy.numReviews} reviews)</p>
                             </div>
                             <p className="text-side-text-gray text-[15px]">{getTimePosted(postData.createdAt)}</p>
                         </div>

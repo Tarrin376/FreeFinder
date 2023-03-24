@@ -9,7 +9,7 @@ import { sortByParams } from '../../components/SortBy';
 function MyPostsView() {
     const [postService, setPostService] = useState<boolean>(false);
     const userContext = useContext(UserContext);
-    const [sortBy, setSortBy] = useState<string>(sortByParams[0]);
+    const [sortBy, setSortBy] = useState<string>(sortByParams["recently added"]);
     const pageRef = useRef<HTMLDivElement>(null);
 
     const URL = `/sellers/posts?sort=${sortBy}`;
@@ -41,16 +41,14 @@ function MyPostsView() {
                         <button onClick={openPostService} className="btn-primary text-main-white bg-main-purple w-60 h-[50px] 
                         hover:bg-main-purple-hover">Create new post</button>
                     </div>
-                    <div className="flex items-center gap-4">
-                        <p>Sort by</p>
-                        <SortBy 
-                            cursor={cursor} setPosts={posts.setPosts} 
-                            setReachedBottom={posts.setReachedBottom} setSortBy={setSortBy} 
-                        />
-                    </div>
+                    <SortBy 
+                        cursor={cursor} setPosts={posts.setPosts} 
+                        setReachedBottom={posts.setReachedBottom} setSortBy={setSortBy}
+                        sortBy={sortBy} head={"HEAD"} loading={posts.loading}
+                    />
                 </div>
                 {posts.errorMessage !== "" && !posts.loading && <h1 className="text-3xl">{posts.errorMessage}</h1>}
-                <Posts posts={posts.posts} loading={posts.loading} userID={userContext.userData.userID} />
+                <Posts posts={posts.posts} loading={posts.loading} userID={userContext.userData.userID} areUserPosts={true} />
             </div>
         </>
     )

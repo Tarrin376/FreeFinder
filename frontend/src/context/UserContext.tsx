@@ -28,7 +28,6 @@ export interface IUserContext {
 
 function UserProvider({ children }: { children?: React.ReactNode }) {
     const [userData, setUserData] = useState<IUser>({ ...initialState.userData });
-    console.log(userData);
 
     return (
         <UserContext.Provider value={{userData, setUserData}}>

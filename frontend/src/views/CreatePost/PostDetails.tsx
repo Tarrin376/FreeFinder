@@ -12,7 +12,7 @@ interface PostDetailsProps {
     setAbout: React.Dispatch<React.SetStateAction<string>>,
     setTitle: React.Dispatch<React.SetStateAction<string>>, 
     setStartingPrice: React.Dispatch<React.SetStateAction<number>>, 
-    createPost: (e: React.MouseEvent<HTMLButtonElement, MouseEvent>) => Promise<any>,
+    createPost: (e: React.MouseEvent<HTMLButtonElement, MouseEvent>) => Promise<void>,
     about: string
     title: string
     startingPrice: number

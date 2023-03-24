@@ -1,6 +1,7 @@
 import { prisma } from "./UserService.js";
 import { Prisma } from '@prisma/client';
 import { paginationLimit } from "../index.js";
+import { sortByParams } from "../utils/sortByParams.js";
 
 export async function findSeller(userID) {
     try {
@@ -49,7 +50,6 @@ async function createSeller(userID) {
 }
 
 export async function sellerPostsHandler(sellerUserID, cursor, sortBy) {
-    console.log(sortBy);
     try {
         const seller = await prisma.seller.findUnique({ 
             where: { 
@@ -58,11 +58,15 @@ export async function sellerPostsHandler(sellerUserID, cursor, sortBy) {
         });
 
         if (!seller) {
-            throw new Error("You currently have no posts");
+            return { 
+                posts: [],
+                cursor: "HEAD", 
+                last: true
+            };
         }
 
-        if (cursor === "HEAD") return firstQuerySellerPosts(seller.sellerID);
-        else return secondQuerySellerPosts(seller.sellerID, cursor);
+        if (cursor === "HEAD") return firstQuerySellerPosts(seller.sellerID, sortBy);
+        else return secondQuerySellerPosts(seller.sellerID, cursor, sortBy);
     }
     catch (err) {
         if (err instanceof Prisma.PrismaClientUnknownRequestError) {
@@ -76,17 +80,13 @@ export async function sellerPostsHandler(sellerUserID, cursor, sortBy) {
     }
 }
 
-export async function firstQuerySellerPosts(sellerID) {
+export async function firstQuerySellerPosts(sellerID, sortBy) {
     try {
         const posts = await prisma.post.findMany({
             take: paginationLimit,
             where: { sellerID: sellerID },
-            orderBy: {
-                postedBy: {
-                    rating: 'desc'
-                }
-            },
-            include: { 
+            orderBy: sortByParams[sortBy],
+            select: { 
                 postedBy: {
                     select: {
                         user: {
@@ -97,15 +97,22 @@ export async function firstQuerySellerPosts(sellerID) {
                             }
                         },
                         rating: true,
-                        description: true,
-                        numReviews: true
                     },
-                }
+                },
+                createdAt: true,
+                numReviews: true,
+                startingPrice: true,
+                title: true,
+                postID: true
             }
         });
 
         if (posts.length === 0) {
-            return { posts: [] };
+            return { 
+                posts,
+                cursor: "HEAD", 
+                last: true
+            };
         }
         
         const minNum = Math.min(paginationLimit - 1, posts.length - 1);
@@ -127,18 +134,19 @@ export async function firstQuerySellerPosts(sellerID) {
     }
 }
 
-export async function secondQuerySellerPosts(sellerID, cursor) {
+export async function secondQuerySellerPosts(sellerID, cursor, sortBy) {
     try {
         const posts = await prisma.post.findMany({
             skip: 1,
             take: paginationLimit,
+            orderBy: sortByParams[sortBy],
             cursor: { 
                 postID: cursor 
             },
             where: { 
                 sellerID: sellerID 
             },
-            include: { 
+            select: { 
                 postedBy: {
                     select: {
                         user: {
@@ -149,15 +157,22 @@ export async function secondQuerySellerPosts(sellerID, cursor) {
                             }
                         },
                         rating: true,
-                        description: true,
-                        numReviews: true
-                    }
-                }
-            },
+                    },
+                },
+                createdAt: true,
+                numReviews: true,
+                startingPrice: true,
+                title: true,
+                postID: true
+            }
         });
 
         if (posts.length === 0) {
-            return { posts: [] };
+            return { 
+                posts, 
+                cursor, 
+                last: true
+            };
         }
 
         const minNum = Math.min(paginationLimit - 1, posts.length - 1);

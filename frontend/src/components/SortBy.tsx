@@ -1,33 +1,49 @@
 import { IPost } from '../models/IPost';
+import { Cursor } from '../types/Cursor';
 
-export const sortByParams = ["recent", "rating", "date"];
-
-interface SortByProps {
-    cursor: React.MutableRefObject<any>,
-    setPosts: React.Dispatch<React.SetStateAction<IPost[]>>,
-    setReachedBottom: React.Dispatch<React.SetStateAction<boolean>>,
-    setSortBy: React.Dispatch<React.SetStateAction<string>>
+export const sortByParams: {
+    [key: string]: string
+} = {
+    "newest arrivals": "recent",
+    "rating": "rating",
+    "lowest price": "lowest-price",
+    "highest price": "highest-price"
 }
 
-function SortBy({ cursor, setPosts, setReachedBottom, setSortBy }: SortByProps) {
+interface SortByProps {
+    cursor: React.MutableRefObject<Cursor>,
+    head: Cursor,
+    sortBy: string,
+    loading: boolean
+    setPosts: React.Dispatch<React.SetStateAction<IPost[]>>,
+    setReachedBottom: React.Dispatch<React.SetStateAction<boolean>>,
+    setSortBy: React.Dispatch<React.SetStateAction<string>>,
+}
+
+function SortBy({ cursor, sortBy, setPosts, setReachedBottom, setSortBy, head, loading }: SortByProps) {
     function sortPosts(value: string) {
-        cursor.current = "HEAD";
-        setPosts([]);
-        setReachedBottom(false);
-        setSortBy(value);
+        if (!loading) {
+            cursor.current = head;
+            setPosts([]);
+            setReachedBottom(false);
+            setSortBy(sortByParams[value]);
+        }
     }
 
     return (
-        <select className="p-2 bg-main-white rounded-[8px] border-2 border-light-gray cursor-pointer"
-            onChange={(e) => sortPosts(e.target.value)}>
-            {sortByParams.map((param) => {
-                return (
-                    <option key={param}>
-                        {param}
-                    </option>
-                );
-            })}
-        </select>
+        <div className="flex items-center gap-4">
+            <p>Sort by</p>
+            <select className="p-2 bg-main-white rounded-[8px] border-2 border-light-gray cursor-pointer"
+                onChange={(e) => sortPosts(e.target.value)} defaultValue={sortBy}>
+                {Object.keys(sortByParams).map((param) => {
+                    return (
+                        <option key={param}>
+                            {param}
+                        </option>
+                    );
+                })}
+            </select>
+        </div>
     );
 }
 

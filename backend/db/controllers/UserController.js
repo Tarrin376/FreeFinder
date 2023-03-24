@@ -72,10 +72,10 @@ export async function updatePassword(req, res) {
 
 export async function getSavedPosts(req, res) {
     try {
-        const saved = await getSavedPostsHandler(req.body.userID, req.body.cursor);
+        const saved = await getSavedPostsHandler(req.body.userID, req.body.cursor, req.query.sort);
         res.json({ ...saved, message: "success" });
     }
     catch (err) {
-        res.json({ message: err.message});
+        res.json({ message: err.message });
     }
 }

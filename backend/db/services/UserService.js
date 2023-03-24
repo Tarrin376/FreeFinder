@@ -3,6 +3,7 @@ import { paginationLimit } from '../index.js';
 import bcrypt from 'bcrypt';
 import { env } from 'process';
 import pkg from 'cloudinary';
+import { sortByParams } from '../utils/sortByParams.js';
 
 export const prisma = new PrismaClient();
 const cloudinary = pkg.v2;
@@ -106,7 +107,7 @@ export async function findUserHandler(usernameOrEmail, password) {
                     select: {
                         description: true,
                         rating: true,
-                        sellerID: true
+                        sellerID: true,
                     }
                 },
             }
@@ -190,10 +191,10 @@ export async function deleteUserHandler(userID) {
     }
 }
 
-export async function getSavedPostsHandler(userID, cursor) {
+export async function getSavedPostsHandler(userID, cursor, sortBy) {
     try {
-        if (!cursor) return firstQuerySavedPosts(userID);
-        else return secondQuerySavedPosts(userID, cursor);
+        if (cursor.userID === "") return firstQuerySavedPosts(userID, sortBy);
+        else return secondQuerySavedPosts(userID, cursor, sortBy);
     }
     catch (err) {
         if (err instanceof Prisma.PrismaClientUnknownRequestError) {
@@ -207,12 +208,15 @@ export async function getSavedPostsHandler(userID, cursor) {
     }
 }
 
-export async function firstQuerySavedPosts(userID) {
+export async function firstQuerySavedPosts(userID, sortBy) {
     try {
         const saved = await prisma.savedPost.findMany({
             take: paginationLimit,
             where: {
                 userID: userID
+            },
+            orderBy: {
+                post: sortByParams[sortBy]
             },
             select: {
                 post: {
@@ -237,6 +241,14 @@ export async function firstQuerySavedPosts(userID) {
             }
         });
 
+        if (saved.length === 0) {
+            return { 
+                posts: saved, 
+                cursor: { userID: "", postID: "" }, 
+                last: true
+            };
+        }
+
         const minNum = Math.min(paginationLimit - 1, saved.length - 1);
         const PID = saved[minNum].post.postID;
         const UID = saved[minNum].post.postedBy.user.userID;
@@ -260,10 +272,13 @@ export async function firstQuerySavedPosts(userID) {
     }
 }
 
-export async function secondQuerySavedPosts(userID, cursor) {
+export async function secondQuerySavedPosts(userID, cursor, sortBy) {
     try {
         const saved = await prisma.savedPost.findMany({
             skip: 1,
+            orderBy: {
+                post: sortByParams[sortBy]
+            },
             cursor: { 
                 userID_postID: {
                     userID: cursor.userID,
@@ -296,6 +311,14 @@ export async function secondQuerySavedPosts(userID, cursor) {
                 }
             }
         });
+
+        if (saved.length === 0) {
+            return { 
+                posts: saved, 
+                cursor, 
+                last: true
+            };
+        }
 
         const minNum = Math.min(paginationLimit - 1, saved.length - 1);
         const PID = saved[minNum].post.postID;

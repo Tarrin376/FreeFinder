@@ -5,13 +5,15 @@ import ProfilePicAndStatus from './ProfilePicAndStatus';
 import { Link } from 'react-router-dom';
 import { getTimePosted, getSeconds } from '../utils/getTimePosted';
 import { actionSuccessful } from '../utils/actionSuccessful';
+import TrashIcon from '../assets/trash.png';
 
 interface PostProps {
     postInfo: IPost,
-    userID: string
+    userID: string,
+    isUserPost: boolean
 }
 
-function Post({ postInfo, userID }: PostProps) {
+function Post({ postInfo, userID, isUserPost }: PostProps) {
     const [saveErrorMessage, setSaveErrorMessage] = useState<string>("");
     const [saveSuccessMessage, setSaveSuccessMessage] = useState<string>("");
     const seconds = getSeconds(postInfo.createdAt);
@@ -37,7 +39,7 @@ function Post({ postInfo, userID }: PostProps) {
             if (response.status !== 500) {
                 const data = await response.json();
                 if (data.message === "success") {
-                    actionSuccessful(setSaveSuccessMessage, "Image successfully saved", "");
+                    actionSuccessful(setSaveSuccessMessage, "Image saved", "");
                 } else if (data.message === "Post already added") {
                     actionSuccessful(setSaveSuccessMessage, data.message, "");
                 } else {
@@ -55,7 +57,7 @@ function Post({ postInfo, userID }: PostProps) {
     return (
         <div className="bg-transparent w-[290px] rounded-[8px] relative overflow-hidden">
             <p className={`absolute px-4 py-[11px] w-[100%] font-semibold transition ease-out duration-100 text-center
-            ${saveErrorMessage !== "" ? 'bg-error-red text-main-white' : saveSuccessMessage ? 'action-btn' : ''}`}>
+            ${saveErrorMessage !== "" ? 'bg-error-red text-main-white' : saveSuccessMessage ? 'action-btn hover:!bg-[#36BF54] select-none' : 'select-none'}`}>
                 {saveErrorMessage !== "" ? saveErrorMessage : saveSuccessMessage !== "" ? saveSuccessMessage : ""}
             </p>
             <svg viewBox="0 0 32 32" xmlns="http://www.w3.org/2000/svg" onClick={savePost}
@@ -84,7 +86,7 @@ function Post({ postInfo, userID }: PostProps) {
                         <div className="flex items-center gap-[7px]">
                             <img src={StarIcon} className="w-[15px] h-[15px] mb-[2px]" alt="star" />
                             <p className="text-[15px] text-main-black">{postInfo.postedBy.rating}</p>
-                            <p className="text-side-text-gray text-[15px]">({postInfo.postedBy.numReviews} reviews)</p>
+                            <p className="text-side-text-gray text-[15px]">({postInfo.numReviews} reviews)</p>
                         </div>
                     </div>
                 </div>
@@ -98,6 +100,7 @@ function Post({ postInfo, userID }: PostProps) {
                 </div>
                 <div className="mt-2 flex items-center justify-between relative underline">
                     <p className="">Starting at: <span className="font-semibold">£{postInfo.startingPrice}</span></p>
+                    {isUserPost && <img src={TrashIcon} className="w-[30px] h-[30px] bg-[#0000000c] rounded-[8px] cursor-pointer" />}
                 </div>
             </div>
         </div>
