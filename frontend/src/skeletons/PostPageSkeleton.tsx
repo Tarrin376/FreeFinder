@@ -1,4 +1,3 @@
-
 function PostPageSkeleton() {
     return (
         <div className="page flex gap-[60px]">

@@ -33,8 +33,25 @@ function ProfileMenu({ userContext, setSettingsPopUp, setSellerProfilePopUp }: P
         setDisabled(false);
     }
 
-    function logOut(): void {
-        userContext.setUserData(initialState.userData);
+    async function logOut(): Promise<void> {
+        try {
+            const clearToken = await fetch("/users/logout");
+            if (clearToken.status !== 500) {
+                const response = await clearToken.json();
+                if (clearToken.status === 200) {
+                    userContext.setUserData(initialState.userData);
+                } else {
+                    console.log(response.message);
+                }
+            } 
+            else {
+                console.log(`Looks like we are having trouble on our end. Please try again later. 
+                (Error code: ${clearToken.status})`);
+            }
+        }
+        catch (err: any) {
+            console.log(err.message);
+        }
     }
 
     function openSettings(): void {

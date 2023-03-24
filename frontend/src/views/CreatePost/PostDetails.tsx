@@ -62,7 +62,7 @@ function PostDetails({ setPostService, setSection, about, setAbout, title, setTi
                     Back
                 </button>
                 <LoadingButton
-                    loading={loading} text="Post service" loadingText="Creating post..."
+                    loading={loading} text="Post service" loadingText="Creating post"
                     callback={createPost} styles={`w-[185px] px-3 ${!validInputs() ? "invalid-button" : "btn-primary action-btn"}`}
                     disabled={false} loadingColour="bg-[#36BF54]"
                 />

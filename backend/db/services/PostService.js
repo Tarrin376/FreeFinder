@@ -82,6 +82,22 @@ export async function getPostHandler(postID) {
         throw err;
     }
     finally {
-        prisma.$disconnect;
+        prisma.$disconnect();
+    }
+}
+
+export async function deletePostHandler(postID) {
+    try {
+        await prisma.post.delete({
+            where: {
+                postID: postID
+            }
+        });
+    }
+    catch (err) {
+        throw err;
+    }
+    finally {
+        prisma.$disconnect();
     }
 }

@@ -9,6 +9,40 @@ import
     getSavedPostsHandler
 } 
 from '../services/UserService.js';
+import { env } from 'process';
+import jwt from 'jsonwebtoken';
+
+export async function loginUser(req, res) {
+    try {
+        const user = await findUserHandler(req.body.usernameOrEmail, req.body.password);
+        const token = jwt.sign({ ...user }, env.JWT_SECRET_KEY, { expiresIn: "1d" });
+
+        return res.cookie("access_token", token, {
+            httpOnly: true,
+            secure: env.NODE_ENV === "production"
+        })
+        .json({ userData: user });
+    }
+    catch (err) {
+        res.json({ message: err.message });
+    }
+}
+
+export async function logoutUser(req, res) {
+    try {
+        const token = req.cookies.access_token;
+        if (token) {
+            return res.clearCookie("access_token")
+            .status(200)
+            .json({ message: "Successfully logged out" });
+        } else {
+            return res.status(400).json({ message: "Unable to logout" });
+        }
+    }
+    catch (err) {
+        res.json({ message: err.message });
+    }
+}
 
 export async function updateProfilePicture(req, res) {
     try {
@@ -32,7 +66,7 @@ export async function addUser(req, res) {
 
 export async function findUser(req, res) {
     try {
-        const user = await findUserHandler(req.params.user, req.body.password);
+        const user = await findUserHandler(req.body.usernameOrEmail, req.body.password);
         res.json({ userData: user });
     }
     catch (err) {

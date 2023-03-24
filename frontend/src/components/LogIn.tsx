@@ -30,9 +30,12 @@ function LogIn({ setLogIn, setSignUp }: LogInProps) {
 
         try {
             setLoading(true);
-            const response = await fetch(`/users/find/${usernameOrEmail}`, {
+            const response = await fetch("/users/login", {
                 method: 'POST',
-                body: JSON.stringify({ password: password }),
+                body: JSON.stringify({ 
+                    password: password,
+                    usernameOrEmail
+                }),
                 headers: {
                     'Accept': 'application/json',
                     'Content-Type': 'application/json'

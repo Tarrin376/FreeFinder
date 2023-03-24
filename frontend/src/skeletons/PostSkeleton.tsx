@@ -1,4 +1,3 @@
-
 function PostSkeleton() {
     return (
         <div className="bg-transparent w-[290px] rounded-[8px] relative overflow-hidden">

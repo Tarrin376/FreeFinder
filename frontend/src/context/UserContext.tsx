@@ -1,4 +1,4 @@
-import { createContext, useState } from 'react';
+import { createContext, useState, useEffect } from 'react';
 import { IUser } from '../models/IUser';
 
 export const initialState: IUserContext = {
@@ -28,6 +28,21 @@ export interface IUserContext {
 
 function UserProvider({ children }: { children?: React.ReactNode }) {
     const [userData, setUserData] = useState<IUser>({ ...initialState.userData });
+
+    useEffect(() => {
+        (async function authoriseUser() {
+            try {
+                const response = await fetch("users/authorise");
+                if (response.status === 200) {
+                    const data = await response.json();
+                    setUserData(data.userData);
+                }
+            }
+            catch (err: any) {
+                console.log(err.message);
+            }
+        })();
+    }, []);
 
     return (
         <UserContext.Provider value={{userData, setUserData}}>

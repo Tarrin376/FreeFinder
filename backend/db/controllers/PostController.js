@@ -1,4 +1,4 @@
-import { createPostHandler, savePostHandler, getPostHandler } from "../services/PostService.js";
+import { createPostHandler, savePostHandler, getPostHandler, deletePostHandler } from "../services/PostService.js";
 
 export async function createPost(req, res) {
     const {userID, ...postData} = req.body;
@@ -39,6 +39,16 @@ export async function getPost(req, res) {
         } else {
             res.json({ message: "Invalid request" });
         }
+    }
+    catch (err) {
+        res.json({ message: err.message });
+    }
+}
+
+export async function deletePost(req, res) {
+    try {
+        await deletePostHandler(req.body.postID);
+        res.json({ message: "success" });
     }
     catch (err) {
         res.json({ message: err.message });

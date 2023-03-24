@@ -2,15 +2,18 @@ import CreatePost from '../CreatePost/CreatePost';
 import { useState, useContext, useRef } from 'react';
 import { UserContext } from '../../context/UserContext';
 import { useFetchPosts } from '../../hooks/useFetchPosts';
-import Posts from '../../components/Posts';
 import SortBy from '../../components/SortBy';
 import { sortByParams } from '../../components/SortBy';
+import { IPost } from '../../models/IPost';
+import Post from '../../components/Post';
+import PostSkeleton from '../../skeletons/PostSkeleton';
 
 function MyPostsView() {
     const [postService, setPostService] = useState<boolean>(false);
     const userContext = useContext(UserContext);
-    const [sortBy, setSortBy] = useState<string>(sortByParams["recently added"]);
+    const [sortBy, setSortBy] = useState<string>(sortByParams["newest arrivals"]);
     const pageRef = useRef<HTMLDivElement>(null);
+    const [deletingPost, setDeletingPost] = useState<boolean>(false);
 
     const URL = `/sellers/posts?sort=${sortBy}`;
     const cursor = useRef<string>("HEAD");
@@ -23,6 +26,43 @@ function MyPostsView() {
             setPostService(true);
         } else {
             setPostService(true);
+        }
+    }
+
+    async function deletePost(postID: string) {
+        if (deletingPost) {
+            return;
+        }
+
+        try {
+            setDeletingPost(true);
+            const response = await fetch("/posts/delete", {
+                method: "DELETE",
+                body: JSON.stringify({
+                    postID
+                }),
+                headers: {
+                    "Accept": "application/json",
+                    "Content-Type": "application/json"
+                }
+            });
+
+            if (response.status !== 500) {
+                const removed = await response.json();
+                if (removed.message === "success") {
+                    posts.setPosts((state) => state.filter((x) => x.postID !== postID));
+                } else {
+                    console.log(removed.message);
+                }
+            } else {
+                console.log("Error");
+            }
+        }
+        catch (err: any) {
+            console.log(err.message);
+        }
+        finally {
+            setDeletingPost(false);
         }
     }
 
@@ -48,7 +88,21 @@ function MyPostsView() {
                     />
                 </div>
                 {posts.errorMessage !== "" && !posts.loading && <h1 className="text-3xl">{posts.errorMessage}</h1>}
-                <Posts posts={posts.posts} loading={posts.loading} userID={userContext.userData.userID} areUserPosts={true} />
+                <div className="flex flex-col gap-7 items-center pb-11">
+                    <div className="flex gap-[30px] items-start flex-wrap pb-11 w-full">
+                        {posts.posts.map((post: IPost) => {
+                            return (
+                                <Post postInfo={post} userID={userContext.userData.userID} key={post.postID}>
+                                    <button className="bg-main-black hover:bg-main-black-hover btn-primary 
+                                    p-1 px-2 h-fit cursor-pointer text-main-white text-[15px]" onClick={() => deletePost(post.postID)}>
+                                        Remove
+                                    </button>
+                                </Post>
+                            );
+                        })}
+                        {posts.loading && new Array(10).fill(true).map((_, index) => <PostSkeleton key={index} />)}
+                    </div>
+                </div>
             </div>
         </>
     )

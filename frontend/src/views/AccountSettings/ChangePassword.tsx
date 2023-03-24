@@ -63,9 +63,12 @@ function ChangePassword({ userContext }: { userContext: IUserContext }) {
 
     async function checkPasswordMatch(): Promise<boolean> {
         try {
-            const response = await fetch(`/users/find/${userContext.userData.username}`, {
+            const response = await fetch("/users/find", {
                 method: 'POST',
-                body: JSON.stringify({ password: currentPass }),
+                body: JSON.stringify({ 
+                    password: currentPass,
+                    usernameOrEmail: userContext.userData.username
+                }),
                 headers: {
                     'Accept': 'application/json',
                     'Content-Type': 'application/json'
