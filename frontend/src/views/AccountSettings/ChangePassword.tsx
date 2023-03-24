@@ -27,7 +27,7 @@ function ChangePassword({ userContext }: { userContext: IUserContext }) {
         }
 
         try {
-            const response = await fetch("update/profile/password", {
+            const response = await fetch("update/password", {
                 method: 'PUT',
                 body: JSON.stringify({
                     userID: userContext.userData.userID,

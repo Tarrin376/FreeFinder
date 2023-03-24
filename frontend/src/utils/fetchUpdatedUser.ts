@@ -9,8 +9,10 @@ export async function fetchUpdatedUser(updatedData: IUser, profilePic?: string |
     if (profilePic) {
         try {
             const response = await updateProfilePic(updatedData.userID, profilePic);
-            if (response.status !== "success") {
-                throw new Error(response.status)
+            if (response.message !== "success") {
+                throw new Error(response.status);
+            } else {
+                updatedData = response.userData;
             }
         }
         catch (err: any) {
@@ -19,24 +21,26 @@ export async function fetchUpdatedUser(updatedData: IUser, profilePic?: string |
     }
     
     try {
-        const response = await fetch(`/users/update`, {
+        const response = await fetch("/users/update", {
             method: 'PUT',
             body: JSON.stringify({
                 ...updatedData,
-                profilePicURL: profilePic
+                profilePicURL: updatedData.profilePicURL
             }),
             headers: {
                 'Content-Type': 'application/json',
                 'Accept': 'application/json'
             }
         });
-        
-        if (response.status !== 500) {
-            const updated: UpdateResponse = await response.json();
-            return updated;
-        } else {
+
+        if (response.status === 403) {
+            throw new Error("Permission to change user details denied");
+        } else if (response.status === 500) {
             throw new Error(`Looks like we are having trouble on our end. Please try again later. 
             (Error code: ${response.status})`);
+        } else {
+            const updated: UpdateResponse = await response.json();
+            return updated;
         }
     }
     catch (err: any) {
@@ -47,7 +51,7 @@ export async function fetchUpdatedUser(updatedData: IUser, profilePic?: string |
 
 async function updateProfilePic(userID: string, profilePic: string | unknown) : Promise<any> {
     try {
-        const response = await fetch(`/users/update/profile`, {
+        const response = await fetch("/users/update/profile-picture", {
             method: 'PUT',
             body: JSON.stringify({ 
                 userID: userID,
@@ -58,13 +62,15 @@ async function updateProfilePic(userID: string, profilePic: string | unknown) : 
                 'Content-Type': 'application/json'
             }
         });
-
-        if (response.status !== 500) {
-            const updated = await response.json();
-            return updated;
-        } else {
+        
+        if (response.status === 403) {
+            throw new Error("Permission to change profile picture denied");
+        } else if (response.status === 500) {
             throw new Error(`Looks like we are having trouble on our end. Please try again later. 
             (Error code: ${response.status})`);
+        } else {
+            const updated = await response.json();
+            return updated;
         }
     }
     catch (err: any) {

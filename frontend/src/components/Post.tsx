@@ -39,18 +39,18 @@ function Post({ postInfo, userID, children }: PostProps) {
             if (response.status !== 500) {
                 const data = await response.json();
                 if (data.message === "success") {
-                    actionSuccessful(setSaveSuccessMessage, "Image saved", "");
+                    actionSuccessful(setSaveSuccessMessage, "Post saved", "");
                 } else if (data.message === "Post already added") {
                     actionSuccessful(setSaveSuccessMessage, data.message, "");
                 } else {
-                    actionSuccessful(setSaveErrorMessage, `Unable to save image: ${data.message}`, "");
+                    actionSuccessful(setSaveErrorMessage, `Unable to save post: ${data.message}`, "");
                 }
             } else {
                 actionSuccessful(setSaveErrorMessage, "Something unexpected occured on our end", "");
             }
         }
         catch (err: any) {
-            actionSuccessful(setSaveErrorMessage, `Unable to save image: ${err.message}`, "");
+            actionSuccessful(setSaveErrorMessage, `Unable to save post: ${err.message}`, "");
         }
     }
 

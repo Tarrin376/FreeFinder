@@ -23,10 +23,22 @@ export async function updateProfilePictureHandler(userID, file) {
     });
 
     try {
-        await prisma.user.update({
+        const updated = await prisma.user.update({
             where: { userID: userID },
-            data: { profilePicURL: success.secure_url }
+            data: { profilePicURL: success.secure_url },
+            include: {
+                seller: {
+                    select: {
+                        description: true,
+                        rating: true,
+                        sellerID: true
+                    }
+                },
+            }
         });
+
+        const {hash, password, ...res} = updated;
+        return res;
     }
     catch (err) {
         if (err instanceof Prisma.PrismaClientUnknownRequestError) {
