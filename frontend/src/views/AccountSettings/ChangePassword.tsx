@@ -79,10 +79,10 @@ function ChangePassword({ userContext }: { userContext: IUserContext }) {
 
             if (response.status !== 500) {
                 const user = await response.json();
-                if (user.userData) {
+                if (user.message === "success") {
                     return true;
                 } else {
-                    if (user.error) setErrorMessage(user.error);
+                    setErrorMessage(user.message);
                     return false;
                 }
             } else {

@@ -84,7 +84,7 @@ function ProfileMenu({ userContext, setSettingsPopUp, setSellerProfilePopUp }: P
                         </div>
                         <div className="border-b border-[#3E3E3E] flex flex-col">
                             <p className="profile-menu-element" onClick={openSettings}>Account Settings</p>
-                            <p className="profile-menu-element" onClick={openSellerProfile}>Update seller profile</p>
+                            {userContext.userData.seller && <p className="profile-menu-element" onClick={openSellerProfile}>Update seller profile</p>}
                             <button className="profile-menu-element" onClick={toggleStatus} disabled={disabled}>
                                 Appear {userContext.userData.status === 'ONLINE' ? 'offline': 'online'}
                             </button>

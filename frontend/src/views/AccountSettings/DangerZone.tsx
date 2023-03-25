@@ -25,7 +25,12 @@ function DangerZone({ userContext, setSettingsPopUp }: { userContext: IUserConte
                 }
             });
 
-            if (response.status !== 500) {
+            if (response.status === 500) {
+                setErrorMessage(`Looks like we are having trouble on our end. Please try again later. 
+                (Error code: ${response.status})`);
+            } else if (response.status === 403) {
+                setErrorMessage("You do not have authorisation to perform this action");
+            } else {
                 const deletedUser = await response.json();
                 if (deletedUser.message === "success") {
                     userContext.setUserData(initialState.userData);
@@ -33,9 +38,6 @@ function DangerZone({ userContext, setSettingsPopUp }: { userContext: IUserConte
                 } else {
                     setErrorMessage(deletedUser.message);
                 }
-            } else {
-                setErrorMessage(`Looks like we are having trouble on our end. Please try again later. 
-                (Error code: ${response.status})`);
             }
         }
         catch(err: any) {

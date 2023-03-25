@@ -6,7 +6,6 @@ import
     updateProfilePictureHandler, 
     deleteUserHandler,
     updatePasswordHandler,
-    getSavedPostsHandler
 } 
 from '../services/UserService.js';
 import { cookieJwtSign } from '../middleware/cookieJwtSign.js';
@@ -20,7 +19,7 @@ export async function loginUser(req, res) {
         return sign;
     }
     catch (err) {
-        res.json({ message: err.message }).status(err.code);
+        res.status(err.code).json({ message: err.message });
     }
 }
 
@@ -28,10 +27,10 @@ export async function logoutUser(_, res) {
     try {
         return res.clearCookie("access_token")
         .status(200)
-        .json({ message: "Successfully logged out" });
+        .json({ message: "success" });
     }
     catch (err) {
-        res.json({ message: err.message }).status(400);
+        res.status(400).json({ message: err.message });
     }
 }
 
@@ -44,27 +43,27 @@ export async function updateProfilePicture(req, res) {
         return sign;
     }
     catch (err) {
-        res.json({ status: err.message });
+        res.status(err.code).json({ message: err.message });
     }
 }
 
 export async function addUser(req, res) {
     try {
         await addUserHandler(req.body);
-        res.json({ status: "success" });
+        res.json({ message: "success" });
     }
     catch (err) {
-        res.json({ status: err.message });
+        res.status(err.code).json({ message: err.message });
     }
 }
 
 export async function getUser(req, res) {
     try {
         const user = await getUserHandler(req.body.usernameOrEmail, req.body.password);
-        res.json({ userData: user });
+        res.json({ userData: user, message: "success" });
     }
     catch (err) {
-        res.json({ error: err.message });
+        res.status(err.code).json({ message: err.message });
     }
 }
 
@@ -77,17 +76,19 @@ export async function updateUser(req, res) {
         return sign;
     }
     catch (err) {
-        res.json({ message: err.message });
+        res.status(err.code).json({ message: err.message });
     }
 }
 
 export async function deleteUser(req, res) {
     try {
         await deleteUserHandler(req.body.userID);
-        res.json({ message: "success" });
+        return res.clearCookie("access_token")
+        .status(200)
+        .json({ message: "success" });
     }
     catch (err) {
-        res.json({ message: err.message });
+        res.status(400).json({ message: err.message });
     }
 }
 
@@ -97,16 +98,6 @@ export async function updatePassword(req, res) {
         res.json({ message: "success" });
     }
     catch (err) {
-        res.json({ message: err.message });
-    }
-}
-
-export async function getSavedPosts(req, res) {
-    try {
-        const saved = await getSavedPostsHandler(req.body.userID, req.body.cursor, req.query.sort);
-        res.json({ ...saved, message: "success" });
-    }
-    catch (err) {
-        res.json({ message: err.message });
+        res.status(err.code).json({ message: err.message });
     }
 }

@@ -30,11 +30,11 @@ function MyPostsView() {
         }
     }
 
-    async function deletePost(postID: string) {
+    async function removePost(postID: string) {
         if (deletingPost) {
             return;
         }
-
+    
         try {
             setDeletingPost(true);
             const response = await fetch("/posts/delete", {
@@ -47,7 +47,7 @@ function MyPostsView() {
                     "Content-Type": "application/json"
                 }
             });
-
+    
             if (response.status !== 500) {
                 const removed = await response.json();
                 if (removed.message === "success") {
@@ -94,7 +94,7 @@ function MyPostsView() {
                         return (
                             <Post postInfo={post} userID={userContext.userData.userID} key={post.postID}>
                                 <button className="bg-main-black hover:bg-main-black-hover btn-primary 
-                                p-1 px-2 h-fit cursor-pointer text-main-white text-[15px]" onClick={() => deletePost(post.postID)}>
+                                p-1 px-2 h-fit cursor-pointer text-main-white text-[15px]" onClick={() => removePost(post.postID)}>
                                     Remove
                                 </button>
                             </Post>

@@ -1,4 +1,4 @@
-import { createPostHandler, savePostHandler, getPostHandler, deletePostHandler } from "../services/PostService.js";
+import { createPostHandler, getPostHandler, deletePostHandler } from "../services/PostService.js";
 
 export async function createPost(req, res) {
     const {userID, ...postData} = req.body;
@@ -7,27 +7,7 @@ export async function createPost(req, res) {
         res.json({ message: "success" });
     }
     catch (err) {
-        res.json({ message: err.message });
-    }
-}
-
-export async function savePost(req, res) {
-    try {
-        await savePostHandler(req.body.postID, req.body.userID);
-        res.json({ message: "success" });
-    }
-    catch (err) {
-        res.json({ message: err.message });
-    }
-}
-
-export async function getSavedPosts(req, res) {
-    try {
-        const savedPosts = await getSavedPostsHandler(req.body.userID);
-        res.json({ savedPosts, message: "success" });
-    }
-    catch (err) {
-        res.json({ message: err.message });
+        res.status(err.code).json({ message: err.message });
     }
 }
 
@@ -41,7 +21,7 @@ export async function getPost(req, res) {
         }
     }
     catch (err) {
-        res.json({ message: err.message });
+        res.status(err.code).json({ message: err.message });
     }
 }
 
@@ -51,6 +31,6 @@ export async function deletePost(req, res) {
         res.json({ message: "success" });
     }
     catch (err) {
-        res.json({ message: err.message });
+        res.status(err.code).json({ message: err.message });
     }
 }

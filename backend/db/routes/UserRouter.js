@@ -7,14 +7,13 @@ import
     updateProfilePicture, 
     deleteUser,
     updatePassword,
-    getSavedPosts,
     loginUser,
     logoutUser
 } from '../controllers/UserController.js';
 import { cookieJwtAuth } from '../middleware/cookieJwtAuth.js';
 
 const userRouter = Router();
-userRouter.post('/create', addUser);
+userRouter.post('/addUser', addUser);
 userRouter.post('/getUser', getUser);
 userRouter.post('/login', loginUser);
 userRouter.get('/logout', cookieJwtAuth, logoutUser);
@@ -26,8 +25,7 @@ userRouter.get('/authoriseUser', cookieJwtAuth, (req, res) => {
 userRouter.put('/update', cookieJwtAuth, updateUser);
 userRouter.put('/update/profile-picture', cookieJwtAuth, updateProfilePicture);
 userRouter.put('/update/password', cookieJwtAuth, updatePassword);
-userRouter.post('/saved', getSavedPosts);
 
-userRouter.delete('/delete', deleteUser);
+userRouter.delete('/delete', cookieJwtAuth, deleteUser);
 
 export default userRouter;

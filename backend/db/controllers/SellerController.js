@@ -6,7 +6,7 @@ export async function findSellerPosts(req, res) {
         res.json({ posts: response.posts, cursor: response.cursor, message: "success", last: response.last });
     }
     catch (err) {
-        res.json({ message: err.message });
+        res.status(err.code).json({ message: err.message });
     }
 }
 
@@ -16,6 +16,6 @@ export async function updateSellerDetails(req, res) {
         res.json({ updatedData, message: "success" });
     }
     catch (err) {
-        res.json({ message: err.message });
+        res.status(err.code).json({ message: err.message });
     }
 }

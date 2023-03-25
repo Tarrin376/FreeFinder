@@ -18,11 +18,16 @@ function SavedServicesView() {
     const [sortBy, setSortBy] = useState<string>(sortByParams["newest arrivals"]);
     const pageRef = useRef<HTMLDivElement>(null);
 
-    const URL = `/users/saved?sort=${sortBy}`;
+    const URL = `/saved-posts/get-posts?sort=${sortBy}`;
     const cursor = useRef<savedServicesKey>({ userID: "", postID: "" });
+    const [deletingPost, setDeletingPost] = useState<boolean>(false);
 
     const [nextPage, setNextPage] = useState<boolean>(false);
     const posts = useFetchPosts(pageRef, userContext.userData.userID, userContext.userData.username, URL, nextPage, setNextPage, cursor);
+
+    async function removePost(postID: string) {
+        
+    }
 
     return (
         <div className="page" ref={pageRef}>
@@ -41,11 +46,12 @@ function SavedServicesView() {
             <PostsWrapper>
                 {posts.posts.map((post: IPost) => {
                     return (
-                        <Post 
-                            postInfo={post} 
-                            userID={userContext.userData.userID} 
-                            key={post.postID} 
-                        />
+                        <Post postInfo={post} userID={userContext.userData.userID} key={post.postID}>
+                            <button className="bg-main-black hover:bg-main-black-hover btn-primary 
+                            p-1 px-2 h-fit cursor-pointer text-main-white text-[15px]" onClick={() => removePost(post.postID)}>
+                                Remove
+                            </button>
+                        </Post>
                     );
                 })}
                 {posts.loading && new Array(10).fill(true).map((_, index) => <PostSkeleton key={index} />)}

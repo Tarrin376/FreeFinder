@@ -8,7 +8,7 @@ export const cookieJwtAuth = (req, res, next) => {
     }
 
     try {
-        const {iat, exp, ...data} = jwt.verify(token, env.JWT_SECRET_KEY);
+        const { iat, exp, ...data } = jwt.verify(token, env.JWT_SECRET_KEY);
         req.userData = data;
         return next();
     } catch (err) {

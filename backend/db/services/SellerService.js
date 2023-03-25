@@ -15,7 +15,9 @@ export async function findSeller(userID) {
     }
     catch (err) {
         if (err instanceof Prisma.PrismaClientUnknownRequestError) {
-            throw new Error("Something went wrong when trying to process your request. Please try again.");
+            const error = new Error("Something went wrong when trying to process your request. Please try again.");
+            error.code = 400;
+            throw error;
         } else {
             throw err;
         }
@@ -39,8 +41,15 @@ async function createSeller(userID) {
     }
     catch (err) {
         if (err instanceof Prisma.PrismaClientUnknownRequestError) {
-            throw new Error("Something went wrong when trying to process your request. Please try again.");
-        } else {
+            const error = new Error("Something went wrong when trying to process your request. Please try again.");
+            error.code = 400;
+            throw error;
+        } else if (err.code === 'P2002') {
+            const error = new Error("This seller already exists.");
+            error.code = 409;
+            throw error;
+        }
+         else {
             throw err;
         }
     }
@@ -70,7 +79,9 @@ export async function sellerPostsHandler(sellerUserID, cursor, sortBy) {
     }
     catch (err) {
         if (err instanceof Prisma.PrismaClientUnknownRequestError) {
-            throw new Error("Something went wrong when trying to process your request. Please try again.");
+            const error = new Error("Something went wrong when trying to process your request. Please try again.");
+            error.code = 400;
+            throw error;
         } else {
             throw err;
         }
@@ -124,7 +135,9 @@ export async function firstQuerySellerPosts(sellerID, sortBy) {
     }
     catch (err) {
         if (err instanceof Prisma.PrismaClientUnknownRequestError) {
-            throw new Error("Something went wrong when trying to process your request. Please try again.");
+            const error = new Error("Something went wrong when trying to process your request. Please try again.");
+            error.code = 400;
+            throw error;
         } else {
             throw err;
         }
@@ -184,7 +197,9 @@ export async function secondQuerySellerPosts(sellerID, cursor, sortBy) {
     }
     catch (err) {
         if (err instanceof Prisma.PrismaClientUnknownRequestError) {
-            throw new Error("Something went wrong when trying to process your request. Please try again.");
+            const error = new Error("Something went wrong when trying to process your request. Please try again.");
+            error.code = 400;
+            throw error;
         } else {
             throw err;
         }
@@ -210,7 +225,7 @@ export async function updateSellerDetailsHandler(sellerDetails) {
             }
         });
 
-        return updatedDetails
+        return updatedDetails;
     }
     catch (err) {
         throw err;

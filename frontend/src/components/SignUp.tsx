@@ -38,7 +38,7 @@ function SignUp({ setLogIn, setSignUp, setAccountCreated }: SignUpProps) {
 
         try {
             setLoading(true);
-            const response = await fetch('/users/create', {
+            const response = await fetch('/users/addUser', {
                 method: 'POST',
                 body: JSON.stringify({ 
                     email: form.emailFirst, 
@@ -54,12 +54,12 @@ function SignUp({ setLogIn, setSignUp, setAccountCreated }: SignUpProps) {
 
             if (response.status !== 500) {
                 const addAttempt = await response.json();
-                if (addAttempt.status === "success") {
+                if (addAttempt.message === "success") {
                     setAccountCreated(true);
                     setSignUp(false);
                     setErrorMessage("");
                 } else {
-                    setErrorMessage(addAttempt.status);
+                    setErrorMessage(addAttempt.message);
                 }
             } else {
                 setErrorMessage(`Looks like we are having trouble on our end. Please try again later. 

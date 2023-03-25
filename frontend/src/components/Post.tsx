@@ -24,7 +24,7 @@ function Post({ postInfo, userID, children }: PostProps) {
                 return;
             }
 
-            const response = await fetch('/posts/save', {
+            const response = await fetch('/saved-posts/save', {
                 method: 'POST',
                 body: JSON.stringify({
                     userID: userID,
@@ -36,21 +36,17 @@ function Post({ postInfo, userID, children }: PostProps) {
                 } 
             });
 
-            if (response.status !== 500) {
-                const data = await response.json();
-                if (data.message === "success") {
-                    actionSuccessful(setSaveSuccessMessage, "Post saved", "");
-                } else if (data.message === "Post already added") {
-                    actionSuccessful(setSaveSuccessMessage, data.message, "");
-                } else {
-                    actionSuccessful(setSaveErrorMessage, `Unable to save post: ${data.message}`, "");
-                }
-            } else {
+            if (response.status === 200) {
+                actionSuccessful(setSaveSuccessMessage, "Post saved", "");
+            } else if (response.status === 500) {
                 actionSuccessful(setSaveErrorMessage, "Something unexpected occured on our end", "");
+            } else {
+                const error = await response.json();
+                actionSuccessful(setSaveErrorMessage, error.message, "");
             }
         }
         catch (err: any) {
-            actionSuccessful(setSaveErrorMessage, `Unable to save post: ${err.message}`, "");
+            actionSuccessful(setSaveErrorMessage, err.message, "");
         }
     }
 
