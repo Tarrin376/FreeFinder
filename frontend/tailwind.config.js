@@ -26,7 +26,7 @@ module.exports = {
         },
         boxShadow: {
             'pop-up': '0px 0px 1px 0px rgba(0, 0, 0, 0.17), 0px 0px 14px 3px rgba(0, 0, 0, 0.12), 0px 8px 10px 0px rgba(0, 0, 0, 0.14)',
-            'post': '0px 3px 10px -7px rgba(0, 0, 0, 0.42)',
+            'post': '0px 0px 1px 0px rgba(0, 0, 0, 0.10), 0px 0px 14px 3px rgba(0, 0, 0, 0.05), 0px 8px 10px 0px rgba(0, 0, 0, 0.02)',
             'profile-page-container': '0px 1px 8px -6px rgba(0, 0, 0, 0.62)'
         },
         fontFamily: {

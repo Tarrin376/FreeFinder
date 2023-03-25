@@ -6,6 +6,7 @@ import { sortByParams } from '../../components/SortBy';
 import { IPost } from '../../models/IPost';
 import PostSkeleton from '../../skeletons/PostSkeleton';
 import Post from '../../components/Post';
+import PostsWrapper from '../../components/PostsWrapper';
 
 export type savedServicesKey = {
     userID: string,
@@ -37,20 +38,18 @@ function SavedServicesView() {
                 />
             </div>
             {posts.errorMessage !== "" && !posts.loading && <h1 className="text-3xl">{posts.errorMessage}</h1>}
-            <div className="flex flex-col gap-7 items-center pb-11">
-                <div className="flex gap-[30px] items-start flex-wrap pb-11 w-full">
-                    {posts.posts.map((post: IPost) => {
-                        return (
-                            <Post 
-                                postInfo={post} 
-                                userID={userContext.userData.userID} 
-                                key={post.postID} 
-                            />
-                        );
-                    })}
-                    {posts.loading && new Array(10).fill(true).map((_, index) => <PostSkeleton key={index} />)}
-                </div>
-            </div>
+            <PostsWrapper>
+                {posts.posts.map((post: IPost) => {
+                    return (
+                        <Post 
+                            postInfo={post} 
+                            userID={userContext.userData.userID} 
+                            key={post.postID} 
+                        />
+                    );
+                })}
+                {posts.loading && new Array(10).fill(true).map((_, index) => <PostSkeleton key={index} />)}
+            </PostsWrapper>
         </div>
     )
 }

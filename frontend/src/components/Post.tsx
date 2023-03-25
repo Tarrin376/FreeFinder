@@ -55,7 +55,7 @@ function Post({ postInfo, userID, children }: PostProps) {
     }
 
     return (
-        <div className="bg-transparent w-[290px] rounded-[8px] relative overflow-hidden">
+        <div className="bg-transparent w-[295px] rounded-[8px] relative overflow-hidden shadow-post">
             <p className={`absolute px-4 py-[11px] w-[100%] font-semibold transition ease-out duration-100 text-center
             ${saveErrorMessage !== "" ? 'bg-error-red text-main-white' : saveSuccessMessage ? 'action-btn hover:!bg-[#36BF54] select-none' : 'select-none'}`}>
                 {saveErrorMessage !== "" ? saveErrorMessage : saveSuccessMessage !== "" ? saveSuccessMessage : ""}
@@ -66,9 +66,9 @@ function Post({ postInfo, userID, children }: PostProps) {
                 <path d="m16 28c7-4.733 14-10 14-17 0-1.792-.683-3.583-2.05-4.95-1.367-1.366-3.158-2.05-4.95-2.05-1.791 0-3.583.684-4.949 2.05l-2.051 2.051-2.05-2.051c-1.367-1.366-3.158-2.05-4.95-2.05-1.791 0-3.583.684-4.949 2.05-1.367 1.367-2.051 3.158-2.051 4.95 0 7 7 12.267 14 17z">
                 </path>
             </svg>
-            <img src={Placeholder} className="w-full h-[240px] bg-black rounded-[11px] object-cover" alt="placeholder"></img>
-            <div className="py-2">
-                <div className="flex items-center mt-1 mb-2 gap-3 relative">
+            <img src={Placeholder} className="w-full h-[215px] bg-black rounded-t-[8px] object-cover" alt="placeholder"></img>
+            <div className="py-3 px-3">
+                <div className="flex items-center mb-2 gap-3 relative">
                     <ProfilePicAndStatus 
                         profilePicURL={postInfo.postedBy.user.profilePicURL} 
                         profileStatus={postInfo.postedBy.user.status}
@@ -93,7 +93,7 @@ function Post({ postInfo, userID, children }: PostProps) {
                     </div>
                 </div>
                 <p className="text-side-text-gray text-[15px] mb-1">{getTimePosted(postInfo.createdAt)}</p>
-                <div className="pb-2 border-b border-b-very-light-gray">
+                <div className="pb-2 border-b border-b-very-light-gray h-[60px]">
                     <p className="text-[17px] nav-item leading-6 overflow-hidden text-ellipsis line-clamp-2">
                         <Link to={{ pathname: `/${postInfo.postedBy.user.username}/`, search: `?id=${postInfo.postID}` }}>
                             {postInfo.title}
