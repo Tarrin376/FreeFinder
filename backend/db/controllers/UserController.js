@@ -1,7 +1,7 @@
 import 
 { 
     addUserHandler, 
-    findUserHandler, 
+    getUserHandler, 
     updateUserHandler, 
     updateProfilePictureHandler, 
     deleteUserHandler,
@@ -9,25 +9,18 @@ import
     getSavedPostsHandler
 } 
 from '../services/UserService.js';
-import { env } from 'process';
-import jwt from 'jsonwebtoken';
+import { cookieJwtSign } from '../middleware/cookieJwtSign.js';
 
 export async function loginUser(req, res) {
     try {
-        if (req.userData) {
-            return res.json({ userData: req.userData });
-        }
+        const user = await getUserHandler(req.body.usernameOrEmail, req.body.password);
+        req.userData = user;
 
-        const user = await findUserHandler(req.body.usernameOrEmail, req.body.password);
-        const access_token = jwt.sign({ ...user }, env.JWT_SECRET_KEY, { expiresIn: "1d" });
-
-        return res.cookie("access_token", access_token, {
-            httpOnly: true,
-            secure: env.NODE_ENV === "production"
-        }).json({ userData: user });
+        const sign = await cookieJwtSign(req, res);
+        return sign;
     }
     catch (err) {
-        res.json({ message: err.message });
+        res.json({ message: err.message }).status(err.code);
     }
 }
 
@@ -38,19 +31,17 @@ export async function logoutUser(_, res) {
         .json({ message: "Successfully logged out" });
     }
     catch (err) {
-        res.json({ message: err.message });
+        res.json({ message: err.message }).status(400);
     }
 }
 
 export async function updateProfilePicture(req, res) {
     try {
         const updated = await updateProfilePictureHandler(req.body.userID, req.body.profilePic);
-        const new_access_token = jwt.sign({ ...updated }, env.JWT_SECRET_KEY, { expiresIn: "1d" });
+        req.userData = updated;
 
-        return res.cookie("access_token", new_access_token, {
-            httpOnly: true,
-            secure: env.NODE_ENV === "production"
-        }).json({ message: "success", userData: updated });
+        const sign = await cookieJwtSign(req, res);
+        return sign;
     }
     catch (err) {
         res.json({ status: err.message });
@@ -67,9 +58,9 @@ export async function addUser(req, res) {
     }
 }
 
-export async function findUser(req, res) {
+export async function getUser(req, res) {
     try {
-        const user = await findUserHandler(req.body.usernameOrEmail, req.body.password);
+        const user = await getUserHandler(req.body.usernameOrEmail, req.body.password);
         res.json({ userData: user });
     }
     catch (err) {
@@ -80,12 +71,10 @@ export async function findUser(req, res) {
 export async function updateUser(req, res) {
     try {
         const updated = await updateUserHandler(req.body);
-        const new_access_token = jwt.sign({ ...updated }, env.JWT_SECRET_KEY, { expiresIn: "1d" });
-
-        return res.cookie("access_token", new_access_token, {
-            httpOnly: true,
-            secure: env.NODE_ENV === "production"
-        }).json({ message: "success", userData: updated });
+        req.userData = updated;
+        
+        const sign = await cookieJwtSign(req, res);
+        return sign;
     }
     catch (err) {
         res.json({ message: err.message });

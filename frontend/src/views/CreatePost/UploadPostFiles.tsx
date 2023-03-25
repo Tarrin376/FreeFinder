@@ -13,12 +13,10 @@ interface UploadPostFilesProps {
     setPostService: React.Dispatch<React.SetStateAction<boolean>>,
     setSection: React.Dispatch<React.SetStateAction<Sections>>,
     setUploadedFiles: React.Dispatch<React.SetStateAction<File[]>>,
-    setThumbnailFile: React.Dispatch<React.SetStateAction<File | undefined>>,
     uploadedFiles: File[],
-    thumbnailFile: File | undefined
 }
 
-function UploadPostFiles({ setPostService, setSection, uploadedFiles, setUploadedFiles, thumbnailFile, setThumbnailFile }: UploadPostFilesProps) {
+function UploadPostFiles({ setPostService, setSection, uploadedFiles, setUploadedFiles }: UploadPostFilesProps) {
     const inputFileRef = useRef<HTMLInputElement>(null);
 
     function checkFile(file: File): boolean {
@@ -55,10 +53,6 @@ function UploadPostFiles({ setPostService, setSection, uploadedFiles, setUploade
         }
     }
 
-    function updateThumbnail(file: File) {
-        setThumbnailFile(file);
-    }
-
     return (
         <PopUpWrapper setIsOpen={setPostService} title={"Upload files"}>
             <DragAndDrop handleDrop={handleDrop}>
@@ -79,7 +73,7 @@ function UploadPostFiles({ setPostService, setSection, uploadedFiles, setUploade
                     {` ${uploadedFiles.length} / ${MAX_FILE_UPLOADS}`}
                 </span>
             </p>
-            <div className="max-h-[250px] overflow-scroll mt-6 flex flex-col gap-[15px] scrollbar-hide">
+            <div className="max-h-[250px] items-center overflow-scroll mt-6 flex flex-col gap-[15px] scrollbar-hide">
                 {uploadedFiles.map((file: File | undefined, index: number) => {
                     if (!file) {
                         return null;
@@ -90,25 +84,17 @@ function UploadPostFiles({ setPostService, setSection, uploadedFiles, setUploade
                             <div>
                                 <div className="flex items-center gap-3 mb-2">
                                     <img src={file.type === "image/jpeg" ? JPGIcon : PNGIcon} alt="file type" className="w-[32px] h-[32px]" />
-                                    <p className="font-semibold mb-1">{file.name}</p>
+                                    <p>{file.name}</p>
                                 </div>
                                 <p className="text-side-text-gray text-[15px]">You can download this file to verify that it is the correct one.</p>
                             </div>
                             <div>
-                                <a href={URL.createObjectURL(file)} className="block mb-2" download={file.name}>
-                                    <button className="bg-main-white border-2 border-light-gray btn-primary w-[140px] px-3 font-semibold
+                                <a href={URL.createObjectURL(file)} download={file.name}>
+                                    <button className="bg-main-white border-2 border-light-gray btn-primary w-[12s0px] px-3
                                 hover:bg-main-white-hover">
                                         Download
                                     </button>
                                 </a>
-                                {file !== thumbnailFile ?
-                                <button className="bg-[#212121cc] btn-primary w-[140px] px-3 font-semibold
-                                hover:bg-main-black text-main-white" onClick={() => updateThumbnail(file)}>
-                                    Set Thumbnail
-                                </button> :
-                                <button className="action-btn btn-primary w-[140px] px-3 font-semibold">
-                                    Thumbnail
-                                </button>}
                             </div>
                         </div>
                     );
@@ -132,7 +118,7 @@ function UploadPostFiles({ setPostService, setSection, uploadedFiles, setUploade
                 </div>
                 <div className="flex gap-3">
                     <input type='file' ref={inputFileRef} className="hidden" onChange={uploadFile} />
-                    <button className="bg-main-white border-2 border-light-gray btn-primary w-[110px] px-3 font-semibold
+                    <button className="bg-main-white border-2 border-light-gray btn-primary w-[110px] px-3
                     hover:bg-main-white-hover" onClick={() => setPostService(false)}>
                         Cancel
                     </button>

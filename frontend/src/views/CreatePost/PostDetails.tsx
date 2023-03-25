@@ -57,7 +57,7 @@ function PostDetails({ setPostService, setSection, about, setAbout, title, setTi
             <textarea placeholder="Write about your service here" className="w-full search-bar mb-6" value={about}
             onChange={(e) => setAbout(e.target.value)} rows={5} maxLength={1500}></textarea>
             <div className="flex justify-end gap-3 mt-[35px]">
-                <button className="bg-main-white border-2 border-light-gray btn-primary w-[110px] px-3 font-semibold
+                <button className="bg-main-white border-2 border-light-gray btn-primary w-[110px] px-3
                 hover:bg-main-white-hover" onClick={() => setSection(Sections.UploadFiles)}>
                     Back
                 </button>

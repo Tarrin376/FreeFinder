@@ -28,12 +28,11 @@ export interface IUserContext {
 
 function UserProvider({ children }: { children?: React.ReactNode }) {
     const [userData, setUserData] = useState<IUser>({ ...initialState.userData });
-    console.log(userData);
-
+    
     useEffect(() => {
         (async function authoriseUser() {
             try {
-                const response = await fetch("users/authorise");
+                const response = await fetch("users/authoriseUser");
                 if (response.status === 200) {
                     const data = await response.json();
                     setUserData(data.userData);

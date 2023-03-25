@@ -74,7 +74,7 @@ function ProfilePicAndStatus({ profilePicURL, profileStatus, statusStyles, imgSt
     }
 
     return (
-        <div className={loading ? '' : `${profileStatus === 'ONLINE' ? 'before:bg-green-500' : 'before:bg-[#FF9800]'} before:w-[18px] before:h-[18px]
+        <div className={loading ? '' : `${profileStatus === 'ONLINE' ? 'before:bg-green-500' : 'before:bg-side-text-gray'} before:w-[18px] before:h-[18px]
         before:absolute before:top-[33px] before:left-[0px] before:border-[3px] before:border-main-white before:content[''] before:rounded-full ${statusStyles}`}>
             {loading ? <div className={`w-12 h-12 rounded-full loading ${imgStyles}`}></div> : 
             <img src={profilePicURL === "" ? BlankProfile : profilePicURL} alt="profile pic" 

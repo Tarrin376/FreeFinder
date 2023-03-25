@@ -13,7 +13,6 @@ const router = express.Router();
 app.use(json());
 app.use(cookieParser());
 app.use(express.urlencoded({ extended: false }));
-app.all('/api*', requireAuthentication);
 app.use('/api', router);
 
 router.use('/users', userRouter);
@@ -23,7 +22,3 @@ router.use('/sellers', sellerRouter);
 app.listen(PORT, () => {
     console.log(`Server is listening on port ${PORT}`);
 });
-
-function requireAuthentication(req, res, next) {
-    next();
-}

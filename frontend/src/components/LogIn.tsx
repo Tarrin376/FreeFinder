@@ -44,12 +44,12 @@ function LogIn({ setLogIn, setSignUp }: LogInProps) {
 
             if (response.status !== 500) {
                 const user = await response.json();
-                if (!user.error) {
+                if (user.message === "success") {
                     user.userData.memberDate = new Date(user.userData.memberDate);
                     userContext.setUserData(user.userData);
                     setLogIn(false);
                 } else {
-                    setErrorMessage(user.error);
+                    setErrorMessage(user.message);
                 }
             } else {
                 setErrorMessage(`Looks like we are having trouble on our end. Please try again later. 

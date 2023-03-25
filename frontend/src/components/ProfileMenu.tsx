@@ -36,17 +36,18 @@ function ProfileMenu({ userContext, setSettingsPopUp, setSellerProfilePopUp }: P
     async function logOut(): Promise<void> {
         try {
             const clearToken = await fetch("/users/logout");
-            if (clearToken.status !== 500) {
+            if (clearToken.status === 500) {
+                console.log(`Looks like we are having trouble on our end. Please try again later. 
+                (Error code: ${clearToken.status})`);
+            } else if (clearToken.status === 403) {
+                console.log("You do not have authorisation to perform this action");
+            } else {
                 const response = await clearToken.json();
                 if (clearToken.status === 200) {
                     userContext.setUserData(initialState.userData);
                 } else {
                     console.log(response.message);
                 }
-            } 
-            else {
-                console.log(`Looks like we are having trouble on our end. Please try again later. 
-                (Error code: ${clearToken.status})`);
             }
         }
         catch (err: any) {

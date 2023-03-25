@@ -105,7 +105,7 @@ export async function addUserHandler(userData) {
     }
 }
 
-export async function findUserHandler(usernameOrEmail, password) {
+export async function getUserHandler(usernameOrEmail, password) {
     try {
         const res = await prisma.user.findFirst({
             where: {
@@ -126,12 +126,16 @@ export async function findUserHandler(usernameOrEmail, password) {
         });
         
         if (!res) {
-            throw new Error("Email or username provided doesn't have any account linked to it.");
+            const error = new Error("Email or username provided doesn't have any account linked to it.");
+            error.code = 400;
+            throw error;
         }
 
         const passwordMatch = await bcrypt.compare(password, res.hash);
         if (!passwordMatch) {
-            throw new Error("Password entered is incorrect. Ensure that you have entered it correctly.");
+            const error = new Error("Password entered is incorrect. Ensure that you have entered it correctly.");
+            error.code = 403;
+            return error;
         } else {
             const {hash, ...filtered} = res;
             return filtered;

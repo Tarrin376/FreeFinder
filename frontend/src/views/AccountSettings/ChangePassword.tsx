@@ -27,7 +27,7 @@ function ChangePassword({ userContext }: { userContext: IUserContext }) {
         }
 
         try {
-            const response = await fetch("update/password", {
+            const response = await fetch("/users/update/password", {
                 method: 'PUT',
                 body: JSON.stringify({
                     userID: userContext.userData.userID,
@@ -38,8 +38,13 @@ function ChangePassword({ userContext }: { userContext: IUserContext }) {
                     'Content-Type': 'application/json',
                 }
             });
-            
-            if (response.status !== 500) {
+
+            if (response.status === 500) {
+                setErrorMessage(`Looks like we are having trouble on our end. Please try again later. 
+                (Error code: ${response.status})`);
+            } else if (response.status === 403) {
+                setErrorMessage("You do not have authorisation to perform this action");
+            } else {
                 const updatedPassword = await response.json();
                 if (updatedPassword.message === "success") {
                     setCompleted(true);
@@ -48,9 +53,6 @@ function ChangePassword({ userContext }: { userContext: IUserContext }) {
                 } else {
                     setErrorMessage(updatedPassword.message);
                 }
-            } else {
-                setErrorMessage(`Looks like we are having trouble on our end. Please try again later. 
-                (Error code: ${response.status})`);
             }
         }
         catch (err: any) {
@@ -63,7 +65,7 @@ function ChangePassword({ userContext }: { userContext: IUserContext }) {
 
     async function checkPasswordMatch(): Promise<boolean> {
         try {
-            const response = await fetch("/users/find", {
+            const response = await fetch("/users/getUser", {
                 method: 'POST',
                 body: JSON.stringify({ 
                     password: currentPass,

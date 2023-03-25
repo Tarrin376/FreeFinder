@@ -56,7 +56,7 @@ function Post({ postInfo, userID, children }: PostProps) {
 
     return (
         <div className="bg-transparent w-[295px] rounded-[8px] relative overflow-hidden shadow-post">
-            <p className={`absolute px-4 py-[11px] w-[100%] font-semibold transition ease-out duration-100 text-center
+            <p className={`absolute px-7 py-[11px] w-[100%] transition ease-out duration-100 text-center
             ${saveErrorMessage !== "" ? 'bg-error-red text-main-white' : saveSuccessMessage ? 'action-btn hover:!bg-[#36BF54] select-none' : 'select-none'}`}>
                 {saveErrorMessage !== "" ? saveErrorMessage : saveSuccessMessage !== "" ? saveSuccessMessage : ""}
             </p>

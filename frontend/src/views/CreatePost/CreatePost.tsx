@@ -20,7 +20,6 @@ function CreatePost({ setPostService, setUserPosts, cursor, setReachedBottom, se
     const [title, setTitle] = useState<string>("");
     const [about, setAbout] = useState<string>("");
     const [uploadedFiles, setUploadedFiles] = useState<File[]>([]);
-    const [thumbnailFile, setThumbnailFile] = useState<File | undefined>();
     const [loading, setLoading] = useState<boolean>(false);
     const [errorMessage, setErrorMessage] = useState<string>("");
 
@@ -76,8 +75,6 @@ function CreatePost({ setPostService, setUserPosts, cursor, setReachedBottom, se
                 setSection={setSection}
                 uploadedFiles={uploadedFiles} 
                 setUploadedFiles={setUploadedFiles}
-                thumbnailFile={thumbnailFile}
-                setThumbnailFile={setThumbnailFile}
             />
         );
     } else {

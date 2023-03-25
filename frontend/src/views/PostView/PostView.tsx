@@ -8,6 +8,7 @@ import AboutSeller from "./AboutSeller";
 import VisitorsAlsoViewed from "./VisitorsAlsoViewed";
 import Review from "./Reviews";
 import PostPageSkeleton from '../../skeletons/PostPageSkeleton';
+import Placeholder from '../../assets/placeholder_img.jpeg';
 
 function PostView() {
     const location = useLocation();
@@ -63,7 +64,7 @@ function PostView() {
                         </div>
                     </div>
                     <div className="flex w-[100%] h-[480px] gap-4 mt-8">
-                        <img src={"#"} className="w-[750px] block rounded-[8px]" />
+                        <img src={Placeholder} className="w-[750px] block rounded-[8px] object-cover" alt="placeholder" />
                         <div className="flex-1 bg-main-white rounded-[8px] border border-gray-300 shadow-profile-page-container"></div>
                     </div>
                 </header>

@@ -34,7 +34,7 @@ export async function fetchUpdatedUser(updatedData: IUser, profilePic?: string |
         });
 
         if (response.status === 403) {
-            throw new Error("Permission to change user details denied");
+            throw new Error("You do not have authorisation to perform this action");
         } else if (response.status === 500) {
             throw new Error(`Looks like we are having trouble on our end. Please try again later. 
             (Error code: ${response.status})`);
@@ -44,8 +44,7 @@ export async function fetchUpdatedUser(updatedData: IUser, profilePic?: string |
         }
     }
     catch (err: any) {
-        if (err instanceof SyntaxError) throw new Error("File size is too large");
-        else throw err;
+        throw err;
     }
 }
 
@@ -64,10 +63,12 @@ async function updateProfilePic(userID: string, profilePic: string | unknown) : 
         });
         
         if (response.status === 403) {
-            throw new Error("Permission to change profile picture denied");
+            throw new Error("You do not have authorisation to perform this action");
         } else if (response.status === 500) {
             throw new Error(`Looks like we are having trouble on our end. Please try again later. 
             (Error code: ${response.status})`);
+        } else if (response.status === 413) {
+            throw new Error("File size is too large. Either compress it or select another image.");
         } else {
             const updated = await response.json();
             return updated;
