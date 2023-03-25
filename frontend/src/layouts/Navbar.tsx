@@ -41,7 +41,7 @@ function Navbar() {
                                 rounded-[8px] px-3 h-10 xl:w-96 lg:w-80 bg-transparent">
                                 <img src={SearchIcon} alt="search-icon" className="w-5 h-5 cursor-pointer"/>
                                 <input type="text" placeholder="Search for sellers" className="w-full h-full 
-                                focus:outline-none placeholder-search-text text-main-black bg-transparent ml-3" />
+                                focus:outline-none placeholder-search-text bg-transparent ml-3" />
                             </div>
                         </ul>
                     </div>
@@ -66,7 +66,7 @@ function AccountOptions({ setLogIn, setSignUp }: {
     setSignUp: React.Dispatch<React.SetStateAction<boolean>>}) {
     return (
         <>
-            <button className="btn-primary bg-very-light-gray text-main-black hover:bg-very-light-gray-hover" 
+            <button className="btn-primary bg-very-light-gray hover:bg-very-light-gray-hover" 
             onClick={() => setLogIn(true)}>
                 Log In
             </button>

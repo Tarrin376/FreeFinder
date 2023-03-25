@@ -57,7 +57,7 @@ function DangerZone({ userContext, setSettingsPopUp }: { userContext: IUserConte
             </p>
             <LoadingButton 
                 loading={loading} text="Delete account" loadingText="Deleting account..." 
-                callback={deleteAccount} disabled={false} styles={"bg-error-red text-main-white hover:bg-[#c10002]"}
+                callback={deleteAccount} disabled={false} styles={"bg-error-red text-main-white hover:bg-error-red-hover"}
                 loadingColour="bg-main-purple"
             />
         </>

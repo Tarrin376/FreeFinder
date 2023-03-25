@@ -82,7 +82,7 @@ function Post({ postInfo, userID, children }: PostProps) {
                             </p>
                             <div className="flex items-center gap-[7px]">
                                 <img src={StarIcon} className="w-[15px] h-[15px] mb-[2px]" alt="star" />
-                                <p className="text-[15px] text-main-black">{postInfo.postedBy.rating}</p>
+                                <p className="text-[15px]">{postInfo.postedBy.rating}</p>
                             </div>
                         </div>
                         <p className="text-side-text-gray text-[15px]">({postInfo.numReviews} reviews)</p>

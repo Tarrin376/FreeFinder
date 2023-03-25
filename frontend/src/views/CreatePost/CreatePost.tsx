@@ -5,6 +5,8 @@ import { IPost } from "../../models/IPost";
 import UploadPostFiles from "./UploadPostFiles";
 import PostDetails from "./PostDetails";
 import { Sections } from '../../types/Sections';
+import ChooseThumbnail from './ChooseThumbnail';
+import BasicPackage from './BasicPackage';
 
 interface CreatePostProps {
     setPostService: React.Dispatch<React.SetStateAction<boolean>>,
@@ -77,7 +79,7 @@ function CreatePost({ setPostService, setUserPosts, cursor, setReachedBottom, se
                 setUploadedFiles={setUploadedFiles}
             />
         );
-    } else {
+    } else if (section === Sections.PostDetails) {
         return (
             <PostDetails 
                 setPostService={setPostService} setSection={setSection}
@@ -88,6 +90,21 @@ function CreatePost({ setPostService, setUserPosts, cursor, setReachedBottom, se
                 createPost={createPost}
             />
         );
+    } else if (section === Sections.ChooseThumbnail) {
+        return (
+            <ChooseThumbnail 
+                setSection={setSection} 
+                setPostService={setPostService}
+                uploadedFiles={uploadedFiles}
+            />
+        );
+    } else {
+        return (
+            <BasicPackage 
+                setSection={setSection} 
+                setPostService={setPostService}
+            />
+        )
     }
 }
 

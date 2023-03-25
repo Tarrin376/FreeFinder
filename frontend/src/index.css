@@ -11,8 +11,8 @@
     }
     .search-bar {
         @apply border border-light-gray rounded-[8px] p-3 w-full drop-shadow-search-bar 
-        bg-main-white block placeholder-paragraph-text focus:outline-none focus:outline-2
-        focus:outline-offset-0 focus:outline-main-black;
+        bg-main-white block placeholder-side-text-gray focus:outline-none focus:outline-2
+        focus:outline-offset-0 focus:outline-side-text-gray;
     }
     .invalid-input {
         @apply focus:outline-2 focus:!outline-error-red focus:border-transparent border-b border-error-red bg-[#FFF7F6]
@@ -27,10 +27,10 @@
         @apply text-main-white whitespace-nowrap hover:bg-main-black-hover bg-main-black p-3 pt-1 pb-1 text-left text-[14px];
     }
     .settings-selection {
-        @apply border-b-[3px] border-b-main-black text-main-black cursor-pointer pb-4;
+        @apply border-b-[3px] border-b-main-black cursor-pointer pb-4;
     }
     .settings-unselected {
-        @apply pb-4 text-main-black cursor-pointer;
+        @apply pb-4 cursor-pointer;
     }
     .loading {
         @apply animate-pulse bg-light-gray rounded-[8px];

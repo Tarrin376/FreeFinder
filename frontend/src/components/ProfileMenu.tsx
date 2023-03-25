@@ -33,7 +33,7 @@ function ProfileMenu({ userContext, setSettingsPopUp, setSellerProfilePopUp }: P
         setDisabled(false);
     }
 
-    async function logOut(): Promise<void> {
+    async function logout(): Promise<void> {
         try {
             const clearToken = await fetch("/users/logout");
             if (clearToken.status === 500) {
@@ -90,7 +90,7 @@ function ProfileMenu({ userContext, setSettingsPopUp, setSellerProfilePopUp }: P
                             </button>
                         </div>
                         <div className="flex flex-col">
-                            <p className="profile-menu-element rounded-bl-[11px] rounded-br-[11px]" onClick={logOut}>Log out</p>
+                            <p className="profile-menu-element rounded-bl-[11px] rounded-br-[11px]" onClick={logout}>Log out</p>
                         </div>
                     </ul>}
                 </OutsideClickHandler>

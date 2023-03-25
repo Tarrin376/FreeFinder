@@ -1,4 +1,6 @@
 export enum Sections {
     PostDetails,
-    UploadFiles
+    UploadFiles,
+    ChooseThumbnail,
+    CreatePackages
 }

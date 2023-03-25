@@ -53,6 +53,10 @@ function UploadPostFiles({ setPostService, setSection, uploadedFiles, setUploade
         }
     }
 
+    function deleteFile(file: File): void {
+        setUploadedFiles((state) => state.filter((x) => x !== file));
+    }
+
     return (
         <PopUpWrapper setIsOpen={setPostService} title={"Upload files"}>
             <DragAndDrop handleDrop={handleDrop}>
@@ -80,21 +84,27 @@ function UploadPostFiles({ setPostService, setSection, uploadedFiles, setUploade
                     }
 
                     return (
-                        <div key={index} className="px-5 py-3 rounded-[8px] bg-[#f0f2f3] flex justify-between gap-[18px] items-center">
+                        <div key={index} className="p-3 rounded-[8px] bg-[#f0f2f3] flex justify-between gap-[18px] items-center">
                             <div>
                                 <div className="flex items-center gap-3 mb-2">
                                     <img src={file.type === "image/jpeg" ? JPGIcon : PNGIcon} alt="file type" className="w-[32px] h-[32px]" />
                                     <p>{file.name}</p>
                                 </div>
-                                <p className="text-side-text-gray text-[15px]">You can download this file to verify that it is the correct one.</p>
+                                <p className="text-side-text-gray text-[15px]">
+                                    You can download this file to verify that it is the correct one.
+                                </p>
                             </div>
-                            <div>
+                            <div className="flex flex-col gap-2">
                                 <a href={URL.createObjectURL(file)} download={file.name}>
-                                    <button className="bg-main-white border-2 border-light-gray btn-primary w-[12s0px] px-3
-                                hover:bg-main-white-hover">
+                                    <button className="bg-main-white border-2 border-light-gray btn-primary w-[120px] px-3
+                                  hover:bg-main-white-hover">
                                         Download
                                     </button>
                                 </a>
+                                <button className="bg-error-red text-main-white btn-primary w-[120px] px-3
+                                  hover:bg-error-red-hover" onClick={() => deleteFile(file)}>
+                                    Remove
+                                </button>
                             </div>
                         </div>
                     );
@@ -123,7 +133,7 @@ function UploadPostFiles({ setPostService, setSection, uploadedFiles, setUploade
                         Cancel
                     </button>
                     <button className="btn-primary bg-main-purple hover:bg-main-purple-hover text-main-white w-[110px] px-3"
-                    onClick={() => setSection(Sections.PostDetails)}>
+                    onClick={() => setSection(Sections.ChooseThumbnail)}>
                         Next
                     </button>
                 </div>

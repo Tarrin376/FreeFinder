@@ -37,7 +37,7 @@ function AboutSeller({ postData }: { postData: PostPage }) {
             <button className="btn-primary w-[100%] h-[45px] bg-main-purple hover:bg-main-purple-hover text-main-white mb-3 mt-1">
                 Contact Seller
             </button>
-            <button className="btn-primary w-[100%] h-[45px] bg-very-light-gray text-main-black hover:bg-very-light-gray-hover">
+            <button className="btn-primary w-[100%] h-[45px] bg-very-light-gray hover:bg-very-light-gray-hover">
                 {`Reviews (${postData.postedBy.numReviews})`}
             </button>
         </section>
