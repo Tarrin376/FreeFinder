@@ -28,8 +28,7 @@ export async function fetchPosts(url: string, sellerUserID: string, setPosts: Re
                 throw new Error(responseData.message);
             }
         } else {
-            throw new Error(`Looks like we are having trouble on our end. Please try again later. 
-            (Error code: ${response.status})`);
+            throw new Error(`Looks like we are having trouble on our end. Please try again later. (Error code: ${response.status})`);
         }
     }
     catch (err: any) {

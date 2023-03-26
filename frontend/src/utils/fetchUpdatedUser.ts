@@ -36,8 +36,7 @@ export async function fetchUpdatedUser(updatedData: IUser, profilePic?: string |
         if (response.status === 403) {
             throw new Error("You do not have authorisation to perform this action");
         } else if (response.status === 500) {
-            throw new Error(`Looks like we are having trouble on our end. Please try again later. 
-            (Error code: ${response.status})`);
+            throw new Error(`Looks like we are having trouble on our end. Please try again later. (Error code: ${response.status})`);
         } else {
             const updated: UpdateResponse = await response.json();
             return updated;
@@ -65,8 +64,7 @@ async function updateProfilePic(userID: string, profilePic: string | unknown) : 
         if (response.status === 403) {
             throw new Error("You do not have authorisation to perform this action");
         } else if (response.status === 500) {
-            throw new Error(`Looks like we are having trouble on our end. Please try again later. 
-            (Error code: ${response.status})`);
+            throw new Error(`Looks like we are having trouble on our end. Please try again later. (Error code: ${response.status})`);
         } else if (response.status === 413) {
             throw new Error("File size is too large. Either compress it or select another image.");
         } else {

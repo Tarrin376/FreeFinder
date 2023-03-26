@@ -1,4 +1,3 @@
-
 export const categories = {
     'Graphics & Design': [
         'Logo & Brand Identity',

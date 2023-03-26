@@ -46,7 +46,9 @@ function UserProfile({  userContext }: { userContext: IUserContext }) {
     return (
         <>
             <h1 className="text-[23px]">Profile</h1>
-            <p className="text-side-text-gray mt-1 pb-4 border-b border-b-nav-search-gray">Customize your profile</p>
+            <p className="text-side-text-gray mt-1 pb-4 border-b border-b-nav-search-gray">
+                Customize your profile
+            </p>
             <div className="flex mt-7 flex-col gap-4">
                 <div>
                     {errorMessage !== "" && <ErrorMessage message={errorMessage} title="Failed to update username" />}
@@ -69,7 +71,7 @@ function UserProfile({  userContext }: { userContext: IUserContext }) {
                 />
             </div>
         </>
-    )
+    );
 }
 
 export default UserProfile;

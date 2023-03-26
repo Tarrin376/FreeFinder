@@ -11,8 +11,8 @@ import PostPageSkeleton from '../../skeletons/PostPageSkeleton';
 import Placeholder from '../../assets/placeholder_img.jpeg';
 
 function PostView() {
-    const location = useLocation();
     const [postData, setPostData] = useState<PostPage>();
+    const location = useLocation();
     
     useEffect(() => {
         (async () => {
@@ -60,7 +60,9 @@ function PostView() {
                                 <p className="text-[15px]">{postData.postedBy.rating}</p>
                                 <p className="text-[15px] text-side-text-gray">({postData.postedBy.numReviews} reviews)</p>
                             </div>
-                            <p className="text-side-text-gray text-[15px]">{getTimePosted(postData.createdAt)}</p>
+                            <p className="text-side-text-gray text-[15px]">
+                                {getTimePosted(postData.createdAt)}
+                            </p>
                         </div>
                     </div>
                     <div className="flex w-[100%] h-[480px] gap-8 mt-8">
@@ -70,7 +72,9 @@ function PostView() {
                 </header>
                 <div className="flex justify-between mt-8 items-center">
                     <h2 className="text-2xl">{`${postData.postedBy.user.username}'s pinned reviews`}</h2>
-                    <p className="text-main-blue underline nav-item hover:text-main-black">See all reviews</p>
+                    <p className="text-main-blue underline nav-item hover:text-main-black">
+                        See all reviews
+                    </p>
                 </div>
                 <div className="mt-4 flex gap-5">
                     <Review />
@@ -78,7 +82,9 @@ function PostView() {
                 </div>
                 <section className="mt-8">
                     <h2 className="text-2xl mb-3">About this service</h2>
-                    <p className="text-paragraph-text leading-7">{postData.about}</p>
+                    <p className="text-paragraph-text leading-7">
+                        {postData.about}
+                    </p>
                 </section>
             </div>
             <div className="w-[25%] flex flex-col gap-7">

@@ -72,7 +72,8 @@ function Package({ setSection, setRevisions, setFeatures, setDeliveryTime, setDe
     return (
         <>
             <h3 className="mb-2">Delivery time (in days)</h3>
-            <input type="number" min={1} max={360} placeholder="Must be between 1 and 360 days" defaultValue={deliveryTime} className="search-bar mb-4" onChange={updateDeliveryTime} />
+            <input type="number" min={1} max={360} placeholder="Must be between 1 and 360 days" defaultValue={deliveryTime} 
+            className="search-bar mb-4" onChange={updateDeliveryTime} />
             <h3 className="mb-2">Amount of revisions</h3>
             <ul className="items-center w-fit text-sm flex bg-[#f8f9fa] rounded-[8px] px-2 mb-4">
                 {new Array(MAX_REVISIONS).fill(true).map((_, index) => {
@@ -104,13 +105,12 @@ function Package({ setSection, setRevisions, setFeatures, setDeliveryTime, setDe
                 Add Feature
             </button>
             {features.length > 0 && 
-            <div className="flex flex-col gap-2 max-h-[200px] overflow-scroll 
-            scrollbar-hide p-[8px] bg-[#f8f9fa] rounded-[8px]">
+            <div className="flex flex-col gap-2 max-h-[200px] overflow-scroll scrollbar-hide p-[8px] bg-[#f8f9fa] rounded-[8px]">
                 {features.map((value, index) => {
                     return (
                         <input type="text" className="search-bar" defaultValue={value} placeholder={"E.g. Video Thumbnail included"}
                         onChange={(e) => updateFeatureInput(index, e.target.value)} />
-                    )
+                    );
                 })}
             </div>}
             <div className="flex gap-3 justify-end mt-[35px]">
@@ -129,7 +129,7 @@ function Package({ setSection, setRevisions, setFeatures, setDeliveryTime, setDe
                 </button>
             </div>
         </>
-    )
+    );
 }
 
 function RevisionListItem({ curRevision, updateRevision, revisions }: { curRevision: string, 
@@ -142,7 +142,7 @@ function RevisionListItem({ curRevision, updateRevision, revisions }: { curRevis
                 {curRevision}
             </label>
         </li>
-    )
+    );
 }
 
 export default Package;

@@ -1,4 +1,3 @@
-
 function Review() {
     return (
         <div className="w-[50%] bg-main-white rounded-[8px] flex items-center gap-4 p-4 shadow-post">
@@ -10,7 +9,7 @@ function Review() {
                 </p>
             </div>
         </div>
-    )
+    );
 }
 
 export default Review;

@@ -52,13 +52,14 @@ function MyDetails({ userContext } : { userContext: IUserContext }) {
     return (
         <>
             <h1 className="text-[23px]">My Details</h1>
-            <p className="text-side-text-gray mt-1 pb-4 border-b border-b-nav-search-gray mb-7">Change your details</p>
+            <p className="text-side-text-gray mt-1 pb-4 border-b border-b-nav-search-gray mb-7">
+                Change your details
+            </p>
             <div className="flex flex-col gap-4">
                 <div>
                     {errorMessage !== "" && <ErrorMessage message={errorMessage} title="Failed to update email address" />}
                     <p className="mb-2">Email address</p>
-                    <input type="text" className={`search-bar ${!validFirst && firstEmail !== "" && "invalid-input"}`} 
-                    placeholder="Change email address"
+                    <input type="text" className={`search-bar ${!validFirst && firstEmail !== "" && "invalid-input"}`} placeholder="Change email address"
                     onChange={(e) => emailChangeHandler(e.target.value, setValidFirst, setFirstEmail)} />
                     <p className="text-box-error-message">
                         {!validFirst && firstEmail !== "" ? "Please use a valid email address" : ""}

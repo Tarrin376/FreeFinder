@@ -140,8 +140,7 @@ function ChangePassword({ userContext }: { userContext: IUserContext }) {
                 <div>
                     <p className="mb-2">Confirm new password</p>
                     <input type="password" className={`search-bar ${(validConfirmNewPass || confirmNewPass === "")
-                    && confirmNewPass === newPass ? '' : 'invalid-input'}`} 
-                    placeholder="Re-enter your new password"
+                    && confirmNewPass === newPass ? '' : 'invalid-input'}`} placeholder="Re-enter your new password"
                     onChange={(e) => updatePass(e.target.value, setValidConfirmNewPass, setConfirmNewPass)} />
                     <p className="text-box-error-message">
                         {!validConfirmNewPass && confirmNewPass !== "" ? "Password must be 8 or more characters long" : 
@@ -156,7 +155,7 @@ function ChangePassword({ userContext }: { userContext: IUserContext }) {
                 />
             </div>
         </>
-    )
+    );
 }
 
 export default ChangePassword;

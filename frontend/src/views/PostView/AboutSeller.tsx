@@ -14,7 +14,10 @@ function AboutSeller({ postData }: { postData: PostPage }) {
                     statusStyles='before:hidden'
                     imgStyles="m-auto w-[100px] h-[100px]"
                 />
-                <h4 className="text-lg text-center mt-2"><span className="text-main-blue">@</span>{postData.postedBy.user.username}</h4>
+                <h4 className="text-lg text-center mt-2">
+                    <span className="text-main-blue">@</span>
+                    {postData.postedBy.user.username}
+                </h4>
             </div>
             <div className="border-b border-b-light-gray pb-4 pt-4">
                 <h3 className="text-xl mb-2">Description</h3>

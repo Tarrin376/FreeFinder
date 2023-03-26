@@ -17,7 +17,7 @@ export async function getPost(req, res) {
             const post = await getPostHandler(req.query.id);
             res.json({ post, message: "success" });
         } else {
-            res.json({ message: "Invalid request" });
+            res.status(400).json({ message: "Bad request" });
         }
     }
     catch (err) {

@@ -21,7 +21,7 @@ function ChooseThumbnail({ setSection, setPostService, uploadedFiles }: ChooseTh
                 </button>
             </div>
         </PopUpWrapper>
-    )
+    );
 }
 
 export default ChooseThumbnail;

@@ -10,7 +10,7 @@ import Placeholder from '../assets/placeholder_img.jpeg';
 interface PostProps {
     postInfo: IPost,
     userID: string,
-    children?: React.ReactNode,
+    children?: React.ReactNode
 }
 
 function Post({ postInfo, userID, children }: PostProps) {
@@ -52,8 +52,8 @@ function Post({ postInfo, userID, children }: PostProps) {
 
     return (
         <div className="bg-main-white w-[295px] rounded-[8px] relative overflow-hidden shadow-post">
-            <p className={`absolute px-7 py-[11px] w-[100%] transition ease-out duration-100 text-center
-            ${saveErrorMessage !== "" ? 'bg-error-text text-main-white' : saveSuccessMessage ? 'action-btn hover:!bg-[#36BF54] select-none' : 'select-none'}`}>
+            <p className={`absolute px-7 py-[11px] w-[100%] transition ease-out duration-100 text-center ${saveErrorMessage !== "" ? 
+            'bg-error-text text-main-white' : saveSuccessMessage ? 'action-btn hover:!bg-[#36BF54] select-none' : 'select-none'}`}>
                 {saveErrorMessage !== "" ? saveErrorMessage : saveSuccessMessage !== "" ? saveSuccessMessage : ""}
             </p>
             <svg viewBox="0 0 32 32" xmlns="http://www.w3.org/2000/svg" onClick={savePost}
@@ -62,7 +62,7 @@ function Post({ postInfo, userID, children }: PostProps) {
                 <path d="m16 28c7-4.733 14-10 14-17 0-1.792-.683-3.583-2.05-4.95-1.367-1.366-3.158-2.05-4.95-2.05-1.791 0-3.583.684-4.949 2.05l-2.051 2.051-2.05-2.051c-1.367-1.366-3.158-2.05-4.95-2.05-1.791 0-3.583.684-4.949 2.05-1.367 1.367-2.051 3.158-2.051 4.95 0 7 7 12.267 14 17z">
                 </path>
             </svg>
-            <img src={Placeholder} className="w-full h-[215px] bg-black rounded-t-[8px] object-cover" alt="placeholder"></img>
+            <img src={Placeholder} className="w-full h-[215px] bg-black rounded-t-[8px] object-cover" alt="placeholder" />
             <div className="py-3 px-3">
                 <div className="flex items-center mb-2 gap-3 relative">
                     <ProfilePicAndStatus 
@@ -85,7 +85,9 @@ function Post({ postInfo, userID, children }: PostProps) {
                                 <p className="text-[15px]">{postInfo.postedBy.rating}</p>
                             </div>
                         </div>
-                        <p className="text-side-text-gray text-[15px]">({postInfo.numReviews} reviews)</p>
+                        <p className="text-side-text-gray text-[15px]">
+                            ({postInfo.numReviews} reviews)
+                        </p>
                     </div>
                 </div>
                 <p className="text-side-text-gray text-[15px] mb-1">{getTimePosted(postInfo.createdAt)}</p>
@@ -97,7 +99,9 @@ function Post({ postInfo, userID, children }: PostProps) {
                     </p>
                 </div>
                 <div className="mt-3 flex items-center justify-between relative">
-                    <p className="underline">Starting at: <span className="font-semibold">£{postInfo.startingPrice}</span></p>
+                    <p className="underline">
+                        Starting at: <span className="font-semibold">£{postInfo.startingPrice}</span>
+                    </p>
                     {children}
                 </div>
             </div>

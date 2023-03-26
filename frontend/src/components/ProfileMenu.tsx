@@ -89,14 +89,21 @@ function ProfileMenu({ userContext, setSettingsPopUp, setSellerProfilePopUp }: P
                             </p>
                         </div>
                         <div className="border-b border-light-gray flex flex-col">
-                            <p className="profile-menu-element" onClick={openSettings}>Account Settings</p>
-                            {userContext.userData.seller && <p className="profile-menu-element" onClick={openSellerProfile}>Update seller profile</p>}
+                            <p className="profile-menu-element" onClick={openSettings}>
+                                Account Settings
+                            </p>
+                            {userContext.userData.seller && 
+                            <p className="profile-menu-element" onClick={openSellerProfile}>
+                                Update seller profile
+                            </p>}
                             <button className="profile-menu-element" onClick={toggleStatus} disabled={disabled}>
                                 Appear {userContext.userData.status === 'ONLINE' ? 'offline': 'online'}
                             </button>
                         </div>
                         <div className="flex flex-col">
-                            <p className="profile-menu-element rounded-bl-[11px] rounded-br-[11px]" onClick={logout}>Log out</p>
+                            <p className="profile-menu-element rounded-bl-[11px] rounded-br-[11px]" onClick={logout}>
+                                Log out
+                            </p>
                         </div>
                     </ul>}
                 </OutsideClickHandler>

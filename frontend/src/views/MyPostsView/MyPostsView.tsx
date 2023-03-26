@@ -83,7 +83,9 @@ function MyPostsView() {
                     <div className="flex gap-5 w-[35rem] items-stretch">
                         <input type="text" placeholder="Search for post" className="search-bar flex-grow" />
                         <button onClick={openPostService} className="btn-primary text-main-white bg-main-blue w-60 h-[50px] 
-                        hover:bg-main-blue-hover">Create new post</button>
+                        hover:bg-main-blue-hover">
+                            Create new post
+                        </button>
                     </div>
                     <SortBy 
                         cursor={cursor} setPosts={posts.setPosts} 
