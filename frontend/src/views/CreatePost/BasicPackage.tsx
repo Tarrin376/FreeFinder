@@ -10,16 +10,21 @@ interface BasicPackageProps {
     setDeliveryTime: React.Dispatch<React.SetStateAction<number>>,
     setDescription: React.Dispatch<React.SetStateAction<string>>,
     features: string[],
+    deliveryTime: number,
+    revisions: string,
+    description: string
 }
 
-function BasicPackage({ setSection, setPostService, setRevisions, setFeatures, setDeliveryTime, setDescription, features }: BasicPackageProps) {
+function BasicPackage({ setSection, setPostService, setRevisions, setFeatures, setDeliveryTime, setDescription, 
+    features, deliveryTime, revisions, description }: BasicPackageProps) {
     return (
         <PopUpWrapper setIsOpen={setPostService} title={"Basic package details"}>
             <Package
                 setSection={setSection} setRevisions={setRevisions} setFeatures={setFeatures} 
                 setDeliveryTime={setDeliveryTime} setDescription={setDescription}
                 features={features} back={Sections.ChooseThumbnail} 
-                next={Sections.StandardPackage}
+                next={Sections.StandardPackage} deliveryTime={deliveryTime}
+                revisions={revisions} description={description}
             />
         </PopUpWrapper>
     );

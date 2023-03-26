@@ -58,6 +58,18 @@ model Post {
     startingPrice Decimal     @db.Money
     numReviews    Int         @default(0)
     reviews       Review[]
+    packages      Package[]
+}
+
+model Package {
+    post         Post        @relation(fields: [postID], references: [postID], onDelete: Cascade)
+    postID       String
+    deliveryTime DateTime
+    revisions    Int
+    description  String
+    type         PackageType
+
+    @@id([postID, type])
 }
 
 model Review {
@@ -95,4 +107,10 @@ enum OrderStatus {
     COMPLETED
     PENDING
     CANCELLED
+}
+
+enum PackageType {
+    BASIC
+    STANDARD
+    SUPERIOR
 }

@@ -60,7 +60,9 @@ function MyDetails({ userContext } : { userContext: IUserContext }) {
                     <input type="text" className={`search-bar ${!validFirst && firstEmail !== "" && "invalid-input"}`} 
                     placeholder="Change email address"
                     onChange={(e) => emailChangeHandler(e.target.value, setValidFirst, setFirstEmail)} />
-                    <p className="text-box-error-message">{!validFirst && firstEmail !== "" ? "Please use a valid email address" : ""}</p>
+                    <p className="text-box-error-message">
+                        {!validFirst && firstEmail !== "" ? "Please use a valid email address" : ""}
+                    </p>
                 </div>
                 <div>
                     <p className="mb-2">Confirm email address</p>

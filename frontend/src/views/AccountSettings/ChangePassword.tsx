@@ -124,14 +124,18 @@ function ChangePassword({ userContext }: { userContext: IUserContext }) {
                     <input type="password" className={`search-bar ${validCurrentPass || currentPass === "" ? '' : 'invalid-input'}`}
                     placeholder="Enter your current password"
                     onChange={(e) => updatePass(e.target.value, setValidCurrentPass, setCurrentPass)} />
-                    <p className="text-box-error-message">{!validCurrentPass && currentPass !== "" ? "Password must be 8 or more characters long" : ""}</p>
+                    <p className="text-box-error-message">
+                        {!validCurrentPass && currentPass !== "" ? "Password must be 8 or more characters long" : ""}
+                    </p>
                 </div>
                 <div>
                     <p className="mb-2">New password</p>
                     <input type="password" className={`search-bar ${validNewPass || newPass === "" ? '' : 'invalid-input'}`} 
                     placeholder="Enter your new password"
                     onChange={(e) => updatePass(e.target.value, setValidNewPass, setNewPass)} />
-                    <p className="text-box-error-message">{!validNewPass && newPass !== "" ? "Password must be 8 or more characters long" : ""}</p>
+                    <p className="text-box-error-message">
+                        {!validNewPass && newPass !== "" ? "Password must be 8 or more characters long" : ""}
+                    </p>
                 </div>
                 <div>
                     <p className="mb-2">Confirm new password</p>

@@ -29,6 +29,19 @@ function AccountSettings({ setSettingsPopUp, userContext }: SettingsProps) {
         setOption(next);
     }
 
+    function getOption() {
+        switch (option) {
+            case Options.details:
+                return <MyDetails userContext={userContext} />
+            case Options.profile:
+                return <UserProfile userContext={userContext} />
+            case Options.password:
+                return <ChangePassword userContext={userContext} />
+            default:
+                return <DangerZone userContext={userContext} setSettingsPopUp={setSettingsPopUp} />
+        }
+    }
+
     return (
         <PopUpWrapper setIsOpen={setSettingsPopUp} title={"Account Settings"}>
             {errorMessage !== "" && <ErrorMessage message={errorMessage} title={"Unable to upload image"} />}
@@ -56,10 +69,7 @@ function AccountSettings({ setSettingsPopUp, userContext }: SettingsProps) {
                     onClick={() => updateOption(Options.dangerZone)}>Danger Zone</li>
                 </ul>
             </div>
-            {option === Options.details && <MyDetails userContext={userContext} />}
-            {option === Options.profile && <UserProfile userContext={userContext} />}
-            {option === Options.password && <ChangePassword userContext={userContext} />}
-            {option === Options.dangerZone && <DangerZone userContext={userContext} setSettingsPopUp={setSettingsPopUp} />}
+            {getOption()}
         </PopUpWrapper>
     );
 }

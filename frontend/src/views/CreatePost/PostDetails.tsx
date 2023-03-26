@@ -3,6 +3,7 @@ import ErrorMessage from "../../components/ErrorMessage";
 import { categories } from "../../utils/jobCategories";
 import LoadingButton from "../../components/LoadingButton";
 import { Sections } from "./CreatePost";
+import { checkIsNumeric } from "../../utils/checkIsNumeric";
 
 const MAX_PRICE: number = 2500;
 
@@ -28,10 +29,8 @@ function PostDetails({ setPostService, setSection, about, setAbout, title, setTi
     }
 
     function updateStartingPrice(e: React.ChangeEvent<HTMLInputElement>): void {
-        const currencyPattern: RegExp = new RegExp("^[1-9]{1}[0-9]+([.][0-9]{2})?$");
         const price: string = e.target.value;
-
-        if (price.match(currencyPattern) && +price <= MAX_PRICE) {
+        if (checkIsNumeric(price, MAX_PRICE)) {
             setStartingPrice(+price);
         } else {
             setStartingPrice(0);

@@ -10,16 +10,21 @@ interface SuperiorPackageProps {
     setDeliveryTime: React.Dispatch<React.SetStateAction<number>>,
     setDescription: React.Dispatch<React.SetStateAction<string>>,
     features: string[],
+    deliveryTime: number,
+    revisions: string,
+    description: string
 }
 
-function SuperiorPackage({ setSection, setPostService, setRevisions, setFeatures, setDeliveryTime, setDescription, features }: SuperiorPackageProps) {
+function SuperiorPackage({ setSection, setPostService, setRevisions, setFeatures, setDeliveryTime, setDescription, 
+    features, deliveryTime, revisions, description }: SuperiorPackageProps) {
     return (
         <PopUpWrapper setIsOpen={setPostService} title={"Superior package details"}>
             <Package
                 setSection={setSection} setRevisions={setRevisions} setFeatures={setFeatures} 
                 setDeliveryTime={setDeliveryTime} setDescription={setDescription}
                 features={features} back={Sections.StandardPackage} skip={Sections.PostDetails} 
-                next={Sections.PostDetails}
+                next={Sections.PostDetails} deliveryTime={deliveryTime}
+                revisions={revisions} description={description}
             />
         </PopUpWrapper>
     );

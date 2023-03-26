@@ -41,21 +41,21 @@ function CreatePost({ setPostService, setUserPosts, cursor, setReachedBottom, se
     const [uploadedFiles, setUploadedFiles] = useState<File[]>([]);
 
     // BasicPackage states
-    const [basicRevisions, setBasicRevisions] = useState<string>("1");
+    const [basicRevisions, setBasicRevisions] = useState<string>("");
     const [basicFeatures, setBasicFeatures] = useState<string[]>([]);
-    const [basicDeliveryTime, setBasicDeliveryTime] = useState<number>(1);
+    const [basicDeliveryTime, setBasicDeliveryTime] = useState<number>(0);
     const [basicDescription, setBasicDescription] = useState<string>("");
 
     // StandardPackage states
     const [standardRevisions, setStandardRevisions] = useState<string>("1");
     const [standardFeatures, setStandardFeatures] = useState<string[]>([]);
-    const [standardDeliveryTime, setStandardDeliveryTime] = useState<number>(1);
+    const [standardDeliveryTime, setStandardDeliveryTime] = useState<number>(0);
     const [standardDescription, setStandardDescription] = useState<string>("");
 
     // StandardPackage states
-    const [superiorRevisions, setSuperiorRevisions] = useState<string>("1");
+    const [superiorRevisions, setSuperiorRevisions] = useState<string>("");
     const [superiorFeatures, setSuperiorFeatures] = useState<string[]>([]);
-    const [superiorDeliveryTime, setSuperiorDeliveryTime] = useState<number>(1);
+    const [superiorDeliveryTime, setSuperiorDeliveryTime] = useState<number>(0);
     const [superiorDescription, setSuperiorDescription] = useState<string>("");
 
     async function createPost(): Promise<void> {
@@ -125,7 +125,8 @@ function CreatePost({ setPostService, setUserPosts, cursor, setReachedBottom, se
                     setSection={setSection} setPostService={setPostService}
                     setRevisions={setBasicRevisions} setFeatures={setBasicFeatures}
                     setDeliveryTime={setBasicDeliveryTime} setDescription={setBasicDescription}
-                    features={basicFeatures}
+                    features={basicFeatures} deliveryTime={basicDeliveryTime}
+                    revisions={basicRevisions} description={basicDescription}
                 />
             );
         case Sections.StandardPackage:
@@ -134,7 +135,8 @@ function CreatePost({ setPostService, setUserPosts, cursor, setReachedBottom, se
                     setSection={setSection} setPostService={setPostService}
                     setRevisions={setStandardRevisions} setFeatures={setStandardFeatures}
                     setDeliveryTime={setStandardDeliveryTime} setDescription={setStandardDescription}
-                    features={standardFeatures}
+                    features={standardFeatures} deliveryTime={standardDeliveryTime}
+                    revisions={standardRevisions} description={standardDescription}
                 />
             );
         case Sections.SuperiorPackage:
@@ -143,7 +145,8 @@ function CreatePost({ setPostService, setUserPosts, cursor, setReachedBottom, se
                     setSection={setSection} setPostService={setPostService}
                     setRevisions={setSuperiorRevisions} setFeatures={setSuperiorFeatures}
                     setDeliveryTime={setSuperiorDeliveryTime} setDescription={setSuperiorDescription}
-                    features={superiorFeatures}
+                    features={superiorFeatures} deliveryTime={superiorDeliveryTime}
+                    revisions={superiorRevisions} description={superiorDescription}
                 />
             );
         default:
