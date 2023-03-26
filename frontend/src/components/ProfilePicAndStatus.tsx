@@ -31,29 +31,28 @@ function ProfilePicAndStatus({ profilePicURL, profileStatus, statusStyles, imgSt
         }
     }
 
-    function updatePhoto(profile: string | unknown): void {
+    async function updatePhoto(profile: string | unknown): Promise<void> {
         if (!setErrorMessage) {
             return;
         }
 
-        const updated: Promise<UpdateResponse> = fetchUpdatedUser({...userContext.userData}, profile);
-        updated.then((response) => {
+        try {
+            const response: UpdateResponse = await fetchUpdatedUser({...userContext.userData}, profile);
             if (response.message === "success" && response.userData) {
                 userContext.setUserData(response.userData);
                 setErrorMessage("");
             } else {
                 setErrorMessage(response.message);
             }
-
-            if (setLoading) {
-                setLoading(false);
-            }
-        }).catch((err) => {
+        }
+        catch (err: any) {
             setErrorMessage(err.message);
+        }
+        finally {
             if (setLoading) {
                 setLoading(false);
             }
-        });
+        }
     }
 
     function removePhoto(): void {

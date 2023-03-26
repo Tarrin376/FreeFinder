@@ -51,9 +51,9 @@ function Post({ postInfo, userID, children }: PostProps) {
     }
 
     return (
-        <div className="bg-transparent w-[295px] rounded-[8px] relative overflow-hidden shadow-post">
+        <div className="bg-main-white w-[295px] rounded-[8px] relative overflow-hidden shadow-post">
             <p className={`absolute px-7 py-[11px] w-[100%] transition ease-out duration-100 text-center
-            ${saveErrorMessage !== "" ? 'bg-error-red text-main-white' : saveSuccessMessage ? 'action-btn hover:!bg-[#36BF54] select-none' : 'select-none'}`}>
+            ${saveErrorMessage !== "" ? 'bg-error-text text-main-white' : saveSuccessMessage ? 'action-btn hover:!bg-[#36BF54] select-none' : 'select-none'}`}>
                 {saveErrorMessage !== "" ? saveErrorMessage : saveSuccessMessage !== "" ? saveSuccessMessage : ""}
             </p>
             <svg viewBox="0 0 32 32" xmlns="http://www.w3.org/2000/svg" onClick={savePost}

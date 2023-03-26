@@ -65,7 +65,7 @@ function PostView() {
                     </div>
                     <div className="flex w-[100%] h-[480px] gap-4 mt-8">
                         <img src={Placeholder} className="w-[750px] block rounded-[8px] object-cover" alt="placeholder" />
-                        <div className="flex-1 bg-main-white rounded-[8px] border border-gray-300 shadow-profile-page-container"></div>
+                        <div className="flex-1 bg-main-white rounded-[8px] border border-gray-300 shadow-post"></div>
                     </div>
                 </header>
                 <div className="flex justify-between mt-8 items-center">
@@ -73,7 +73,7 @@ function PostView() {
                     <p className="text-main-purple underline nav-item hover:text-main-black">See all reviews</p>
                 </div>
                 <div className="mt-4 flex gap-5">
-                    <Review styles="border-r border-r-light-gray" />
+                    <Review />
                     <Review />
                 </div>
                 <section className="mt-8">

@@ -17,12 +17,10 @@ export async function savePostHandler(postID, userID) {
             const error = new Error("Post already saved.");
             error.code = 409;
             throw error;
-        } else if (err instanceof Prisma.PrismaClientUnknownRequestError) {
+        } else {
             const error = new Error("Something went wrong when trying to process your request. Please try again.");
             error.code = 400;
             throw error;
-        } else {
-            throw err;
         }
     }
     finally {
@@ -36,13 +34,9 @@ export async function getSavedPostsHandler(userID, cursor, sortBy) {
         else return secondQuerySavedPosts(userID, cursor, sortBy);
     }
     catch (err) {
-        if (err instanceof Prisma.PrismaClientUnknownRequestError) {
-            const error = new Error("Something went wrong when trying to process your request. Please try again.");
-            error.code = 400;
-            throw error;
-        } else {
-            throw err;
-        }
+        const error = new Error("Something went wrong when trying to process your request. Please try again.");
+        error.code = 400;
+        throw error;
     }
     finally {
         await prisma.$disconnect();
@@ -102,13 +96,9 @@ export async function firstQuerySavedPosts(userID, sortBy) {
         };
     }
     catch (err) {
-        if (err instanceof Prisma.PrismaClientUnknownRequestError) {
-            const error = new Error("Something went wrong when trying to process your request. Please try again.");
-            error.code = 400;
-            throw error;
-        } else {
-            throw err;
-        }
+        const error = new Error("Something went wrong when trying to process your request. Please try again.");
+        error.code = 400;
+        throw error;
     }
     finally {
         await prisma.$disconnect();
@@ -175,12 +165,35 @@ export async function secondQuerySavedPosts(userID, cursor, sortBy) {
         };
     }
     catch (err) {
-        if (err instanceof Prisma.PrismaClientUnknownRequestError) {
+        const error = new Error("Something went wrong when trying to process your request. Please try again.");
+        error.code = 400;
+        throw error;
+    }
+    finally {
+        await prisma.$disconnect();
+    }
+}
+
+export async function deleteSavedPostHandler(postID, userID) {
+    try {
+        await prisma.savedPost.delete({
+            where: {
+                userID_postID: {
+                    userID: userID,
+                    postID: postID
+                }
+            }
+        });
+    }
+    catch (err) {
+        if (err instanceof Prisma.PrismaClientKnownRequestError && err.code === "P2025") {
+            const error = new Error("Post not found");
+            error.code = 404;
+            throw error;
+        } else {
             const error = new Error("Something went wrong when trying to process your request. Please try again.");
             error.code = 400;
             throw error;
-        } else {
-            throw err;
         }
     }
     finally {

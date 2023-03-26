@@ -19,18 +19,23 @@ function ProfileMenu({ userContext, setSettingsPopUp, setSellerProfilePopUp }: P
     async function toggleStatus(): Promise<void> {
         setDisabled(true);
         const toggledStatus: string = userContext.userData.status === 'ONLINE' ? 'OFFLINE' : 'ONLINE';
-        const updated: Promise<UpdateResponse> = fetchUpdatedUser({
-            ...userContext.userData, 
-            status: toggledStatus
-        });
-        
-        updated.then((response) => {
+
+        try {
+            const response: UpdateResponse = await fetchUpdatedUser({
+                ...userContext.userData, 
+                status: toggledStatus
+            });
+    
             if (response.userData && response.message === "success") {
                 userContext.setUserData({ ...response.userData });
             }
-        });
-
-        setDisabled(false);
+        } 
+        catch (err: any) {
+            console.log(err.message);
+        } 
+        finally {
+            setDisabled(false);
+        }
     }
 
     async function logout(): Promise<void> {
@@ -49,7 +54,7 @@ function ProfileMenu({ userContext, setSettingsPopUp, setSellerProfilePopUp }: P
                     console.log(response.message);
                 }
             }
-        }
+        } 
         catch (err: any) {
             console.log(err.message);
         }

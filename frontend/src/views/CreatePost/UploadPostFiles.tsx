@@ -84,7 +84,7 @@ function UploadPostFiles({ setPostService, setSection, uploadedFiles, setUploade
                     }
 
                     return (
-                        <div key={index} className="p-3 rounded-[8px] bg-[#f0f2f3] flex justify-between gap-[18px] items-center">
+                        <div key={index} className="p-3 rounded-[8px] bg-[#f6f7f8] flex justify-between gap-[18px] items-center">
                             <div>
                                 <div className="flex items-center gap-3 mb-2">
                                     <img src={file.type === "image/jpeg" ? JPGIcon : PNGIcon} alt="file type" className="w-[32px] h-[32px]" />
@@ -94,14 +94,14 @@ function UploadPostFiles({ setPostService, setSection, uploadedFiles, setUploade
                                     You can download this file to verify that it is the correct one.
                                 </p>
                             </div>
-                            <div className="flex flex-col gap-2">
+                            <div className="flex flex-col gap-[10px]">
                                 <a href={URL.createObjectURL(file)} download={file.name}>
                                     <button className="bg-main-white border-2 border-light-gray btn-primary w-[120px] px-3
                                   hover:bg-main-white-hover">
                                         Download
                                     </button>
                                 </a>
-                                <button className="bg-error-red text-main-white btn-primary w-[120px] px-3
+                                <button className="bg-error-red text-error-text btn-primary w-[120px] px-3
                                   hover:bg-error-red-hover" onClick={() => deleteFile(file)}>
                                     Remove
                                 </button>

@@ -51,13 +51,13 @@ function DangerZone({ userContext, setSettingsPopUp }: { userContext: IUserConte
     return (
         <>
             {errorMessage !== "" && <ErrorMessage message={errorMessage} title="Failed to delete account" />}
-            <h1 className="text-[23px] text-error-red">Delete account</h1>
+            <h1 className="text-[23px] text-error-text">Delete account</h1>
             <p className="text-side-text-gray mt-1 pb-4">
                 Once you delete your account, there is no going back. Please be certain.
             </p>
             <LoadingButton 
                 loading={loading} text="Delete account" loadingText="Deleting account..." 
-                callback={deleteAccount} disabled={false} styles={"bg-error-red text-main-white hover:bg-error-red-hover"}
+                callback={deleteAccount} disabled={false} styles={"bg-error-red text-error-text hover:bg-error-red-hover"}
                 loadingColour="bg-main-purple"
             />
         </>

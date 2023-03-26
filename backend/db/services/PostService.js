@@ -15,13 +15,9 @@ export async function createPostHandler(postData, userID) {
         });
     }
     catch (err) {
-        if (err instanceof Prisma.PrismaClientUnknownRequestError) {
-            const error = new Error("Something went wrong when trying to process your request. Please try again.");
-            error.code = 400;
-            throw error;
-        } else {
-            throw err;
-        }
+        const error = new Error("Something went wrong when trying to process your request. Please try again.");
+        error.code = 400;
+        throw error;
     }
     finally {
         await prisma.$disconnect();
@@ -56,7 +52,9 @@ export async function getPostHandler(postID) {
         return { ...post, postedBy };
     }
     catch (err) {
-        throw err;
+        const error = new Error("Something went wrong when trying to process your request. Please try again.");
+        error.code = 400;
+        throw error;
     }
     finally {
         prisma.$disconnect();
@@ -72,7 +70,15 @@ export async function deletePostHandler(postID) {
         });
     }
     catch (err) {
-        throw err;
+        if (err instanceof Prisma.PrismaClientKnownRequestError && err.code === "P2025") {
+            const error = new Error("Post not found");
+            error.code = 404;
+            throw error;
+        } else {
+            const error = new Error("Something went wrong when trying to process your request. Please try again.");
+            error.code = 400;
+            throw error;
+        }
     }
     finally {
         prisma.$disconnect();

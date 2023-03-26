@@ -6,28 +6,29 @@ module.exports = {
   theme: {
     extend: {
         colors: {
-            'main-purple': '#714cfe',
-            'main-purple-hover': '#7f5efe',
-            'main-white': '#fdfdfd',
-            'light-gray': '#DDDDDD',
+            'main-purple': '#234dd6',
+            'main-purple-hover': '#2c55dc',
+            'main-white': '#fefefe',
+            'light-gray': '#e1e3e8',
             'nav-search-gray': '#cdcdcd',
             'very-light-gray': '#EBEBEB',
             'very-light-gray-hover': '#E6E6E6',
-            'main-black': '#212121',
+            'main-black': '#292929',
             'paragraph-text': '#4b4b4b',
             'side-text-gray': '#879198',
-            'main-black-hover': 'rgba(51, 51, 51, 1)',
-            'error-red': '#B00020',
+            'main-black-hover': '#323232',
             'pop-up-bg': 'rgba(149, 149, 149, 0.10)',
-            'main-white-hover': '#f8f8f8',
-            'error-red-hover': '#c10002'
+            'main-white-hover': '#fbfbfb',
+            'error-red': '#f43c3c14',
+            'error-red-hover': 'rgba(255, 0, 0, 0.08)',
+            'error-text': '#F43C3C'
         },
         dropShadow: {
             'search-bar': '0px 0px 1px #DDDDDD',
         },
         boxShadow: {
             'pop-up': '0px 0px 14px 3px rgba(0, 0, 0, 0.10), 0px 8px 10px 0px rgba(0, 0, 0, 0.04)',
-            'post': '0px 0px 1px 0px rgba(0, 0, 0, 0.10), 0px 0px 14px 3px rgba(0, 0, 0, 0.05), 0px 8px 10px 0px rgba(0, 0, 0, 0.02)',
+            'post': 'rgba(0, 0, 0, 0.25) 0px 2px 4px 0px',
             'profile-page-container': '0px 1px 8px -6px rgba(0, 0, 0, 0.62)'
         },
         fontFamily: {

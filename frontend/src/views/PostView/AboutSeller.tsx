@@ -5,7 +5,7 @@ import UserIcon from '../../assets/user-icon-svgrepo-com.svg';
 
 function AboutSeller({ postData }: { postData: PostPage }) {
     return (
-        <section className=" bg-main-white rounded-[8px] border border-gray-300 shadow-profile-page-container p-4">
+        <section className=" bg-main-white rounded-[8px] border border-gray-300 shadow-post p-4">
             <div className="border-b border-b-light-gray pb-4 relative">
                 <h3 className="text-xl mb-4">About this seller</h3>
                 <ProfilePicAndStatus 

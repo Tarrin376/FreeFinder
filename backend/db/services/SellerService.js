@@ -14,13 +14,9 @@ export async function findSeller(userID) {
         }
     }
     catch (err) {
-        if (err instanceof Prisma.PrismaClientUnknownRequestError) {
-            const error = new Error("Something went wrong when trying to process your request. Please try again.");
-            error.code = 400;
-            throw error;
-        } else {
-            throw err;
-        }
+        const error = new Error("Something went wrong when trying to process your request. Please try again.");
+        error.code = 400;
+        throw error;
     }
     finally {
         await prisma.$disconnect();
@@ -40,17 +36,14 @@ async function createSeller(userID) {
         return seller;
     }
     catch (err) {
-        if (err instanceof Prisma.PrismaClientUnknownRequestError) {
-            const error = new Error("Something went wrong when trying to process your request. Please try again.");
-            error.code = 400;
-            throw error;
-        } else if (err.code === 'P2002') {
+        if (err instanceof Prisma.PrismaClientKnownRequestError && err.code === 'P2002') {
             const error = new Error("This seller already exists.");
             error.code = 409;
             throw error;
-        }
-         else {
-            throw err;
+        } else {
+            const error = new Error("Something went wrong when trying to process your request. Please try again.");
+            error.code = 400;
+            throw error;
         }
     }
     finally {
@@ -78,13 +71,9 @@ export async function sellerPostsHandler(sellerUserID, cursor, sortBy) {
         else return secondQuerySellerPosts(seller.sellerID, cursor, sortBy);
     }
     catch (err) {
-        if (err instanceof Prisma.PrismaClientUnknownRequestError) {
-            const error = new Error("Something went wrong when trying to process your request. Please try again.");
-            error.code = 400;
-            throw error;
-        } else {
-            throw err;
-        }
+        const error = new Error("Something went wrong when trying to process your request. Please try again.");
+        error.code = 400;
+        throw error;
     }
     finally {
         await prisma.$disconnect();
@@ -134,13 +123,9 @@ export async function firstQuerySellerPosts(sellerID, sortBy) {
         };
     }
     catch (err) {
-        if (err instanceof Prisma.PrismaClientUnknownRequestError) {
-            const error = new Error("Something went wrong when trying to process your request. Please try again.");
-            error.code = 400;
-            throw error;
-        } else {
-            throw err;
-        }
+        const error = new Error("Something went wrong when trying to process your request. Please try again.");
+        error.code = 400;
+        throw error;
     }
     finally {
         await prisma.$disconnect();
@@ -196,13 +181,9 @@ export async function secondQuerySellerPosts(sellerID, cursor, sortBy) {
         };
     }
     catch (err) {
-        if (err instanceof Prisma.PrismaClientUnknownRequestError) {
-            const error = new Error("Something went wrong when trying to process your request. Please try again.");
-            error.code = 400;
-            throw error;
-        } else {
-            throw err;
-        }
+        const error = new Error("Something went wrong when trying to process your request. Please try again.");
+        error.code = 400;
+        throw error;
     }
     finally {
         await prisma.$disconnect();
@@ -228,7 +209,15 @@ export async function updateSellerDetailsHandler(sellerDetails) {
         return updatedDetails;
     }
     catch (err) {
-        throw err;
+        if (err instanceof Prisma.PrismaClientKnownRequestError && err.code === "P2025") {
+            const error = new Error("Seller not found");
+            error.code = 404;
+            throw error;
+        } else {
+            const error = new Error("Something went wrong when trying to process your request. Please try again.");
+            error.code = 400;
+            throw error;
+        }
     }
     finally {
         await prisma.$disconnect();

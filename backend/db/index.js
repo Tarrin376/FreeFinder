@@ -19,7 +19,7 @@ app.use('/api', router);
 router.use('/users', userRouter);
 router.use('/posts', postRouter);
 router.use('/sellers', sellerRouter);
-router.use('/saved-posts/', savedPostRouter);
+router.use('/saved-posts', savedPostRouter);
 
 app.listen(PORT, () => {
     console.log(`Server is listening on port ${PORT}`);

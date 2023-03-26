@@ -16,7 +16,7 @@ const userRouter = Router();
 userRouter.post('/addUser', addUser);
 userRouter.post('/getUser', getUser);
 userRouter.post('/login', loginUser);
-userRouter.get('/logout', cookieJwtAuth, logoutUser);
+userRouter.get('/logout', logoutUser);
 
 userRouter.get('/authoriseUser', cookieJwtAuth, (req, res) => {
     return res.json({ userData: req.userData });

@@ -38,14 +38,10 @@ export async function updateProfilePictureHandler(userID, file) {
         const {hash, password, ...res} = updated;
         return res;
     }
-    catch (err) {
-        if (err instanceof Prisma.PrismaClientUnknownRequestError) {
-            const error = new Error("Something went wrong when trying to process your request. Please try again.");
-            error.code = 400;
-            throw error;
-        } else {
-            throw err;
-        }
+    catch (err) { 
+        const error = new Error("Something went wrong when trying to process your request. Please try again.");
+        error.code = 400;
+        throw error;
     }
     finally {
         await prisma.$disconnect();
@@ -66,12 +62,10 @@ export async function updatePasswordHandler(userID, password) {
             const error = new Error("User could not be found.");
             error.code = 404;
             throw error;
-        } else if (err instanceof Prisma.PrismaClientUnknownRequestError) {
+        } else {
             const error = new Error("Something went wrong when trying to process your request. Please try again.");
             error.code = 400;
             throw error;
-        } else {
-            throw err;
         }
     }
     finally {
@@ -96,12 +90,10 @@ export async function addUserHandler(userData) {
             const error = new Error("There already exists a user with this username or email address.");
             error.code = 409;
             throw error;
-        } else if (err instanceof Prisma.PrismaClientUnknownRequestError) {
+        } else {
             const error = new Error("Something went wrong when trying to process your request. Please try again.");
             error.code = 400;
             throw error;
-        } else {
-            throw err;
         }
     }
     finally {
@@ -139,20 +131,16 @@ export async function getUserHandler(usernameOrEmail, password) {
         if (!passwordMatch) {
             const error = new Error("Password entered is incorrect. Ensure that you have entered it correctly.");
             error.code = 403;
-            return error;
+            throw error;
         } else {
             const {hash, ...filtered} = res;
             return filtered;
         }
     }
     catch (err) {
-        if (err instanceof Prisma.PrismaClientUnknownRequestError) {
-            const error = new Error("Something went wrong when trying to process your request. Please try again.");
-            error.code = 400;
-            throw error;
-        } else {
-            throw err;
-        }
+        const error = new Error("Something went wrong when trying to process your request. Please try again.");
+        error.code = 400;
+        throw error;
     }
     finally {
         await prisma.$disconnect();
@@ -186,12 +174,10 @@ export async function updateUserHandler(data) {
             const error = new Error("There already exists a user with this username or email address.");
             error.code = 409;
             throw error;
-        } else if (err instanceof Prisma.PrismaClientUnknownRequestError) {
+        } else {
             const error = new Error("Something went wrong when trying to process your request. Please try again.");
             error.code = 400;
             throw error;
-        } else {
-            throw err;
         }
     }
     finally {
@@ -204,12 +190,14 @@ export async function deleteUserHandler(userID) {
         await prisma.user.delete({ where: { userID: userID } });
     }
     catch (err) {
-        if (err instanceof Prisma.PrismaClientUnknownRequestError) {
+        if (err instanceof Prisma.PrismaClientKnownRequestError && err.code === "P2025") {
+            const error = new Error("User not found");
+            error.code = 404;
+            throw error;
+        } else {
             const error = new Error("Something went wrong when trying to process your request. Please try again.");
             error.code = 400;
             throw error;
-        } else {
-            throw err;
         }
     }
     finally {

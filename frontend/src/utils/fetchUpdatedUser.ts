@@ -25,7 +25,7 @@ export async function fetchUpdatedUser(updatedData: IUser, profilePic?: string |
             method: 'PUT',
             body: JSON.stringify({
                 ...updatedData,
-                profilePicURL: updatedData.profilePicURL
+                profilePicURL: profilePic === "" ? profilePic : updatedData.profilePicURL
             }),
             headers: {
                 'Content-Type': 'application/json',

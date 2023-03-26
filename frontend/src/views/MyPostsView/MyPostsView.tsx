@@ -12,7 +12,7 @@ import PostsWrapper from '../../components/PostsWrapper';
 function MyPostsView() {
     const [postService, setPostService] = useState<boolean>(false);
     const userContext = useContext(UserContext);
-    const [sortBy, setSortBy] = useState<string>(sortByParams["newest arrivals"]);
+    const [sortBy, setSortBy] = useState<string>(sortByParams["most recent"]);
     const pageRef = useRef<HTMLDivElement>(null);
     const [deletingPost, setDeletingPost] = useState<boolean>(false);
 
@@ -47,16 +47,19 @@ function MyPostsView() {
                     "Content-Type": "application/json"
                 }
             });
-    
-            if (response.status !== 500) {
+
+            if (response.status === 500) {
+                console.log(`Looks like we are having trouble on our end. Please try again later. 
+                (Error code: ${response.status})`);
+            } else if (response.status === 403) {
+                console.log("You do not have authorisation to perform this action");
+            } else {
                 const removed = await response.json();
                 if (removed.message === "success") {
                     posts.setPosts((state) => state.filter((x) => x.postID !== postID));
                 } else {
                     console.log(removed.message);
                 }
-            } else {
-                console.log("Error");
             }
         }
         catch (err: any) {
@@ -93,8 +96,8 @@ function MyPostsView() {
                     {posts.posts.map((post: IPost) => {
                         return (
                             <Post postInfo={post} userID={userContext.userData.userID} key={post.postID}>
-                                <button className="bg-main-black hover:bg-main-black-hover btn-primary 
-                                p-1 px-2 h-fit cursor-pointer text-main-white text-[15px]" onClick={() => removePost(post.postID)}>
+                                <button className="bg-error-red hover:bg-error-red-hover btn-primary 
+                                p-[3px] px-[8px] h-fit cursor-pointer text-error-text text-[15px]" onClick={() => removePost(post.postID)}>
                                     Remove
                                 </button>
                             </Post>

@@ -4,7 +4,7 @@ import { Cursor } from '../types/Cursor';
 export const sortByParams: {
     [key: string]: string
 } = {
-    "newest arrivals": "recent",
+    "most recent": "recent",
     "rating": "rating",
     "lowest price": "lowest-price",
     "highest price": "highest-price"
