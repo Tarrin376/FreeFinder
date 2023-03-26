@@ -25,7 +25,7 @@ function SavedServicesView() {
     const [nextPage, setNextPage] = useState<boolean>(false);
     const posts = useFetchPosts(pageRef, userContext.userData.userID, userContext.userData.username, url, nextPage, setNextPage, cursor);
 
-    async function removePost(postID: string) {
+    async function removePost(postID: string): Promise<void> {
         if (deletingPost) {
             return;
         }

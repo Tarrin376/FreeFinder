@@ -64,10 +64,11 @@ model Post {
 model Package {
     post         Post        @relation(fields: [postID], references: [postID], onDelete: Cascade)
     postID       String
-    deliveryTime DateTime
-    revisions    Int
+    deliveryTime Int
+    revisions    String
     description  String
     type         PackageType
+    features     String[]
 
     @@id([postID, type])
 }

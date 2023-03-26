@@ -30,11 +30,12 @@ function UserProvider({ children }: { children?: React.ReactNode }) {
     const [userData, setUserData] = useState<IUser>({ ...initialState.userData });
     
     useEffect(() => {
-        (async function authoriseUser() {
+        (async (): Promise<void> => {
             try {
                 const response = await fetch("/api/users/authoriseUser");
                 if (response.status === 200) {
                     const data = await response.json();
+                    console.log(data);
                     setUserData(data.userData);
                 }
             }

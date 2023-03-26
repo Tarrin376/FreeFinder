@@ -92,7 +92,7 @@ function Post({ postInfo, userID, children }: PostProps) {
                 </div>
                 <p className="text-side-text-gray text-[15px] mb-1">{getTimePosted(postInfo.createdAt)}</p>
                 <div className="pb-2 border-b border-b-very-light-gray h-[60px]">
-                    <p className="text-[17px] nav-item leading-6 overflow-hidden text-ellipsis line-clamp-2">
+                    <p className="text-[17px] nav-item leading-6 overflow-hidden text-ellipsis line-clamp-2 break-words">
                         <Link to={{ pathname: `/${postInfo.postedBy.user.username}/`, search: `?id=${postInfo.postID}` }}>
                             {postInfo.title}
                         </Link>

@@ -6,7 +6,7 @@ export function useFetchCountries(): Country[] {
     const [errorMessage, setErrorMessage] = useState<string>("");
 
     useEffect(() => {
-        (async function getCountries() {
+        (async (): Promise<void> => {
             try {
                 const response = await fetch("https://restcountries.com/v3.1/all");
                 if (response.status === 500) {

@@ -5,14 +5,18 @@ import { findSeller } from './SellerService.js';
 export async function createPostHandler(postData, userID) {
     try {
         const seller = await findSeller(userID);
-        await prisma.post.create({
+        const res = await prisma.post.create({
             data: {
                 sellerID: seller.sellerID,
                 about: postData.about,
                 title: postData.title,
-                startingPrice: +postData.startingPrice
+                startingPrice: postData.startingPrice
             }
         });
+
+        createPostPackage(postData.packages[0], res.postID, "BASIC");
+        if (postData.packages.length >= 2) createPostPackage(postData.packages[1], res.postID, "STANDARD");
+        if (postData.packages.length === 3) createPostPackage(postData.packages[2], res.postID, "SUPERIOR");
     }
     catch (err) {
         const error = new Error("Something went wrong when trying to process your request. Please try again.");
@@ -21,6 +25,26 @@ export async function createPostHandler(postData, userID) {
     }
     finally {
         await prisma.$disconnect();
+    }
+}
+
+export async function createPostPackage(packageData, postID, type) {
+    try {
+        await prisma.package.create({
+            data: {
+                postID: postID,
+                deliveryTime: packageData.deliveryTime,
+                revisions: packageData.revisions,
+                description: packageData.description,
+                type: type,
+                features: packageData.features
+            }
+        });
+    }
+    catch (err) {
+        const error = new Error("Something went wrong when trying to process your request. Please try again.");
+        error.code = 400;
+        throw error;
     }
 }
 
@@ -43,6 +67,15 @@ export async function getPostHandler(postID) {
                             }
                         },
                     },
+                },
+                packages: {
+                    select: {
+                        deliveryTime: true,
+                        revisions: true,
+                        description: true,
+                        type: true,
+                        features: true
+                    }
                 }
             }
         });

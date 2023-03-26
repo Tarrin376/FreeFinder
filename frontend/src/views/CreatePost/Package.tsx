@@ -22,7 +22,8 @@ const MAX_DELIVERY_DAYS = 360;
  
 function Package({ setSection, setRevisions, setFeatures, setDeliveryTime, setDescription, features, back, 
     skip, next, deliveryTime, revisions, description }: PackageProps) {
-    function updateFeatureInput(index: number, value: string) {
+
+    function updateFeatureInput(index: number, value: string): void {
         setFeatures((state) => {
             const cpy = [...state];
             cpy[index] = value; 
@@ -30,13 +31,13 @@ function Package({ setSection, setRevisions, setFeatures, setDeliveryTime, setDe
         });
     }
 
-    function addNewFeature() {
+    function addNewFeature(): void {
         if (features.length < MAX_FEATURES) {
             setFeatures((state) => [...state, ""]);
         }
     }
 
-    function updateDeliveryTime(e: React.ChangeEvent<HTMLInputElement>) {
+    function updateDeliveryTime(e: React.ChangeEvent<HTMLInputElement>): void {
         const deliveryTime = e.target.value;
         if (checkIsNumeric(deliveryTime, MAX_DELIVERY_DAYS)) {
             setDeliveryTime(+deliveryTime);
@@ -45,21 +46,21 @@ function Package({ setSection, setRevisions, setFeatures, setDeliveryTime, setDe
         }
     }
 
-    function updateDescription(e: React.ChangeEvent<HTMLTextAreaElement>) {
+    function updateDescription(e: React.ChangeEvent<HTMLTextAreaElement>): void {
         const description = e.target.value;
         setDescription(description);
     }
 
-    function updateRevision(e: React.ChangeEvent<HTMLInputElement>) {
+    function updateRevision(e: React.ChangeEvent<HTMLInputElement>): void {
         const revision = e.target.value;
         setRevisions(revision);
     }
 
-    function checkInputs() {
+    function checkInputs(): boolean {
         return description.length > 0 && deliveryTime > 0;
     }
 
-    function skipPackage() {
+    function skipPackage(): void {
         setDeliveryTime(0);
         setDescription("");
         setRevisions("1");

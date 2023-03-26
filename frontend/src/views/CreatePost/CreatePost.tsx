@@ -8,6 +8,7 @@ import ChooseThumbnail from './ChooseThumbnail';
 import BasicPackage from './BasicPackage';
 import StandardPackage from './StandardPackage';
 import SuperiorPackage from './SuperiorPackage';
+import { IPackage } from '../../models/IPackage';
 
 interface CreatePostProps {
     setPostService: React.Dispatch<React.SetStateAction<boolean>>,
@@ -26,6 +27,14 @@ export enum Sections {
     SuperiorPackage
 }
 
+type PostData = {
+    about: string,
+    title: string,
+    startingPrice: number,
+    userID: string,
+    packages: IPackage[]
+}
+
 function CreatePost({ setPostService, setUserPosts, cursor, setReachedBottom, setNextPage }: CreatePostProps) {
     const [section, setSection] = useState<Sections>(Sections.UploadFiles);
     const userContext: IUserContext = useContext(UserContext);
@@ -41,7 +50,7 @@ function CreatePost({ setPostService, setUserPosts, cursor, setReachedBottom, se
     const [uploadedFiles, setUploadedFiles] = useState<File[]>([]);
 
     // BasicPackage states
-    const [basicRevisions, setBasicRevisions] = useState<string>("");
+    const [basicRevisions, setBasicRevisions] = useState<string>("1");
     const [basicFeatures, setBasicFeatures] = useState<string[]>([]);
     const [basicDeliveryTime, setBasicDeliveryTime] = useState<number>(0);
     const [basicDescription, setBasicDescription] = useState<string>("");
@@ -53,23 +62,56 @@ function CreatePost({ setPostService, setUserPosts, cursor, setReachedBottom, se
     const [standardDescription, setStandardDescription] = useState<string>("");
 
     // StandardPackage states
-    const [superiorRevisions, setSuperiorRevisions] = useState<string>("");
+    const [superiorRevisions, setSuperiorRevisions] = useState<string>("1");
     const [superiorFeatures, setSuperiorFeatures] = useState<string[]>([]);
     const [superiorDeliveryTime, setSuperiorDeliveryTime] = useState<number>(0);
     const [superiorDescription, setSuperiorDescription] = useState<string>("");
 
+    function constructPost(): PostData {
+        const post: PostData = { 
+            about: about.trim(), 
+            title: title.trim(),
+            startingPrice: +startingPrice, 
+            userID: userContext.userData.userID,
+            packages: [
+                {
+                    revisions: basicRevisions,
+                    features: basicFeatures,
+                    deliveryTime: basicDeliveryTime,
+                    description: basicDescription
+                }
+            ]
+        };
+
+        if (standardDeliveryTime > 0) {
+            post.packages.push({
+                revisions: standardRevisions,
+                features: standardFeatures,
+                deliveryTime: standardDeliveryTime,
+                description: standardDescription
+            });
+        }
+
+        if (superiorDeliveryTime > 0) {
+            post.packages.push({
+                revisions: superiorRevisions,
+                features: superiorFeatures,
+                deliveryTime: superiorDeliveryTime,
+                description: superiorDescription
+            });
+        }
+
+        return post;
+    }
+
     async function createPost(): Promise<void> {
         setLoading(true);
-        
+        const post: PostData = constructPost();
+
         try {
             const response = await fetch("/api/posts/create", {
                 method: 'POST',
-                body: JSON.stringify({
-                    about: about.trim(),
-                    title: title.trim(),
-                    startingPrice: startingPrice,
-                    userID: userContext.userData.userID
-                }),
+                body: JSON.stringify(post),
                 headers: {
                     'Content-Type': 'application/json',
                     'Accept': 'application/json'

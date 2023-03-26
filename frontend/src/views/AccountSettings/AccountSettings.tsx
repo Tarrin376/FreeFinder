@@ -29,7 +29,7 @@ function AccountSettings({ setSettingsPopUp, userContext }: SettingsProps) {
         setOption(next);
     }
 
-    function getOption() {
+    function getOption(): React.ReactElement<any> {
         switch (option) {
             case Options.details:
                 return <MyDetails userContext={userContext} />

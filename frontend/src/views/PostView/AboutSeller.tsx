@@ -21,7 +21,7 @@ function AboutSeller({ postData }: { postData: PostPage }) {
             </div>
             <div className="border-b border-b-light-gray pb-4 pt-4">
                 <h3 className="text-xl mb-2">Description</h3>
-                <p className="text-paragraph-text">
+                <p className="text-paragraph-text break-words">
                     {postData.postedBy.description}
                 </p>
             </div>

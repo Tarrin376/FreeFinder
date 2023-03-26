@@ -23,7 +23,7 @@ interface SortByProps {
 }
 
 function SortBy({ cursor, sortBy, setPosts, setReachedBottom, setSortBy, head, loading }: SortByProps) {
-    function sortPosts(value: string) {
+    function sortPosts(value: string): void {
         if (!loading) {
             cursor.current = head;
             setPosts([]);

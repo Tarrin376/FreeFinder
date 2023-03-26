@@ -1,3 +1,5 @@
+import { IPackage } from "../models/IPackage";
+
 export type PostPage = {
     postID: string,
     sellerID: string,
@@ -16,5 +18,6 @@ export type PostPage = {
             status: string,
             profilePicURL: string,
         }
-    }
+    },
+    packages: IPackage[]
 }

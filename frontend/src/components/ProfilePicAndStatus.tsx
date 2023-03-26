@@ -25,7 +25,7 @@ function ProfilePicAndStatus({ profilePicURL, profileStatus, statusStyles, imgSt
     const userContext: IUserContext = useContext(UserContext);
     const [profileDropdown, setProfileDropdown] = useState<boolean>(false);
 
-    function triggerUpload() {
+    function triggerUpload(): void {
         if (inputFileRef.current) {
             inputFileRef.current.click();
         }

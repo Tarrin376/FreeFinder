@@ -19,7 +19,7 @@ function ChangePassword({ userContext }: { userContext: IUserContext }) {
     async function updatePassword(): Promise<void> {
         setLoading(true);
 
-        const passwordMatch = await checkPasswordMatch();
+        const passwordMatch: boolean = await checkPasswordMatch();
         if (!passwordMatch) {
             setErrorMessage("The password you provided does not match your current password.");
             setLoading(false);

@@ -17,7 +17,7 @@ export function useFetchPosts(pageRef: React.RefObject<HTMLDivElement>, sellerUs
         try {
             setLoading(true);
             setTimeout(() => {
-                (async function getPosts() {
+                (async (): Promise<void> => {
                     const posts = await fetchPosts(url, sellerUserID, setPosts, cursor.current);
                     if (posts.last) setReachedBottom(true);
                     else cursor.current = posts.cursor;

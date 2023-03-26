@@ -30,7 +30,7 @@ function MyPostsView() {
         }
     }
 
-    async function removePost(postID: string) {
+    async function removePost(postID: string): Promise<void> {
         if (deletingPost) {
             return;
         }

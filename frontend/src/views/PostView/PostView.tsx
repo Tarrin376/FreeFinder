@@ -7,7 +7,7 @@ import { getTimePosted } from "../../utils/getTimePosted";
 import AboutSeller from "./AboutSeller";
 import VisitorsAlsoViewed from "./VisitorsAlsoViewed";
 import Review from "./Reviews";
-import PostPageSkeleton from '../../skeletons/PostPageSkeleton';
+import PostViewSkeleton from '../../skeletons/PostViewSkeleton';
 import Placeholder from '../../assets/placeholder_img.jpeg';
 
 function PostView() {
@@ -15,7 +15,7 @@ function PostView() {
     const location = useLocation();
     
     useEffect(() => {
-        (async () => {
+        (async (): Promise<void> => {
             try {
                 const response = await fetch(`/api/posts/find${location.search}`);
                 if (response.status !== 500) {
@@ -34,7 +34,7 @@ function PostView() {
 
     if (!postData) {
         return (
-            <PostPageSkeleton />
+            <PostViewSkeleton />
         );
     }
 
@@ -43,7 +43,7 @@ function PostView() {
             <div className="w-[75%]">
                 <header>
                     <p className="text-main-blue mb-2">Website design</p>
-                    <h1 className="text-3xl mb-4 max-w-[80%]">{postData.title}</h1>
+                    <h1 className="text-3xl mb-4 max-w-[80%] break-words">{postData.title}</h1>
                     <div className="flex gap-3 items-center">
                         <div className="relative">
                             <ProfilePicAndStatus 
@@ -65,7 +65,7 @@ function PostView() {
                             </p>
                         </div>
                     </div>
-                    <div className="flex w-[100%] h-[480px] gap-8 mt-8">
+                    <div className="flex h-[480px] gap-8 mt-8">
                         <img src={Placeholder} className="w-[750px] block rounded-[8px] object-cover" alt="placeholder" />
                         <div className="flex-1 bg-main-white rounded-[8px] border border-gray-300 shadow-post"></div>
                     </div>
@@ -82,7 +82,7 @@ function PostView() {
                 </div>
                 <section className="mt-8">
                     <h2 className="text-2xl mb-3">About this service</h2>
-                    <p className="text-paragraph-text leading-7">
+                    <p className="text-paragraph-text leading-7 break-words">
                         {postData.about}
                     </p>
                 </section>

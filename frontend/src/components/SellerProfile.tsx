@@ -16,7 +16,7 @@ function SellerProfile({ setSellerProfilePopUp }: SellerProfileProps) {
     const userContext = useContext<IUserContext>(UserContext);
     const [errorMessage, setErrorMessage] = useState<string>("");
 
-    async function updateSellerDetails() {
+    async function updateSellerDetails(): Promise<void> {
         setLoading(true);
         try {
             const response = await fetch("/api/sellers/update", {
