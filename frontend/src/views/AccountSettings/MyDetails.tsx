@@ -60,13 +60,16 @@ function MyDetails({ userContext } : { userContext: IUserContext }) {
                     <input type="text" className={`search-bar ${!validFirst && firstEmail !== "" && "invalid-input"}`} 
                     placeholder="Change email address"
                     onChange={(e) => emailChangeHandler(e.target.value, setValidFirst, setFirstEmail)} />
+                    <p className="text-box-error-message">{!validFirst && firstEmail !== "" ? "Please use a valid email address" : ""}</p>
                 </div>
                 <div>
                     <p className="mb-2">Confirm email address</p>
-                    <input type="text" 
-                    className={`search-bar ${(!validSecond || firstEmail !== secondEmail) && secondEmail !== "" && "invalid-input"}`} 
-                    placeholder="Re-enter your email address"
-                    onChange={(e) => emailChangeHandler(e.target.value, setValidSecond, setSecondEmail)} />
+                    <input type="text" className={`search-bar ${((!validSecond  && secondEmail !== "") || firstEmail !== secondEmail) && "invalid-input"}`} 
+                    placeholder="Re-enter your email address" onChange={(e) => emailChangeHandler(e.target.value, setValidSecond, setSecondEmail)} />
+                    <p className="text-box-error-message">
+                        {!validSecond && secondEmail !== "" ? "Please use a valid email address" : 
+                        firstEmail !== secondEmail ? "Email address does not match" : ""}
+                    </p>
                 </div>
                 <LoadingButton 
                     loading={loading} text="Update Details" loadingText="Checking details..." 

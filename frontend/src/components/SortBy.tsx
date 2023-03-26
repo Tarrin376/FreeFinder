@@ -1,5 +1,5 @@
 import { IPost } from '../models/IPost';
-import { Cursor } from '../types/Cursor';
+import { savedServicesKey } from '../views/SavedServicesView/SavedServicesView';
 
 export const sortByParams: {
     [key: string]: string
@@ -9,6 +9,8 @@ export const sortByParams: {
     "lowest price": "lowest-price",
     "highest price": "highest-price"
 }
+
+export type Cursor = string | savedServicesKey;
 
 interface SortByProps {
     cursor: React.MutableRefObject<Cursor>,

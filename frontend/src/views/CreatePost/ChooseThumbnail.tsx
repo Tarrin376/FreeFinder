@@ -1,5 +1,5 @@
 import PopUpWrapper from "../../layouts/PopUpWrapper";
-import { Sections } from "../../types/Sections";
+import { Sections } from "./CreatePost";
 
 interface ChooseThumbnailProps {
     setSection: React.Dispatch<React.SetStateAction<Sections>>,
@@ -15,8 +15,8 @@ function ChooseThumbnail({ setSection, setPostService, uploadedFiles }: ChooseTh
                 hover:bg-main-white-hover" onClick={() => setSection(Sections.UploadFiles)}>
                     Back
                 </button>
-                <button className="btn-primary bg-main-purple hover:bg-main-purple-hover text-main-white w-[110px] px-3"
-                onClick={() => setSection(Sections.CreatePackages)}>
+                <button className="btn-primary bg-main-blue hover:bg-main-blue-hover text-main-white w-[110px] px-3"
+                onClick={() => setSection(Sections.BasicPackage)}>
                     Next
                 </button>
             </div>

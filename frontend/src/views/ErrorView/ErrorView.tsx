@@ -6,7 +6,7 @@ function ErrorView() {
             <h1 className="text-[80px] mt-24">404</h1>
             <h1 className="text-[40px]">This is not the page you are looking for...</h1>
             <Link to="/">
-                <button className="btn-primary bg-main-purple mt-4 text-main-white hover:bg-main-purple-hover">
+                <button className="btn-primary bg-main-blue mt-4 text-main-white hover:bg-main-blue-hover">
                     Home Page
                 </button>
             </Link>

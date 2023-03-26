@@ -17,7 +17,7 @@ function PostView() {
     useEffect(() => {
         (async () => {
             try {
-                const response = await fetch(`/posts/find${location.search}`);
+                const response = await fetch(`/api/posts/find${location.search}`);
                 if (response.status !== 500) {
                     const data = await response.json();
                     setTimeout(() => {
@@ -39,10 +39,10 @@ function PostView() {
     }
 
     return (
-        <div className="page flex gap-[60px]">
-            <div className="w-[70%]">
+        <div className="page flex gap-[80px]">
+            <div className="w-[75%]">
                 <header>
-                    <p className="text-main-purple mb-2">Website design</p>
+                    <p className="text-main-blue mb-2">Website design</p>
                     <h1 className="text-3xl mb-4 max-w-[80%]">{postData.title}</h1>
                     <div className="flex gap-3 items-center">
                         <div className="relative">
@@ -63,14 +63,14 @@ function PostView() {
                             <p className="text-side-text-gray text-[15px]">{getTimePosted(postData.createdAt)}</p>
                         </div>
                     </div>
-                    <div className="flex w-[100%] h-[480px] gap-4 mt-8">
+                    <div className="flex w-[100%] h-[480px] gap-8 mt-8">
                         <img src={Placeholder} className="w-[750px] block rounded-[8px] object-cover" alt="placeholder" />
                         <div className="flex-1 bg-main-white rounded-[8px] border border-gray-300 shadow-post"></div>
                     </div>
                 </header>
                 <div className="flex justify-between mt-8 items-center">
                     <h2 className="text-2xl">{`${postData.postedBy.user.username}'s pinned reviews`}</h2>
-                    <p className="text-main-purple underline nav-item hover:text-main-black">See all reviews</p>
+                    <p className="text-main-blue underline nav-item hover:text-main-black">See all reviews</p>
                 </div>
                 <div className="mt-4 flex gap-5">
                     <Review />

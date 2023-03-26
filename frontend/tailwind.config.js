@@ -6,8 +6,8 @@ module.exports = {
   theme: {
     extend: {
         colors: {
-            'main-purple': '#234dd6',
-            'main-purple-hover': '#2c55dc',
+            'main-blue': '#2374E1',
+            'main-blue-hover': '#2f7ce3',
             'main-white': '#fefefe',
             'light-gray': '#e1e3e8',
             'nav-search-gray': '#cdcdcd',
@@ -18,9 +18,9 @@ module.exports = {
             'side-text-gray': '#879198',
             'main-black-hover': '#323232',
             'pop-up-bg': 'rgba(149, 149, 149, 0.10)',
-            'main-white-hover': '#fbfbfb',
-            'error-red': '#f43c3c14',
-            'error-red-hover': 'rgba(255, 0, 0, 0.08)',
+            'main-white-hover': '#f9f9f9',
+            'error-red': 'rgba(255, 0, 0, 0.08)',
+            'error-red-hover': 'rgba(255, 0, 0, 0.10)',
             'error-text': '#F43C3C'
         },
         dropShadow: {

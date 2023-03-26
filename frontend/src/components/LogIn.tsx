@@ -30,7 +30,7 @@ function LogIn({ setLogIn, setSignUp }: LogInProps) {
 
         try {
             setLoading(true);
-            const response = await fetch("/users/login", {
+            const response = await fetch("/api/users/login", {
                 method: 'POST',
                 body: JSON.stringify({ 
                     password: password,
@@ -78,7 +78,7 @@ function LogIn({ setLogIn, setSignUp }: LogInProps) {
                     callback={logInAttempt} disabled={false} styles={"main-btn"} loadingColour="bg-main-black"
                 />
                 <p className="mt-6 text-side-text-gray text-[15px]">Dont yet have an account? 
-                    <span className="text-main-purple ml-2 cursor-pointer hover:text-main-black" onClick={openSignUp}>
+                    <span className="text-main-blue ml-2 cursor-pointer hover:text-main-black" onClick={openSignUp}>
                         Sign Up
                     </span>
                 </p>

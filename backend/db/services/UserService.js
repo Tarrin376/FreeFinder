@@ -138,9 +138,13 @@ export async function getUserHandler(usernameOrEmail, password) {
         }
     }
     catch (err) {
-        const error = new Error("Something went wrong when trying to process your request. Please try again.");
-        error.code = 400;
-        throw error;
+        if (!err.code) {
+            const error = new Error("Something went wrong when trying to process your request. Please try again.");
+            error.code = 400;
+            throw error;
+        } else {
+            throw err;
+        }
     }
     finally {
         await prisma.$disconnect();
@@ -187,7 +191,11 @@ export async function updateUserHandler(data) {
 
 export async function deleteUserHandler(userID) {
     try {
-        await prisma.user.delete({ where: { userID: userID } });
+        await prisma.user.delete({ 
+            where: { 
+                userID: userID 
+            } 
+        });
     }
     catch (err) {
         if (err instanceof Prisma.PrismaClientKnownRequestError && err.code === "P2025") {

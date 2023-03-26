@@ -40,7 +40,7 @@ function ProfileMenu({ userContext, setSettingsPopUp, setSellerProfilePopUp }: P
 
     async function logout(): Promise<void> {
         try {
-            const clearToken = await fetch("/users/logout");
+            const clearToken = await fetch("/api/users/logout");
             if (clearToken.status === 500) {
                 console.log(`Looks like we are having trouble on our end. Please try again later. 
                 (Error code: ${clearToken.status})`);
@@ -54,7 +54,7 @@ function ProfileMenu({ userContext, setSettingsPopUp, setSellerProfilePopUp }: P
                     console.log(response.message);
                 }
             }
-        } 
+        }
         catch (err: any) {
             console.log(err.message);
         }
@@ -74,20 +74,21 @@ function ProfileMenu({ userContext, setSettingsPopUp, setSellerProfilePopUp }: P
         <div className="flex gap-4 items-center">
             <div>
                 <p className="text-right text-[14px]">{userContext.userData.username}</p>
-                <p className="text-right text-main-purple text-[14px]">{userContext.userData.email}</p>
+                <p className="text-right text-main-blue text-[14px]">{userContext.userData.email}</p>
             </div>
             <div className="cursor-pointer relative">
                 <div onClick={() => setNavProfileDropdown(true)}>
                     <ProfilePicAndStatus profilePicURL={userContext.userData.profilePicURL} profileStatus={userContext.userData.status} />
                 </div>
                 <OutsideClickHandler onOutsideClick={() => setNavProfileDropdown(false)}>
-                    {navProfileDropdown && <ul className="absolute bg-main-black mt-2 border-nav-search-gray border rounded-[11px] right-0 z-10 overflow-hidden">
-                        <div className="border-b border-[#3E3E3E]">
-                            <p className="whitespace-nowrap p-3 pt-1 pb-1 cursor-default select-none profile-menu-element hover:bg-main-black">
-                                Signed in as: <b className="text-main-white">{userContext.userData.username}</b>
+                    {navProfileDropdown && <ul className="absolute bg-main-white shadow-profile-page-container 
+                    mt-2 border-light-gray border-2 rounded-[11px] right-0 z-10 overflow-hidden">
+                        <div className="border-b border-light-gray">
+                            <p className="whitespace-nowrap p-3 pt-1 pb-1 cursor-default select-none profile-menu-element">
+                                Signed in as: <span className="text-main-blue">@</span>{userContext.userData.username}
                             </p>
                         </div>
-                        <div className="border-b border-[#3E3E3E] flex flex-col">
+                        <div className="border-b border-light-gray flex flex-col">
                             <p className="profile-menu-element" onClick={openSettings}>Account Settings</p>
                             {userContext.userData.seller && <p className="profile-menu-element" onClick={openSellerProfile}>Update seller profile</p>}
                             <button className="profile-menu-element" onClick={toggleStatus} disabled={disabled}>

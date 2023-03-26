@@ -43,7 +43,7 @@ function DragAndDrop({ children, handleDrop }: { children?: React.ReactNode, han
     return (
         <div onDragEnter={dragInHandler} onDragLeave={dragOutHandler} onDragOver={dragHandler} onDrop={dropHandler}
         className={`w-full h-[260px] outline-2 outline-dashed rounded-[8px] relative
-        ${dragging ? 'outline-main-purple bg-[#714cfe05]' : 'outline-light-gray'}`}>
+        ${dragging ? 'outline-main-blue bg-[#2375e109]' : 'outline-light-gray'}`}>
             {children}
         </div>
     )

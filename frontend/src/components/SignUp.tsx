@@ -38,7 +38,7 @@ function SignUp({ setLogIn, setSignUp, setAccountCreated }: SignUpProps) {
 
         try {
             setLoading(true);
-            const response = await fetch('/users/addUser', {
+            const response = await fetch("/api/users/addUser", {
                 method: 'POST',
                 body: JSON.stringify({ 
                     email: form.emailFirst, 
@@ -84,7 +84,8 @@ function SignUp({ setLogIn, setSignUp, setAccountCreated }: SignUpProps) {
         const validEmail: boolean = email.match(emailPattern) !== null;
 
         if (isFirst) {
-            setForm({ ...form, validEmailFirst: validEmail, emailFirst: email });
+            if (validEmail) setForm({ ...form, validEmailFirst: validEmail, emailFirst: email, validEmailSecond: form.emailSecond === email });
+            else setForm({ ...form, validEmailFirst: validEmail, emailFirst: email });
         } else {
             setForm({ ...form, validEmailSecond: validEmail && email === form.emailFirst, emailSecond: email });
         }
@@ -100,10 +101,6 @@ function SignUp({ setLogIn, setSignUp, setAccountCreated }: SignUpProps) {
         setForm({ ...form, validPassword: password.length >= 8, password });
     }
 
-    function isValidInput(valid: boolean, value: string): boolean {
-        return valid || value === "";
-    }
-
     function isValidForm(): boolean {
         return form.validEmailFirst && form.validEmailSecond 
         && form.validUsername && form.validPassword;
@@ -114,34 +111,25 @@ function SignUp({ setLogIn, setSignUp, setAccountCreated }: SignUpProps) {
             <form>
                 <p className="mb-6 text-side-text-gray text-[15px]">Signing up for FreeFinder is fast and 100% free!</p>
                 {errorMessage !== "" && <ErrorMessage message={errorMessage} title={"Account creation failed."} />}
-                <div className="flex gap-3 flex-col mb-8">
-
-                    <input type="email" placeholder="Enter your email*" 
-                    className={`search-bar ${!isValidInput(form.validEmailFirst, form.emailFirst) && "invalid-input"}`} 
+                <div className="flex flex-col mb-8">
+                    <input type="email" placeholder="Enter your email*" className={`search-bar ${!form.validEmailFirst && form.emailFirst !== "" && "invalid-input"}`} 
                     onChange={(e) => checkEmail(e, true)} />
-
-                    <input type="email" placeholder="Confirm your email*" 
-                    className={`search-bar ${!isValidInput(form.validEmailSecond, form.emailSecond) && "invalid-input"}`} 
+                    {!form.validEmailFirst && form.emailFirst !== "" && <p className="text-box-error-message">Please use a valid email address</p>}
+                    <input type="email" placeholder="Confirm your email*" className={`search-bar mt-3 ${!form.validEmailSecond && form.emailSecond !== "" && "invalid-input"}`} 
                     onChange={(e) => checkEmail(e, false)} />
-
-                    <input type="text" placeholder="Create a username*" 
-                    className={`search-bar ${!isValidInput(form.validUsername, form.username) && "invalid-input"}`} 
-                    onChange={(e) => checkUsername(e)} />
-
-                    <input type="password" placeholder="Create a password*" 
-                    className={`search-bar ${!isValidInput(form.validPassword, form.password) && "invalid-input"}`} 
+                    {!form.validEmailSecond && form.emailSecond !== "" && <p className="text-box-error-message">Email address does not match</p>}
+                    <input type="text" placeholder="Create a username*" className="search-bar mt-3" onChange={(e) => checkUsername(e)} />
+                    <input type="password" placeholder="Create a password*" className={`search-bar mt-3 mb-3 ${!form.validPassword && form.password !== "" && "invalid-input"}`} 
                     onChange={(e) => checkPassword(e)} />
                     <CountriesDropdown country={country} selected={"🇬🇧 United Kingdom"} />
                 </div>
-
                 <LoadingButton
                     loading={loading} text="Create Account" loadingText="Checking details" 
                     callback={createAccount} styles={!isValidForm() ? "invalid-button main-btn" : "main-btn"} 
                     disabled={!isValidForm()} loadingColour="bg-main-black"
                 />
-                
                 <p className="mt-6 text-side-text-gray text-[15px]">Already have an account? 
-                    <span className="text-main-purple ml-2 cursor-pointer hover:text-main-black" onClick={openLogIn}>
+                    <span className="text-main-blue ml-2 cursor-pointer hover:text-main-black" onClick={openLogIn}>
                         Log In
                     </span>
                 </p>

@@ -8,8 +8,7 @@ export function useFetchCountries(): Country[] {
     useEffect(() => {
         (async function getCountries() {
             try {
-                const response = await fetch('https://restcountries.com/v3.1/all');
-                
+                const response = await fetch("https://restcountries.com/v3.1/all");
                 if (response.status === 500) {
                     setErrorMessage(`Looks like we are having trouble on our end. Please try again later. 
                     (Error code: ${response.status})`);
@@ -34,7 +33,7 @@ export function useFetchCountries(): Country[] {
             catch (err: any) {
                 setErrorMessage(err.message);
             }
-        })()
+        })();
     }, []);
 
     return countries;

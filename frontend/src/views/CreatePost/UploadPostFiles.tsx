@@ -4,7 +4,7 @@ import DragAndDrop from "../../components/DragAndDrop";
 import Storage from '../../assets/storage.png';
 import PNGIcon from '../../assets/png.png';
 import JPGIcon from '../../assets/jpg.png';
-import { Sections } from "../../types/Sections";
+import { Sections } from "./CreatePost";
 
 const MAX_FILE_UPLOADS: number = 20;
 const MAX_FILE_BYTES = 26214400;
@@ -78,13 +78,9 @@ function UploadPostFiles({ setPostService, setSection, uploadedFiles, setUploade
                 </span>
             </p>
             <div className="max-h-[250px] items-center overflow-scroll mt-6 flex flex-col gap-[15px] scrollbar-hide">
-                {uploadedFiles.map((file: File | undefined, index: number) => {
-                    if (!file) {
-                        return null;
-                    }
-
+                {uploadedFiles.map((file: File, index: number) => {
                     return (
-                        <div key={index} className="p-3 rounded-[8px] bg-[#f6f7f8] flex justify-between gap-[18px] items-center">
+                        <div key={index} className="p-3 rounded-[8px] bg-[#f8f9fa] flex justify-between gap-[18px] items-center">
                             <div>
                                 <div className="flex items-center gap-3 mb-2">
                                     <img src={file.type === "image/jpeg" ? JPGIcon : PNGIcon} alt="file type" className="w-[32px] h-[32px]" />
@@ -110,33 +106,17 @@ function UploadPostFiles({ setPostService, setSection, uploadedFiles, setUploade
                     );
                 })}
             </div>
-            <div className="mt-[35px] flex items-center justify-between">
-                <div className="flex items-center gap-2 cursor-pointer">
-                    <svg fill="#879198" width="15px" height="15px" version="1.1" id="Capa_1" xmlns="http://www.w3.org/2000/svg" 
-                    xmlnsXlink="http://www.w3.org/1999/xlink" 
-                    viewBox="0 0 416.979 416.979" xmlSpace="preserve">
-                        <g id="SVGRepo_bgCarrier" strokeWidth="0"></g>
-                        <g id="SVGRepo_tracerCarrier" strokeLinecap="round" strokeLinejoin="round"></g>
-                        <g id="SVGRepo_iconCarrier">
-                            <g>
-                                <path d="M356.004,61.156c-81.37-81.47-213.377-81.551-294.848-0.182c-81.47,81.371-81.552,213.379-0.181,294.85 c81.369,81.47,213.378,81.551,294.849,0.181C437.293,274.636,437.375,142.626,356.004,61.156z M237.6,340.786 c0,3.217-2.607,5.822-5.822,5.822h-46.576c-3.215,0-5.822-2.605-5.822-5.822V167.885c0-3.217,2.607-5.822,5.822-5.822h46.576 c3.215,0,5.822,2.604,5.822,5.822V340.786z M208.49,137.901c-18.618,0-33.766-15.146-33.766-33.765 c0-18.617,15.147-33.766,33.766-33.766c18.619,0,33.766,15.148,33.766,33.766C242.256,122.755,227.107,137.901,208.49,137.901z">
-                                </path>
-                            </g> 
-                        </g>
-                    </svg>
-                    <p className="text-side-text-gray pb-[1px] select-none">Help Center</p>
-                </div>
-                <div className="flex gap-3">
-                    <input type='file' ref={inputFileRef} className="hidden" onChange={uploadFile} />
-                    <button className="bg-main-white border-2 border-light-gray btn-primary w-[110px] px-3
-                    hover:bg-main-white-hover" onClick={() => setPostService(false)}>
-                        Cancel
-                    </button>
-                    <button className="btn-primary bg-main-purple hover:bg-main-purple-hover text-main-white w-[110px] px-3"
-                    onClick={() => setSection(Sections.ChooseThumbnail)}>
-                        Next
-                    </button>
-                </div>
+            <div className="mt-[35px] flex gap-3 ml-auto w-fit">
+                <input type='file' ref={inputFileRef} className="hidden" onChange={uploadFile} />
+                <button className="bg-main-white border-2 border-light-gray btn-primary w-[110px] px-3
+                hover:bg-main-white-hover" onClick={() => setPostService(false)}>
+                    Cancel
+                </button>
+                <button className={`btn-primary bg-main-blue hover:bg-main-blue-hover text-main-white w-[110px] px-3 
+                ${uploadedFiles.length === 0 ? 'invalid-button' : ''}`}
+                onClick={() => setSection(Sections.ChooseThumbnail)} disabled={uploadedFiles.length === 0}>
+                    Next
+                </button>
             </div>
         </PopUpWrapper>
     )

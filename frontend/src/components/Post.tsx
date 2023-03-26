@@ -24,7 +24,7 @@ function Post({ postInfo, userID, children }: PostProps) {
                 return;
             }
 
-            const response = await fetch('/saved-posts/save', {
+            const response = await fetch("/api/saved-posts/save", {
                 method: 'POST',
                 body: JSON.stringify({
                     userID: userID,

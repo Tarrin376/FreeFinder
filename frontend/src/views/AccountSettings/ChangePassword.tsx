@@ -21,13 +21,13 @@ function ChangePassword({ userContext }: { userContext: IUserContext }) {
 
         const passwordMatch = await checkPasswordMatch();
         if (!passwordMatch) {
-            setErrorMessage("The current password you provided does not match your password.");
+            setErrorMessage("The password you provided does not match your current password.");
             setLoading(false);
             return;
         }
 
         try {
-            const response = await fetch("/users/update/password", {
+            const response = await fetch("/api/users/update/password", {
                 method: 'PUT',
                 body: JSON.stringify({
                     userID: userContext.userData.userID,
@@ -65,7 +65,7 @@ function ChangePassword({ userContext }: { userContext: IUserContext }) {
 
     async function checkPasswordMatch(): Promise<boolean> {
         try {
-            const response = await fetch("/users/getUser", {
+            const response = await fetch("/api/users/getUser", {
                 method: 'POST',
                 body: JSON.stringify({ 
                     password: currentPass,
@@ -124,18 +124,25 @@ function ChangePassword({ userContext }: { userContext: IUserContext }) {
                     <input type="password" className={`search-bar ${validCurrentPass || currentPass === "" ? '' : 'invalid-input'}`}
                     placeholder="Enter your current password"
                     onChange={(e) => updatePass(e.target.value, setValidCurrentPass, setCurrentPass)} />
+                    <p className="text-box-error-message">{!validCurrentPass && currentPass !== "" ? "Password must be 8 or more characters long" : ""}</p>
                 </div>
                 <div>
                     <p className="mb-2">New password</p>
                     <input type="password" className={`search-bar ${validNewPass || newPass === "" ? '' : 'invalid-input'}`} 
                     placeholder="Enter your new password"
                     onChange={(e) => updatePass(e.target.value, setValidNewPass, setNewPass)} />
+                    <p className="text-box-error-message">{!validNewPass && newPass !== "" ? "Password must be 8 or more characters long" : ""}</p>
                 </div>
                 <div>
                     <p className="mb-2">Confirm new password</p>
-                    <input type="password" className={`search-bar ${validConfirmNewPass || confirmNewPass === "" ? '' : 'invalid-input'}`} 
+                    <input type="password" className={`search-bar ${(validConfirmNewPass || confirmNewPass === "")
+                    && confirmNewPass === newPass ? '' : 'invalid-input'}`} 
                     placeholder="Re-enter your new password"
                     onChange={(e) => updatePass(e.target.value, setValidConfirmNewPass, setConfirmNewPass)} />
+                    <p className="text-box-error-message">
+                        {!validConfirmNewPass && confirmNewPass !== "" ? "Password must be 8 or more characters long" : 
+                        confirmNewPass !== newPass ? "Passwords do not match" : ""}
+                    </p>
                 </div>
                 <LoadingButton 
                     loading={loading} text="Update Details" loadingText="Checking password..." 

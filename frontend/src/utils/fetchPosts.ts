@@ -5,9 +5,9 @@ type fetchPostsRes = {
     last: boolean
 }
 
-export async function fetchPosts(URL: string, sellerUserID: string, setPosts: React.Dispatch<React.SetStateAction<IPost[]>>, cursor: any): Promise<fetchPostsRes> {
+export async function fetchPosts(url: string, sellerUserID: string, setPosts: React.Dispatch<React.SetStateAction<IPost[]>>, cursor: any): Promise<fetchPostsRes> {
     try {
-        const response = await fetch(URL, {
+        const response = await fetch(url, {
             method: 'POST',
             body: JSON.stringify({ 
                 userID: sellerUserID,

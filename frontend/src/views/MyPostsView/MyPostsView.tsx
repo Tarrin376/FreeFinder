@@ -16,11 +16,11 @@ function MyPostsView() {
     const pageRef = useRef<HTMLDivElement>(null);
     const [deletingPost, setDeletingPost] = useState<boolean>(false);
 
-    const URL = `/sellers/posts?sort=${sortBy}`;
+    const url = `/api/sellers/posts?sort=${sortBy}`;
     const cursor = useRef<string>("HEAD");
     
     const [nextPage, setNextPage] = useState<boolean>(false);
-    const posts = useFetchPosts(pageRef, userContext.userData.userID, userContext.userData.username, URL, nextPage, setNextPage, cursor);
+    const posts = useFetchPosts(pageRef, userContext.userData.userID, userContext.userData.username, url, nextPage, setNextPage, cursor);
 
     function openPostService(): void {
         if (userContext.userData.username === "") {
@@ -37,7 +37,7 @@ function MyPostsView() {
     
         try {
             setDeletingPost(true);
-            const response = await fetch("/posts/delete", {
+            const response = await fetch("/api/posts/delete", {
                 method: "DELETE",
                 body: JSON.stringify({
                     postID
@@ -82,8 +82,8 @@ function MyPostsView() {
                 <div className="flex justify-between w-full items-center mb-11">
                     <div className="flex gap-5 w-[35rem] items-stretch">
                         <input type="text" placeholder="Search for post" className="search-bar flex-grow" />
-                        <button onClick={openPostService} className="btn-primary text-main-white bg-main-purple w-60 h-[50px] 
-                        hover:bg-main-purple-hover">Create new post</button>
+                        <button onClick={openPostService} className="btn-primary text-main-white bg-main-blue w-60 h-[50px] 
+                        hover:bg-main-blue-hover">Create new post</button>
                     </div>
                     <SortBy 
                         cursor={cursor} setPosts={posts.setPosts} 

@@ -5,7 +5,7 @@ import UserIcon from '../../assets/user-icon-svgrepo-com.svg';
 
 function AboutSeller({ postData }: { postData: PostPage }) {
     return (
-        <section className=" bg-main-white rounded-[8px] border border-gray-300 shadow-post p-4">
+        <section className=" bg-main-white rounded-[8px] shadow-post p-4">
             <div className="border-b border-b-light-gray pb-4 relative">
                 <h3 className="text-xl mb-4">About this seller</h3>
                 <ProfilePicAndStatus 
@@ -14,7 +14,7 @@ function AboutSeller({ postData }: { postData: PostPage }) {
                     statusStyles='before:hidden'
                     imgStyles="m-auto w-[100px] h-[100px]"
                 />
-                <h4 className="text-lg text-center mt-2">@{postData.postedBy.user.username}</h4>
+                <h4 className="text-lg text-center mt-2"><span className="text-main-blue">@</span>{postData.postedBy.user.username}</h4>
             </div>
             <div className="border-b border-b-light-gray pb-4 pt-4">
                 <h3 className="text-xl mb-2">Description</h3>
@@ -34,7 +34,7 @@ function AboutSeller({ postData }: { postData: PostPage }) {
                     <p className="ml-auto text-side-text-gray">{new Date(postData.postedBy.user.memberDate).toLocaleDateString()}</p>
                 </div>
             </div>
-            <button className="btn-primary w-[100%] h-[45px] bg-main-purple hover:bg-main-purple-hover text-main-white mb-3 mt-1">
+            <button className="btn-primary w-[100%] h-[45px] bg-main-blue hover:bg-main-blue-hover text-main-white mb-3 mt-1">
                 Contact Seller
             </button>
             <button className="btn-primary w-[100%] h-[45px] bg-very-light-gray hover:bg-very-light-gray-hover">

@@ -7,7 +7,7 @@ export const initialState: IUserContext = {
         country: "",
         profilePicURL: "",
         email: "",
-        status: "ONLINE",
+        status: "",
         userID: "",
         memberDate: new Date(),
         seller: {
@@ -32,7 +32,7 @@ function UserProvider({ children }: { children?: React.ReactNode }) {
     useEffect(() => {
         (async function authoriseUser() {
             try {
-                const response = await fetch("users/authoriseUser");
+                const response = await fetch("/api/users/authoriseUser");
                 if (response.status === 200) {
                     const data = await response.json();
                     setUserData(data.userData);

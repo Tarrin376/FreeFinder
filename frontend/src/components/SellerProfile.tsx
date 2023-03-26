@@ -19,7 +19,7 @@ function SellerProfile({ setSellerProfilePopUp }: SellerProfileProps) {
     async function updateSellerDetails() {
         setLoading(true);
         try {
-            const response = await fetch("/sellers/update", {
+            const response = await fetch("/api/sellers/update", {
                 method: 'PUT',
                 body: JSON.stringify({
                     description: description,
@@ -55,7 +55,12 @@ function SellerProfile({ setSellerProfilePopUp }: SellerProfileProps) {
     return (
         <PopUpWrapper setIsOpen={setSellerProfilePopUp} title={"Seller Profile"}>
             {errorMessage !== "" && <ErrorMessage message={errorMessage} title={"Unable to update seller profile"} />}
-            <p className="mb-2">Seller description <span className="text-side-text-gray">{`(Max ${MAX_DESC_CHARS} characters)`}</span></p>
+            <p className="mb-2">
+                Seller description 
+                <span className="text-side-text-gray">
+                    {`(Max ${MAX_DESC_CHARS} characters)`}
+                </span>
+            </p>
             <textarea rows={7} className="search-bar mb-3" defaultValue={userContext.userData.seller.description} 
             maxLength={MAX_DESC_CHARS} onChange={(e) => setDescription(e.target.value)} />
             <LoadingButton 

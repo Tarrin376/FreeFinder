@@ -7,7 +7,7 @@
         @apply transition ease-in-out duration-200 font-medium rounded-[8px] px-6 h-10;
     }
     .nav-item {
-        @apply transition ease-linear duration-100 hover:text-main-purple cursor-pointer;
+        @apply transition ease-linear duration-100 hover:text-main-blue cursor-pointer;
     }
     .search-bar {
         @apply border border-light-gray rounded-[8px] p-3 w-full drop-shadow-search-bar 
@@ -24,7 +24,7 @@
         @apply bg-[#36BF54] text-main-white hover:bg-[#45B65E];
     }
     .profile-menu-element {
-        @apply text-main-white whitespace-nowrap hover:bg-main-black-hover bg-main-black p-3 pt-1 pb-1 text-left text-[14px];
+        @apply text-main-black hover:bg-main-white-hover whitespace-nowrap p-3 pt-1 pb-1 text-left text-[14px];
     }
     .settings-selection {
         @apply border-b-[3px] border-b-main-black cursor-pointer pb-4;
@@ -36,10 +36,13 @@
         @apply animate-pulse bg-light-gray rounded-[8px];
     }
     .main-btn {
-        @apply bg-main-black text-main-white hover:bg-main-purple w-full !h-12 loading-btn;
+        @apply bg-main-black text-main-white hover:bg-main-blue w-full !h-12 loading-btn;
     }
     .loading-btn {
         @apply btn-primary flex items-center justify-center gap-2;
+    }
+    .text-box-error-message {
+        @apply text-error-text mt-1 text-[15px];
     }
 }
 

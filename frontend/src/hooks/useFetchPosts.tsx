@@ -3,7 +3,7 @@ import { fetchPosts } from '../utils/fetchPosts';
 import { IPost } from '../models/IPost';
 import { useScrollEvent } from './useScrollEvent';
 
-export function useFetchPosts(pageRef: React.RefObject<HTMLDivElement>, sellerUserID: string, username: string, URL: string, 
+export function useFetchPosts(pageRef: React.RefObject<HTMLDivElement>, sellerUserID: string, username: string, url: string, 
     nextPage: boolean, setNextPage: React.Dispatch<React.SetStateAction<boolean>>, cursor: React.MutableRefObject<any>) {
 
     const [reachedBottom, setReachedBottom] = useState<boolean>(false);
@@ -17,22 +17,20 @@ export function useFetchPosts(pageRef: React.RefObject<HTMLDivElement>, sellerUs
         try {
             setLoading(true);
             setTimeout(() => {
-                fetchPosts(URL, sellerUserID, setPosts, cursor.current)
-                .then((res) => {
-                    if (res.last) setReachedBottom(true);
-                    else cursor.current = res.cursor;
+                (async function getPosts() {
+                    const posts = await fetchPosts(url, sellerUserID, setPosts, cursor.current);
+                    if (posts.last) setReachedBottom(true);
+                    else cursor.current = posts.cursor;
                     setErrorMessage("");
                     setLoading(false);
-                }).catch((err: any) => { 
-                    setErrorMessage(err.message);
-                    setLoading(false);
-                });
+                })();
             }, 1000);
         }
         catch(err: any) {
             setErrorMessage(err.message);
+            setLoading(false);
         }
-    }, [nextPage, URL, cursor, sellerUserID]);
+    }, [nextPage, url, cursor, sellerUserID]);
 
     return { 
         posts, 

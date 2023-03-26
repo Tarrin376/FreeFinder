@@ -18,12 +18,12 @@ function SavedServicesView() {
     const [sortBy, setSortBy] = useState<string>(sortByParams["most recent"]);
     const pageRef = useRef<HTMLDivElement>(null);
 
-    const URL = `/saved-posts/get-posts?sort=${sortBy}`;
+    const url = `/api/saved-posts/get-posts?sort=${sortBy}`;
     const cursor = useRef<savedServicesKey>({ userID: "", postID: "" });
     const [deletingPost, setDeletingPost] = useState<boolean>(false);
 
     const [nextPage, setNextPage] = useState<boolean>(false);
-    const posts = useFetchPosts(pageRef, userContext.userData.userID, userContext.userData.username, URL, nextPage, setNextPage, cursor);
+    const posts = useFetchPosts(pageRef, userContext.userData.userID, userContext.userData.username, url, nextPage, setNextPage, cursor);
 
     async function removePost(postID: string) {
         if (deletingPost) {
@@ -32,7 +32,7 @@ function SavedServicesView() {
 
         setDeletingPost(true);
         try {
-            const response = await fetch("/saved-posts/delete", {
+            const response = await fetch("/api/saved-posts/delete", {
                 method: "DELETE",
                 body: JSON.stringify({
                     postID: postID,

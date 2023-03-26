@@ -2,7 +2,7 @@ import { Sections } from "./CreatePost";
 import PopUpWrapper from "../../layouts/PopUpWrapper";
 import Package from "./Package";
 
-interface BasicPackageProps {
+interface SuperiorPackageProps {
     setSection: React.Dispatch<React.SetStateAction<Sections>>,
     setPostService: React.Dispatch<React.SetStateAction<boolean>>,
     setRevisions: React.Dispatch<React.SetStateAction<string>>,
@@ -12,17 +12,17 @@ interface BasicPackageProps {
     features: string[],
 }
 
-function BasicPackage({ setSection, setPostService, setRevisions, setFeatures, setDeliveryTime, setDescription, features }: BasicPackageProps) {
+function SuperiorPackage({ setSection, setPostService, setRevisions, setFeatures, setDeliveryTime, setDescription, features }: SuperiorPackageProps) {
     return (
-        <PopUpWrapper setIsOpen={setPostService} title={"Basic package details"}>
+        <PopUpWrapper setIsOpen={setPostService} title={"Superior package details"}>
             <Package
                 setSection={setSection} setRevisions={setRevisions} setFeatures={setFeatures} 
                 setDeliveryTime={setDeliveryTime} setDescription={setDescription}
-                features={features} back={Sections.ChooseThumbnail} 
-                next={Sections.StandardPackage}
+                features={features} back={Sections.StandardPackage} skip={Sections.PostDetails} 
+                next={Sections.PostDetails}
             />
         </PopUpWrapper>
     );
 }
 
-export default BasicPackage;
+export default SuperiorPackage;

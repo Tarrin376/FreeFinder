@@ -14,7 +14,7 @@ function DangerZone({ userContext, setSettingsPopUp }: { userContext: IUserConte
         setLoading(true);
 
         try {
-            const response = await fetch(`/users/delete`, { 
+            const response = await fetch("/api/users/delete", { 
                 method: 'DELETE',
                 body: JSON.stringify({
                     userID: userContext.userData.userID
@@ -58,7 +58,7 @@ function DangerZone({ userContext, setSettingsPopUp }: { userContext: IUserConte
             <LoadingButton 
                 loading={loading} text="Delete account" loadingText="Deleting account..." 
                 callback={deleteAccount} disabled={false} styles={"bg-error-red text-error-text hover:bg-error-red-hover"}
-                loadingColour="bg-main-purple"
+                loadingColour="bg-main-blue"
             />
         </>
     );

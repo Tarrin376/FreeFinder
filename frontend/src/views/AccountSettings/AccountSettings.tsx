@@ -39,9 +39,9 @@ function AccountSettings({ setSettingsPopUp, userContext }: SettingsProps) {
                     setErrorMessage={setErrorMessage} loading={loading} setLoading={setLoading} />
                 </div>
                 <div>
-                    <p>Username: <span className="text-main-purple">{userContext.userData.username}</span></p>
-                    <p>Country: <span className="text-main-purple">{userContext.userData.country}</span></p>
-                    <p>Email: <span className="text-main-purple">{userContext.userData.email}</span></p>
+                    <p>Username: <span className="text-main-blue">{userContext.userData.username}</span></p>
+                    <p>Country: <span className="text-main-blue">{userContext.userData.country}</span></p>
+                    <p>Email: <span className="text-main-blue">{userContext.userData.email}</span></p>
                 </div>
             </div>
             <div className="mt-9 mb-5">

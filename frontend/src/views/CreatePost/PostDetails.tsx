@@ -2,7 +2,7 @@ import PopUpWrapper from "../../layouts/PopUpWrapper";
 import ErrorMessage from "../../components/ErrorMessage";
 import { categories } from "../../utils/jobCategories";
 import LoadingButton from "../../components/LoadingButton";
-import { Sections } from "../../types/Sections";
+import { Sections } from "./CreatePost";
 
 const MAX_PRICE: number = 2500;
 
@@ -22,6 +22,7 @@ interface PostDetailsProps {
 
 function PostDetails({ setPostService, setSection, about, setAbout, title, setTitle, startingPrice, 
     setStartingPrice, errorMessage, loading, createPost }: PostDetailsProps) {
+        
     function validInputs(): boolean {
         return title.trim().length > 0 && about.trim().length > 0 && startingPrice > 0;
     }
@@ -58,7 +59,7 @@ function PostDetails({ setPostService, setSection, about, setAbout, title, setTi
             onChange={(e) => setAbout(e.target.value)} rows={5} maxLength={1500} />
             <div className="flex justify-end gap-3 mt-[35px]">
                 <button className="bg-main-white border-2 border-light-gray btn-primary w-[110px] px-3
-                hover:bg-main-white-hover" onClick={() => setSection(Sections.CreatePackages)}>
+                hover:bg-main-white-hover" onClick={() => setSection(Sections.BasicPackage)}>
                     Back
                 </button>
                 <LoadingButton

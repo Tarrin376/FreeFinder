@@ -53,6 +53,7 @@ function UserProfile({  userContext }: { userContext: IUserContext }) {
                     <p className="mb-2">Username</p>
                     <input type="text" name="change-username" className={`search-bar ${username === "" && "invalid-input"}`} 
                     value={username} onChange={(e) => setUsername(e.target.value)} />
+                    <p className="text-box-error-message">{username === "" ? "Username cannot be empty" : ""}</p>
                 </div>
                 <div>
                     <p className="mb-2">Country</p>
