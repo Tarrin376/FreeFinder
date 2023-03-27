@@ -77,7 +77,7 @@ function CreatePost({ setPostService, setUserPosts, cursor, setReachedBottom, se
             packages: [
                 {
                     revisions: basicRevisions,
-                    features: basicFeatures,
+                    features: basicFeatures.filter((x) => x.trim() !== "").map((x) => x.trim()),
                     deliveryTime: basicDeliveryTime,
                     description: basicDescription,
                     amount: basicAmount,
@@ -90,7 +90,7 @@ function CreatePost({ setPostService, setUserPosts, cursor, setReachedBottom, se
         if (standardDeliveryTime > 0) {
             post.packages.push({
                 revisions: standardRevisions,
-                features: standardFeatures,
+                features: standardFeatures.filter((x) => x.trim() !== "").map((x) => x.trim()),
                 deliveryTime: standardDeliveryTime,
                 description: standardDescription,
                 amount: standardAmount,
@@ -102,7 +102,7 @@ function CreatePost({ setPostService, setUserPosts, cursor, setReachedBottom, se
         if (superiorDeliveryTime > 0) {
             post.packages.push({
                 revisions: superiorRevisions,
-                features: superiorFeatures,
+                features: superiorFeatures.filter((x) => x.trim() !== "").map((x) => x.trim()),
                 deliveryTime: superiorDeliveryTime,
                 description: superiorDescription,
                 amount: superiorAmount,
@@ -117,11 +117,15 @@ function CreatePost({ setPostService, setUserPosts, cursor, setReachedBottom, se
     async function createPost(): Promise<void> {
         setLoading(true);
         const post: PostData = constructPost();
+        const minPrice = post.packages.reduce((acc, cur) => Math.min(cur.amount, acc), Infinity);
 
         try {
             const response = await fetch("/api/posts/create", {
                 method: 'POST',
-                body: JSON.stringify(post),
+                body: JSON.stringify({
+                    ...post, 
+                    startingPrice: minPrice
+                }),
                 headers: {
                     'Content-Type': 'application/json',
                     'Accept': 'application/json'
