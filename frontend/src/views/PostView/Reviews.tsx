@@ -4,7 +4,7 @@ function Review() {
             <div className="min-w-[60px] min-h-[60px] rounded-full bg-black"></div>
             <div className="">
                 <p className="text-main-blue">Jason Fried <span className="text-side-text-gray ml-2">Nov 10, 2020</span></p>
-                <p className="text-paragraph-text break-words">
+                <p className="text-paragraph-text break-all">
                     Lorem ipsum dolor sit, amet consectetur adipisicing elit. Nam ratione incidunt qui architecto repellendus saepe excepturi quidem tempora cum ea?
                 </p>
             </div>

@@ -20,8 +20,8 @@ function AboutSeller({ postData }: { postData: PostPage }) {
                 </h4>
             </div>
             <div className="border-b border-b-light-gray pb-4 pt-4">
-                <h3 className="text-xl mb-2">Description</h3>
-                <p className="text-paragraph-text break-words">
+                <h4 className="text-[18px] mb-2">Description</h4>
+                <p className="text-paragraph-text break-all">
                     {postData.postedBy.description}
                 </p>
             </div>
@@ -37,7 +37,7 @@ function AboutSeller({ postData }: { postData: PostPage }) {
                     <p className="ml-auto text-side-text-gray">{new Date(postData.postedBy.user.memberDate).toLocaleDateString()}</p>
                 </div>
             </div>
-            <button className="btn-primary w-[100%] h-[45px] bg-main-blue hover:bg-main-blue-hover text-main-white mb-3 mt-1">
+            <button className="btn-primary w-[100%] h-[45px] bg-main-blue hover:bg-main-blue-hover text-main-white mb-4 mt-1">
                 Contact Seller
             </button>
             <button className="btn-primary w-[100%] h-[45px] bg-very-light-gray hover:bg-very-light-gray-hover">

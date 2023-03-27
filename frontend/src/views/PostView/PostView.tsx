@@ -44,7 +44,7 @@ function PostView() {
             <div className="w-[75%]">
                 <header>
                     <p className="text-main-blue mb-2">Website design</p>
-                    <h1 className="text-3xl mb-4 max-w-[80%] break-words">{postData.title}</h1>
+                    <h1 className="text-3xl mb-4 max-w-[80%] break-all">{postData.title}</h1>
                     <div className="flex gap-3 items-center">
                         <div className="relative">
                             <ProfilePicAndStatus 
@@ -83,7 +83,7 @@ function PostView() {
                 </div>
                 <section className="mt-8">
                     <h2 className="text-2xl mb-3">About this service</h2>
-                    <p className="text-paragraph-text leading-7 break-words">
+                    <p className="text-paragraph-text leading-7 break-all">
                         {postData.about}
                     </p>
                 </section>
