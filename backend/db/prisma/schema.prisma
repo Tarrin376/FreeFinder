@@ -69,6 +69,8 @@ model Package {
     description  String
     type         PackageType
     features     String[]
+    amount       Decimal     @db.Money
+    numOrders    Int         @default(0)
 
     @@id([postID, type])
 }

@@ -75,8 +75,7 @@ function Post({ postInfo, userID, children }: PostProps) {
                             <p>
                                 <span className="nav-item">{postInfo.postedBy.user.username}</span>
                                 {seconds < 60 * 60 * 24 && 
-                                <span className="btn-primary action-btn rounded-[12px] px-[9px] text-[14px] ml-[10px] 
-                                select-none cursor-pointer">
+                                <span className="bg-[#fbb6fd] w-fit text-[14px] px-2 ml-3 rounded-[5px]">
                                     New
                                 </span>}
                             </p>

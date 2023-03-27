@@ -2,5 +2,8 @@ export interface IPackage {
     revisions: string,
     features: string[],
     deliveryTime: number,
-    description: string
+    description: string,
+    amount: number,
+    numOrders: number,
+    type: string
 }

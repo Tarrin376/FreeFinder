@@ -5,10 +5,8 @@ import { IPost } from "../../models/IPost";
 import UploadPostFiles from "./UploadPostFiles";
 import PostDetails from "./PostDetails";
 import ChooseThumbnail from './ChooseThumbnail';
-import BasicPackage from './BasicPackage';
-import StandardPackage from './StandardPackage';
-import SuperiorPackage from './SuperiorPackage';
 import { IPackage } from '../../models/IPackage';
+import Package from './Package';
 
 interface CreatePostProps {
     setPostService: React.Dispatch<React.SetStateAction<boolean>>,
@@ -53,18 +51,21 @@ function CreatePost({ setPostService, setUserPosts, cursor, setReachedBottom, se
     const [basicRevisions, setBasicRevisions] = useState<string>("1");
     const [basicFeatures, setBasicFeatures] = useState<string[]>([]);
     const [basicDeliveryTime, setBasicDeliveryTime] = useState<number>(0);
+    const [basicAmount, setBasicAmount] = useState<number>(0);
     const [basicDescription, setBasicDescription] = useState<string>("");
 
     // StandardPackage states
     const [standardRevisions, setStandardRevisions] = useState<string>("1");
     const [standardFeatures, setStandardFeatures] = useState<string[]>([]);
     const [standardDeliveryTime, setStandardDeliveryTime] = useState<number>(0);
+    const [standardAmount, setStandardAmount] = useState<number>(0);
     const [standardDescription, setStandardDescription] = useState<string>("");
 
     // StandardPackage states
     const [superiorRevisions, setSuperiorRevisions] = useState<string>("1");
     const [superiorFeatures, setSuperiorFeatures] = useState<string[]>([]);
     const [superiorDeliveryTime, setSuperiorDeliveryTime] = useState<number>(0);
+    const [superiorAmount, setSuperiorAmount] = useState<number>(0);
     const [superiorDescription, setSuperiorDescription] = useState<string>("");
 
     function constructPost(): PostData {
@@ -78,7 +79,10 @@ function CreatePost({ setPostService, setUserPosts, cursor, setReachedBottom, se
                     revisions: basicRevisions,
                     features: basicFeatures,
                     deliveryTime: basicDeliveryTime,
-                    description: basicDescription
+                    description: basicDescription,
+                    amount: basicAmount,
+                    numOrders: 0,
+                    type: "BASIC",
                 }
             ]
         };
@@ -88,7 +92,10 @@ function CreatePost({ setPostService, setUserPosts, cursor, setReachedBottom, se
                 revisions: standardRevisions,
                 features: standardFeatures,
                 deliveryTime: standardDeliveryTime,
-                description: standardDescription
+                description: standardDescription,
+                amount: standardAmount,
+                numOrders: 0,
+                type: "STANDARD"
             });
         }
 
@@ -97,7 +104,10 @@ function CreatePost({ setPostService, setUserPosts, cursor, setReachedBottom, se
                 revisions: superiorRevisions,
                 features: superiorFeatures,
                 deliveryTime: superiorDeliveryTime,
-                description: superiorDescription
+                description: superiorDescription,
+                amount: superiorAmount,
+                numOrders: 0,
+                type: "SUPERIOR"
             });
         }
 
@@ -163,32 +173,34 @@ function CreatePost({ setPostService, setUserPosts, cursor, setReachedBottom, se
             );
         case Sections.BasicPackage:
             return (
-                <BasicPackage 
-                    setSection={setSection} setPostService={setPostService}
-                    setRevisions={setBasicRevisions} setFeatures={setBasicFeatures}
-                    setDeliveryTime={setBasicDeliveryTime} setDescription={setBasicDescription}
-                    features={basicFeatures} deliveryTime={basicDeliveryTime}
-                    revisions={basicRevisions} description={basicDescription}
+                <Package 
+                    setSection={setSection} setRevisions={setBasicRevisions} setFeatures={setBasicFeatures}
+                    setDeliveryTime={setBasicDeliveryTime} setDescription={setBasicDescription} 
+                    setPostService={setPostService} setAmount={setBasicAmount} features={basicFeatures} 
+                    back={Sections.ChooseThumbnail} next={Sections.StandardPackage} deliveryTime={basicDeliveryTime} 
+                    title={"Basic package details"} revisions={basicRevisions} description={basicDescription}
+                    amount={basicAmount}
                 />
             );
         case Sections.StandardPackage:
             return (
-                <StandardPackage 
-                    setSection={setSection} setPostService={setPostService}
-                    setRevisions={setStandardRevisions} setFeatures={setStandardFeatures}
-                    setDeliveryTime={setStandardDeliveryTime} setDescription={setStandardDescription}
-                    features={standardFeatures} deliveryTime={standardDeliveryTime}
-                    revisions={standardRevisions} description={standardDescription}
+                <Package 
+                    setSection={setSection} setRevisions={setStandardRevisions} setFeatures={setStandardFeatures}
+                    setDeliveryTime={setStandardDeliveryTime} setDescription={setStandardDescription} 
+                    setPostService={setPostService} setAmount={setStandardAmount} features={standardFeatures} 
+                    back={Sections.BasicPackage} skip={Sections.PostDetails} next={Sections.SuperiorPackage} 
+                    deliveryTime={standardDeliveryTime} revisions={standardRevisions} description={standardDescription} 
+                    title={"Standard package details"} amount={standardAmount}
                 />
             );
         case Sections.SuperiorPackage:
             return (
-                <SuperiorPackage 
-                    setSection={setSection} setPostService={setPostService}
-                    setRevisions={setSuperiorRevisions} setFeatures={setSuperiorFeatures}
-                    setDeliveryTime={setSuperiorDeliveryTime} setDescription={setSuperiorDescription}
-                    features={superiorFeatures} deliveryTime={superiorDeliveryTime}
-                    revisions={superiorRevisions} description={superiorDescription}
+                <Package 
+                    setSection={setSection} setRevisions={setSuperiorRevisions} setFeatures={setSuperiorFeatures}
+                    setDeliveryTime={setSuperiorDeliveryTime} setDescription={setSuperiorDescription} setPostService={setPostService}
+                    setAmount={setSuperiorAmount} features={superiorFeatures} back={Sections.StandardPackage} skip={Sections.PostDetails} 
+                    next={Sections.PostDetails} deliveryTime={superiorDeliveryTime} revisions={superiorRevisions} 
+                    description={superiorDescription} title={"Superior package details"} amount={superiorAmount}
                 />
             );
         default:

@@ -9,6 +9,7 @@ import VisitorsAlsoViewed from "./VisitorsAlsoViewed";
 import Review from "./Reviews";
 import PostViewSkeleton from '../../skeletons/PostViewSkeleton';
 import Placeholder from '../../assets/placeholder_img.jpeg';
+import Packages from "./Packages";
 
 function PostView() {
     const [postData, setPostData] = useState<PostPage>();
@@ -39,7 +40,7 @@ function PostView() {
     }
 
     return (
-        <div className="page flex gap-[80px]">
+        <div className="page flex gap-16">
             <div className="w-[75%]">
                 <header>
                     <p className="text-main-blue mb-2">Website design</p>
@@ -65,9 +66,9 @@ function PostView() {
                             </p>
                         </div>
                     </div>
-                    <div className="flex h-[480px] gap-8 mt-8">
-                        <img src={Placeholder} className="w-[750px] block rounded-[8px] object-cover" alt="placeholder" />
-                        <div className="flex-1 bg-main-white rounded-[8px] border border-gray-300 shadow-post"></div>
+                    <div className="flex h-[500px] gap-8 mt-8">
+                        <img src={Placeholder} className="w-[730px] block rounded-[8px] object-cover" alt="placeholder" />
+                        <Packages packages={postData.packages} />
                     </div>
                 </header>
                 <div className="flex justify-between mt-8 items-center">

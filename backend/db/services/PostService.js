@@ -14,9 +14,9 @@ export async function createPostHandler(postData, userID) {
             }
         });
 
-        createPostPackage(postData.packages[0], res.postID, "BASIC");
-        if (postData.packages.length >= 2) createPostPackage(postData.packages[1], res.postID, "STANDARD");
-        if (postData.packages.length === 3) createPostPackage(postData.packages[2], res.postID, "SUPERIOR");
+        createPostPackage(postData.packages[0], res.postID, postData.packages[0].type);
+        if (postData.packages.length >= 2) createPostPackage(postData.packages[1], res.postID, postData.packages[1].type);
+        if (postData.packages.length === 3) createPostPackage(postData.packages[2], res.postID, postData.packages[2].type);
     }
     catch (err) {
         const error = new Error("Something went wrong when trying to process your request. Please try again.");
@@ -36,8 +36,10 @@ export async function createPostPackage(packageData, postID, type) {
                 deliveryTime: packageData.deliveryTime,
                 revisions: packageData.revisions,
                 description: packageData.description,
-                type: type,
-                features: packageData.features
+                features: packageData.features,
+                amount: packageData.amount,
+                numOrders: packageData.numOrders,
+                type: type
             }
         });
     }
@@ -73,8 +75,10 @@ export async function getPostHandler(postID) {
                         deliveryTime: true,
                         revisions: true,
                         description: true,
+                        amount: true,
                         type: true,
-                        features: true
+                        features: true,
+                        numOrders: true
                     }
                 }
             }

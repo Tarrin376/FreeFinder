@@ -4,7 +4,7 @@ import { useState, useContext } from 'react';
 import { IUserContext, UserContext } from "../context/UserContext";
 import ErrorMessage from "./ErrorMessage";
 
-const MAX_DESC_CHARS = 450;
+const MAX_DESC_CHARS = 250;
 
 interface SellerProfileProps {
     setSellerProfilePopUp: React.Dispatch<React.SetStateAction<boolean>>,
