@@ -5,11 +5,10 @@ import ProfilePicAndStatus from "../../components/ProfilePicAndStatus";
 import StarIcon from '../../assets/star.png';
 import { getTimePosted } from "../../utils/getTimePosted";
 import AboutSeller from "./AboutSeller";
-import VisitorsAlsoViewed from "./VisitorsAlsoViewed";
-import Review from "./Reviews";
 import PostViewSkeleton from '../../skeletons/PostViewSkeleton';
 import Placeholder from '../../assets/placeholder_img.jpeg';
 import Packages from "./Packages";
+import TopReviews from "./TopReviews";
 
 function PostView() {
     const [postData, setPostData] = useState<PostPage>();
@@ -41,7 +40,7 @@ function PostView() {
 
     return (
         <div className="page flex gap-16">
-            <div className="w-[75%]">
+            <div>
                 <header>
                     <p className="text-main-blue mb-2">Website design</p>
                     <h1 className="text-3xl mb-4 max-w-[80%] break-all">{postData.title}</h1>
@@ -66,32 +65,34 @@ function PostView() {
                             </p>
                         </div>
                     </div>
-                    <div className="flex h-[500px] gap-8 mt-8">
-                        <img src={Placeholder} className="w-[730px] block rounded-[8px] object-cover" alt="placeholder" />
+                    <div className="flex h-[520px] gap-8 mt-8">
+                        <img src={Placeholder} className="w-4/6 block rounded-[8px] object-cover shadow-info-component" alt="placeholder" />
                         <Packages packages={postData.packages} />
                     </div>
                 </header>
                 <div className="flex justify-between mt-8 items-center">
-                    <h2 className="text-2xl">{`${postData.postedBy.user.username}'s pinned reviews`}</h2>
+                    <h2 className="text-2xl">{`${postData.postedBy.user.username}'s top reviews`}</h2>
                     <p className="text-main-blue underline nav-item hover:text-main-black">
                         See all reviews
                     </p>
                 </div>
-                <div className="mt-4 flex gap-5">
-                    <Review />
-                    <Review />
-                </div>
-                <section className="mt-8">
+                <TopReviews />
+                <section className="mt-8 mb-8">
                     <h2 className="text-2xl mb-3">About this service</h2>
                     <p className="text-paragraph-text leading-7 break-all">
                         {postData.about}
                     </p>
                 </section>
+                <div className="flex gap-8">
+                    <div className="w-[60%] bg-main-white rounded-[8px] shadow-info-component p-4 pt-3 h-[400px]">
+                        <h3 className="text-xl">Service reviews</h3>
+                    </div>
+                    <div className="w-[40%] bg-main-white rounded-[8px] shadow-info-component p-4 h-[400px]">
+
+                    </div>
+                </div>
             </div>
-            <div className="w-[25%] flex flex-col gap-7">
-                <AboutSeller postData={postData} />
-                <VisitorsAlsoViewed />
-            </div>
+            <AboutSeller postData={postData} />
         </div>
     );
 }

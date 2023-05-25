@@ -82,7 +82,7 @@ function ProfilePicAndStatus({ profilePicURL, profileStatus, statusStyles, imgSt
         before:absolute before:top-[33px] before:left-[0px] before:border-[3px] before:border-main-white before:content[''] before:rounded-full ${statusStyles}`}>
             {loading ? <div className={`w-12 h-12 rounded-full loading ${imgStyles}`}></div> : 
             <img src={profilePicURL === "" ? BlankProfile : profilePicURL} alt="" 
-            className={`w-12 h-12 rounded-full object-cover ${imgStyles} border border-b-nav-search-gray`} />}
+            className={`w-12 h-12 rounded-full object-cover ${imgStyles} border-2 border-b-nav-search-gray`} />}
             {showEdit && !loading &&
                 <>
                     <button className="flex gap-1 items-center absolute text-xs top-[60px] right-0 bg-main-white hover:bg-main-white-hover border-2 border-light-gray 

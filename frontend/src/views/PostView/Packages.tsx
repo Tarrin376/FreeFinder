@@ -34,7 +34,7 @@ function Packages({ packages }: { packages: IPackage[] }) {
     }
 
     return (
-        <div className="flex-1 bg-main-white relative rounded-[8px] border border-gray-300 shadow-post">
+        <div className="flex-1 bg-main-white relative rounded-[8px] shadow-info-component">
             {curPkg &&
             <>
                 <div className="flex justify-evenly overflow-hidden">
@@ -47,7 +47,7 @@ function Packages({ packages }: { packages: IPackage[] }) {
                         );
                     })}
                 </div>
-                <div className="p-6 overflow-y-scroll h-[calc(100%-50px)] scrollbar-hide flex flex-col justify-between">
+                <div className="p-6 overflow-y-scroll h-[calc(100%-50px)] flex flex-col justify-between">
                     <div>
                         <div className="flex justify-between items-center mt-[-6px]">
                             <h3 className="text-[23px] font-semibold">{capitalizePkgType(curPkg.type)} package</h3>

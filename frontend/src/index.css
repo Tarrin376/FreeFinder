@@ -54,6 +54,6 @@
         overflow-y: scroll;
     }
     .page {
-        @apply max-w-screen-xxl m-auto px-16 min-h-[calc(100vh-90px)] bg-[#fafbfd] py-14;
+        @apply max-w-screen-xxl m-auto px-10 min-h-[calc(100vh-90px)] bg-[#fafbfd] py-14;
     }
 }

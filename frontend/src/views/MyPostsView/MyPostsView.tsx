@@ -98,7 +98,7 @@ function MyPostsView() {
                     {posts.posts.map((post: IPost) => {
                         return (
                             <Post postInfo={post} userID={userContext.userData.userID} key={post.postID}>
-                                <button className="bg-error-red hover:bg-error-red-hover btn-primary 
+                                <button className="bg-error-red hover:bg-error-red-hover rounded-[6px] 
                                 p-[3px] px-[8px] h-fit cursor-pointer text-error-text text-[15px]" onClick={() => removePost(post.postID)}>
                                     Remove
                                 </button>
