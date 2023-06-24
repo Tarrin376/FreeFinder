@@ -6,17 +6,12 @@ export type UpdateResponse = {
 }
 
 export async function fetchUpdatedUser(updatedData: IUser, profilePic?: string | unknown): Promise<UpdateResponse> {
-    if (profilePic) {
-        try {
-            const response = await updateProfilePic(updatedData.userID, profilePic);
-            if (response.message !== "success") {
-                throw new Error(response.status);
-            } else {
-                updatedData = response.userData;
-            }
-        }
-        catch (err: any) {
-            throw err;
+    if (profilePic !== undefined) {
+        const response = await updateProfilePic(updatedData.userID, profilePic);
+        if (response.message !== "success") {
+            throw new Error(response.status);
+        } else {
+            updatedData = response.userData;
         }
     }
     
@@ -33,13 +28,11 @@ export async function fetchUpdatedUser(updatedData: IUser, profilePic?: string |
             }
         });
 
-        if (response.status === 403) {
-            throw new Error("You do not have authorisation to perform this action");
-        } else if (response.status === 500) {
-            throw new Error(`Looks like we are having trouble on our end. Please try again later. (Error code: ${response.status})`);
+        const responseData = await response.json();
+        if (responseData.message === "success") {
+            return responseData;
         } else {
-            const updated: UpdateResponse = await response.json();
-            return updated;
+            throw new Error(responseData.message);
         }
     }
     catch (err: any) {
@@ -60,12 +53,8 @@ async function updateProfilePic(userID: string, profilePic: string | unknown) : 
                 'Content-Type': 'application/json'
             }
         });
-        
-        if (response.status === 403) {
-            throw new Error("You do not have authorisation to perform this action");
-        } else if (response.status === 500) {
-            throw new Error(`Looks like we are having trouble on our end. Please try again later. (Error code: ${response.status})`);
-        } else if (response.status === 413) {
+
+        if (response.status === 413) {
             throw new Error("File size is too large. Either compress it or select another image.");
         } else {
             const updated = await response.json();

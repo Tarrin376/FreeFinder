@@ -1,7 +1,7 @@
 import { Router } from 'express';
 import 
 { 
-    addUser,
+    registerUser,
     getUser, 
     updateUser, 
     updateProfilePicture, 
@@ -13,12 +13,12 @@ import
 import { cookieJwtAuth } from '../middleware/cookieJwtAuth.js';
 
 const userRouter = Router();
-userRouter.post('/addUser', addUser);
+userRouter.post('/register', registerUser);
 userRouter.post('/getUser', getUser);
 userRouter.post('/login', loginUser);
 userRouter.get('/logout', logoutUser);
 
-userRouter.get('/authoriseUser', cookieJwtAuth, (req, res) => {
+userRouter.get('/jwtLogin', cookieJwtAuth, (req, res) => {
     return res.json({ userData: req.userData });
 });
 

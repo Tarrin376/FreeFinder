@@ -19,16 +19,12 @@ export async function fetchPosts(url: string, sellerUserID: string, setPosts: Re
             }
         });
 
-        if (response.status !== 500) {
-            const responseData = await response.json();
-            if (responseData.message === "success") {
-                setPosts((state) => [...state, ...responseData.posts]);
-                return { cursor: responseData.cursor, last: responseData.last };
-            } else {
-                throw new Error(responseData.message);
-            }
+        const responseData = await response.json();
+        if (responseData.message === "success") {
+            setPosts((state) => [...state, ...responseData.posts]);
+            return { cursor: responseData.cursor, last: responseData.last };
         } else {
-            throw new Error(`Looks like we are having trouble on our end. Please try again later. (Error code: ${response.status})`);
+            throw new Error(responseData.message);
         }
     }
     catch (err: any) {

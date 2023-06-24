@@ -5,7 +5,7 @@ import UserIcon from '../../assets/user-icon-svgrepo-com.svg';
 
 function AboutSeller({ postData }: { postData: PostPage }) {
     return (
-        <section className=" bg-main-white rounded-[8px] shadow-info-component p-4 pt-3 min-w-[390px] h-[calc(100vh-210px)] flex flex-col overflow-y-scroll">
+        <section className="bg-main-white rounded-[8px] shadow-info-component p-4 pt-3 w-1/4 h-[calc(100vh-210px)] flex flex-col overflow-y-scroll">
             <div className="flex-grow">
                 <div className="border-b border-b-light-gray pb-4 relative">
                     <h3 className="text-xl mb-4">About this seller</h3>
@@ -20,12 +20,13 @@ function AboutSeller({ postData }: { postData: PostPage }) {
                         {postData.postedBy.user.username}
                     </h4>
                 </div>
+                {postData.postedBy.description !== "" &&
                 <div className="border-b border-b-light-gray pb-4 pt-4">
                     <h4 className="text-[18px] mb-2">Description</h4>
                     <p className="text-paragraph-text break-all">
                         {postData.postedBy.description}
                     </p>
-                </div>
+                </div>}
                 <div className="pb-4 pt-4">
                     <div className="flex gap-1 items-center">
                         <img src={LocationIcon} width="20px" height="20px" alt="location" />

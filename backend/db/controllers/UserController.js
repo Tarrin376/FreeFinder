@@ -1,6 +1,6 @@
 import 
 { 
-    addUserHandler, 
+    registerUserHandler, 
     getUserHandler, 
     updateUserHandler, 
     updateProfilePictureHandler, 
@@ -25,9 +25,7 @@ export async function loginUser(req, res) {
 
 export async function logoutUser(_, res) {
     try {
-        return res.clearCookie("access_token")
-        .status(200)
-        .json({ message: "success" });
+        return res.clearCookie("access_token").status(200).json({ message: "success" });
     }
     catch (err) {
         res.status(400).json({ message: err.message });
@@ -47,9 +45,9 @@ export async function updateProfilePicture(req, res) {
     }
 }
 
-export async function addUser(req, res) {
+export async function registerUser(req, res) {
     try {
-        await addUserHandler(req.body);
+        await registerUserHandler(req.body);
         res.json({ message: "success" });
     }
     catch (err) {

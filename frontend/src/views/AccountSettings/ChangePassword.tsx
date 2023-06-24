@@ -148,7 +148,7 @@ function ChangePassword({ userContext }: { userContext: IUserContext }) {
                     </p>
                 </div>
                 <LoadingButton 
-                    loading={loading} text="Update Details" loadingText="Checking password..." 
+                    loading={loading} text="Update Details" loadingText="Checking password" 
                     callback={updatePassword} styles={!checkInputs() ? "invalid-button mt-3 main-btn" : "mt-3 main-btn"}
                     disabled={!checkInputs()} loadingColour="bg-main-black" completed={completed} 
                     completedText="Password updated successfully"

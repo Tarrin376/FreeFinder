@@ -18,9 +18,7 @@ interface ProfilePicAndStatusProps {
     setLoading?: React.Dispatch<React.SetStateAction<boolean>>
 }
 
-function ProfilePicAndStatus({ profilePicURL, profileStatus, statusStyles, imgStyles, showEdit,
-    setErrorMessage, loading, setLoading }: ProfilePicAndStatusProps) {
-
+function ProfilePicAndStatus(props: ProfilePicAndStatusProps) {
     const inputFileRef = useRef<HTMLInputElement>(null);
     const userContext: IUserContext = useContext(UserContext);
     const [profileDropdown, setProfileDropdown] = useState<boolean>(false);
@@ -32,7 +30,7 @@ function ProfilePicAndStatus({ profilePicURL, profileStatus, statusStyles, imgSt
     }
 
     async function updatePhoto(profile: string | unknown): Promise<void> {
-        if (!setErrorMessage) {
+        if (!props.setErrorMessage || !props.setLoading) {
             return;
         }
 
@@ -40,24 +38,22 @@ function ProfilePicAndStatus({ profilePicURL, profileStatus, statusStyles, imgSt
             const response: UpdateResponse = await fetchUpdatedUser({...userContext.userData}, profile);
             if (response.message === "success" && response.userData) {
                 userContext.setUserData(response.userData);
-                setErrorMessage("");
+                props.setErrorMessage("");
             } else {
-                setErrorMessage(response.message);
+                props.setErrorMessage(response.message);
             }
         }
         catch (err: any) {
-            setErrorMessage(err.message);
+            props.setErrorMessage(err.message);
         }
         finally {
-            if (setLoading) {
-                setLoading(false);
-            }
+            props.setLoading(false);
         }
     }
 
     function removePhoto(): void {
-        if (setLoading) {
-            setLoading(true);
+        if (props.setLoading) {
+            props.setLoading(true);
         }
         
         updatePhoto("");
@@ -65,25 +61,28 @@ function ProfilePicAndStatus({ profilePicURL, profileStatus, statusStyles, imgSt
 
     async function uploadPhoto(e: React.ChangeEvent<HTMLInputElement>): Promise<void> {
         const files = e.target.files;
-        if (!files) {
+        if (!files || !props.setLoading) {
             return;
         }
-        
-        if (setLoading) {
-            setLoading(true);
-        }
-        
+
+        props.setLoading(true);
         const base64Str = await parseImage(files[0]);
         updatePhoto(base64Str);
     }
 
     return (
-        <div className={loading ? '' : `${profileStatus === 'ONLINE' ? 'before:bg-green-500' : 'before:bg-side-text-gray'} before:w-[18px] before:h-[18px]
-        before:absolute before:top-[33px] before:left-[0px] before:border-[3px] before:border-main-white before:content[''] before:rounded-full ${statusStyles}`}>
-            {loading ? <div className={`w-12 h-12 rounded-full loading ${imgStyles}`}></div> : 
-            <img src={profilePicURL === "" ? BlankProfile : profilePicURL} alt="" 
-            className={`w-12 h-12 rounded-full object-cover ${imgStyles} border-2 border-b-nav-search-gray`} />}
-            {showEdit && !loading &&
+        <div className={props.loading ? '' : `${props.profileStatus === 'ONLINE' ? 'before:bg-green-500' : 'before:bg-side-text-gray'} 
+        before:w-[18px] before:h-[18px] before:absolute before:top-[33px] before:left-[0px] before:border-[3px] before:border-main-white 
+        before:content[''] before:rounded-full ${props.statusStyles}`}>
+            {props.loading ? 
+            <div className={`w-12 h-12 rounded-full loading ${props.imgStyles}`}>
+            </div> : 
+            <img 
+                src={props.profilePicURL === "" ? BlankProfile : props.profilePicURL} 
+                alt="" 
+                className={`w-12 h-12 rounded-full object-cover ${props.imgStyles} border border-b-nav-search-gray`} 
+            />}
+            {props.showEdit && !props.loading &&
                 <>
                     <button className="flex gap-1 items-center absolute text-xs top-[60px] right-0 bg-main-white hover:bg-main-white-hover border-2 border-light-gray 
                     btn-primary p-1 px-2 h-fit cursor-pointer"

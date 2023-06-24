@@ -38,7 +38,7 @@ function SignUp({ setLogIn, setSignUp, setAccountCreated }: SignUpProps) {
 
         try {
             setLoading(true);
-            const response = await fetch("/api/users/addUser", {
+            const response = await fetch("/api/users/register", {
                 method: 'POST',
                 body: JSON.stringify({ 
                     email: form.emailFirst, 
@@ -52,18 +52,13 @@ function SignUp({ setLogIn, setSignUp, setAccountCreated }: SignUpProps) {
                 }
             });
 
-            if (response.status !== 500) {
-                const addAttempt = await response.json();
-                if (addAttempt.message === "success") {
-                    setAccountCreated(true);
-                    setSignUp(false);
-                    setErrorMessage("");
-                } else {
-                    setErrorMessage(addAttempt.message);
-                }
+            const responseData = await response.json();
+            if (responseData.message === "success") {
+                setAccountCreated(true);
+                setSignUp(false);
+                setErrorMessage("");
             } else {
-                setErrorMessage(`Looks like we are having trouble on our end. Please try again later. 
-                (Error code: ${response.status})`);
+                setErrorMessage(responseData.message);
             }
         }
         catch (e: any) {
@@ -107,20 +102,42 @@ function SignUp({ setLogIn, setSignUp, setAccountCreated }: SignUpProps) {
     }
 
     return (
-        <PopUpWrapper setIsOpen={setSignUp} title={"Let's create your new account"} styles={"!mb-5"}>
+        <PopUpWrapper setIsOpen={setSignUp} title={"Create your new account"} styles="!max-w-[470px]">
             <form>
-                <p className="mb-6 text-side-text-gray text-[15px]">Signing up for FreeFinder is fast and 100% free!</p>
+                <p className="mb-6 text-side-text-gray text-[16px]">Signing up for FreeFinder is fast and 100% free!</p>
                 {errorMessage !== "" && <ErrorMessage message={errorMessage} title={"Account creation failed."} />}
                 <div className="flex flex-col mb-8">
-                    <input type="email" placeholder="Enter your email*" className={`search-bar ${!form.validEmailFirst && form.emailFirst !== "" && "invalid-input"}`} 
-                    onChange={(e) => checkEmail(e, true)} />
-                    {!form.validEmailFirst && form.emailFirst !== "" && <p className="text-box-error-message">Please use a valid email address</p>}
-                    <input type="email" placeholder="Confirm your email*" className={`search-bar mt-3 ${!form.validEmailSecond && form.emailSecond !== "" && "invalid-input"}`} 
-                    onChange={(e) => checkEmail(e, false)} />
-                    {!form.validEmailSecond && form.emailSecond !== "" && <p className="text-box-error-message">Email address does not match</p>}
+                    <input 
+                        type="email" 
+                        placeholder="Enter your email*" 
+                        className={`search-bar ${!form.validEmailFirst && form.emailFirst !== "" && "invalid-input"}`} 
+                        onChange={(e) => checkEmail(e, true)}
+                    />
+                    {!form.validEmailFirst && form.emailFirst !== "" && 
+                    <p className="text-box-error-message">
+                        Please use a valid email address
+                    </p>}
+                    <input 
+                        type="email" 
+                        placeholder="Confirm your email*" 
+                        className={`search-bar mt-3 ${!form.validEmailSecond && form.emailSecond !== "" && "invalid-input"}`} 
+                        onChange={(e) => checkEmail(e, false)}
+                        onPaste={(e) => {
+                            e.preventDefault();
+                            return false;
+                        }}
+                    />
+                    {!form.validEmailSecond && form.emailSecond !== "" && 
+                    <p className="text-box-error-message">
+                        Email address does not match
+                    </p>}
                     <input type="text" placeholder="Create a username*" className="search-bar mt-3" onChange={(e) => checkUsername(e)} />
-                    <input type="password" placeholder="Create a password*" className={`search-bar mt-3 mb-3 ${!form.validPassword && form.password !== "" && "invalid-input"}`} 
-                    onChange={(e) => checkPassword(e)} />
+                    <input 
+                        type="password" 
+                        placeholder="Create a password*" 
+                        className={`search-bar mt-3 mb-3 ${!form.validPassword && form.password !== "" && "invalid-input"}`} 
+                        onChange={(e) => checkPassword(e)} 
+                    />
                     <CountriesDropdown country={country} selected={"🇬🇧 United Kingdom"} />
                 </div>
                 <LoadingButton

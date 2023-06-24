@@ -31,17 +31,12 @@ function SellerProfile({ setSellerProfilePopUp }: SellerProfileProps) {
                 }
             });
 
-            if (response.status !== 500) {
-                const status = await response.json();
-                if (status.message === "success") {
-                    userContext.setUserData({ ...userContext.userData, seller: { ...status.updatedData }});
-                    setSellerProfilePopUp(false);
-                } else {
-                    setErrorMessage(status.message);
-                }
+            const responseData = await response.json();
+            if (responseData.message === "success") {
+                userContext.setUserData({ ...userContext.userData, seller: { ...responseData.updatedData }});
+                setSellerProfilePopUp(false);
             } else {
-                setErrorMessage(`Looks like we are having trouble on our end. Please try again later. 
-                (Error code: ${response.status})`);
+                setErrorMessage(responseData.message);
             }
         }
         catch (err: any) {
@@ -58,7 +53,7 @@ function SellerProfile({ setSellerProfilePopUp }: SellerProfileProps) {
             <p className="mb-2">
                 Seller description 
                 <span className="text-side-text-gray">
-                    {`(Max ${MAX_DESC_CHARS} characters)`}
+                    {` (Max ${MAX_DESC_CHARS} characters)`}
                 </span>
             </p>
             <textarea rows={7} className="search-bar mb-3" defaultValue={userContext.userData.seller.description} 

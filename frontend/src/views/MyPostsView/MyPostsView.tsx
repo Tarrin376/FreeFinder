@@ -8,6 +8,7 @@ import { IPost } from '../../models/IPost';
 import Post from '../../components/Post';
 import PostSkeleton from '../../skeletons/PostSkeleton';
 import PostsWrapper from '../../components/PostsWrapper';
+import NoResultsFound from '../../components/NoResultsFound';
 
 function MyPostsView() {
     const [postService, setPostService] = useState<boolean>(false);
@@ -30,46 +31,6 @@ function MyPostsView() {
         }
     }
 
-    async function removePost(postID: string): Promise<void> {
-        if (deletingPost) {
-            return;
-        }
-    
-        try {
-            setDeletingPost(true);
-            const response = await fetch("/api/posts/delete", {
-                method: "DELETE",
-                body: JSON.stringify({
-                    postID
-                }),
-                headers: {
-                    "Accept": "application/json",
-                    "Content-Type": "application/json"
-                }
-            });
-
-            if (response.status === 500) {
-                console.log(`Looks like we are having trouble on our end. Please try again later. 
-                (Error code: ${response.status})`);
-            } else if (response.status === 403) {
-                console.log("You do not have authorisation to perform this action");
-            } else {
-                const removed = await response.json();
-                if (removed.message === "success") {
-                    posts.setPosts((state) => state.filter((x) => x.postID !== postID));
-                } else {
-                    console.log(removed.message);
-                }
-            }
-        }
-        catch (err: any) {
-            console.log(err.message);
-        }
-        finally {
-            setDeletingPost(false);
-        }
-    }
-
     return (
         <>
             {postService && 
@@ -77,7 +38,7 @@ function MyPostsView() {
                 setPostService={setPostService} setUserPosts={posts.setPosts} 
                 cursor={cursor} setReachedBottom={posts.setReachedBottom} setNextPage={setNextPage}
             />}
-            <div className="page" ref={pageRef}>
+            <div ref={pageRef}>
                 <h1 className="text-3xl mb-11">My Posts</h1>
                 <div className="flex justify-between w-full items-center mb-11">
                     <div className="flex gap-5 w-[35rem] items-stretch">
@@ -94,19 +55,28 @@ function MyPostsView() {
                     />
                 </div>
                 {posts.errorMessage !== "" && !posts.loading && <h1 className="text-3xl">{posts.errorMessage}</h1>}
+                {(posts.loading || posts.posts.length > 0) && 
                 <PostsWrapper>
                     {posts.posts.map((post: IPost) => {
                         return (
-                            <Post postInfo={post} userID={userContext.userData.userID} key={post.postID}>
-                                <button className="bg-error-red hover:bg-error-red-hover rounded-[6px] 
-                                p-[3px] px-[8px] h-fit cursor-pointer text-error-text text-[15px]" onClick={() => removePost(post.postID)}>
-                                    Remove
-                                </button>
-                            </Post>
+                            <Post 
+                                postInfo={post} 
+                                userID={userContext.userData.userID} 
+                                key={post.postID}
+                                canRemove={{
+                                    deletingPost: deletingPost,
+                                    setDeletingPost: setDeletingPost,
+                                }}
+                            />
                         );
                     })}
                     {posts.loading && new Array(10).fill(true).map((_, index) => <PostSkeleton key={index} />)}
-                </PostsWrapper>
+                </PostsWrapper>}
+                {!posts.loading && posts.posts.length === 0 && 
+                <NoResultsFound 
+                    title="Sorry, we could not find any of your posts." 
+                    message="If you are searching for a post, check your spelling and try again."
+                 />}
             </div>
         </>
     )

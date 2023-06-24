@@ -14,11 +14,7 @@ cloudinary.config({
 
 export async function updateProfilePictureHandler(userID, file) {
     const upload = cloudinary.uploader.upload(file, { public_id: `FreeFinder/ProfilePictures/${userID}` });
-    
-    const success = await upload.then((data) => data)
-    .catch((err) => {
-        throw err;
-    });
+    const success = await upload.then((data) => data);
 
     try {
         const updated = await prisma.user.update({
@@ -38,10 +34,16 @@ export async function updateProfilePictureHandler(userID, file) {
         const {hash, password, ...res} = updated;
         return res;
     }
-    catch (err) { 
-        const error = new Error("Something went wrong when trying to process your request. Please try again.");
-        error.code = 400;
-        throw error;
+    catch (err) {
+        if (err instanceof Prisma.PrismaClientKnownRequestError && err.code === 413) {
+            const error = new Error("Error updating profile picture: File size exceeds limit.");
+            error.code = 413;
+            throw error;
+        } else {
+            const error = new Error("Something went wrong when trying to process your request. Please try again.");
+            error.code = 400;
+            throw error;
+        }
     }
     finally {
         await prisma.$disconnect();
@@ -73,7 +75,7 @@ export async function updatePasswordHandler(userID, password) {
     }
 }
 
-export async function addUserHandler(userData) {
+export async function registerUserHandler(userData) {
     try {
         await prisma.user.create({
             data: {

@@ -41,18 +41,12 @@ function ProfileMenu({ userContext, setSettingsPopUp, setSellerProfilePopUp }: P
     async function logout(): Promise<void> {
         try {
             const clearToken = await fetch("/api/users/logout");
-            if (clearToken.status === 500) {
-                console.log(`Looks like we are having trouble on our end. Please try again later. 
-                (Error code: ${clearToken.status})`);
-            } else if (clearToken.status === 403) {
-                console.log("You do not have authorisation to perform this action");
+            const responseData = await clearToken.json();
+
+            if (responseData.message === "success") {
+                userContext.setUserData(initialState.userData);
             } else {
-                const response = await clearToken.json();
-                if (clearToken.status === 200) {
-                    userContext.setUserData(initialState.userData);
-                } else {
-                    console.log(response.message);
-                }
+                console.log(responseData.message);
             }
         }
         catch (err: any) {
@@ -78,7 +72,10 @@ function ProfileMenu({ userContext, setSettingsPopUp, setSellerProfilePopUp }: P
             </div>
             <div className="cursor-pointer relative">
                 <div onClick={() => setNavProfileDropdown(true)}>
-                    <ProfilePicAndStatus profilePicURL={userContext.userData.profilePicURL} profileStatus={userContext.userData.status} />
+                    <ProfilePicAndStatus 
+                        profilePicURL={userContext.userData.profilePicURL} 
+                        profileStatus={userContext.userData.status} 
+                    />
                 </div>
                 <OutsideClickHandler onOutsideClick={() => setNavProfileDropdown(false)}>
                     {navProfileDropdown && <ul className="absolute bg-main-white shadow-profile-page-container 

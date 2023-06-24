@@ -64,7 +64,7 @@ function UserProfile({  userContext }: { userContext: IUserContext }) {
                     <CountriesDropdown country={country} selected={userContext.userData.country} />
                 </div>
                 <LoadingButton 
-                    loading={loading} text="Update Profile" loadingText="Checking username..." 
+                    loading={loading} text="Update Profile" loadingText="Checking username" 
                     callback={updateProfile} styles={username === "" ? "invalid-button main-btn mt-3" : "mt-3 main-btn"}
                     disabled={username === ""} loadingColour="bg-main-black" completed={completed} 
                     completedText="Profile updated successfully"

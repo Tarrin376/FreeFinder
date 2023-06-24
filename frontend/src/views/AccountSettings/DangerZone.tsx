@@ -56,7 +56,7 @@ function DangerZone({ userContext, setSettingsPopUp }: { userContext: IUserConte
                 Once you delete your account, there is no going back. Please be certain.
             </p>
             <LoadingButton 
-                loading={loading} text="Delete account" loadingText="Deleting account..." 
+                loading={loading} text="Delete account" loadingText="Deleting account" 
                 callback={deleteAccount} disabled={false} styles={"bg-error-red text-error-text hover:bg-error-red-hover"}
                 loadingColour="bg-main-blue"
             />

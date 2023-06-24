@@ -32,15 +32,14 @@ function UserProvider({ children }: { children?: React.ReactNode }) {
     useEffect(() => {
         (async (): Promise<void> => {
             try {
-                const response = await fetch("/api/users/authoriseUser");
+                const response = await fetch("/api/users/jwtLogin");
                 if (response.status === 200) {
                     const data = await response.json();
-                    console.log(data);
                     setUserData(data.userData);
                 }
             }
             catch (err: any) {
-                console.log(err.message);
+                // Do nothing if the user is not logged in.
             }
         })();
     }, []);

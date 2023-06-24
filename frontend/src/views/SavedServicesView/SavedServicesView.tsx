@@ -7,11 +7,8 @@ import { IPost } from '../../models/IPost';
 import PostSkeleton from '../../skeletons/PostSkeleton';
 import Post from '../../components/Post';
 import PostsWrapper from '../../components/PostsWrapper';
-
-export type savedServicesKey = {
-    userID: string,
-    postID: string
-}
+import NoResultsFound from '../../components/NoResultsFound';
+import { SavedServicesKey } from '../../types/SavedServicesKey';
 
 function SavedServicesView() {
     const userContext = useContext(UserContext);
@@ -19,52 +16,14 @@ function SavedServicesView() {
     const pageRef = useRef<HTMLDivElement>(null);
 
     const url = `/api/saved-posts/get-posts?sort=${sortBy}`;
-    const cursor = useRef<savedServicesKey>({ userID: "", postID: "" });
+    const cursor = useRef<SavedServicesKey>({ userID: "", postID: "" });
     const [deletingPost, setDeletingPost] = useState<boolean>(false);
 
     const [nextPage, setNextPage] = useState<boolean>(false);
     const posts = useFetchPosts(pageRef, userContext.userData.userID, userContext.userData.username, url, nextPage, setNextPage, cursor);
 
-    async function removePost(postID: string): Promise<void> {
-        if (deletingPost) {
-            return;
-        }
-
-        setDeletingPost(true);
-        try {
-            const response = await fetch("/api/saved-posts/delete", {
-                method: "DELETE",
-                body: JSON.stringify({
-                    postID: postID,
-                    userID: userContext.userData.userID
-                }),
-                headers: {
-                    "Accept": "application/json",
-                    "Content-Type": "application/json"
-                }
-            });
-
-            if (response.status === 500) {
-                console.log(`Looks like we are having trouble on our end. Please try again later. 
-                (Error code: ${response.status})`);
-            } else if (response.status === 403) {
-                console.log("You do not have authorisation to perform this action");
-            } else {
-                const deleted = await response.json();
-                if (deleted.message === "success") {
-                    posts.setPosts((state) => state.filter((x) => x.postID !== postID));
-                } else {
-                    console.log(deleted.message);
-                }
-            }
-        }
-        catch (err: any) {
-            console.log(err.message);
-        }
-    }
-
     return (
-        <div className="page" ref={pageRef}>
+        <div ref={pageRef}>
             <h1 className="text-3xl mb-11">My Saved Posts</h1>
             <div className="flex justify-between w-full items-center mb-11">
                 <div className="flex gap-5 w-[35rem] items-stretch">
@@ -77,19 +36,28 @@ function SavedServicesView() {
                 />
             </div>
             {posts.errorMessage !== "" && !posts.loading && <h1 className="text-3xl">{posts.errorMessage}</h1>}
+            {(posts.loading || posts.posts.length > 0) && 
             <PostsWrapper>
                 {posts.posts.map((post: IPost) => {
                     return (
-                        <Post postInfo={post} userID={userContext.userData.userID} key={post.postID}>
-                            <button className="bg-error-red text-error-text hover:bg-error-red-hover btn-primary 
-                            p-[3px] px-[8px] h-fit cursor-pointer text-[15px]" onClick={() => removePost(post.postID)}>
-                                Remove
-                            </button>
-                        </Post>
+                        <Post 
+                            postInfo={post} 
+                            userID={userContext.userData.userID} 
+                            key={post.postID}
+                            canRemove={{
+                                deletingPost: deletingPost,
+                                setDeletingPost: setDeletingPost,
+                            }}
+                        />
                     );
                 })}
                 {posts.loading && new Array(10).fill(true).map((_, index) => <PostSkeleton key={index} />)}
-            </PostsWrapper>
+            </PostsWrapper>}
+            {!posts.loading && posts.posts.length === 0 &&
+            <NoResultsFound 
+                title="Sorry, we could not find any of your saved posts."
+                message="If you are searching for a post, check your spelling and try again."
+            />}
         </div>
     )
 }

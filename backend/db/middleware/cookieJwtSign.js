@@ -6,7 +6,7 @@ export function cookieJwtSign(req, res) {
 
     return res.cookie("access_token", access_token, {
         httpOnly: true,
-        secure: env.NODE_ENV === "production",
+        secure: env.NODE_ENV === "production"
     })
     .json({ userData: req.userData, message: "success" })
     .status(200);

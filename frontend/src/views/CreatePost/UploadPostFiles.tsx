@@ -5,6 +5,8 @@ import Storage from '../../assets/storage.png';
 import PNGIcon from '../../assets/png.png';
 import JPGIcon from '../../assets/jpg.png';
 import { Sections } from "./CreatePost";
+import ErrorMessage from "../../components/ErrorMessage";
+import { useState } from "react";
 
 const MAX_FILE_UPLOADS: number = 20;
 const MAX_FILE_BYTES = 26214400;
@@ -18,6 +20,7 @@ interface UploadPostFilesProps {
 
 function UploadPostFiles({ setPostService, setSection, uploadedFiles, setUploadedFiles }: UploadPostFilesProps) {
     const inputFileRef = useRef<HTMLInputElement>(null);
+    const [errorMessage, setErrorMessage] = useState<string>("");
 
     function checkFile(file: File): boolean {
         return (file.type === "image/jpeg" || file.type === "image/png") && file.size <= MAX_FILE_BYTES;
@@ -27,15 +30,23 @@ function UploadPostFiles({ setPostService, setSection, uploadedFiles, setUploade
         let filesToAdd: number = Math.min(MAX_FILE_UPLOADS - uploadedFiles.length, files.length);
         const uploaded: File[] = [];
         let index = 0;
+        let failed = 0;
 
         while (index < files.length && filesToAdd > 0) {
             const validFile: boolean = checkFile(files[index]);
             if (validFile) {
                 uploaded.push(files[index]);
                 filesToAdd--;
+            } else {
+                failed++;
             }
 
             index++;
+        }
+
+        if (failed > 0) {
+            setErrorMessage(`Failed to upload ${failed} ${failed === 1 ? "file" : "files"}. 
+            Please check that they are in one of the supported formats.`);
         }
 
         setUploadedFiles((state) => [...state, ...uploaded]);
@@ -72,11 +83,12 @@ function UploadPostFiles({ setPostService, setSection, uploadedFiles, setUploade
                 <p className="text-side-text-gray">Supported formats: PNG, JPG</p>
                 <p className="text-side-text-gray">Maximum size: 25MB</p>
             </div>
-            <p className="text-side-text-gray mt-3">Files uploaded:
+            <p className="text-side-text-gray mt-3 mb-4">Files uploaded:
                 <span className={uploadedFiles.length === MAX_FILE_UPLOADS ? 'text-error-red' : 'text-[#36BF54]'}>
                     {` ${uploadedFiles.length} / ${MAX_FILE_UPLOADS}`}
                 </span>
             </p>
+            {errorMessage !== "" && <ErrorMessage message={errorMessage} title="There was a problem uploading some of your files." />}
             <div className="max-h-[250px] items-center overflow-scroll mt-6 flex flex-col gap-[15px] scrollbar-hide">
                 {uploadedFiles.map((file: File, index: number) => {
                     return (

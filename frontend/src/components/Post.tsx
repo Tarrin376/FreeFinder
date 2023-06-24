@@ -10,17 +10,21 @@ import Placeholder from '../assets/placeholder_img.jpeg';
 interface PostProps {
     postInfo: IPost,
     userID: string,
-    children?: React.ReactNode
+    canRemove?: {
+        deletingPost: boolean,
+        setDeletingPost: React.Dispatch<React.SetStateAction<boolean>>,
+    }
 }
 
-function Post({ postInfo, userID, children }: PostProps) {
-    const [saveErrorMessage, setSaveErrorMessage] = useState<string>("");
-    const [saveSuccessMessage, setSaveSuccessMessage] = useState<string>("");
+function Post({ postInfo, userID, canRemove }: PostProps) {
+    const [errorMessage, setErrorMessage] = useState<string>("");
+    const [successMessage, setSuccessMessage] = useState<string>("");
     const seconds = getSeconds(postInfo.createdAt);
+    const [hide, setHide] = useState<boolean>(false);
 
     async function savePost(): Promise<void> {
         try {
-            if (saveErrorMessage !== "" || saveSuccessMessage !== "") {
+            if (errorMessage !== "" || successMessage !== "") {
                 return;
             }
 
@@ -36,25 +40,61 @@ function Post({ postInfo, userID, children }: PostProps) {
                 } 
             });
 
-            if (response.status === 200) {
-                actionSuccessful(setSaveSuccessMessage, "Post saved", "");
-            } else if (response.status === 500) {
-                actionSuccessful(setSaveErrorMessage, "Something unexpected occured on our end", "");
+            const result = await response.json();
+            if (result.message === "success") {
+                setSuccessMessage("Saved post")
+                setHide(true);
             } else {
-                const error = await response.json();
-                actionSuccessful(setSaveErrorMessage, error.message, "");
+                actionSuccessful(setErrorMessage, result.message, "");
             }
         }
         catch (err: any) {
-            actionSuccessful(setSaveErrorMessage, err.message, "");
+            actionSuccessful(setErrorMessage, err.message, "");
         }
+    }
+
+    async function removePost(): Promise<void> {
+        if (!canRemove || canRemove.deletingPost) {
+            return;
+        }
+    
+        try {
+            canRemove.setDeletingPost(true);
+            const response = await fetch("/api/posts/delete", {
+                method: "DELETE",
+                body: JSON.stringify({
+                    postID: postInfo.postID
+                }),
+                headers: {
+                    "Accept": "application/json",
+                    "Content-Type": "application/json"
+                }
+            });
+
+            const removed = await response.json();
+            if (removed.message === "success") {
+                setHide(true);
+            } else {
+                actionSuccessful(setErrorMessage, removed.message, "");
+            }
+        }
+        catch (err: any) {
+            actionSuccessful(setErrorMessage, err.message, "");
+        }
+        finally {
+            canRemove.setDeletingPost(false);
+        }
+    }
+
+    if (hide) {
+        return <></>
     }
 
     return (
         <div className="bg-main-white w-[295px] rounded-[8px] relative overflow-hidden shadow-post">
-            <p className={`absolute px-7 py-[11px] w-[100%] transition ease-out duration-100 text-center ${saveErrorMessage !== "" ? 
-            'bg-error-text text-main-white' : saveSuccessMessage ? 'action-btn hover:!bg-[#36BF54] select-none' : 'select-none'}`}>
-                {saveErrorMessage !== "" ? saveErrorMessage : saveSuccessMessage !== "" ? saveSuccessMessage : ""}
+            <p className={`absolute z-10 px-7 py-[11px] w-[100%] transition ease-out duration-100 text-center ${errorMessage !== "" ? 
+            'bg-error-text text-main-white' : successMessage ? 'action-btn hover:!bg-[#36BF54] select-none' : 'select-none'}`}>
+                {errorMessage !== "" ? errorMessage : successMessage !== "" ? successMessage : ""}
             </p>
             <svg viewBox="0 0 32 32" xmlns="http://www.w3.org/2000/svg" onClick={savePost}
             className="block fill-[#00000077] h-[24px] w-[24px] stroke-white stroke-2 overflow-visible right-3 top-3 absolute cursor-pointer" 
@@ -101,7 +141,11 @@ function Post({ postInfo, userID, children }: PostProps) {
                     <p className="underline">
                         Starting at: <span className="font-semibold">£{postInfo.startingPrice}</span>
                     </p>
-                    {children}
+                    {canRemove &&
+                    <button className="bg-error-red text-error-text hover:bg-error-red-hover btn-primary 
+                    p-[3px] px-[8px] h-fit cursor-pointer text-[15px]" onClick={() => removePost()}>
+                        Remove
+                    </button>}
                 </div>
             </div>
         </div>

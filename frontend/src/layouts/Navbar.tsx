@@ -24,20 +24,20 @@ function Navbar() {
             {logIn && <LogIn setLogIn={setLogIn} setSignUp={setSignUp} />}
             {accountCreated && <AccountCreated setAccountCreated={setAccountCreated} />}
             {sellerProfilePopUp && <SellerProfile setSellerProfilePopUp={setSellerProfilePopUp} />}
-            <nav className="px-5 h-[90px] border-b-2 border-b-light-gray bg-white">
+            <nav className="px-5 h-[90px] border-b border-b-light-gray bg-white">
                 <div className="max-w-screen-xxl m-auto h-full flex gap-8 items-center">
                     <div className="flex xl:gap-16 lg:gap-12 items-center justify-between">
                         <div className="text-main-blue text-2xl"><Link to="/">FreeFinder</Link></div>
                         <ul className="flex items-center xl:gap-11 lg:gap-9 xl:ml-14 lg:ml-5">
                             <li className="nav-item">Browse</li>
                             <li className="nav-item">Orders</li>
-                            <Link to={`${userContext.userData.username}/saved-services`}>
+                            <Link to={`${userContext.userData.username}/saved-posts`}>
                                 <li className="nav-item">Saved Posts</li>
                             </Link>
                             <Link to={`${userContext.userData.username}/my-posts`}>
                                 <li className="nav-item">My Posts</li>
                             </Link>
-                            <div className="flex items-center border-2 border-light-gray 
+                            <div className="flex items-center border border-light-gray 
                                 rounded-[8px] px-3 h-10 xl:w-96 lg:w-80 bg-transparent">
                                 <img src={SearchIcon} alt="search-icon" className="w-5 h-5 cursor-pointer"/>
                                 <input type="text" placeholder="Search for sellers" className="w-full h-full 
@@ -56,7 +56,9 @@ function Navbar() {
                     </div>
                 </div>
             </nav>
-            <Outlet />
+            <div className="page">
+                <Outlet />
+            </div>
         </>
     );
 }

@@ -38,6 +38,6 @@ export function useFetchPosts(pageRef: React.RefObject<HTMLDivElement>, sellerUs
         loading, 
         setReachedBottom, 
         setNextPage,
-        setPosts, 
+        setPosts
     };
 }

@@ -1,4 +1,4 @@
-export const sortByParams = {
+export const sortPosts = {
     "rating": {
         postedBy: {
             rating: 'desc'

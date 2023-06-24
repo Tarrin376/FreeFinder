@@ -1,7 +1,7 @@
 import { prisma } from "./UserService.js";
 import { Prisma } from '@prisma/client';
 import { paginationLimit } from "../index.js";
-import { sortByParams } from "../utils/sortByParams.js";
+import { sortPosts } from "../utils/sortPosts.js";
 
 export async function findSeller(userID) {
     try {
@@ -85,7 +85,7 @@ export async function firstQuerySellerPosts(sellerID, sortBy) {
         const posts = await prisma.post.findMany({
             take: paginationLimit,
             where: { sellerID: sellerID },
-            orderBy: sortByParams[sortBy],
+            orderBy: sortPosts[sortBy],
             select: { 
                 postedBy: {
                     select: {
@@ -137,7 +137,7 @@ export async function secondQuerySellerPosts(sellerID, cursor, sortBy) {
         const posts = await prisma.post.findMany({
             skip: 1,
             take: paginationLimit,
-            orderBy: sortByParams[sortBy],
+            orderBy: sortPosts[sortBy],
             cursor: { 
                 postID: cursor 
             },

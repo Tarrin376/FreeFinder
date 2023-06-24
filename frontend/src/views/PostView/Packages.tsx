@@ -34,14 +34,14 @@ function Packages({ packages }: { packages: IPackage[] }) {
     }
 
     return (
-        <div className="flex-1 bg-main-white relative rounded-[8px] shadow-info-component">
+        <div className="flex-1 bg-main-white relative rounded-[8px] shadow-info-component w-2/6">
             {curPkg &&
             <>
                 <div className="flex justify-evenly overflow-hidden">
-                    {packages.sort((a, b) => a.type.localeCompare(b.type)).map((cur) => {
+                    {packages.sort((a, b) => a.type.localeCompare(b.type)).map((cur, index) => {
                         return (
                             <button className={`h-[50px] border-b-2 ${cur.type === curPkg.type ? " border-main-blue bg-[#2375e109]" : "border-light-gray"} 
-                            flex-grow basis-0`} onClick={() => selectPackage(cur)}>
+                            flex-grow basis-0`} onClick={() => selectPackage(cur)} key={index}>
                                 {capitalizePkgType(cur.type)}
                             </button>
                         );

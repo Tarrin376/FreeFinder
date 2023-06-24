@@ -105,6 +105,7 @@ function Package({ setSection, setRevisions, setFeatures, setDeliveryTime, setDe
                             curRevision={"" + (index + 1)} 
                             updateRevision={updateRevision} 
                             revisions={revisions} 
+                            key={index}
                         />
                     );
                 })}
@@ -132,7 +133,7 @@ function Package({ setSection, setRevisions, setFeatures, setDeliveryTime, setDe
                 {features.map((value, index) => {
                     return (
                         <input type="text" className="search-bar" value={value} placeholder={"E.g. Video Thumbnail included"}
-                        onChange={(e) => updateFeatureInput(index, e.target.value)} />
+                        onChange={(e) => updateFeatureInput(index, e.target.value)} key={index} />
                     );
                 })}
             </div>}

@@ -132,21 +132,17 @@ function CreatePost({ setPostService, setUserPosts, cursor, setReachedBottom, se
                 }
             });
 
-            if (response.status !== 500) {
-                const responseData = await response.json();
-                if (responseData.message === "success") {
-                    setErrorMessage("");
-                    setPostService(false);
-                    cursor.current = "HEAD";
-                    setUserPosts([]);
-                    setReachedBottom(false);
-                    setNextPage((state) => !state);
-                } else {
-                    setErrorMessage(responseData.message);
-                }
+            const responseData = await response.json();
+
+            if (responseData.message === "success") {
+                setErrorMessage("");
+                setPostService(false);
+                cursor.current = "HEAD";
+                setUserPosts([]);
+                setReachedBottom(false);
+                setNextPage((state) => !state);
             } else {
-                setErrorMessage(`Looks like we are having trouble on our end. Please try again later. 
-                (Error code: ${response.status})`);
+                setErrorMessage(responseData.message);
             }
         }
         catch (err: any) {

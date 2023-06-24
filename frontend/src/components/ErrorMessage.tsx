@@ -2,7 +2,7 @@ import ErrorIcon from '../assets/warning.png';
 
 interface ErrorMessageProps {
     message: string,
-    title: string
+    title: string,
 }
 
 function ErrorMessage({ message, title }: ErrorMessageProps) {

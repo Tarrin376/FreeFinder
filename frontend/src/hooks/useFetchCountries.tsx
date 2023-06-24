@@ -1,7 +1,10 @@
 import { useEffect, useState } from 'react';
 import { Country } from '../types/Country';
 
-export function useFetchCountries(): Country[] {
+export function useFetchCountries(): {
+    countries: Country[],
+    errorMessage: string
+} {
     const [countries, setCountries] = useState<Country[]>([]);
     const [errorMessage, setErrorMessage] = useState<string>("");
 
@@ -9,7 +12,7 @@ export function useFetchCountries(): Country[] {
         (async (): Promise<void> => {
             try {
                 const response = await fetch("https://restcountries.com/v3.1/all");
-                if (response.status === 500) {
+                if (response.status !== 200) {
                     setErrorMessage(`Looks like we are having trouble on our end. Please try again later. 
                     (Error code: ${response.status})`);
                     return;
@@ -36,5 +39,8 @@ export function useFetchCountries(): Country[] {
         })();
     }, []);
 
-    return countries;
+    return {
+        countries,
+        errorMessage
+    };
 }
