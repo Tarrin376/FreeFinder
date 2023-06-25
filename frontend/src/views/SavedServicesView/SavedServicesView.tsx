@@ -2,25 +2,25 @@ import { useRef, useContext, useState } from 'react';
 import { UserContext } from '../../context/UserContext';
 import { useFetchPosts } from '../../hooks/useFetchPosts';
 import SortBy from '../../components/SortBy';
-import { sortByParams } from '../../components/SortBy';
 import { IPost } from '../../models/IPost';
 import PostSkeleton from '../../skeletons/PostSkeleton';
 import Post from '../../components/Post';
 import PostsWrapper from '../../components/PostsWrapper';
 import NoResultsFound from '../../components/NoResultsFound';
 import { SavedServicesKey } from '../../types/SavedServicesKey';
+import { sortPosts } from '../../utils/sortPosts';
 
 function SavedServicesView() {
     const userContext = useContext(UserContext);
-    const [sortBy, setSortBy] = useState<string>(sortByParams["most recent"]);
+    const [sortBy, setSortBy] = useState<string>(sortPosts["most recent"]);
     const pageRef = useRef<HTMLDivElement>(null);
 
-    const url = `/api/saved-posts/get-posts?sort=${sortBy}`;
+    const url = `/api/users/${userContext.userData.userID}/saved-posts?sort=${sortBy}`;
     const cursor = useRef<SavedServicesKey>({ userID: "", postID: "" });
     const [deletingPost, setDeletingPost] = useState<boolean>(false);
 
     const [nextPage, setNextPage] = useState<boolean>(false);
-    const posts = useFetchPosts(pageRef, userContext.userData.userID, userContext.userData.username, url, nextPage, setNextPage, cursor);
+    const posts = useFetchPosts(pageRef, url, nextPage, setNextPage, cursor);
 
     return (
         <div ref={pageRef}>

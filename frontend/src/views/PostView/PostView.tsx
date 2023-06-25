@@ -6,7 +6,6 @@ import StarIcon from '../../assets/star.png';
 import { getTimePosted } from "../../utils/getTimePosted";
 import AboutSeller from "./AboutSeller";
 import PostViewSkeleton from '../../skeletons/PostViewSkeleton';
-import Placeholder from '../../assets/placeholder_img.jpeg';
 import Packages from "./Packages";
 
 function PostView() {
@@ -16,7 +15,7 @@ function PostView() {
     useEffect(() => {
         (async (): Promise<void> => {
             try {
-                const response = await fetch(`/api/posts/find${location.search}`);
+                const response = await fetch(`/api${location.pathname}`);
                 if (response.status !== 500) {
                     const data = await response.json();
                     setTimeout(() => {
@@ -29,7 +28,7 @@ function PostView() {
                 console.log(err.message);
             }
         })();
-    }, [location.search]);
+    }, [location.pathname]);
 
     if (!postData) {
         return (
@@ -65,7 +64,7 @@ function PostView() {
                         </div>
                     </div>
                     <div className="flex h-[550px] gap-8 mt-8">
-                        <img src={Placeholder} className="w-4/6 block rounded-[8px] object-cover shadow-info-component" alt="placeholder" />
+                        <img src={postData.images[0].url} className="w-4/6 block rounded-[8px] object-cover shadow-info-component" alt="placeholder" />
                         <Packages packages={postData.packages} />
                     </div>
                 </header>

@@ -1,9 +1,9 @@
 import { Router } from 'express';
-import { findSellerPosts, updateSellerDetails } from '../controllers/SellerController.js';
+import { getSellerPosts, updateSellerDetails } from '../controllers/SellerController.js';
 
 const sellerRouter = Router();
 
-sellerRouter.post('/posts', findSellerPosts);
+sellerRouter.post('/:id/posts', getSellerPosts);
 sellerRouter.put('/update', updateSellerDetails);
 
 export default sellerRouter;

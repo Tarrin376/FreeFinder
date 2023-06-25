@@ -1,3 +1,5 @@
+import { IPostImage } from "./IPostImage"
+
 export interface IPost {
     createdAt: Date,
     postID: string,
@@ -11,5 +13,6 @@ export interface IPost {
             status: string,
             username: string,
         }
-    }
+    },
+    images: IPostImage[]
 }

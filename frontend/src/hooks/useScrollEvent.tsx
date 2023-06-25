@@ -1,9 +1,7 @@
 import { useEffect } from "react";
-import { useNavigate } from "react-router-dom";
 
-export function useScrollEvent(username: string, pageRef: React.RefObject<HTMLDivElement>, loading: boolean, 
+export function useScrollEvent(pageRef: React.RefObject<HTMLDivElement>, loading: boolean, 
     reachedBottom: boolean, setNextPage: React.Dispatch<React.SetStateAction<boolean>>) {
-    const navigate = useNavigate();
 
     function loadMoreContent(): void {
         let documentHeight = document.body.scrollHeight;
@@ -15,10 +13,6 @@ export function useScrollEvent(username: string, pageRef: React.RefObject<HTMLDi
     }
 
     useEffect(() => {
-        if (username === "") {
-            navigate("/");
-        }
-
         if (pageRef && pageRef.current) {
             pageRef.current.addEventListener('wheel', loadMoreContent);
         }

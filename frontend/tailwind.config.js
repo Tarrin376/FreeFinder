@@ -21,7 +21,8 @@ module.exports = {
             'main-white-hover': '#f9f9f9',
             'error-red': 'rgba(255, 0, 0, 0.08)',
             'error-red-hover': 'rgba(255, 0, 0, 0.10)',
-            'error-text': '#F43C3C'
+            'error-text': '#F43C3C',
+            'light-green': '#36BF54',
         },
         dropShadow: {
             'search-bar': '0px 0px 1px #DDDDDD',

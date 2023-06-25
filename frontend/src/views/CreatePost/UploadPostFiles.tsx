@@ -9,7 +9,7 @@ import ErrorMessage from "../../components/ErrorMessage";
 import { useState } from "react";
 
 const MAX_FILE_UPLOADS: number = 20;
-const MAX_FILE_BYTES = 26214400;
+const MAX_FILE_BYTES = 5000000;
 
 interface UploadPostFilesProps {
     setPostService: React.Dispatch<React.SetStateAction<boolean>>,
@@ -47,6 +47,8 @@ function UploadPostFiles({ setPostService, setSection, uploadedFiles, setUploade
         if (failed > 0) {
             setErrorMessage(`Failed to upload ${failed} ${failed === 1 ? "file" : "files"}. 
             Please check that they are in one of the supported formats.`);
+        } else {
+            setErrorMessage("");
         }
 
         setUploadedFiles((state) => [...state, ...uploaded]);
@@ -69,7 +71,7 @@ function UploadPostFiles({ setPostService, setSection, uploadedFiles, setUploade
     }
 
     return (
-        <PopUpWrapper setIsOpen={setPostService} title={"Upload files"}>
+        <PopUpWrapper setIsOpen={setPostService} title={"Upload post images"}>
             <DragAndDrop handleDrop={handleDrop}>
                 <div className="absolute top-[50%] left-[50%] translate-x-[-50%] translate-y-[-50%]">
                     <img src={Storage} className="block m-auto w-[50px] h-[50px] mb-3" alt="storage" />
@@ -81,7 +83,7 @@ function UploadPostFiles({ setPostService, setSection, uploadedFiles, setUploade
             </DragAndDrop>
             <div className="flex items-center justify-between mt-3">
                 <p className="text-side-text-gray">Supported formats: PNG, JPG</p>
-                <p className="text-side-text-gray">Maximum size: 25MB</p>
+                <p className="text-side-text-gray">Maximum size: 5MB</p>
             </div>
             <p className="text-side-text-gray mt-3 mb-4">Files uploaded:
                 <span className={uploadedFiles.length === MAX_FILE_UPLOADS ? 'text-error-red' : 'text-[#36BF54]'}>

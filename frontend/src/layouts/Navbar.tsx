@@ -34,10 +34,10 @@ function Navbar() {
                             <Link to={`${userContext.userData.username}/saved-posts`}>
                                 <li className="nav-item">Saved Posts</li>
                             </Link>
-                            <Link to={`${userContext.userData.username}/my-posts`}>
+                            <Link to={`${userContext.userData.username}/posts`}>
                                 <li className="nav-item">My Posts</li>
                             </Link>
-                            <div className="flex items-center border border-light-gray 
+                            <div className="flex items-center border-2 border-light-gray 
                                 rounded-[8px] px-3 h-10 xl:w-96 lg:w-80 bg-transparent">
                                 <img src={SearchIcon} alt="search-icon" className="w-5 h-5 cursor-pointer"/>
                                 <input type="text" placeholder="Search for sellers" className="w-full h-full 

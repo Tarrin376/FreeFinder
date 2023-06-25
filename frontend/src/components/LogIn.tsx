@@ -3,6 +3,9 @@ import { useState, useContext } from 'react';
 import ErrorMessage from "./ErrorMessage";
 import { IUserContext, UserContext } from "../context/UserContext";
 import LoadingButton from "./LoadingButton";
+import axios, { AxiosError } from "axios";
+import { IUser } from "../models/IUser";
+import { getAPIErrorMessage } from "../utils/getAPIErrorMessage";
 
 interface LogInProps {
     setLogIn: React.Dispatch<React.SetStateAction<boolean>>,
@@ -30,29 +33,18 @@ function LogIn({ setLogIn, setSignUp }: LogInProps) {
 
         try {
             setLoading(true);
-            const response = await fetch("/api/users/login", {
-                method: 'POST',
-                body: JSON.stringify({ 
-                    password: password,
-                    usernameOrEmail
-                }),
-                headers: {
-                    'Accept': 'application/json',
-                    'Content-Type': 'application/json'
-                }
+            const resp = await axios.post<{ userData: IUser, message: string }>(`/api/users/login`, {
+                password: password,
+                usernameOrEmail
             });
 
-            const user = await response.json();
-            if (user.message === "success") {
-                user.userData.memberDate = new Date(user.userData.memberDate);
-                userContext.setUserData(user.userData);
-                setLogIn(false);
-            } else {
-                setErrorMessage(user.message);
-            }
+            resp.data.userData.memberDate = new Date(resp.data.userData.memberDate);
+            userContext.setUserData(resp.data.userData);
+            setLogIn(false);
         }
         catch (err: any) {
-            setErrorMessage(err.message);
+            const errorMessage = getAPIErrorMessage(err as AxiosError<{ message: string }>);
+            setErrorMessage(errorMessage);
         }
         finally {
             setLoading(false);

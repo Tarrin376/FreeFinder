@@ -2,6 +2,7 @@ import { prisma } from "./UserService.js";
 import { Prisma } from '@prisma/client';
 import { paginationLimit } from "../index.js";
 import { sortPosts } from '../utils/sortPosts.js';
+import { DBError } from "../customErrors/DBError.js";
 
 export async function savePostHandler(postID, userID) {
     try {
@@ -13,14 +14,14 @@ export async function savePostHandler(postID, userID) {
         });
     }
     catch (err) {
-        if (err instanceof Prisma.PrismaClientKnownRequestError && err.code === 'P2002') {
-            const error = new Error("Post already saved.");
-            error.code = 409;
-            throw error;
+        if (err instanceof DBError) {
+            throw err;
+        } else if (err instanceof Prisma.PrismaClientValidationError) {
+            throw new DBError("Missing required fields or fields provided are invalid.", 400);
+        } else if (err instanceof Prisma.PrismaClientKnownRequestError && err.code === 'P2002') {
+            throw new DBError("Post already saved.", 409);
         } else {
-            const error = new Error("Something went wrong when trying to process your request. Please try again.");
-            error.code = 400;
-            throw error;
+            throw new DBError("Something went wrong when trying to save this post. Please try again.", 500);
         }
     }
     finally {
@@ -34,9 +35,11 @@ export async function getSavedPostsHandler(userID, cursor, sortBy) {
         else return secondQuerySavedPosts(userID, cursor, sortBy);
     }
     catch (err) {
-        const error = new Error("Something went wrong when trying to process your request. Please try again.");
-        error.code = 400;
-        throw error;
+        if (err instanceof Prisma.PrismaClientValidationError) {
+            throw new DBError("Missing required fields or fields provided are invalid.", 400);
+        } else {
+            throw new DBError("Something went wrong when trying to get your saved posts. Please try again.", 500);
+        }
     }
     finally {
         await prisma.$disconnect();
@@ -44,134 +47,117 @@ export async function getSavedPostsHandler(userID, cursor, sortBy) {
 }
 
 export async function firstQuerySavedPosts(userID, sortBy) {
-    try {
-        const saved = await prisma.savedPost.findMany({
-            take: paginationLimit,
-            where: {
-                userID: userID
-            },
-            orderBy: {
-                post: sortPosts[sortBy]
-            },
-            select: {
-                post: {
-                    include: {
-                        postedBy: {
-                            select: {
-                                user: {
-                                    select: {
-                                        profilePicURL: true,
-                                        status: true,
-                                        username: true,
-                                        userID: true,
-                                    }
-                                },
-                                rating: true,
-                                description: true,
-                                numReviews: true
-                            }
+    const saved = await prisma.savedPost.findMany({
+        take: paginationLimit,
+        where: {
+            userID: userID
+        },
+        orderBy: {
+            post: sortPosts[sortBy]
+        },
+        select: {
+            post: {
+                include: {
+                    postedBy: {
+                        select: {
+                            user: {
+                                select: {
+                                    profilePicURL: true,
+                                    status: true,
+                                    username: true,
+                                    userID: true,
+                                }
+                            },
+                            rating: true,
+                            description: true,
+                            numReviews: true
                         }
-                    }
+                    },
+                    images: true
                 }
             }
-        });
-
-        if (saved.length === 0) {
-            return { 
-                posts: saved, 
-                cursor: { userID: "", postID: "" }, 
-                last: true
-            };
         }
+    });
 
-        const minNum = Math.min(paginationLimit - 1, saved.length - 1);
-        const PID = saved[minNum].post.postID;
-        const UID = saved[minNum].post.postedBy.user.userID;
-        const posts = saved.map((cur) => cur.post);
-
+    if (saved.length === 0) {
         return { 
-            posts, 
-            cursor: { userID: UID, postID: PID },
-            last: minNum < paginationLimit - 1 
+            posts: saved, 
+            cursor: { userID: "", postID: "" }, 
+            last: true
         };
     }
-    catch (err) {
-        const error = new Error("Something went wrong when trying to process your request. Please try again.");
-        error.code = 400;
-        throw error;
-    }
-    finally {
-        await prisma.$disconnect();
-    }
+
+    const minNum = Math.min(paginationLimit - 1, saved.length - 1);
+    const PID = saved[minNum].post.postID;
+    const UID = saved[minNum].post.postedBy.user.userID;
+    const posts = saved.map((cur) => cur.post);
+
+    return { 
+        posts, 
+        cursor: { userID: UID, postID: PID },
+        last: minNum < paginationLimit - 1 
+    };
 }
 
 export async function secondQuerySavedPosts(userID, cursor, sortBy) {
-    try {
-        const saved = await prisma.savedPost.findMany({
-            skip: 1,
-            orderBy: {
-                post: sortPosts[sortBy]
-            },
-            cursor: { 
-                userID_postID: {
-                    userID: cursor.userID,
-                    postID: cursor.postID
-                }
-            },
-            take: paginationLimit,
-            where: {
-                userID: userID
-            },
-            select: {
-                post: {
-                    include: {
-                        postedBy: {
-                            select: {
-                                user: {
-                                    select: {
-                                        profilePicURL: true,
-                                        status: true,
-                                        username: true,
-                                        userID: true,
-                                    }
-                                },
-                                rating: true,
-                                description: true,
-                                numReviews: true
-                            }
+    const saved = await prisma.savedPost.findMany({
+        skip: 1,
+        orderBy: {
+            post: sortPosts[sortBy]
+        },
+        cursor: { 
+            userID_postID: {
+                userID: cursor.userID,
+                postID: cursor.postID
+            }
+        },
+        take: paginationLimit,
+        where: {
+            userID: userID
+        },
+        select: {
+            post: {
+                include: {
+                    postedBy: {
+                        select: {
+                            user: {
+                                select: {
+                                    profilePicURL: true,
+                                    status: true,
+                                    username: true,
+                                    userID: true,
+                                }
+                            },
+                            rating: true,
+                            description: true,
+                            numReviews: true
                         }
-                    }
+                    },
+                    images: true
                 }
             }
-        });
-
-        if (saved.length === 0) {
-            return { 
-                posts: saved, 
-                cursor, 
-                last: true
-            };
         }
+    });
 
-        const minNum = Math.min(paginationLimit - 1, saved.length - 1);
-        const PID = saved[minNum].post.postID;
-        const UID = saved[minNum].post.postedBy.user.userID;
-        const posts = saved.map((cur) => cur.post);
-
+    if (saved.length === 0) {
         return { 
-            posts, 
-            cursor: { userID: UID, postID: PID },
-            last: minNum < paginationLimit - 1
+            posts: saved, 
+            cursor, 
+            last: true
         };
     }
-    catch (err) {
-        const error = new Error("Something went wrong when trying to process your request. Please try again.");
-        error.code = 400;
-        throw error;
-    }
-    finally {
-        await prisma.$disconnect();
-    }
+
+    const minNum = Math.min(paginationLimit - 1, saved.length - 1);
+    const PID = saved[minNum].post.postID;
+    const UID = saved[minNum].post.postedBy.user.userID;
+    const posts = saved.map((cur) => cur.post);
+
+    return { 
+        posts, 
+        cursor: { userID: UID, postID: PID },
+        last: minNum < paginationLimit - 1
+    };
+    
 }
 
 export async function deleteSavedPostHandler(postID, userID) {
@@ -186,14 +172,14 @@ export async function deleteSavedPostHandler(postID, userID) {
         });
     }
     catch (err) {
-        if (err instanceof Prisma.PrismaClientKnownRequestError && err.code === "P2025") {
-            const error = new Error("Post not found");
-            error.code = 404;
-            throw error;
+        if (err instanceof DBError) {
+            throw err;
+        } else if (err instanceof Prisma.PrismaClientValidationError) {
+            throw new DBError("Missing required fields or fields provided are invalid.", 400);
+        } else if (err instanceof Prisma.PrismaClientKnownRequestError && err.code === "P2025") {
+            throw new DBError("Post not found.", 404);
         } else {
-            const error = new Error("Something went wrong when trying to process your request. Please try again.");
-            error.code = 400;
-            throw error;
+            throw new DBError("Something went wrong when trying to delete this post. Please try again.", 500);
         }
     }
     finally {

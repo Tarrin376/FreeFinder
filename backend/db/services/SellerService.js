@@ -2,6 +2,7 @@ import { prisma } from "./UserService.js";
 import { Prisma } from '@prisma/client';
 import { paginationLimit } from "../index.js";
 import { sortPosts } from "../utils/sortPosts.js";
+import { DBError } from "../customErrors/DBError.js";
 
 export async function findSeller(userID) {
     try {
@@ -14,36 +15,12 @@ export async function findSeller(userID) {
         }
     }
     catch (err) {
-        const error = new Error("Something went wrong when trying to process your request. Please try again.");
-        error.code = 400;
-        throw error;
-    }
-    finally {
-        await prisma.$disconnect();
-    }
-}
-
-async function createSeller(userID) {
-    try {
-        const seller = await prisma.seller.create({
-            data: {
-                userID: userID,
-                rating: 0,
-                description: ""
-            }
-        });
-
-        return seller;
-    }
-    catch (err) {
-        if (err instanceof Prisma.PrismaClientKnownRequestError && err.code === 'P2002') {
-            const error = new Error("This seller already exists.");
-            error.code = 409;
-            throw error;
+        if (err instanceof DBError) {
+            throw err;
+        } else if (err instanceof Prisma.PrismaClientValidationError) {
+            throw new DBError("Missing required fields or fields provided are invalid.", 400);
         } else {
-            const error = new Error("Something went wrong when trying to process your request. Please try again.");
-            error.code = 400;
-            throw error;
+            throw new DBError("Something went wrong when trying to find this seller. Please try again.", 500);
         }
     }
     finally {
@@ -51,7 +28,35 @@ async function createSeller(userID) {
     }
 }
 
-export async function sellerPostsHandler(sellerUserID, cursor, sortBy) {
+async function createSeller(id) {
+    try {
+        const seller = await prisma.seller.create({
+            data: {
+                userID: id,
+                rating: 0,
+                description: "",
+            }
+        });
+
+        return seller;
+    }
+    catch (err) {
+        if (err instanceof DBError) {
+            throw err;
+        } else if (err instanceof Prisma.PrismaClientValidationError) {
+            throw new DBError("Missing required fields or fields provided are invalid.", 400);
+        } else if (err instanceof Prisma.PrismaClientKnownRequestError && err.code === 'P2002') {
+            throw new DBError("You are already a seller.", 409);
+        } else {
+            throw new DBError("Something went wrong when trying to make you a seller. Please try again.", 500);
+        }
+    }
+    finally {
+        await prisma.$disconnect();
+    }
+}
+
+export async function getSellerPostsHandler(sellerUserID, cursor, sortBy) {
     try {
         const seller = await prisma.seller.findUnique({ 
             where: { 
@@ -71,9 +76,13 @@ export async function sellerPostsHandler(sellerUserID, cursor, sortBy) {
         else return secondQuerySellerPosts(seller.sellerID, cursor, sortBy);
     }
     catch (err) {
-        const error = new Error("Something went wrong when trying to process your request. Please try again.");
-        error.code = 400;
-        throw error;
+        if (err instanceof DBError) {
+            throw err;
+        } else if (err instanceof Prisma.PrismaClientValidationError) {
+            throw new DBError("Missing required fields or fields provided are invalid.", 400);
+        } else {
+            throw new DBError("Something went wrong when trying to get this seller's posts. Please try again.", 500);
+        }
     }
     finally {
         await prisma.$disconnect();
@@ -81,113 +90,103 @@ export async function sellerPostsHandler(sellerUserID, cursor, sortBy) {
 }
 
 export async function firstQuerySellerPosts(sellerID, sortBy) {
-    try {
-        const posts = await prisma.post.findMany({
-            take: paginationLimit,
-            where: { sellerID: sellerID },
-            orderBy: sortPosts[sortBy],
-            select: { 
-                postedBy: {
-                    select: {
-                        user: {
-                            select: {
-                                profilePicURL: true,
-                                status: true,
-                                username: true,
-                            }
-                        },
-                        rating: true,
+    const posts = await prisma.post.findMany({
+        take: paginationLimit,
+        where: { sellerID: sellerID },
+        orderBy: sortPosts[sortBy],
+        select: { 
+            postedBy: {
+                select: {
+                    user: {
+                        select: {
+                            profilePicURL: true,
+                            status: true,
+                            username: true,
+                        }
                     },
+                    rating: true,
                 },
-                createdAt: true,
-                numReviews: true,
-                startingPrice: true,
-                title: true,
-                postID: true
+            },
+            createdAt: true,
+            numReviews: true,
+            startingPrice: true,
+            title: true,
+            postID: true,
+            images: {
+                where: {
+                    isThumbnail: true
+                }
             }
-        });
-
-        if (posts.length === 0) {
-            return { 
-                posts,
-                cursor: "HEAD", 
-                last: true
-            };
         }
-        
-        const minNum = Math.min(paginationLimit - 1, posts.length - 1);
+    });
+
+    if (posts.length === 0) {
         return { 
-            posts, 
-            cursor: posts[minNum].postID, 
-            last: minNum < paginationLimit - 1 
+            posts,
+            cursor: "HEAD", 
+            last: true
         };
     }
-    catch (err) {
-        const error = new Error("Something went wrong when trying to process your request. Please try again.");
-        error.code = 400;
-        throw error;
-    }
-    finally {
-        await prisma.$disconnect();
-    }
+    
+    const minNum = Math.min(paginationLimit - 1, posts.length - 1);
+    return { 
+        posts, 
+        cursor: posts[minNum].postID, 
+        last: minNum < paginationLimit - 1 
+    };
 }
 
 export async function secondQuerySellerPosts(sellerID, cursor, sortBy) {
-    try {
-        const posts = await prisma.post.findMany({
-            skip: 1,
-            take: paginationLimit,
-            orderBy: sortPosts[sortBy],
-            cursor: { 
-                postID: cursor 
-            },
-            where: { 
-                sellerID: sellerID 
-            },
-            select: { 
-                postedBy: {
-                    select: {
-                        user: {
-                            select: {
-                                profilePicURL: true,
-                                status: true,
-                                username: true,
-                            }
-                        },
-                        rating: true,
+    const posts = await prisma.post.findMany({
+        skip: 1,
+        take: paginationLimit,
+        orderBy: sortPosts[sortBy],
+        cursor: { 
+            postID: cursor 
+        },
+        where: { 
+            sellerID: sellerID 
+        },
+        select: { 
+            postedBy: {
+                select: {
+                    user: {
+                        select: {
+                            profilePicURL: true,
+                            status: true,
+                            username: true,
+                        }
                     },
+                    rating: true,
                 },
-                createdAt: true,
-                numReviews: true,
-                startingPrice: true,
-                title: true,
-                postID: true
+            },
+            createdAt: true,
+            numReviews: true,
+            startingPrice: true,
+            title: true,
+            postID: true,
+            images: {
+                where: {
+                    isThumbnail: true
+                }
             }
-        });
-
-        if (posts.length === 0) {
-            return { 
-                posts, 
-                cursor, 
-                last: true
-            };
         }
+    });
 
-        const minNum = Math.min(paginationLimit - 1, posts.length - 1);
+    if (posts.length === 0) {
         return { 
             posts, 
-            cursor: posts[minNum].postID, 
-            last: minNum < paginationLimit - 1
+            cursor, 
+            last: true
         };
     }
-    catch (err) {
-        const error = new Error("Something went wrong when trying to process your request. Please try again.");
-        error.code = 400;
-        throw error;
-    }
-    finally {
-        await prisma.$disconnect();
-    }
+
+    const minNum = Math.min(paginationLimit - 1, posts.length - 1);
+    return { 
+        posts, 
+        cursor: posts[minNum].postID, 
+        last: minNum < paginationLimit - 1
+    };
 }
 
 export async function updateSellerDetailsHandler(sellerDetails) {
@@ -209,14 +208,14 @@ export async function updateSellerDetailsHandler(sellerDetails) {
         return updatedDetails;
     }
     catch (err) {
-        if (err instanceof Prisma.PrismaClientKnownRequestError && err.code === "P2025") {
-            const error = new Error("Seller not found");
-            error.code = 404;
-            throw error;
+        if (err instanceof DBError) {
+            throw err;
+        } else if (err instanceof Prisma.PrismaClientValidationError) {
+            throw new DBError("Missing required fields or fields provided are invalid.", 400);
+        } else if (err instanceof Prisma.PrismaClientKnownRequestError && err.code === "P2025") {
+            throw new DBError("Seller not found.", 404);
         } else {
-            const error = new Error("Something went wrong when trying to process your request. Please try again.");
-            error.code = 400;
-            throw error;
+            throw new DBError("Something went wrong when trying to process your request. Please try again.", 500);
         }
     }
     finally {

@@ -1,14 +1,6 @@
 import { IPost } from '../models/IPost';
 import { SavedServicesKey } from '../types/SavedServicesKey';
-
-export const sortByParams: {
-    [key: string]: string
-} = {
-    "most recent": "recent",
-    "rating": "rating",
-    "lowest price": "lowest-price",
-    "highest price": "highest-price"
-}
+import { sortPosts } from '../utils/sortPosts';
 
 export type Cursor = string | SavedServicesKey;
 
@@ -23,12 +15,12 @@ interface SortByProps {
 }
 
 function SortBy({ cursor, sortBy, setPosts, setReachedBottom, setSortBy, head, loading }: SortByProps) {
-    function sortPosts(value: string): void {
+    function sort(value: string): void {
         if (!loading) {
             cursor.current = head;
             setPosts([]);
             setReachedBottom(false);
-            setSortBy(sortByParams[value]);
+            setSortBy(sortPosts[value]);
         }
     }
 
@@ -36,8 +28,8 @@ function SortBy({ cursor, sortBy, setPosts, setReachedBottom, setSortBy, head, l
         <div className="flex items-center gap-4">
             <p>Sort by</p>
             <select className="p-2 bg-main-white rounded-[8px] border-2 border-light-gray cursor-pointer"
-                onChange={(e) => sortPosts(e.target.value)} defaultValue={sortBy}>
-                {Object.keys(sortByParams).map((param) => {
+                onChange={(e) => sort(e.target.value)} defaultValue={sortBy}>
+                {Object.keys(sortPosts).map((param) => {
                     return (
                         <option key={param}>
                             {param}

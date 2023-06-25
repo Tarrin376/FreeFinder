@@ -1,8 +1,8 @@
-import { sellerPostsHandler, updateSellerDetailsHandler } from "../services/SellerService.js";
+import { getSellerPostsHandler, updateSellerDetailsHandler } from "../services/SellerService.js";
 
-export async function findSellerPosts(req, res) {
+export async function getSellerPosts(req, res) {
     try {
-        const response = await sellerPostsHandler(req.body.userID, req.body.cursor, req.query.sort);
+        const response = await getSellerPostsHandler(req.params.id, req.body.cursor, req.query.sort);
         res.json({ posts: response.posts, cursor: response.cursor, message: "success", last: response.last });
     }
     catch (err) {

@@ -31,7 +31,7 @@ function ProfileMenu({ userContext, setSettingsPopUp, setSellerProfilePopUp }: P
             }
         } 
         catch (err: any) {
-            console.log(err.message);
+            // Ignore error message and do nothing
         } 
         finally {
             setDisabled(false);
@@ -45,12 +45,10 @@ function ProfileMenu({ userContext, setSettingsPopUp, setSellerProfilePopUp }: P
 
             if (responseData.message === "success") {
                 userContext.setUserData(initialState.userData);
-            } else {
-                console.log(responseData.message);
             }
         }
         catch (err: any) {
-            console.log(err.message);
+            // Ignore error message and do nothing
         }
     }
 

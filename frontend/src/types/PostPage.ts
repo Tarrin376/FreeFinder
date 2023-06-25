@@ -1,4 +1,5 @@
 import { IPackage } from "../models/IPackage";
+import { IPostImage } from "../models/IPostImage";
 
 export type PostPage = {
     postID: string,
@@ -19,5 +20,6 @@ export type PostPage = {
             profilePicURL: string,
         }
     },
-    packages: IPackage[]
+    packages: IPackage[],
+    images: IPostImage[]
 }

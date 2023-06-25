@@ -5,7 +5,8 @@ import ProfilePicAndStatus from './ProfilePicAndStatus';
 import { Link } from 'react-router-dom';
 import { getTimePosted, getSeconds } from '../utils/getTimePosted';
 import { actionSuccessful } from '../utils/actionSuccessful';
-import Placeholder from '../assets/placeholder_img.jpeg';
+import axios, { AxiosError } from "axios";
+import { getAPIErrorMessage } from '../utils/getAPIErrorMessage';
 
 interface PostProps {
     postInfo: IPost,
@@ -28,28 +29,12 @@ function Post({ postInfo, userID, canRemove }: PostProps) {
                 return;
             }
 
-            const response = await fetch("/api/saved-posts/save", {
-                method: 'POST',
-                body: JSON.stringify({
-                    userID: userID,
-                    postID: postInfo.postID
-                }),
-                headers: {
-                    'Accept': 'application/json',
-                    'Content-Type': 'application/json'
-                } 
-            });
-
-            const result = await response.json();
-            if (result.message === "success") {
-                setSuccessMessage("Saved post")
-                setHide(true);
-            } else {
-                actionSuccessful(setErrorMessage, result.message, "");
-            }
+            await axios.post<{ message: string }>(`/api/users/${userID}/saved-posts/save/${postInfo.postID}`);
+            actionSuccessful(setSuccessMessage, "Saved post", "");
         }
         catch (err: any) {
-            actionSuccessful(setErrorMessage, err.message, "");
+            const errorMessage = getAPIErrorMessage(err as AxiosError<{ message: string }>);
+            actionSuccessful(setErrorMessage, errorMessage, "");
         }
     }
 
@@ -60,26 +45,12 @@ function Post({ postInfo, userID, canRemove }: PostProps) {
     
         try {
             canRemove.setDeletingPost(true);
-            const response = await fetch("/api/posts/delete", {
-                method: "DELETE",
-                body: JSON.stringify({
-                    postID: postInfo.postID
-                }),
-                headers: {
-                    "Accept": "application/json",
-                    "Content-Type": "application/json"
-                }
-            });
-
-            const removed = await response.json();
-            if (removed.message === "success") {
-                setHide(true);
-            } else {
-                actionSuccessful(setErrorMessage, removed.message, "");
-            }
+            await axios.delete<{ message: string }>(`/api/posts/${postInfo.postID}/delete`);
+            setHide(true);
         }
         catch (err: any) {
-            actionSuccessful(setErrorMessage, err.message, "");
+            const errorMessage = getAPIErrorMessage(err as AxiosError<{ message: string }>);
+            actionSuccessful(setErrorMessage, errorMessage, "");
         }
         finally {
             canRemove.setDeletingPost(false);
@@ -96,13 +67,18 @@ function Post({ postInfo, userID, canRemove }: PostProps) {
             'bg-error-text text-main-white' : successMessage ? 'action-btn hover:!bg-[#36BF54] select-none' : 'select-none'}`}>
                 {errorMessage !== "" ? errorMessage : successMessage !== "" ? successMessage : ""}
             </p>
-            <svg viewBox="0 0 32 32" xmlns="http://www.w3.org/2000/svg" onClick={savePost}
-            className="block fill-[#00000077] h-[24px] w-[24px] stroke-white stroke-2 overflow-visible right-3 top-3 absolute cursor-pointer" 
-            aria-hidden="true" role="presentation" focusable="false">
+            <svg 
+                viewBox="0 0 32 32" 
+                xmlns="http://www.w3.org/2000/svg" 
+                onClick={savePost}
+                className="block fill-[#00000077] h-[24px] w-[24px] stroke-white stroke-2 overflow-visible right-3 top-3 absolute cursor-pointer" 
+                aria-hidden="true" 
+                role="presentation" 
+                focusable="false">
                 <path d="m16 28c7-4.733 14-10 14-17 0-1.792-.683-3.583-2.05-4.95-1.367-1.366-3.158-2.05-4.95-2.05-1.791 0-3.583.684-4.949 2.05l-2.051 2.051-2.05-2.051c-1.367-1.366-3.158-2.05-4.95-2.05-1.791 0-3.583.684-4.949 2.05-1.367 1.367-2.051 3.158-2.051 4.95 0 7 7 12.267 14 17z">
                 </path>
             </svg>
-            <img src={Placeholder} className="w-full h-[215px] bg-black rounded-t-[8px] object-cover" alt="placeholder" />
+            <img src={postInfo.images[0].url} className="w-full h-[215px] rounded-t-[8px] object-cover" alt="placeholder" />
             <div className="py-3 px-3">
                 <div className="flex items-center mb-2 gap-3 relative">
                     <ProfilePicAndStatus 
@@ -132,15 +108,13 @@ function Post({ postInfo, userID, canRemove }: PostProps) {
                 <p className="text-side-text-gray text-[15px] mb-1">{getTimePosted(postInfo.createdAt)}</p>
                 <div className="pb-2 border-b border-b-very-light-gray h-[60px]">
                     <p className="text-[17px] nav-item leading-6 overflow-hidden text-ellipsis line-clamp-2 break-all">
-                        <Link to={{ pathname: `/${postInfo.postedBy.user.username}/`, search: `?id=${postInfo.postID}` }}>
+                        <Link to={{ pathname: `/posts/${postInfo.postID}` }}>
                             {postInfo.title}
                         </Link>
                     </p>
                 </div>
                 <div className="mt-3 flex items-center justify-between relative">
-                    <p className="underline">
-                        Starting at: <span className="font-semibold">£{postInfo.startingPrice}</span>
-                    </p>
+                    <p>Starting at: <span className="text-main-blue">£{postInfo.startingPrice}</span></p>
                     {canRemove &&
                     <button className="bg-error-red text-error-text hover:bg-error-red-hover btn-primary 
                     p-[3px] px-[8px] h-fit cursor-pointer text-[15px]" onClick={() => removePost()}>

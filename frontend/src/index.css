@@ -18,7 +18,7 @@
         @apply focus:outline-2 focus:!outline-error-text focus:border-transparent border-b border-error-text bg-[#FFF7F6]
     }
     .invalid-button {
-        @apply btn-primary !bg-[#575757] hover:!bg-[#575757] cursor-not-allowed text-[#E0E0E0] opacity-80;
+        @apply btn-primary !bg-[#575757] hover:!bg-[#575757] pointer-events-none text-[#E0E0E0] opacity-50;
     }
     .action-btn {
         @apply bg-[#36BF54] text-main-white hover:bg-[#45B65E];

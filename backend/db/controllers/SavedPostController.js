@@ -2,7 +2,7 @@ import { savePostHandler, getSavedPostsHandler, deleteSavedPostHandler } from ".
 
 export async function savePost(req, res) {
     try {
-        await savePostHandler(req.body.postID, req.body.userID);
+        await savePostHandler(req.params.postID, req.userData.userID);
         res.json({ message: "success" });
     }
     catch (err) {
@@ -12,7 +12,7 @@ export async function savePost(req, res) {
 
 export async function getSavedPosts(req, res) {
     try {
-        const saved = await getSavedPostsHandler(req.body.userID, req.body.cursor, req.query.sort);
+        const saved = await getSavedPostsHandler(req.params.userID, req.body.cursor, req.query.sort);
         res.json({ ...saved, message: "success" });
     }
     catch (err) {
@@ -22,7 +22,7 @@ export async function getSavedPosts(req, res) {
 
 export async function deleteSavedPost(req, res) {
     try {
-        await deleteSavedPostHandler(req.body.postID, req.body.userID);
+        await deleteSavedPostHandler(req.params.postID, req.userData.userID);
         res.json({ message: "success" });
     }
     catch (err) {

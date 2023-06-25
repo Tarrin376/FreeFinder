@@ -1,10 +1,9 @@
-import { createPostHandler, getPostHandler, deletePostHandler } from "../services/PostService.js";
+import { createPostHandler, getPostHandler, deletePostHandler, addPostImageHandler } from "../services/PostService.js";
 
 export async function createPost(req, res) {
-    const {userID, ...postData} = req.body;
     try {
-        await createPostHandler(postData, userID);
-        res.json({ message: "success" });
+        const postID = await createPostHandler(req.body.post, req.body.startingPrice, req.userData.userID);
+        res.status(201).json({ message: "success", postID });
     }
     catch (err) {
         res.status(err.code).json({ message: err.message });
@@ -13,12 +12,8 @@ export async function createPost(req, res) {
 
 export async function getPost(req, res) {
     try {
-        if (req.query.id) {
-            const post = await getPostHandler(req.query.id);
-            res.json({ post, message: "success" });
-        } else {
-            res.status(400).json({ message: "Bad request" });
-        }
+        const post = await getPostHandler(req.params.id);
+        res.json({ message: "success", post });
     }
     catch (err) {
         res.status(err.code).json({ message: err.message });
@@ -27,8 +22,18 @@ export async function getPost(req, res) {
 
 export async function deletePost(req, res) {
     try {
-        await deletePostHandler(req.body.postID);
+        await deletePostHandler(req.params.id, req.userData.userID);
         res.json({ message: "success" });
+    }
+    catch (err) {
+        res.status(err.code).json({ message: err.message });
+    }
+}
+
+export async function addPostImage(req, res) {
+    try {
+        await addPostImageHandler(req.params.id, req.body);
+        res.status(201).json({ message: "success" });
     }
     catch (err) {
         res.status(err.code).json({ message: err.message });

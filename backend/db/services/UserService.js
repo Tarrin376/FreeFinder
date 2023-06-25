@@ -2,9 +2,10 @@ import { PrismaClient, Prisma } from '@prisma/client';
 import bcrypt from 'bcrypt';
 import { env } from 'process';
 import pkg from 'cloudinary';
+import { DBError } from '../customErrors/DBError.js';
 
 export const prisma = new PrismaClient();
-const cloudinary = pkg.v2;
+export const cloudinary = pkg.v2;
 
 cloudinary.config({
     cloud_name: env.CLOUDINARY_CLOUD_NAME,
@@ -12,11 +13,16 @@ cloudinary.config({
     api_key: env.CLOUDINARY_API_KEY
 });
 
-export async function updateProfilePictureHandler(userID, file) {
-    const upload = cloudinary.uploader.upload(file, { public_id: `FreeFinder/ProfilePictures/${userID}` });
-    const success = await upload.then((data) => data);
-
+export async function updateProfilePictureHandler(userID, image) {
     try {
+        const user = await prisma.user.findUnique({ where: { userID: userID }});
+        if (!user) {
+            throw new DBError("User not found.", 404);
+        }
+
+        const upload = cloudinary.uploader.upload(image, { public_id: `FreeFinder/ProfilePictures/${userID}` });
+        const success = await upload.then((data) => data);
+        
         const updated = await prisma.user.update({
             where: { userID: userID },
             data: { profilePicURL: success.secure_url },
@@ -35,14 +41,14 @@ export async function updateProfilePictureHandler(userID, file) {
         return res;
     }
     catch (err) {
-        if (err instanceof Prisma.PrismaClientKnownRequestError && err.code === 413) {
-            const error = new Error("Error updating profile picture: File size exceeds limit.");
-            error.code = 413;
-            throw error;
+        if (err instanceof DBError) {
+            throw err;
+        } else if (err instanceof Prisma.PrismaClientValidationError) {
+            throw new DBError("Missing required fields or fields provided are invalid.", 400);
+        } else if (err instanceof Prisma.PrismaClientKnownRequestError && err.code === 413) {
+            throw new DBError("Error updating profile picture: File size exceeds limit.", 413);
         } else {
-            const error = new Error("Something went wrong when trying to process your request. Please try again.");
-            error.code = 400;
-            throw error;
+            throw new DBError("Something went wrong when trying to update your profile picture. Please try again.", 500);
         }
     }
     finally {
@@ -60,14 +66,14 @@ export async function updatePasswordHandler(userID, password) {
         });
     }
     catch (err) {
-        if (err instanceof Prisma.PrismaClientKnownRequestError && err.code === 'P2025') {
-            const error = new Error("User could not be found.");
-            error.code = 404;
-            throw error;
+        if (err instanceof DBError) {
+            throw err;
+        } else if (err instanceof Prisma.PrismaClientValidationError) {
+            throw new DBError("Missing required fields or fields provided are invalid.", 400);
+        } else if (err instanceof Prisma.PrismaClientKnownRequestError && err.code === 'P2025') {
+            throw new DBError("User not found.", 404);
         } else {
-            const error = new Error("Something went wrong when trying to process your request. Please try again.");
-            error.code = 400;
-            throw error;
+            throw new DBError("Something went wrong when trying to update your password. Please try again.", 500)
         }
     }
     finally {
@@ -88,14 +94,14 @@ export async function registerUserHandler(userData) {
         });
     }
     catch (err) {
-        if (err instanceof Prisma.PrismaClientKnownRequestError && err.code === 'P2002') {
-            const error = new Error("There already exists a user with this username or email address.");
-            error.code = 409;
-            throw error;
+        if (err instanceof DBError) {
+            throw err;
+        } else if (err instanceof Prisma.PrismaClientValidationError) {
+            throw new DBError("Missing required fields or fields provided are invalid.", 400);
+        } else if (err instanceof Prisma.PrismaClientKnownRequestError && err.code === 'P2002') {
+            throw new DBError("There already exists a user with this username or email address.", 409)
         } else {
-            const error = new Error("Something went wrong when trying to process your request. Please try again.");
-            error.code = 400;
-            throw error;
+            throw new DBError("Something went wrong when trying to register you. Please try again.", 500)
         }
     }
     finally {
@@ -124,28 +130,24 @@ export async function getUserHandler(usernameOrEmail, password) {
         });
         
         if (!res) {
-            const error = new Error("Email or username provided doesn't have any account linked to it.");
-            error.code = 400;
-            throw error;
+            throw new DBError("Email or username provided doesn't have any account linked to it.", 400);
         }
 
         const passwordMatch = await bcrypt.compare(password, res.hash);
         if (!passwordMatch) {
-            const error = new Error("Password entered is incorrect. Ensure that you have entered it correctly.");
-            error.code = 403;
-            throw error;
+            throw new DBError("Password entered is incorrect. Ensure that you have entered it correctly.", 403)
         } else {
             const {hash, ...filtered} = res;
             return filtered;
         }
     }
     catch (err) {
-        if (!err.code) {
-            const error = new Error("Something went wrong when trying to process your request. Please try again.");
-            error.code = 400;
-            throw error;
-        } else {
+        if (err instanceof DBError) {
             throw err;
+        } else if (err instanceof Prisma.PrismaClientValidationError) {
+            throw new DBError("Missing required fields or fields provided are invalid.", 400);
+        } else {
+            throw new DBError("Something went wrong when trying to get this user. Please try again.", 500);
         }
     }
     finally {
@@ -172,18 +174,18 @@ export async function updateUserHandler(data) {
             }
         });
 
-        const {hash, password, ...res} = updated;
-        return res;
+        const {hash, password, ...filtered} = updated;
+        return filtered;
     }
     catch (err) {
-        if (err instanceof Prisma.PrismaClientKnownRequestError && err.code === 'P2002') {
-            const error = new Error("There already exists a user with this username or email address.");
-            error.code = 409;
-            throw error;
+        if (err instanceof DBError) {
+            throw err;
+        } else if (err instanceof Prisma.PrismaClientValidationError) {
+            throw new DBError("Missing required fields or fields provided are invalid.", 400);
+        } if (err instanceof Prisma.PrismaClientKnownRequestError && err.code === 'P2002') {
+            throw new DBError("There already exists a user with this username or email address.", 409);
         } else {
-            const error = new Error("Something went wrong when trying to process your request. Please try again.");
-            error.code = 400;
-            throw error;
+            throw new DBError("Something went wrong when trying update this user. Please try again.", 500);
         }
     }
     finally {
@@ -200,14 +202,14 @@ export async function deleteUserHandler(userID) {
         });
     }
     catch (err) {
-        if (err instanceof Prisma.PrismaClientKnownRequestError && err.code === "P2025") {
-            const error = new Error("User not found");
-            error.code = 404;
-            throw error;
+        if (err instanceof DBError) {
+            throw err;
+        } else if (err instanceof Prisma.PrismaClientValidationError) {
+            throw new DBError("Missing required fields or fields provided are invalid.", 400);
+        } else if (err instanceof Prisma.PrismaClientKnownRequestError && err.code === "P2025") {
+            throw new DBError("User not found.", 404);
         } else {
-            const error = new Error("Something went wrong when trying to process your request. Please try again.");
-            error.code = 400;
-            throw error;
+            throw new DBError("Something went wrong when trying to delete this user. Please try again.", 500);
         }
     }
     finally {

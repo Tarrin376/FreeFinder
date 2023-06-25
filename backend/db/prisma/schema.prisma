@@ -59,6 +59,16 @@ model Post {
     numReviews    Int         @default(0)
     reviews       Review[]
     packages      Package[]
+    images        PostImage[] @relation("Images")
+}
+
+model PostImage {
+    isThumbnail Boolean @default(false)
+    post        Post    @relation("Images", fields: [postID], references: [postID], onDelete: Cascade)
+    postID      String
+    url         String
+
+    @@id([postID, url])
 }
 
 model Package {

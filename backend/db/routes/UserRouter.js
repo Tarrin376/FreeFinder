@@ -1,4 +1,6 @@
 import { Router } from 'express';
+import savedPostRouter from './SavedPostRouter.js';
+import { cookieJwtAuth } from '../middleware/cookieJwtAuth.js';
 import 
 { 
     registerUser,
@@ -10,9 +12,11 @@ import
     loginUser,
     logoutUser
 } from '../controllers/UserController.js';
-import { cookieJwtAuth } from '../middleware/cookieJwtAuth.js';
 
 const userRouter = Router();
+
+userRouter.use('/:userID/saved-posts', savedPostRouter);
+
 userRouter.post('/register', registerUser);
 userRouter.post('/getUser', getUser);
 userRouter.post('/login', loginUser);

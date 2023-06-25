@@ -1,12 +1,10 @@
-import { useState, useContext } from 'react';
-import { UserContext } from "../../context/UserContext";
-import { IUserContext } from "../../context/UserContext";
+import { useState } from 'react';
 import { IPost } from "../../models/IPost";
 import UploadPostFiles from "./UploadPostFiles";
 import PostDetails from "./PostDetails";
 import ChooseThumbnail from './ChooseThumbnail';
-import { IPackage } from '../../models/IPackage';
 import Package from './Package';
+import { IPackage } from '../../models/IPackage';
 
 interface CreatePostProps {
     setPostService: React.Dispatch<React.SetStateAction<boolean>>,
@@ -14,6 +12,13 @@ interface CreatePostProps {
     setReachedBottom: React.Dispatch<React.SetStateAction<boolean>>,
     setNextPage: React.Dispatch<React.SetStateAction<boolean>>,
     cursor:  React.MutableRefObject<string>
+}
+
+export type PostData = {
+    about: string,
+    title: string,
+    packages: IPackage[],
+    thumbnail: unknown
 }
 
 export enum Sections {
@@ -25,27 +30,16 @@ export enum Sections {
     SuperiorPackage
 }
 
-type PostData = {
-    about: string,
-    title: string,
-    startingPrice: number,
-    userID: string,
-    packages: IPackage[]
-}
-
 function CreatePost({ setPostService, setUserPosts, cursor, setReachedBottom, setNextPage }: CreatePostProps) {
     const [section, setSection] = useState<Sections>(Sections.UploadFiles);
-    const userContext: IUserContext = useContext(UserContext);
     const [loading, setLoading] = useState<boolean>(false);
     const [errorMessage, setErrorMessage] = useState<string>("");
+    const [uploadedFiles, setUploadedFiles] = useState<File[]>([]);
+    const [thumbnail, setThumbnail] = useState<unknown>();
 
     // PostDetails states
-    const [startingPrice, setStartingPrice] = useState<number>(10);
     const [title, setTitle] = useState<string>("");
     const [about, setAbout] = useState<string>("");
-
-    // UploadedPostFiles states
-    const [uploadedFiles, setUploadedFiles] = useState<File[]>([]);
 
     // BasicPackage states
     const [basicRevisions, setBasicRevisions] = useState<string>("1");
@@ -72,8 +66,7 @@ function CreatePost({ setPostService, setUserPosts, cursor, setReachedBottom, se
         const post: PostData = { 
             about: about.trim(), 
             title: title.trim(),
-            startingPrice: +startingPrice, 
-            userID: userContext.userData.userID,
+            thumbnail: thumbnail,
             packages: [
                 {
                     revisions: basicRevisions,
@@ -123,8 +116,8 @@ function CreatePost({ setPostService, setUserPosts, cursor, setReachedBottom, se
             const response = await fetch("/api/posts/create", {
                 method: 'POST',
                 body: JSON.stringify({
-                    ...post, 
-                    startingPrice: minPrice
+                    startingPrice: minPrice,
+                    post
                 }),
                 headers: {
                     'Content-Type': 'application/json',
@@ -135,6 +128,7 @@ function CreatePost({ setPostService, setUserPosts, cursor, setReachedBottom, se
             const responseData = await response.json();
 
             if (responseData.message === "success") {
+                addPostImages(responseData.postID);
                 setErrorMessage("");
                 setPostService(false);
                 cursor.current = "HEAD";
@@ -150,6 +144,15 @@ function CreatePost({ setPostService, setUserPosts, cursor, setReachedBottom, se
         }
         finally {
             setLoading(false);
+        }
+    }
+
+    async function addPostImages(postID: string): Promise<void> {
+        try {
+            
+        }
+        catch (err: any) {
+
         }
     }
 
@@ -169,6 +172,8 @@ function CreatePost({ setPostService, setUserPosts, cursor, setReachedBottom, se
                     setSection={setSection} 
                     setPostService={setPostService}
                     uploadedFiles={uploadedFiles}
+                    thumbnail={thumbnail}
+                    setThumbnail={setThumbnail}
                 />
             );
         case Sections.BasicPackage:
@@ -208,8 +213,7 @@ function CreatePost({ setPostService, setUserPosts, cursor, setReachedBottom, se
                 <PostDetails 
                     setPostService={setPostService} setSection={setSection}
                     setAbout={setAbout} setTitle={setTitle}
-                    setStartingPrice={setStartingPrice} about={about}
-                    title={title} startingPrice={startingPrice}
+                    about={about} title={title} 
                     errorMessage={errorMessage} loading={loading}
                     createPost={createPost}
                 />

@@ -28,13 +28,13 @@ export async function logoutUser(_, res) {
         return res.clearCookie("access_token").status(200).json({ message: "success" });
     }
     catch (err) {
-        res.status(400).json({ message: err.message });
+        res.status(500).json({ message: err.message });
     }
 }
 
 export async function updateProfilePicture(req, res) {
     try {
-        const updated = await updateProfilePictureHandler(req.body.userID, req.body.profilePic);
+        const updated = await updateProfilePictureHandler(req.userData.userID, req.body.profilePic);
         req.userData = updated;
 
         const sign = await cookieJwtSign(req, res);
@@ -48,7 +48,7 @@ export async function updateProfilePicture(req, res) {
 export async function registerUser(req, res) {
     try {
         await registerUserHandler(req.body);
-        res.json({ message: "success" });
+        res.status(201).json({ message: "success" });
     }
     catch (err) {
         res.status(err.code).json({ message: err.message });
@@ -80,19 +80,17 @@ export async function updateUser(req, res) {
 
 export async function deleteUser(req, res) {
     try {
-        await deleteUserHandler(req.body.userID);
-        return res.clearCookie("access_token")
-        .status(200)
-        .json({ message: "success" });
+        await deleteUserHandler(req.userData.userID);
+        return res.clearCookie("access_token").status(200).json({ message: "success" });
     }
     catch (err) {
-        res.status(400).json({ message: err.message });
+        res.status(err.code).json({ message: err.message });
     }
 }
 
 export async function updatePassword(req, res) {
     try {
-        await updatePasswordHandler(req.body.userID, req.body.password);
+        await updatePasswordHandler(req.userData.userID, req.body.password);
         res.json({ message: "success" });
     }
     catch (err) {

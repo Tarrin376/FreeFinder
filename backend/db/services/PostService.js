@@ -1,27 +1,74 @@
 import { Prisma } from '@prisma/client';
 import { prisma } from './UserService.js';
 import { findSeller } from './SellerService.js';
+import { DBError } from "../customErrors/DBError.js";
+import { cloudinary } from './UserService.js';
 
-export async function createPostHandler(postData, userID) {
+export async function createPostHandler(postData, startingPrice, userID) {
     try {
         const seller = await findSeller(userID);
         const res = await prisma.post.create({
             data: {
-                sellerID: seller.sellerID,
                 about: postData.about,
                 title: postData.title,
-                startingPrice: postData.startingPrice
+                startingPrice: startingPrice,
+                sellerID: seller.sellerID
+            }
+        });
+
+        const upload = cloudinary.uploader.upload(postData.thumbnail, { public_id: `FreeFinder/PostImages/${userID}-thumbnail` });
+        const success = await upload.then((data) => data);
+
+        await prisma.postImage.create({
+            data: {
+                url: success.secure_url,
+                isThumbnail: true,
+                postID: res.postID
             }
         });
 
         createPostPackage(postData.packages[0], res.postID, postData.packages[0].type);
         if (postData.packages.length >= 2) createPostPackage(postData.packages[1], res.postID, postData.packages[1].type);
         if (postData.packages.length === 3) createPostPackage(postData.packages[2], res.postID, postData.packages[2].type);
+        return res.postID;
     }
     catch (err) {
-        const error = new Error("Something went wrong when trying to process your request. Please try again.");
-        error.code = 400;
-        throw error;
+        if (err instanceof DBError) {
+            throw err;
+        } else if (err instanceof Prisma.PrismaClientValidationError) {
+            throw new DBError("Missing required fields or fields provided are invalid.", 400);
+        } else {
+            throw new DBError("Something went wrong when trying to create your post. Please try again.", 500);
+        }
+    }
+    finally {
+        await prisma.$disconnect();
+    }
+}
+
+export async function addPostImageHandler(postID, data) {
+    try {
+        const post = await prisma.post.findUnique({ where: { postID: postID }});
+        if (!post) {
+            throw new DBError("Post not found.", 404);
+        }
+
+        await prisma.postImage.create({
+            data: {
+                isThumbnail: data.isThumbnail,
+                postID: postID,
+                url: data.url
+            }
+        });
+    }
+    catch (err) {
+        if (err instanceof DBError) {
+            throw err;
+        } else if (err instanceof Prisma.PrismaClientValidationError) {
+            throw new DBError("Missing required fields or fields provided are invalid.", 400);
+        } else {
+            throw new DBError("Something went wrong when trying to add this image. Please try again.", 500);
+        }
     }
     finally {
         await prisma.$disconnect();
@@ -38,15 +85,21 @@ export async function createPostPackage(packageData, postID, type) {
                 description: packageData.description,
                 features: packageData.features,
                 amount: packageData.amount,
-                numOrders: packageData.numOrders,
                 type: type
             }
         });
     }
     catch (err) {
-        const error = new Error("Something went wrong when trying to process your request. Please try again.");
-        error.code = 400;
-        throw error;
+        if (err instanceof DBError) {
+            throw err;
+        }  else if (err instanceof Prisma.PrismaClientValidationError) {
+            throw new DBError("Missing required fields or fields provided are invalid.", 400);
+        } else {
+            throw new DBError("Something went wrong when trying to create this package. Please try again.", 500);
+        }
+    }
+    finally {
+        await prisma.$disconnect();
     }
 }
 
@@ -80,41 +133,63 @@ export async function getPostHandler(postID) {
                         features: true,
                         numOrders: true
                     }
-                }
+                },
+                images: true
             }
         });
-
-        const { ...post } = postData;
+        
         const { userID, sellerID, ...postedBy } = postData.postedBy;
-        return { ...post, postedBy };
+        return { ...postData, postedBy };
     }
     catch (err) {
-        const error = new Error("Something went wrong when trying to process your request. Please try again.");
-        error.code = 400;
-        throw error;
+        if (err instanceof DBError) {
+            throw err;
+        } else if (err instanceof Prisma.PrismaClientValidationError) {
+            throw new DBError("Missing required fields or fields provided are invalid.", 400);
+        } else {
+            throw new DBError("Something went wrong when trying to get this post. Please try again.", 500);
+        }
     }
     finally {
         prisma.$disconnect();
     }
 }
 
-export async function deletePostHandler(postID) {
+export async function deletePostHandler(postID, userID) {
     try {
-        await prisma.post.delete({
-            where: {
-                postID: postID
+        const post = await prisma.post.findUnique({ where: { postID: postID } });
+        const user = await prisma.user.findUnique({ 
+            where: { 
+                userID: userID 
+            },
+            include: {
+                seller: {
+                    select: {
+                        sellerID: true
+                    }
+                }
             }
         });
+        
+        if (!user) {
+            throw new DBError("User not found.", 404);
+        } else if (!post) {
+            throw new DBError("Post not found.", 404);
+        } else if (post.sellerID !== user.seller.sellerID) {
+            throw new DBError("You do not have authorization to delete this post.", 403);
+        } else {
+            await prisma.post.delete({ where: { postID: postID } });
+        }
     }
     catch (err) {
-        if (err instanceof Prisma.PrismaClientKnownRequestError && err.code === "P2025") {
-            const error = new Error("Post not found");
-            error.code = 404;
-            throw error;
+        if (err instanceof DBError) {
+            throw err;
+        } else if (err instanceof Prisma.PrismaClientValidationError) {
+            throw new DBError("Missing required fields or fields provided are invalid.", 400);
+        } else if (err instanceof Prisma.PrismaClientKnownRequestError && err.code === "P2025") {
+            throw new DBError("Post not found.", 404);
         } else {
-            const error = new Error("Something went wrong when trying to process your request. Please try again.");
-            error.code = 400;
-            throw error;
+            throw new DBError("Something went wrong when trying to delete this post. Please try again.", 500);
         }
     }
     finally {

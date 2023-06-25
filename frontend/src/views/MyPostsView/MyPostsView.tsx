@@ -3,32 +3,28 @@ import { useState, useContext, useRef } from 'react';
 import { UserContext } from '../../context/UserContext';
 import { useFetchPosts } from '../../hooks/useFetchPosts';
 import SortBy from '../../components/SortBy';
-import { sortByParams } from '../../components/SortBy';
 import { IPost } from '../../models/IPost';
 import Post from '../../components/Post';
 import PostSkeleton from '../../skeletons/PostSkeleton';
 import PostsWrapper from '../../components/PostsWrapper';
 import NoResultsFound from '../../components/NoResultsFound';
+import { sortPosts } from '../../utils/sortPosts';
 
 function MyPostsView() {
     const [postService, setPostService] = useState<boolean>(false);
     const userContext = useContext(UserContext);
-    const [sortBy, setSortBy] = useState<string>(sortByParams["most recent"]);
+    const [sortBy, setSortBy] = useState<string>(sortPosts["most recent"]);
     const pageRef = useRef<HTMLDivElement>(null);
     const [deletingPost, setDeletingPost] = useState<boolean>(false);
 
-    const url = `/api/sellers/posts?sort=${sortBy}`;
+    const url = `/api/sellers/${userContext.userData.userID}/posts?sort=${sortBy}`;
     const cursor = useRef<string>("HEAD");
     
     const [nextPage, setNextPage] = useState<boolean>(false);
-    const posts = useFetchPosts(pageRef, userContext.userData.userID, userContext.userData.username, url, nextPage, setNextPage, cursor);
+    const posts = useFetchPosts(pageRef, url, nextPage, setNextPage, cursor);
 
     function openPostService(): void {
-        if (userContext.userData.username === "") {
-            setPostService(true);
-        } else {
-            setPostService(true);
-        }
+        setPostService(true);
     }
 
     return (
