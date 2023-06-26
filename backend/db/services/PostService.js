@@ -46,18 +46,37 @@ export async function createPostHandler(postData, startingPrice, userID) {
     }
 }
 
-export async function addPostImageHandler(postID, data) {
+export async function addPostImageHandler(req) {
     try {
-        const post = await prisma.post.findUnique({ where: { postID: postID }});
+        const post = await prisma.post.findUnique({ 
+            where: { 
+                postID: req.params.id 
+            },
+            include: {
+                postedBy: true
+            }
+        });
+
         if (!post) {
             throw new DBError("Post not found.", 404);
         }
 
+        if (req.userData.userID !== post.postedBy.userID) {
+            throw new DBError("You are not authorized to add an image to this post.", 403);
+        }
+
+        if (req.body.imageNum === undefined) {
+            throw new DBError("Image number not specified.", 400);
+        }
+
+        const upload = cloudinary.uploader.upload(req.body.image, { public_id: `FreeFinder/PostImages/${req.userData.userID}-${req.body.imageNum}` });
+        const success = await upload.then((data) => data);
+
         await prisma.postImage.create({
             data: {
-                isThumbnail: data.isThumbnail,
-                postID: postID,
-                url: data.url
+                isThumbnail: req.body.isThumbnail,
+                postID: req.params.id,
+                url: success.secure_url
             }
         });
     }

@@ -8,6 +8,5 @@ export function cookieJwtSign(req, res) {
         httpOnly: true,
         secure: env.NODE_ENV === "production"
     })
-    .json({ userData: req.userData, message: "success" })
-    .status(200);
+    .json({ userData: req.userData, message: "success" });
 }

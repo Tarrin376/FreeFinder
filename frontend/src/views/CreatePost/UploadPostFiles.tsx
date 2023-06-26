@@ -2,11 +2,10 @@ import PopUpWrapper from "../../layouts/PopUpWrapper";
 import { useRef } from 'react';
 import DragAndDrop from "../../components/DragAndDrop";
 import Storage from '../../assets/storage.png';
-import PNGIcon from '../../assets/png.png';
-import JPGIcon from '../../assets/jpg.png';
 import { Sections } from "./CreatePost";
 import ErrorMessage from "../../components/ErrorMessage";
 import { useState } from "react";
+import File from "../../components/File";
 
 const MAX_FILE_UPLOADS: number = 20;
 const MAX_FILE_BYTES = 5000000;
@@ -91,32 +90,21 @@ function UploadPostFiles({ setPostService, setSection, uploadedFiles, setUploade
                 </span>
             </p>
             {errorMessage !== "" && <ErrorMessage message={errorMessage} title="There was a problem uploading some of your files." />}
-            <div className="max-h-[250px] items-center overflow-scroll mt-6 flex flex-col gap-[15px] scrollbar-hide">
+            <div className="max-h-[250px] items-center overflow-y-scroll mt-6 flex flex-col gap-[15px] scrollbar-hide">
                 {uploadedFiles.map((file: File, index: number) => {
                     return (
-                        <div key={index} className="p-3 rounded-[8px] bg-[#f8f9fa] flex justify-between gap-[18px] items-center">
-                            <div>
-                                <div className="flex items-center gap-3 mb-2">
-                                    <img src={file.type === "image/jpeg" ? JPGIcon : PNGIcon} alt="file type" className="w-[32px] h-[32px]" />
-                                    <p>{file.name}</p>
-                                </div>
-                                <p className="text-side-text-gray text-[15px]">
-                                    You can download this file to verify that it is the correct one.
-                                </p>
-                            </div>
-                            <div className="flex flex-col gap-[10px]">
-                                <a href={URL.createObjectURL(file)} download={file.name}>
-                                    <button className="bg-main-white border-2 border-light-gray btn-primary w-[120px] px-3
-                                  hover:bg-main-white-hover">
-                                        Download
-                                    </button>
-                                </a>
-                                <button className="bg-error-red text-error-text btn-primary w-[120px] px-3
-                                  hover:bg-error-red-hover" onClick={() => deleteFile(file)}>
-                                    Remove
+                        <File file={file} key={index} description="You can download this file to verify that it is the correct one.">
+                            <a href={URL.createObjectURL(file)} download={file.name}>
+                                <button className="bg-main-white border-2 border-light-gray btn-primary w-[120px] px-3
+                                hover:bg-main-white-hover">
+                                    Download
                                 </button>
-                            </div>
-                        </div>
+                            </a>
+                            <button className="bg-error-red text-error-text btn-primary w-[120px] px-3
+                            hover:bg-error-red-hover" onClick={() => deleteFile(file)}>
+                                Remove
+                            </button>
+                        </File>
                     );
                 })}
             </div>

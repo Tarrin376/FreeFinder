@@ -1,7 +1,7 @@
 import CreatePost from '../CreatePost/CreatePost';
 import { useState, useContext, useRef } from 'react';
 import { UserContext } from '../../context/UserContext';
-import { useFetchPosts } from '../../hooks/useFetchPosts';
+import { usePaginateData } from '../../hooks/usePaginateData';
 import SortBy from '../../components/SortBy';
 import { IPost } from '../../models/IPost';
 import Post from '../../components/Post';
@@ -18,10 +18,10 @@ function MyPostsView() {
     const [deletingPost, setDeletingPost] = useState<boolean>(false);
 
     const url = `/api/sellers/${userContext.userData.userID}/posts?sort=${sortBy}`;
-    const cursor = useRef<string>("HEAD");
+    const cursor = useRef<string>("");
     
     const [nextPage, setNextPage] = useState<boolean>(false);
-    const posts = useFetchPosts(pageRef, url, nextPage, setNextPage, cursor);
+    const posts = usePaginateData<IPost>(pageRef, url, nextPage, setNextPage, cursor);
 
     function openPostService(): void {
         setPostService(true);
@@ -62,6 +62,7 @@ function MyPostsView() {
                                 canRemove={{
                                     deletingPost: deletingPost,
                                     setDeletingPost: setDeletingPost,
+                                    removeURL: `/api/posts/`
                                 }}
                             />
                         );

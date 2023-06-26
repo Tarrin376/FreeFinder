@@ -1,5 +1,6 @@
 import { createContext, useState, useEffect } from 'react';
 import { IUser } from '../models/IUser';
+import axios from "axios";
 
 export const initialState: IUserContext = {
     userData: {
@@ -32,11 +33,8 @@ function UserProvider({ children }: { children?: React.ReactNode }) {
     useEffect(() => {
         (async (): Promise<void> => {
             try {
-                const response = await fetch("/api/users/jwtLogin");
-                if (response.status === 200) {
-                    const data = await response.json();
-                    setUserData(data.userData);
-                }
+                const resp = await axios.get<{ userData: IUser, message: string }>(`/api/users/jwt-auth`);
+                setUserData(resp.data.userData);
             }
             catch (err: any) {
                 // Do nothing if the user is not logged in.

@@ -12,6 +12,7 @@ export const cookieJwtAuth = (req, res, next) => {
         req.userData = data;
         return next();
     } catch (err) {
+        console.log(err);
         res.clearCookie("access_token");
         return res.status(403).json({ message: "You do not have authorization to perform this action."});
     }

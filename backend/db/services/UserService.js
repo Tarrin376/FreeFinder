@@ -13,18 +13,22 @@ cloudinary.config({
     api_key: env.CLOUDINARY_API_KEY
 });
 
-export async function updateProfilePictureHandler(userID, image) {
+export async function updateProfilePictureHandler(req, image) {
     try {
-        const user = await prisma.user.findUnique({ where: { userID: userID }});
+        if (req.userID !== req.params.userID) {
+            throw new DBError("You are not authorized to update this user's profile picture.", 403);
+        }
+
+        const user = await prisma.user.findUnique({ where: { userID: req.userID }});
         if (!user) {
             throw new DBError("User not found.", 404);
         }
 
-        const upload = cloudinary.uploader.upload(image, { public_id: `FreeFinder/ProfilePictures/${userID}` });
+        const upload = cloudinary.uploader.upload(image, { public_id: `FreeFinder/ProfilePictures/${req.userID}` });
         const success = await upload.then((data) => data);
         
         const updated = await prisma.user.update({
-            where: { userID: userID },
+            where: { userID: req.userID },
             data: { profilePicURL: success.secure_url },
             include: {
                 seller: {
@@ -56,12 +60,16 @@ export async function updateProfilePictureHandler(userID, image) {
     }
 }
 
-export async function updatePasswordHandler(userID, password) {
-    const hash = await bcrypt.hash(password, 10);
+export async function updatePasswordHandler(req) {
+    if (req.userID !== req.params.userID) {
+        throw new DBError("You are not authorized to update this user's password.", 403);
+    }
+
+    const hash = await bcrypt.hash(req.body.password, 10);
     
     try {
         await prisma.user.update({
-            where: { userID: userID },
+            where: { userID: req.userID },
             data: { hash: hash }
         });
     }
@@ -109,7 +117,7 @@ export async function registerUserHandler(userData) {
     }
 }
 
-export async function getUserHandler(usernameOrEmail, password) {
+export async function findUserHandler(usernameOrEmail, password) {
     try {
         const res = await prisma.user.findFirst({
             where: {
@@ -130,7 +138,7 @@ export async function getUserHandler(usernameOrEmail, password) {
         });
         
         if (!res) {
-            throw new DBError("Email or username provided doesn't have any account linked to it.", 400);
+            throw new DBError("Email or username provided doesn't have any account linked to it.", 404);
         }
 
         const passwordMatch = await bcrypt.compare(password, res.hash);
@@ -155,13 +163,17 @@ export async function getUserHandler(usernameOrEmail, password) {
     }
 }
 
-export async function updateUserHandler(data) {
-    const {seller, ...res} = data;
+export async function updateUserHandler(req) {
+    if (req.userID !== req.params.userID) {
+        throw new DBError("You are not authorized to update this user.", 403);
+    }
+
+    const {seller, ...res} = req.body;
     const userData = res;
     
     try {
         const updated = await prisma.user.update({
-            where: { userID: userData.userID },
+            where: { userID: req.userID },
             data: { ...userData },
             include: {
                 seller: {
@@ -193,11 +205,15 @@ export async function updateUserHandler(data) {
     }
 }
 
-export async function deleteUserHandler(userID) {
+export async function deleteUserHandler(req) {
+    if (req.userID !== req.params.userID) {
+        throw new DBError("You are not authorized to delete this user.", 403);
+    }
+
     try {
         await prisma.user.delete({ 
             where: { 
-                userID: userID 
+                userID: req.userID 
             } 
         });
     }

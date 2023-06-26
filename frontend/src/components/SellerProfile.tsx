@@ -3,6 +3,9 @@ import LoadingButton from "./LoadingButton";
 import { useState, useContext } from 'react';
 import { IUserContext, UserContext } from "../context/UserContext";
 import ErrorMessage from "./ErrorMessage";
+import axios, { AxiosError } from "axios";
+import { ISeller } from "../models/ISeller";
+import { getAPIErrorMessage } from "../utils/getAPIErrorMessage";
 
 const MAX_DESC_CHARS = 250;
 
@@ -19,28 +22,16 @@ function SellerProfile({ setSellerProfilePopUp }: SellerProfileProps) {
     async function updateSellerDetails(): Promise<void> {
         setLoading(true);
         try {
-            const response = await fetch("/api/sellers/update", {
-                method: 'PUT',
-                body: JSON.stringify({
-                    description: description,
-                    userID: userContext.userData.userID
-                }),
-                headers: {
-                    'Accept': 'application/json',
-                    'Content-Type': 'application/json'
-                }
+            const resp = await axios.put<{ updatedData: ISeller, message: string }>(`/api/sellers/${userContext.userData.userID}`, {
+                description: description,
             });
 
-            const responseData = await response.json();
-            if (responseData.message === "success") {
-                userContext.setUserData({ ...userContext.userData, seller: { ...responseData.updatedData }});
-                setSellerProfilePopUp(false);
-            } else {
-                setErrorMessage(responseData.message);
-            }
+            userContext.setUserData({ ...userContext.userData, seller: { ...resp.data.updatedData }});
+            setSellerProfilePopUp(false);
         }
         catch (err: any) {
-            setErrorMessage(err.message);
+            const errorMessage = getAPIErrorMessage(err as AxiosError<{ message: string }>);
+            setErrorMessage(errorMessage);
         }
         finally {
             setLoading(false);

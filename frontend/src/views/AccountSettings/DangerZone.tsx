@@ -3,6 +3,8 @@ import { useState } from 'react';
 import ErrorMessage from "../../components/ErrorMessage";
 import LoadingButton from "../../components/LoadingButton";
 import { initialState } from "../../context/UserContext";
+import axios, { AxiosError } from "axios";
+import { getAPIErrorMessage } from "../../utils/getAPIErrorMessage";
 
 function DangerZone({ userContext, setSettingsPopUp }: { userContext: IUserContext, 
     setSettingsPopUp: React.Dispatch<React.SetStateAction<boolean>> }) {
@@ -14,34 +16,13 @@ function DangerZone({ userContext, setSettingsPopUp }: { userContext: IUserConte
         setLoading(true);
 
         try {
-            const response = await fetch("/api/users/delete", { 
-                method: 'DELETE',
-                body: JSON.stringify({
-                    userID: userContext.userData.userID
-                }),
-                headers: {
-                    'Accept': 'application/json',
-                    'Content-Type': 'application/json'
-                }
-            });
-
-            if (response.status === 500) {
-                setErrorMessage(`Looks like we are having trouble on our end. Please try again later. 
-                (Error code: ${response.status})`);
-            } else if (response.status === 403) {
-                setErrorMessage("You do not have authorisation to perform this action");
-            } else {
-                const deletedUser = await response.json();
-                if (deletedUser.message === "success") {
-                    userContext.setUserData(initialState.userData);
-                    setSettingsPopUp(false);
-                } else {
-                    setErrorMessage(deletedUser.message);
-                }
-            }
+            await axios.delete<{ message: string }>(`/api/users/${userContext.userData.userID}`);
+            userContext.setUserData(initialState.userData);
+            setSettingsPopUp(false);
         }
         catch(err: any) {
-            setErrorMessage(err.message);
+            const errorMessage = getAPIErrorMessage(err as AxiosError<{ message: string }>);
+            setErrorMessage(errorMessage);
         }
         finally {
             setLoading(false);

@@ -33,9 +33,9 @@ function LogIn({ setLogIn, setSignUp }: LogInProps) {
 
         try {
             setLoading(true);
-            const resp = await axios.post<{ userData: IUser, message: string }>(`/api/users/login`, {
-                password: password,
-                usernameOrEmail
+            const resp = await axios.post<{ userData: IUser, message: string }>(`/api/users/session`, {
+                usernameOrEmail,
+                password,
             });
 
             resp.data.userData.memberDate = new Date(resp.data.userData.memberDate);

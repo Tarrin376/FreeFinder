@@ -1,5 +1,7 @@
 import { useEffect, useState } from 'react';
 import { Country } from '../types/Country';
+import axios, { AxiosError } from "axios";
+import { getAPIErrorMessage } from '../utils/getAPIErrorMessage';
 
 export function useFetchCountries(): {
     countries: Country[],
@@ -11,15 +13,8 @@ export function useFetchCountries(): {
     useEffect(() => {
         (async (): Promise<void> => {
             try {
-                const response = await fetch("https://restcountries.com/v3.1/all");
-                if (response.status !== 200) {
-                    setErrorMessage(`Looks like we are having trouble on our end. Please try again later. 
-                    (Error code: ${response.status})`);
-                    return;
-                }
-                
-                const data: Country[] = await response.json();
-                const countries = data.map((cur: Country) => {
+                const resp = await axios.get<Country[]>(`https://restcountries.com/v3.1/all`);
+                const countries = resp.data.map((cur: Country) => {
                     return {
                         flag: cur.flag,
                         name: {
@@ -34,7 +29,8 @@ export function useFetchCountries(): {
                 }
             }
             catch (err: any) {
-                setErrorMessage(err.message);
+                const errorMessage = getAPIErrorMessage(err as AxiosError<{ message: string }>);
+                setErrorMessage(errorMessage);
             }
         })();
     }, []);

@@ -23,6 +23,7 @@ module.exports = {
             'error-red-hover': 'rgba(255, 0, 0, 0.10)',
             'error-text': '#F43C3C',
             'light-green': '#36BF54',
+            'light-border-gray': '#e2e2e2'
         },
         dropShadow: {
             'search-bar': '0px 0px 1px #DDDDDD',
@@ -30,7 +31,7 @@ module.exports = {
         boxShadow: {
             'pop-up': '0px 0px 14px 3px rgba(0, 0, 0, 0.10), 0px 8px 10px 0px rgba(0, 0, 0, 0.04)',
             'post': 'rgba(0, 0, 0, 0.10) 0px 2px 4px 0px',
-            'info-component': 'rgba(0, 0, 0, 0.20) 0px 1px 4px 0px',
+            'info-component': 'rgba(0, 0, 0, 0.05) 0px 1px 4px 0px',
             'profile-page-container': '0px 1px 8px -6px rgba(0, 0, 0, 0.62)'
         },
         fontFamily: {

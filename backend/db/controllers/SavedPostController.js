@@ -3,7 +3,7 @@ import { savePostHandler, getSavedPostsHandler, deleteSavedPostHandler } from ".
 export async function savePost(req, res) {
     try {
         await savePostHandler(req.params.postID, req.userData.userID);
-        res.json({ message: "success" });
+        res.status(201).json({ message: "success" });
     }
     catch (err) {
         res.status(err.code).json({ message: err.message });
@@ -12,7 +12,7 @@ export async function savePost(req, res) {
 
 export async function getSavedPosts(req, res) {
     try {
-        const saved = await getSavedPostsHandler(req.params.userID, req.body.cursor, req.query.sort);
+        const saved = await getSavedPostsHandler(req);
         res.json({ ...saved, message: "success" });
     }
     catch (err) {

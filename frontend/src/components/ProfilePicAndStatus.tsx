@@ -3,9 +3,10 @@ import EditIcon from '../assets/edit.png';
 import { useRef, useContext, useState } from 'react';
 import { IUserContext, UserContext } from '../context/UserContext';
 import { fetchUpdatedUser } from '../utils/fetchUpdatedUser';
-import { UpdateResponse } from '../utils/fetchUpdatedUser';
 import OutsideClickHandler from 'react-outside-click-handler';
 import { parseImage } from '../utils/parseImage';
+import { getAPIErrorMessage } from '../utils/getAPIErrorMessage';
+import { AxiosError } from "axios";
 
 interface ProfilePicAndStatusProps {
     profilePicURL: string, 
@@ -35,16 +36,13 @@ function ProfilePicAndStatus(props: ProfilePicAndStatusProps) {
         }
 
         try {
-            const response: UpdateResponse = await fetchUpdatedUser({...userContext.userData}, profile);
-            if (response.message === "success" && response.userData) {
-                userContext.setUserData(response.userData);
-                props.setErrorMessage("");
-            } else {
-                props.setErrorMessage(response.message);
-            }
+            const response = await fetchUpdatedUser({...userContext.userData}, profile);
+            userContext.setUserData(response.userData);
+            props.setErrorMessage("");
         }
         catch (err: any) {
-            props.setErrorMessage(err.message);
+            const errorMessage = getAPIErrorMessage(err as AxiosError<{ message: string }>);
+            props.setErrorMessage(errorMessage);
         }
         finally {
             props.setLoading(false);

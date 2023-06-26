@@ -4,8 +4,9 @@ import ErrorMessage from "../../components/ErrorMessage";
 import { emailPattern } from "../../components/SignUp";
 import LoadingButton from "../../components/LoadingButton";
 import { fetchUpdatedUser } from "../../utils/fetchUpdatedUser";
-import { UpdateResponse } from "../../utils/fetchUpdatedUser";
 import { actionSuccessful } from "../../utils/actionSuccessful";
+import { getAPIErrorMessage } from "../../utils/getAPIErrorMessage";
+import { AxiosError } from "axios";
 
 function MyDetails({ userContext } : { userContext: IUserContext }) {
     const [firstEmail, setFirstEmail] = useState<string>("");
@@ -20,29 +21,30 @@ function MyDetails({ userContext } : { userContext: IUserContext }) {
         setEmail: React.Dispatch<React.SetStateAction<string>>): void {
 
         const validEmail: boolean = input.match(emailPattern) !== null;
-        if (validEmail) setValid(true);
-        else setValid(false);
+        if (validEmail) {
+            setValid(true);
+        } else {
+            setValid(false);
+        }
+        
         setEmail(input);
     }
 
     async function updateDetails(): Promise<void> {
         try {
             setLoading(true);
-            const updated: UpdateResponse = await fetchUpdatedUser({ 
+            const updated = await fetchUpdatedUser({ 
                 ...userContext.userData, 
                 email: firstEmail 
             });
             
-            if (updated.message === "success" && updated.userData) {
-                userContext.setUserData(updated.userData);
-                setErrorMessage("");
-                actionSuccessful(setCompleted, true, false);
-            } else {
-                setErrorMessage(updated.message);
-            }
+            userContext.setUserData(updated.userData);
+            setErrorMessage("");
+            actionSuccessful(setCompleted, true, false);
         }
         catch (err: any) {
-            setErrorMessage(err.message);
+            const errorMessage = getAPIErrorMessage(err as AxiosError<{ message: string }>);
+            setErrorMessage(errorMessage);
         }
         finally {
             setLoading(false);

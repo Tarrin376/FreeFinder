@@ -3,8 +3,8 @@ import { IUserContext } from "../context/UserContext";
 import { initialState } from "../context/UserContext";
 import { useState } from 'react';
 import { fetchUpdatedUser } from "../utils/fetchUpdatedUser";
-import { UpdateResponse } from "../utils/fetchUpdatedUser";
 import OutsideClickHandler from "react-outside-click-handler";
+import axios from "axios";
 
 interface ProfileMenuProps {
     userContext: IUserContext,
@@ -17,18 +17,16 @@ function ProfileMenu({ userContext, setSettingsPopUp, setSellerProfilePopUp }: P
     const [navProfileDropdown, setNavProfileDropdown] = useState<boolean>(false);
 
     async function toggleStatus(): Promise<void> {
-        setDisabled(true);
         const toggledStatus: string = userContext.userData.status === 'ONLINE' ? 'OFFLINE' : 'ONLINE';
+        setDisabled(true);
 
         try {
-            const response: UpdateResponse = await fetchUpdatedUser({
+            const response = await fetchUpdatedUser({
                 ...userContext.userData, 
                 status: toggledStatus
             });
     
-            if (response.userData && response.message === "success") {
-                userContext.setUserData({ ...response.userData });
-            }
+            userContext.setUserData({ ...response.userData });
         } 
         catch (err: any) {
             // Ignore error message and do nothing
@@ -40,12 +38,8 @@ function ProfileMenu({ userContext, setSettingsPopUp, setSellerProfilePopUp }: P
 
     async function logout(): Promise<void> {
         try {
-            const clearToken = await fetch("/api/users/logout");
-            const responseData = await clearToken.json();
-
-            if (responseData.message === "success") {
-                userContext.setUserData(initialState.userData);
-            }
+            await axios.delete<{ message: string }>(`/api/users/session`);
+            userContext.setUserData(initialState.userData);
         }
         catch (err: any) {
             // Ignore error message and do nothing
@@ -80,7 +74,7 @@ function ProfileMenu({ userContext, setSettingsPopUp, setSellerProfilePopUp }: P
                     mt-2 border-light-gray border-2 rounded-[11px] right-0 z-10 overflow-hidden">
                         <div className="border-b border-light-gray">
                             <p className="whitespace-nowrap p-3 pt-1 pb-1 cursor-default select-none profile-menu-element">
-                                Signed in as: <span className="text-main-blue">@</span>{userContext.userData.username}
+                                Signed in as: <span className="text-main-blue">{userContext.userData.username}</span>
                             </p>
                         </div>
                         <div className="border-b border-light-gray flex flex-col">

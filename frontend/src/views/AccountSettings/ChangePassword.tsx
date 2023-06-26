@@ -3,6 +3,8 @@ import { useState } from 'react';
 import ErrorMessage from "../../components/ErrorMessage";
 import LoadingButton from "../../components/LoadingButton";
 import { actionSuccessful } from "../../utils/actionSuccessful";
+import axios, { AxiosError } from "axios";
+import { getAPIErrorMessage } from "../../utils/getAPIErrorMessage";
 
 function ChangePassword({ userContext }: { userContext: IUserContext }) {
     const [currentPass, setCurrentPass] = useState<string>("");
@@ -19,7 +21,7 @@ function ChangePassword({ userContext }: { userContext: IUserContext }) {
     async function updatePassword(): Promise<void> {
         setLoading(true);
 
-        const passwordMatch: boolean = await checkPasswordMatch();
+        const passwordMatch: boolean = await checkPassword();
         if (!passwordMatch) {
             setErrorMessage("The password you provided does not match your current password.");
             setLoading(false);
@@ -27,72 +29,28 @@ function ChangePassword({ userContext }: { userContext: IUserContext }) {
         }
 
         try {
-            const response = await fetch("/api/users/update/password", {
-                method: 'PUT',
-                body: JSON.stringify({
-                    userID: userContext.userData.userID,
-                    password: newPass 
-                }),
-                headers: {
-                    'Accept': 'application/json',
-                    'Content-Type': 'application/json',
-                }
-            });
-
-            if (response.status === 500) {
-                setErrorMessage(`Looks like we are having trouble on our end. Please try again later. 
-                (Error code: ${response.status})`);
-            } else if (response.status === 403) {
-                setErrorMessage("You do not have authorisation to perform this action");
-            } else {
-                const updatedPassword = await response.json();
-                if (updatedPassword.message === "success") {
-                    setCompleted(true);
-                    setErrorMessage("");
-                    actionSuccessful(setCompleted, true, false);
-                } else {
-                    setErrorMessage(updatedPassword.message);
-                }
-            }
+            await axios.put<{ message: string }>(`/api/users/${userContext.userData.userID}/password`, { password: newPass });
+            setCompleted(true);
+            setErrorMessage("");
+            actionSuccessful(setCompleted, true, false);
         }
         catch (err: any) {
-            setErrorMessage(err.message);
+            const errorMessage = getAPIErrorMessage(err as AxiosError<{ message: string }>)
+            setErrorMessage(errorMessage);
         }
         finally {
             setLoading(false);
         }
     }
 
-    async function checkPasswordMatch(): Promise<boolean> {
+    async function checkPassword(): Promise<boolean> {
         try {
-            const response = await fetch("/api/users/getUser", {
-                method: 'POST',
-                body: JSON.stringify({ 
-                    password: currentPass,
-                    usernameOrEmail: userContext.userData.username
-                }),
-                headers: {
-                    'Accept': 'application/json',
-                    'Content-Type': 'application/json'
-                }
-            });
-
-            if (response.status !== 500) {
-                const user = await response.json();
-                if (user.message === "success") {
-                    return true;
-                } else {
-                    setErrorMessage(user.message);
-                    return false;
-                }
-            } else {
-                setErrorMessage(`Looks like we are having trouble on our end. Please try again later. 
-                (Error code: ${response.status})`);
-                return false;
-            }
+            await axios.post<{ message: string }>(`/api/users/${userContext.userData.username}`, { password: currentPass });
+            return true;
         }
         catch (err: any) {
-            setErrorMessage(err.message);
+            const errorMessage = getAPIErrorMessage(err as AxiosError<{ message: string }>);
+            setErrorMessage(errorMessage);
             return false;
         }
     }
@@ -101,8 +59,9 @@ function ChangePassword({ userContext }: { userContext: IUserContext }) {
         return validCurrentPass && validNewPass && validConfirmNewPass && newPass === confirmNewPass;
     }
 
-    function updatePass(pass: string, setValid: React.Dispatch<React.SetStateAction<boolean>>, 
-    setPass: React.Dispatch<React.SetStateAction<string>>): void {
+    function updatePass(pass: string, setValid: React.Dispatch<React.SetStateAction<boolean>>,
+        setPass: React.Dispatch<React.SetStateAction<string>>): void {
+            
         setPass(pass);
         if (pass.length >= 8) {
             setValid(true);

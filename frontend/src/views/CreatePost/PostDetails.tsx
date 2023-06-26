@@ -3,6 +3,9 @@ import ErrorMessage from "../../components/ErrorMessage";
 import { categories } from "../../utils/jobCategories";
 import LoadingButton from "../../components/LoadingButton";
 import { Sections } from "./CreatePost";
+import { FailedUpload } from "../../types/FailedUploaded";
+import { useState } from "react";
+import File from "../../components/File";
 
 interface PostDetailsProps {
     setPostService: React.Dispatch<React.SetStateAction<boolean>>,
@@ -14,16 +17,45 @@ interface PostDetailsProps {
     title: string,
     errorMessage: string,
     loading: boolean,
+    failedUploads: FailedUpload[]
 }
 
 function PostDetails(props: PostDetailsProps) {
+    const [showFailedUploads, setShowFailedUploads] = useState<boolean>(false);
+
     function validInputs(): boolean {
         return props.title.trim().length > 0 && props.about.trim().length > 0;
     }
 
+    const toggleFailedUploads = () => {
+        setShowFailedUploads((cur) => !cur);
+    }
+
     return (
         <PopUpWrapper setIsOpen={props.setPostService} title={"Enter post details"}>
-            {props.errorMessage !== "" && <ErrorMessage message={props.errorMessage} title={"Unable to create post."} />}
+            {props.errorMessage !== "" && 
+            <ErrorMessage 
+                message={props.errorMessage} 
+                title={"Unable to create post."} 
+                styles="!mb-3"
+            />}
+            {props.failedUploads.length > 0 && 
+            <p className="text-main-blue mb-6 underline cursor-pointer" onClick={toggleFailedUploads}>
+                {showFailedUploads ? "Hide all failed images" : "View all failed images"}
+            </p>}
+            {showFailedUploads && 
+            <div className="max-h-[250px] items-center overflow-y-scroll mt-6 mb-6 flex flex-col gap-[15px] scrollbar-hide">
+                {props.failedUploads.map((image: FailedUpload, index: number) => {
+                    return (
+                        <File file={image.file} key={index} description={image.errorMessage} error={true}>
+                            <button className="bg-error-red text-error-text btn-primary w-[120px] px-3
+                            hover:bg-error-red-hover">
+                                Retry
+                            </button>
+                        </File>
+                    )
+                })}
+            </div>}
             <h3 className="mb-2">What category does your service fall under?</h3>
             <select className="p-2 search-bar cursor-pointer mb-4">
                 {Object.keys(categories).map((category, index) => {

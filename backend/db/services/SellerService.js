@@ -67,12 +67,12 @@ export async function getSellerPostsHandler(sellerUserID, cursor, sortBy) {
         if (!seller) {
             return { 
                 posts: [],
-                cursor: "HEAD", 
+                cursor: "", 
                 last: true
             };
         }
 
-        if (cursor === "HEAD") return firstQuerySellerPosts(seller.sellerID, sortBy);
+        if (cursor === "") return firstQuerySellerPosts(seller.sellerID, sortBy);
         else return secondQuerySellerPosts(seller.sellerID, cursor, sortBy);
     }
     catch (err) {
@@ -123,7 +123,7 @@ export async function firstQuerySellerPosts(sellerID, sortBy) {
     if (posts.length === 0) {
         return { 
             posts,
-            cursor: "HEAD", 
+            cursor: "", 
             last: true
         };
     }
@@ -142,7 +142,7 @@ export async function secondQuerySellerPosts(sellerID, cursor, sortBy) {
         take: paginationLimit,
         orderBy: sortPosts[sortBy],
         cursor: { 
-            postID: cursor 
+            postID: cursor
         },
         where: { 
             sellerID: sellerID 
@@ -189,14 +189,18 @@ export async function secondQuerySellerPosts(sellerID, cursor, sortBy) {
     };
 }
 
-export async function updateSellerDetailsHandler(sellerDetails) {
+export async function updateSellerDetailsHandler(req) {
+    if (req.params.userID !== req.userData.userID) {
+        throw new DBError("You are not authorized to update this user's seller details.", 403);
+    }
+
     try {
         const updatedDetails = await prisma.seller.update({
             where: {
-                userID: sellerDetails.userID
+                userID: req.userData.userID
             },
             data: {
-                description: sellerDetails.description
+                description: req.body.description
             },
             select: {
                 sellerID: true,

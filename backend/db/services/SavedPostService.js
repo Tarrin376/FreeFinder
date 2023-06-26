@@ -29,13 +29,19 @@ export async function savePostHandler(postID, userID) {
     }
 }
 
-export async function getSavedPostsHandler(userID, cursor, sortBy) {
+export async function getSavedPostsHandler(req) {
     try {
-        if (cursor.userID === "") return firstQuerySavedPosts(userID, sortBy);
-        else return secondQuerySavedPosts(userID, cursor, sortBy);
+        if (req.userData.userID !== req.userID) {
+            throw new DBError("You are not authorized to view this user's saved posts.", 403);
+        }
+
+        if (req.body.cursor === "") return firstQuerySavedPosts(req.userID, req.query.sort);
+        else return secondQuerySavedPosts(req.userID, req.body.cursor, req.query.sort);
     }
     catch (err) {
-        if (err instanceof Prisma.PrismaClientValidationError) {
+        if (err instanceof DBError) {
+            throw err;
+        } else if (err instanceof Prisma.PrismaClientValidationError) {
             throw new DBError("Missing required fields or fields provided are invalid.", 400);
         } else {
             throw new DBError("Something went wrong when trying to get your saved posts. Please try again.", 500);
@@ -82,19 +88,17 @@ export async function firstQuerySavedPosts(userID, sortBy) {
     if (saved.length === 0) {
         return { 
             posts: saved, 
-            cursor: { userID: "", postID: "" }, 
+            cursor: "", 
             last: true
         };
     }
 
     const minNum = Math.min(paginationLimit - 1, saved.length - 1);
-    const PID = saved[minNum].post.postID;
-    const UID = saved[minNum].post.postedBy.user.userID;
     const posts = saved.map((cur) => cur.post);
 
     return { 
         posts, 
-        cursor: { userID: UID, postID: PID },
+        cursor: saved[minNum].post.postID,
         last: minNum < paginationLimit - 1 
     };
 }
@@ -105,16 +109,16 @@ export async function secondQuerySavedPosts(userID, cursor, sortBy) {
         orderBy: {
             post: sortPosts[sortBy]
         },
-        cursor: { 
-            userID_postID: {
-                userID: cursor.userID,
-                postID: cursor.postID
-            }
-        },
-        take: paginationLimit,
         where: {
             userID: userID
         },
+        cursor: { 
+            userID_postID: {
+                userID: userID,
+                postID: cursor
+            }
+        },
+        take: paginationLimit,
         select: {
             post: {
                 include: {
@@ -148,16 +152,13 @@ export async function secondQuerySavedPosts(userID, cursor, sortBy) {
     }
 
     const minNum = Math.min(paginationLimit - 1, saved.length - 1);
-    const PID = saved[minNum].post.postID;
-    const UID = saved[minNum].post.postedBy.user.userID;
     const posts = saved.map((cur) => cur.post);
 
     return { 
         posts, 
-        cursor: { userID: UID, postID: PID },
+        cursor: saved[minNum].post.postID,
         last: minNum < paginationLimit - 1
     };
-    
 }
 
 export async function deleteSavedPostHandler(postID, userID) {

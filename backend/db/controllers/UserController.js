@@ -1,7 +1,7 @@
 import 
 { 
     registerUserHandler, 
-    getUserHandler, 
+    findUserHandler, 
     updateUserHandler, 
     updateProfilePictureHandler, 
     deleteUserHandler,
@@ -10,9 +10,9 @@ import
 from '../services/UserService.js';
 import { cookieJwtSign } from '../middleware/cookieJwtSign.js';
 
-export async function loginUser(req, res) {
+export async function authenticateUser(req, res) {
     try {
-        const user = await getUserHandler(req.body.usernameOrEmail, req.body.password);
+        const user = await findUserHandler(req.body.usernameOrEmail, req.body.password);
         req.userData = user;
 
         const sign = await cookieJwtSign(req, res);
@@ -23,9 +23,9 @@ export async function loginUser(req, res) {
     }
 }
 
-export async function logoutUser(_, res) {
+export async function deleteUserSession(_, res) {
     try {
-        return res.clearCookie("access_token").status(200).json({ message: "success" });
+        return res.clearCookie("access_token").json({ message: "success" });
     }
     catch (err) {
         res.status(500).json({ message: err.message });
@@ -34,7 +34,7 @@ export async function logoutUser(_, res) {
 
 export async function updateProfilePicture(req, res) {
     try {
-        const updated = await updateProfilePictureHandler(req.userData.userID, req.body.profilePic);
+        const updated = await updateProfilePictureHandler(req, req.body.profilePic);
         req.userData = updated;
 
         const sign = await cookieJwtSign(req, res);
@@ -55,10 +55,10 @@ export async function registerUser(req, res) {
     }
 }
 
-export async function getUser(req, res) {
+export async function findUser(req, res) {
     try {
-        const user = await getUserHandler(req.body.usernameOrEmail, req.body.password);
-        res.json({ userData: user, message: "success" });
+        await findUserHandler(req.params.usernameOrEmail, req.body.password);
+        res.json({ message: "success" });
     }
     catch (err) {
         res.status(err.code).json({ message: err.message });
@@ -67,7 +67,7 @@ export async function getUser(req, res) {
 
 export async function updateUser(req, res) {
     try {
-        const updated = await updateUserHandler(req.body);
+        const updated = await updateUserHandler(req);
         req.userData = updated;
         
         const sign = await cookieJwtSign(req, res);
@@ -80,8 +80,8 @@ export async function updateUser(req, res) {
 
 export async function deleteUser(req, res) {
     try {
-        await deleteUserHandler(req.userData.userID);
-        return res.clearCookie("access_token").status(200).json({ message: "success" });
+        await deleteUserHandler(req);
+        return res.clearCookie("access_token").json({ message: "success" });
     }
     catch (err) {
         res.status(err.code).json({ message: err.message });
@@ -90,7 +90,7 @@ export async function deleteUser(req, res) {
 
 export async function updatePassword(req, res) {
     try {
-        await updatePasswordHandler(req.userData.userID, req.body.password);
+        await updatePasswordHandler(req);
         res.json({ message: "success" });
     }
     catch (err) {

@@ -1,13 +1,12 @@
 import { useRef, useContext, useState } from 'react';
 import { UserContext } from '../../context/UserContext';
-import { useFetchPosts } from '../../hooks/useFetchPosts';
+import { usePaginateData } from '../../hooks/usePaginateData';
 import SortBy from '../../components/SortBy';
 import { IPost } from '../../models/IPost';
 import PostSkeleton from '../../skeletons/PostSkeleton';
 import Post from '../../components/Post';
 import PostsWrapper from '../../components/PostsWrapper';
 import NoResultsFound from '../../components/NoResultsFound';
-import { SavedServicesKey } from '../../types/SavedServicesKey';
 import { sortPosts } from '../../utils/sortPosts';
 
 function SavedServicesView() {
@@ -16,11 +15,11 @@ function SavedServicesView() {
     const pageRef = useRef<HTMLDivElement>(null);
 
     const url = `/api/users/${userContext.userData.userID}/saved-posts?sort=${sortBy}`;
-    const cursor = useRef<SavedServicesKey>({ userID: "", postID: "" });
     const [deletingPost, setDeletingPost] = useState<boolean>(false);
+    const cursor = useRef<string>("");
 
     const [nextPage, setNextPage] = useState<boolean>(false);
-    const posts = useFetchPosts(pageRef, url, nextPage, setNextPage, cursor);
+    const posts = usePaginateData<IPost>(pageRef, url, nextPage, setNextPage, cursor);
 
     return (
         <div ref={pageRef}>
@@ -47,6 +46,7 @@ function SavedServicesView() {
                             canRemove={{
                                 deletingPost: deletingPost,
                                 setDeletingPost: setDeletingPost,
+                                removeURL: `/api/users/${userContext.userData.userID}/saved-posts/`
                             }}
                         />
                     );

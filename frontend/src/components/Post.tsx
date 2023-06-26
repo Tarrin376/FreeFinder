@@ -14,6 +14,7 @@ interface PostProps {
     canRemove?: {
         deletingPost: boolean,
         setDeletingPost: React.Dispatch<React.SetStateAction<boolean>>,
+        removeURL: string
     }
 }
 
@@ -29,7 +30,7 @@ function Post({ postInfo, userID, canRemove }: PostProps) {
                 return;
             }
 
-            await axios.post<{ message: string }>(`/api/users/${userID}/saved-posts/save/${postInfo.postID}`);
+            await axios.post<{ message: string }>(`/api/users/${userID}/saved-posts/${postInfo.postID}`);
             actionSuccessful(setSuccessMessage, "Saved post", "");
         }
         catch (err: any) {
@@ -45,7 +46,7 @@ function Post({ postInfo, userID, canRemove }: PostProps) {
     
         try {
             canRemove.setDeletingPost(true);
-            await axios.delete<{ message: string }>(`/api/posts/${postInfo.postID}/delete`);
+            await axios.delete<{ message: string }>(`${canRemove.removeURL}${postInfo.postID}`);
             setHide(true);
         }
         catch (err: any) {
@@ -62,9 +63,9 @@ function Post({ postInfo, userID, canRemove }: PostProps) {
     }
 
     return (
-        <div className="bg-main-white w-[295px] rounded-[8px] relative overflow-hidden shadow-post">
-            <p className={`absolute z-10 px-7 py-[11px] w-[100%] transition ease-out duration-100 text-center ${errorMessage !== "" ? 
-            'bg-error-text text-main-white' : successMessage ? 'action-btn hover:!bg-[#36BF54] select-none' : 'select-none'}`}>
+        <div className="bg-main-white border border-light-border-gray w-[295px] rounded-[8px] relative overflow-hidden shadow-post">
+            <p className={`absolute z-10 px-7 py-[11px] w-[100%] transition ease-out duration-100 text-center select-none  ${errorMessage !== "" ? 
+            'bg-error-text text-main-white' : successMessage ? 'action-btn hover:!bg-[#36BF54]' : '!py-[0px]'}`}>
                 {errorMessage !== "" ? errorMessage : successMessage !== "" ? successMessage : ""}
             </p>
             <svg 

@@ -4,39 +4,37 @@ import ErrorMessage from "../../components/ErrorMessage";
 import CountriesDropdown from "../../components/CountriesDropdown";
 import LoadingButton from "../../components/LoadingButton";
 import { fetchUpdatedUser } from "../../utils/fetchUpdatedUser";
-import { UpdateResponse } from "../../utils/fetchUpdatedUser";
 import { actionSuccessful } from "../../utils/actionSuccessful";
+import { getAPIErrorMessage } from "../../utils/getAPIErrorMessage";
+import { AxiosError } from "axios";
 
 function UserProfile({  userContext }: { userContext: IUserContext }) {
     const [username, setUsername] = useState<string>(userContext.userData.username);
     const [loading, setLoading] = useState<boolean>(false);
     const [errorMessage, setErrorMessage] = useState<string>("");
-    const country = useRef<HTMLSelectElement>(null);
+    const countryRef = useRef<HTMLSelectElement>(null);
     const [completed, setCompleted] = useState<boolean>(false);
     
     async function updateProfile(): Promise<void> {
         try {
-            if (!country.current || !country.current!.value) {
+            if (!countryRef.current || !countryRef.current!.value) {
                 return;
             }
 
             setLoading(true);
-            const updated: UpdateResponse = await fetchUpdatedUser({ 
+            const updated = await fetchUpdatedUser({ 
                 ...userContext.userData, 
                 username, 
-                country: country.current!.value 
+                country: countryRef.current!.value 
             });
 
-            if (updated.message === "success" && updated.userData) {
-                userContext.setUserData(updated.userData);
-                setErrorMessage("");
-                actionSuccessful(setCompleted, true, false);
-            } else {
-                setErrorMessage(updated.message);
-            }
+            userContext.setUserData(updated.userData);
+            setErrorMessage("");
+            actionSuccessful(setCompleted, true, false);
         }
         catch (err: any) {
-            setErrorMessage(err.message);
+            const errorMessage = getAPIErrorMessage(err as AxiosError<{ message: string }>);
+            setErrorMessage(errorMessage);
         }
         finally {
             setLoading(false);
@@ -61,7 +59,10 @@ function UserProfile({  userContext }: { userContext: IUserContext }) {
                 </div>
                 <div>
                     <p className="mb-2">Country</p>
-                    <CountriesDropdown country={country} selected={userContext.userData.country} />
+                    <CountriesDropdown 
+                        countryRef={countryRef} 
+                        selected={userContext.userData.country} 
+                    />
                 </div>
                 <LoadingButton 
                     loading={loading} text="Update Profile" loadingText="Checking username" 

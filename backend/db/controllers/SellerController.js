@@ -12,7 +12,7 @@ export async function getSellerPosts(req, res) {
 
 export async function updateSellerDetails(req, res) {
     try {
-        const updatedData = await updateSellerDetailsHandler(req.body);
+        const updatedData = await updateSellerDetailsHandler(req);
         res.json({ updatedData, message: "success" });
     }
     catch (err) {

@@ -4,32 +4,37 @@ import { cookieJwtAuth } from '../middleware/cookieJwtAuth.js';
 import 
 { 
     registerUser,
-    getUser, 
+    findUser, 
     updateUser, 
     updateProfilePicture, 
     deleteUser,
     updatePassword,
-    loginUser,
-    logoutUser
+    authenticateUser,
+    deleteUserSession
 } from '../controllers/UserController.js';
 
 const userRouter = Router();
 
 userRouter.use('/:userID/saved-posts', savedPostRouter);
 
-userRouter.post('/register', registerUser);
-userRouter.post('/getUser', getUser);
-userRouter.post('/login', loginUser);
-userRouter.get('/logout', logoutUser);
+userRouter.param('userID', (req, _, next, value) => {
+    req.userID = value;
+    next();
+});
 
-userRouter.get('/jwtLogin', cookieJwtAuth, (req, res) => {
+userRouter.post('/', registerUser);
+userRouter.post('/session', authenticateUser);
+userRouter.post('/:usernameOrEmail', findUser);
+userRouter.delete('/session', deleteUserSession);
+
+userRouter.get('/jwt-auth', cookieJwtAuth, (req, res) => {
     return res.json({ userData: req.userData });
 });
 
-userRouter.put('/update', cookieJwtAuth, updateUser);
-userRouter.put('/update/profile-picture', cookieJwtAuth, updateProfilePicture);
-userRouter.put('/update/password', cookieJwtAuth, updatePassword);
+userRouter.put('/:userID', cookieJwtAuth, updateUser);
+userRouter.put('/:userID/profile-picture', cookieJwtAuth, updateProfilePicture);
+userRouter.put('/:userID/password', cookieJwtAuth, updatePassword);
 
-userRouter.delete('/delete', cookieJwtAuth, deleteUser);
+userRouter.delete('/:userID', cookieJwtAuth, deleteUser);
 
 export default userRouter;

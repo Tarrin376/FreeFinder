@@ -22,8 +22,8 @@ function ChooseThumbnail({ setSection, setPostService, uploadedFiles, thumbnail,
         (async () => {
             let res = [];
             for (const file of uploadedFiles) {
-                const image = await parseImage(file);
-                res.push(image);
+                const parsedImage = await parseImage(file);
+                res.push(parsedImage);
             }
             
             setImages(res);

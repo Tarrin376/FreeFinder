@@ -4,6 +4,8 @@ import ErrorMessage from "./ErrorMessage";
 import CountriesDropdown from "./CountriesDropdown";
 import LoadingButton from "./LoadingButton";
 import { SignUpForm } from "../types/SignUpForm";
+import axios, { AxiosError } from "axios";
+import { getAPIErrorMessage } from "../utils/getAPIErrorMessage";
 
 export const emailPattern: RegExp = new RegExp("[a-z0-9]+@[a-zA-Z]+[.][a-z]+$");
 
@@ -27,42 +29,31 @@ interface SignUpProps {
 function SignUp({ setLogIn, setSignUp, setAccountCreated }: SignUpProps) {
     const [form, setForm] = useState<SignUpForm>(initialFormValues);
     const [errorMessage, setErrorMessage] = useState<string>("");
-    const country = useRef<HTMLSelectElement>(null);
+    const countryRef = useRef<HTMLSelectElement>(null);
     const [loading, setLoading] = useState<boolean>(false);
 
     async function createAccount(e: React.MouseEvent<HTMLButtonElement>): Promise<void> {
         e.preventDefault();
-        if (!country.current || !country.current!.value || loading) {
+        if (!countryRef.current || !countryRef.current!.value || loading) {
             return;
         }
 
         try {
             setLoading(true);
-            const response = await fetch("/api/users/register", {
-                method: 'POST',
-                body: JSON.stringify({ 
-                    email: form.emailFirst, 
-                    username: form.username, 
-                    password: form.password,
-                    country: country.current.value
-                }),
-                headers: {
-                    'Accept': 'application/json',
-                    'Content-Type': 'application/json'
-                }
+            await axios.post<{ message: string }>(`/api/users`, {
+                email: form.emailFirst, 
+                username: form.username, 
+                password: form.password,
+                country: countryRef.current.value
             });
 
-            const responseData = await response.json();
-            if (responseData.message === "success") {
-                setAccountCreated(true);
-                setSignUp(false);
-                setErrorMessage("");
-            } else {
-                setErrorMessage(responseData.message);
-            }
+            setAccountCreated(true);
+            setSignUp(false);
+            setErrorMessage("");
         }
         catch (e: any) {
-            setErrorMessage(e.message);
+            const errorMessage = getAPIErrorMessage(e as AxiosError<{ message: string }>);
+            setErrorMessage(errorMessage);
         }
         finally {
             setLoading(false);
@@ -138,7 +129,10 @@ function SignUp({ setLogIn, setSignUp, setAccountCreated }: SignUpProps) {
                         className={`search-bar mt-3 mb-3 ${!form.validPassword && form.password !== "" && "invalid-input"}`} 
                         onChange={(e) => checkPassword(e)} 
                     />
-                    <CountriesDropdown country={country} selected={"🇬🇧 United Kingdom"} />
+                    <CountriesDropdown 
+                        countryRef={countryRef} 
+                        selected={"🇬🇧 United Kingdom"} 
+                    />
                 </div>
                 <LoadingButton
                     loading={loading} text="Create Account" loadingText="Checking details" 

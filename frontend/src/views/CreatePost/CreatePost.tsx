@@ -5,6 +5,10 @@ import PostDetails from "./PostDetails";
 import ChooseThumbnail from './ChooseThumbnail';
 import Package from './Package';
 import { IPackage } from '../../models/IPackage';
+import axios, { AxiosError } from "axios";
+import { getAPIErrorMessage } from "../../utils/getAPIErrorMessage";
+import { parseImage } from '../../utils/parseImage';
+import { FailedUpload } from '../../types/FailedUploaded';
 
 interface CreatePostProps {
     setPostService: React.Dispatch<React.SetStateAction<boolean>>,
@@ -36,6 +40,7 @@ function CreatePost({ setPostService, setUserPosts, cursor, setReachedBottom, se
     const [errorMessage, setErrorMessage] = useState<string>("");
     const [uploadedFiles, setUploadedFiles] = useState<File[]>([]);
     const [thumbnail, setThumbnail] = useState<unknown>();
+    const [failedUploads, setFailedUploads] = useState<FailedUpload[]>([]);
 
     // PostDetails states
     const [title, setTitle] = useState<string>("");
@@ -108,52 +113,66 @@ function CreatePost({ setPostService, setUserPosts, cursor, setReachedBottom, se
     }
 
     async function createPost(): Promise<void> {
-        setLoading(true);
         const post: PostData = constructPost();
         const minPrice = post.packages.reduce((acc, cur) => Math.min(cur.amount, acc), Infinity);
+        setLoading(true);
 
         try {
-            const response = await fetch("/api/posts/create", {
-                method: 'POST',
-                body: JSON.stringify({
-                    startingPrice: minPrice,
-                    post
-                }),
-                headers: {
-                    'Content-Type': 'application/json',
-                    'Accept': 'application/json'
-                }
+            const resp = await axios.post<{ postID: string, message: string }>(`/api/posts/create`, {
+                startingPrice: minPrice,
+                post: post
             });
 
-            const responseData = await response.json();
-
-            if (responseData.message === "success") {
-                addPostImages(responseData.postID);
+            const addedImages = await addPostImages(resp.data.postID);
+            if (addedImages) {
                 setErrorMessage("");
                 setPostService(false);
-                cursor.current = "HEAD";
+                cursor.current = "";
                 setUserPosts([]);
                 setReachedBottom(false);
                 setNextPage((state) => !state);
-            } else {
-                setErrorMessage(responseData.message);
             }
         }
         catch (err: any) {
-            setErrorMessage(err.message);
+            const errorMessage = getAPIErrorMessage(err as AxiosError<{ message: string }>);
+            setErrorMessage(errorMessage);
         }
         finally {
             setLoading(false);
         }
     }
 
-    async function addPostImages(postID: string): Promise<void> {
-        try {
-            
-        }
-        catch (err: any) {
+    async function addPostImages(postID: string): Promise<boolean> {
+        const failed = [];
 
+        for (let i = 0; i < uploadedFiles.length; i++) {
+            try {
+                const parsedImage = await parseImage(uploadedFiles[i]);
+                if (parsedImage !== thumbnail) {
+                    await axios.post(`/api/posts/${postID}`, {
+                        isThumbnail: false,
+                        image: parsedImage,
+                        imageNum: i
+                    });
+                }
+            }
+            catch (err: any) {
+                const errorMessage = getAPIErrorMessage(err as AxiosError<{ message: string }>);
+                failed.push({
+                    file: uploadedFiles[i], 
+                    index: i,
+                    errorMessage: errorMessage
+                });
+            }
         }
+
+        setFailedUploads(failed);
+        if (failed.length > 0) {
+            setErrorMessage(`Failed to upload ${failed.length} ${failed.length === 1 ? "image" : "images"}.`);
+            return false;
+        }
+
+        return true;
     }
 
     switch (section) {
@@ -216,6 +235,7 @@ function CreatePost({ setPostService, setUserPosts, cursor, setReachedBottom, se
                     about={about} title={title} 
                     errorMessage={errorMessage} loading={loading}
                     createPost={createPost}
+                    failedUploads={failedUploads}
                 />
             );
     }
