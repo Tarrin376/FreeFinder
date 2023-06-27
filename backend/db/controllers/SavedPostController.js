@@ -2,7 +2,7 @@ import { savePostHandler, getSavedPostsHandler, deleteSavedPostHandler } from ".
 
 export async function savePost(req, res) {
     try {
-        await savePostHandler(req.params.postID, req.userData.userID);
+        await savePostHandler(req.params.postID, req.userData.userID, req.username);
         res.status(201).json({ message: "success" });
     }
     catch (err) {
@@ -22,7 +22,7 @@ export async function getSavedPosts(req, res) {
 
 export async function deleteSavedPost(req, res) {
     try {
-        await deleteSavedPostHandler(req.params.postID, req.userData.userID);
+        await deleteSavedPostHandler(req.params.postID, req.userData.userID, req.username);
         res.json({ message: "success" });
     }
     catch (err) {

@@ -9,6 +9,8 @@ import PostSkeleton from '../../skeletons/PostSkeleton';
 import PostsWrapper from '../../components/PostsWrapper';
 import NoResultsFound from '../../components/NoResultsFound';
 import { sortPosts } from '../../utils/sortPosts';
+import { useNavigateErrorPage } from '../../hooks/useNavigateErrorPage';
+import { useLocation } from 'react-router-dom';
 
 function MyPostsView() {
     const [postService, setPostService] = useState<boolean>(false);
@@ -16,16 +18,17 @@ function MyPostsView() {
     const [sortBy, setSortBy] = useState<string>(sortPosts["most recent"]);
     const pageRef = useRef<HTMLDivElement>(null);
     const [deletingPost, setDeletingPost] = useState<boolean>(false);
-
-    const url = `/api/sellers/${userContext.userData.userID}/posts?sort=${sortBy}`;
     const cursor = useRef<string>("");
+    const location = useLocation();
     
     const [nextPage, setNextPage] = useState<boolean>(false);
-    const posts = usePaginateData<IPost>(pageRef, url, nextPage, setNextPage, cursor);
+    const posts = usePaginateData<IPost>(pageRef, `/api/sellers${location.pathname}?sort=${sortBy}`, nextPage, setNextPage, cursor);
 
     function openPostService(): void {
         setPostService(true);
     }
+
+    useNavigateErrorPage("Uh oh!", posts.errorMessage);
 
     return (
         <>
@@ -57,7 +60,7 @@ function MyPostsView() {
                         return (
                             <Post 
                                 postInfo={post} 
-                                userID={userContext.userData.userID} 
+                                username={userContext.userData.username} 
                                 key={post.postID}
                                 canRemove={{
                                     deletingPost: deletingPost,

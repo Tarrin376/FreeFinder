@@ -1,10 +1,9 @@
 import { IUserContext } from "../../context/UserContext";
 import { useState } from 'react';
 import ErrorMessage from "../../components/ErrorMessage";
-import LoadingButton from "../../components/LoadingButton";
-import { actionSuccessful } from "../../utils/actionSuccessful";
 import axios, { AxiosError } from "axios";
 import { getAPIErrorMessage } from "../../utils/getAPIErrorMessage";
+import Button from "../../components/Button";
 
 function ChangePassword({ userContext }: { userContext: IUserContext }) {
     const [currentPass, setCurrentPass] = useState<string>("");
@@ -15,31 +14,21 @@ function ChangePassword({ userContext }: { userContext: IUserContext }) {
     const [validNewPass, setValidNewPass] = useState<boolean>(false);
     const [validConfirmNewPass, setValidConfirmNewPass] = useState<boolean>(false);
     const [validCurrentPass, setValidCurrentPass] = useState<boolean>(false);
-    const [loading, setLoading] = useState<boolean>(false);
-    const [completed, setCompleted] = useState<boolean>(false);
 
-    async function updatePassword(): Promise<void> {
-        setLoading(true);
-
+    async function updatePassword(): Promise<string | undefined> {
         const passwordMatch: boolean = await checkPassword();
         if (!passwordMatch) {
-            setErrorMessage("The password you provided does not match your current password.");
-            setLoading(false);
-            return;
+            return "The password you provided does not match your current password.";
         }
 
         try {
-            await axios.put<{ message: string }>(`/api/users/${userContext.userData.userID}/password`, { password: newPass });
-            setCompleted(true);
-            setErrorMessage("");
-            actionSuccessful(setCompleted, true, false);
+            await axios.put<{ message: string }>(`/api/users/${userContext.userData.username}/password`, { 
+                password: newPass 
+            });
         }
         catch (err: any) {
             const errorMessage = getAPIErrorMessage(err as AxiosError<{ message: string }>)
-            setErrorMessage(errorMessage);
-        }
-        finally {
-            setLoading(false);
+            return errorMessage;
         }
     }
 
@@ -106,11 +95,14 @@ function ChangePassword({ userContext }: { userContext: IUserContext }) {
                         confirmNewPass !== newPass ? "Passwords do not match" : ""}
                     </p>
                 </div>
-                <LoadingButton 
-                    loading={loading} text="Update Details" loadingText="Checking password" 
-                    callback={updatePassword} styles={!checkInputs() ? "invalid-button mt-3 main-btn" : "mt-3 main-btn"}
-                    disabled={!checkInputs()} loadingColour="bg-main-black" completed={completed} 
-                    completedText="Password updated successfully"
+                <Button
+                    action={updatePassword}
+                    completedText="Password updated"
+                    defaultText="Update details"
+                    loadingText="Checking password"
+                    styles={!checkInputs() ? "invalid-button mt-3 main-btn" : "mt-3 main-btn"}
+                    textColor="text-main-white"
+                    setErrorMessage={setErrorMessage}
                 />
             </div>
         </>

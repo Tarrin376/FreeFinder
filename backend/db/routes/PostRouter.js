@@ -4,7 +4,7 @@ import { cookieJwtAuth } from '../middleware/cookieJwtAuth.js';
 
 const postRouter = Router();
 
-postRouter.post('/create', cookieJwtAuth, createPost);
+postRouter.post('/', cookieJwtAuth, createPost);
 postRouter.get('/:id', getPost);
 postRouter.delete('/:id', cookieJwtAuth, deletePost);
 postRouter.post('/:id', cookieJwtAuth, addPostImage);

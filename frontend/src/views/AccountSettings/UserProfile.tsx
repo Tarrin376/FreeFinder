@@ -2,26 +2,22 @@ import { IUserContext } from "../../context/UserContext";
 import { useState, useRef } from 'react';
 import ErrorMessage from "../../components/ErrorMessage";
 import CountriesDropdown from "../../components/CountriesDropdown";
-import LoadingButton from "../../components/LoadingButton";
 import { fetchUpdatedUser } from "../../utils/fetchUpdatedUser";
-import { actionSuccessful } from "../../utils/actionSuccessful";
 import { getAPIErrorMessage } from "../../utils/getAPIErrorMessage";
 import { AxiosError } from "axios";
+import Button from "../../components/Button";
 
 function UserProfile({  userContext }: { userContext: IUserContext }) {
     const [username, setUsername] = useState<string>(userContext.userData.username);
-    const [loading, setLoading] = useState<boolean>(false);
     const [errorMessage, setErrorMessage] = useState<string>("");
     const countryRef = useRef<HTMLSelectElement>(null);
-    const [completed, setCompleted] = useState<boolean>(false);
     
-    async function updateProfile(): Promise<void> {
+    async function updateProfile(): Promise<string | undefined> {
         try {
             if (!countryRef.current || !countryRef.current!.value) {
                 return;
             }
 
-            setLoading(true);
             const updated = await fetchUpdatedUser({ 
                 ...userContext.userData, 
                 username, 
@@ -29,15 +25,10 @@ function UserProfile({  userContext }: { userContext: IUserContext }) {
             });
 
             userContext.setUserData(updated.userData);
-            setErrorMessage("");
-            actionSuccessful(setCompleted, true, false);
         }
         catch (err: any) {
             const errorMessage = getAPIErrorMessage(err as AxiosError<{ message: string }>);
-            setErrorMessage(errorMessage);
-        }
-        finally {
-            setLoading(false);
+            return errorMessage;
         }
     }
 
@@ -64,11 +55,14 @@ function UserProfile({  userContext }: { userContext: IUserContext }) {
                         selected={userContext.userData.country} 
                     />
                 </div>
-                <LoadingButton 
-                    loading={loading} text="Update Profile" loadingText="Checking username" 
-                    callback={updateProfile} styles={username === "" ? "invalid-button main-btn mt-3" : "mt-3 main-btn"}
-                    disabled={username === ""} loadingColour="bg-main-black" completed={completed} 
+                <Button
+                    action={updateProfile}
                     completedText="Profile updated successfully"
+                    defaultText="Update profile"
+                    loadingText="Checking details"
+                    styles={username === "" ? "invalid-button main-btn mt-3" : "mt-3 main-btn"}
+                    textColor="text-main-white"
+                    setErrorMessage={setErrorMessage}
                 />
             </div>
         </>

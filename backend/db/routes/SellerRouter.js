@@ -4,7 +4,7 @@ import { cookieJwtAuth } from '../middleware/cookieJwtAuth.js';
 
 const sellerRouter = Router();
 
-sellerRouter.post('/:id/posts', getSellerPosts);
+sellerRouter.post('/:username/posts', cookieJwtAuth, getSellerPosts);
 sellerRouter.put('/:userID', cookieJwtAuth, updateSellerDetails);
 
 export default sellerRouter;

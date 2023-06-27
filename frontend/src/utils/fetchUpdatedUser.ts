@@ -1,16 +1,16 @@
 import { IUser } from "../models/IUser";
 import axios from "axios";
 
-export async function fetchUpdatedUser(updatedData: IUser, profilePic?: string | unknown): Promise<{ message: string, userData: IUser }> {
+export async function fetchUpdatedUser(data: IUser, profilePic?: string | unknown): Promise<{ message: string, userData: IUser }> {
     if (profilePic !== undefined) {
-        const response = await updateProfilePic(profilePic, updatedData.userID);
-        updatedData = response.userData;
+        const response = await updateProfilePic(profilePic, data.username);
+        data = response.userData;
     }
     
     try {
-        const resp = await axios.put<{ userData: IUser, message: string }>(`/api/users/${updatedData.userID}`, {
-            ...updatedData,
-            profilePicURL: profilePic === "" ? profilePic : updatedData.profilePicURL
+        const resp = await axios.put<{ userData: IUser, message: string }>(`/api/users/${data.username}`, {
+            ...data,
+            profilePicURL: profilePic === "" ? profilePic : data.profilePicURL
         });
 
         return resp.data;
@@ -20,9 +20,9 @@ export async function fetchUpdatedUser(updatedData: IUser, profilePic?: string |
     }
 }
 
-async function updateProfilePic(profilePic: string | unknown, userID: string) : Promise<{ message: string, userData: IUser }> {
+async function updateProfilePic(profilePic: string | unknown, username: string) : Promise<{ message: string, userData: IUser }> {
     try {
-        const resp = await axios.put<{ userData: IUser, message: string }>(`/api/users/${userID}/profile-picture`, { profilePic });
+        const resp = await axios.put<{ userData: IUser, message: string }>(`/api/users/${username}/profile-picture`, { profilePic });
         return resp.data;
     }
     catch (err: any) {

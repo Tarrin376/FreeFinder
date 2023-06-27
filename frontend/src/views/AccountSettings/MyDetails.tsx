@@ -2,11 +2,10 @@ import { IUserContext } from "../../context/UserContext";
 import { useState } from 'react';
 import ErrorMessage from "../../components/ErrorMessage";
 import { emailPattern } from "../../components/SignUp";
-import LoadingButton from "../../components/LoadingButton";
 import { fetchUpdatedUser } from "../../utils/fetchUpdatedUser";
-import { actionSuccessful } from "../../utils/actionSuccessful";
 import { getAPIErrorMessage } from "../../utils/getAPIErrorMessage";
 import { AxiosError } from "axios";
+import Button from "../../components/Button";
 
 function MyDetails({ userContext } : { userContext: IUserContext }) {
     const [firstEmail, setFirstEmail] = useState<string>("");
@@ -14,8 +13,6 @@ function MyDetails({ userContext } : { userContext: IUserContext }) {
     const [validFirst, setValidFirst] = useState<boolean>(false);
     const [validSecond, setValidSecond] = useState<boolean>(false);
     const [errorMessage, setErrorMessage] = useState<string>("");
-    const [loading, setLoading] = useState<boolean>(false);
-    const [completed, setCompleted] = useState<boolean>(false);
 
     function emailChangeHandler(input: string, setValid: React.Dispatch<React.SetStateAction<boolean>>,
         setEmail: React.Dispatch<React.SetStateAction<string>>): void {
@@ -30,24 +27,18 @@ function MyDetails({ userContext } : { userContext: IUserContext }) {
         setEmail(input);
     }
 
-    async function updateDetails(): Promise<void> {
+    async function updateDetails(): Promise<string | undefined> {
         try {
-            setLoading(true);
             const updated = await fetchUpdatedUser({ 
                 ...userContext.userData, 
                 email: firstEmail 
             });
             
             userContext.setUserData(updated.userData);
-            setErrorMessage("");
-            actionSuccessful(setCompleted, true, false);
         }
         catch (err: any) {
             const errorMessage = getAPIErrorMessage(err as AxiosError<{ message: string }>);
-            setErrorMessage(errorMessage);
-        }
-        finally {
-            setLoading(false);
+            return errorMessage;
         }
     }
 
@@ -87,11 +78,14 @@ function MyDetails({ userContext } : { userContext: IUserContext }) {
                         firstEmail !== secondEmail ? "Email address does not match" : ""}
                     </p>
                 </div>
-                <LoadingButton 
-                    loading={loading} text="Update Details" loadingText="Checking details" 
-                    callback={updateDetails} styles={(!validFirst || !validSecond || firstEmail !== secondEmail) ? "invalid-button mt-3 main-btn" : "main-btn mt-3"}
-                    disabled={!validFirst || !validSecond || firstEmail !== secondEmail} loadingColour="bg-main-black"
-                    completed={completed} completedText="Details updated successfully"
+                <Button
+                    action={updateDetails}
+                    completedText="Details updated successfully"
+                    defaultText="Update details"
+                    loadingText="Checking details"
+                    styles={(!validFirst || !validSecond || firstEmail !== secondEmail) ? "invalid-button mt-3 main-btn" : "main-btn mt-3"}
+                    textColor="text-main-white"
+                    setErrorMessage={setErrorMessage}
                 />
             </div>
         </>

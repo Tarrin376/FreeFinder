@@ -32,7 +32,7 @@ function Navbar() {
                             <li className="nav-item">Browse</li>
                             <li className="nav-item">Orders</li>
                             <Link to={`${userContext.userData.username}/saved-posts`}>
-                                <li className="nav-item">Saved Posts</li>
+                                <li className="nav-item">Saved posts</li>
                             </Link>
                             <Link to={`${userContext.userData.username}/posts`}>
                                 <li className="nav-item">My Posts</li>

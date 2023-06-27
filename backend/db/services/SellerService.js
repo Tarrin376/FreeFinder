@@ -56,11 +56,13 @@ async function createSeller(id) {
     }
 }
 
-export async function getSellerPostsHandler(sellerUserID, cursor, sortBy) {
+export async function getSellerPostsHandler(username, cursor, sortBy) {
     try {
-        const seller = await prisma.seller.findUnique({ 
+        const seller = await prisma.seller.findFirst({ 
             where: { 
-                userID: sellerUserID
+                user: {
+                    username: username
+                }
             }
         });
 
@@ -114,7 +116,7 @@ export async function firstQuerySellerPosts(sellerID, sortBy) {
             postID: true,
             images: {
                 where: {
-                    isThumbnail: true
+                    imageNum: 0
                 }
             }
         }
@@ -167,7 +169,7 @@ export async function secondQuerySellerPosts(sellerID, cursor, sortBy) {
             postID: true,
             images: {
                 where: {
-                    isThumbnail: true
+                    imageNum: 0
                 }
             }
         }

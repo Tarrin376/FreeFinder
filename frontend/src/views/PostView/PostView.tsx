@@ -5,40 +5,42 @@ import ProfilePicAndStatus from "../../components/ProfilePicAndStatus";
 import StarIcon from '../../assets/star.png';
 import { getTimePosted } from "../../utils/getTimePosted";
 import AboutSeller from "./AboutSeller";
-import PostViewSkeleton from '../../skeletons/PostViewSkeleton';
 import Packages from "./Packages";
 import axios, { AxiosError } from "axios";
 import { getAPIErrorMessage } from "../../utils/getAPIErrorMessage";
 import { IPostImage } from "../../models/IPostImage";
+import BackIcon from "../../assets/back.png";
+import NextIcon from "../../assets/next.png";
+import { useNavigateErrorPage } from "../../hooks/useNavigateErrorPage";
 
 function PostView() {
     const [postData, setPostData] = useState<PostPage>();
-    const [selectedImage, setSelectedImage] = useState<string>();
+    const [selectedImage, setSelectedImage] = useState<number>(0);
+    const [errorMessage, setErrorMessage] = useState<string>("");
     const location = useLocation();
 
-    const updateSelectedImage = (url: string) => {
-        setSelectedImage(url);
+    const updateSelectedImage = (index: number) => {
+        setSelectedImage(index);
     }
+
+    useNavigateErrorPage("Uh oh!", errorMessage);
     
     useEffect(() => {
         (async (): Promise<void> => {
             try {
                 const resp = await axios.get<{ post: PostPage, message: string }>(`/api${location.pathname}`);
-                setTimeout(() => {
-                    setPostData(resp.data.post);
-                    setSelectedImage(resp.data.post.images.find((x) => x.isThumbnail === true)?.url);
-                }, 1000);
+                setPostData(resp.data.post);
             }
             catch (err: any) {
                 const errorMessage = getAPIErrorMessage(err as AxiosError<{ message: string }>);
-                console.log(errorMessage);
+                setErrorMessage(errorMessage);
             }
         })();
     }, [location.pathname]);
 
-    if (!postData || !selectedImage) {
+    if (!postData) {
         return (
-            <PostViewSkeleton />
+            <p>loading</p>
         );
     }
 
@@ -71,13 +73,17 @@ function PostView() {
                     </div>
                     <div className="flex w-fit gap-12 mt-8">
                         <div className="w-[700px]">
-                            <img 
-                                src={selectedImage} 
-                                className="bg-[#f5f6f8] w-full h-[500px] block rounded-[8px] object-contain 
-                                border border-light-border-gray shadow-info-component" 
-                                alt="placeholder" 
-                            />
-                            <div className="mt-5 w-full">
+                            <div className="bg-main-white w-full h-[500px] rounded-[8px] bg-contain bg-no-repeat bg-center 
+                            border border-light-border-gray shadow-info-component flex items-center justify-between p-4" 
+                            style={{ backgroundImage: `url(${postData.images[selectedImage].url})` }}>
+                                <button className="carousel-btn" onClick={() => updateSelectedImage(selectedImage === 0 ? postData.images.length - 1 : selectedImage - 1)}>
+                                    <img src={BackIcon} alt="" className="w-[30px] h-[30px]"></img>
+                                </button>
+                                <button className="carousel-btn" onClick={() => updateSelectedImage((selectedImage + 1) % postData.images.length)}>
+                                    <img src={NextIcon} alt="" className="w-[30px] h-[30px]"></img>
+                                </button>
+                            </div>
+                            <div className="mt-5 w-full whitespace-nowrap overflow-x-scroll pb-5">
                                 {postData.images.map((image: IPostImage, index: number) => {
                                     return (
                                         <img 
@@ -85,9 +91,9 @@ function PostView() {
                                             alt="" 
                                             className={`w-[112px] h-[80px] inline-block rounded-[8px] object-contain cursor-pointer
                                             bg-[#f5f6f8] border border-light-border-gray ${index > 0 ? "ml-3" : ""}
-                                            ${selectedImage === image.url ? "border-side-text-gray" : ""}`}
+                                            ${selectedImage === index ? "border-side-text-gray" : ""}`}
                                             key={index}
-                                            onClick={() => updateSelectedImage(image.url)}
+                                            onClick={() => updateSelectedImage(index)}
                                         />
                                     )
                                 })}

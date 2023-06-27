@@ -18,7 +18,7 @@ function App() {
                             <Route path=":username?/saved-posts" element={<SavedServicesView />} />
                             <Route path=":username?/posts" element={<MyPostsView />} />
                             <Route path="posts/:id" element={<PostView />} />
-                            <Route path="*" element={<ErrorView />} />
+                            <Route path="*" element={<ErrorView title="404" errorMessage="This is not the page you are looking for..." />} />
                         </Route>
                     </Routes>
                 </BrowserRouter>

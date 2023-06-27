@@ -1,4 +1,4 @@
-import { useState } from 'react';
+import { useState, useRef } from 'react';
 import { IPost } from "../../models/IPost";
 import UploadPostFiles from "./UploadPostFiles";
 import PostDetails from "./PostDetails";
@@ -7,8 +7,8 @@ import Package from './Package';
 import { IPackage } from '../../models/IPackage';
 import axios, { AxiosError } from "axios";
 import { getAPIErrorMessage } from "../../utils/getAPIErrorMessage";
-import { parseImage } from '../../utils/parseImage';
 import { FailedUpload } from '../../types/FailedUploaded';
+import { ImageData } from '../../types/ImageData';
 
 interface CreatePostProps {
     setPostService: React.Dispatch<React.SetStateAction<boolean>>,
@@ -36,11 +36,11 @@ export enum Sections {
 
 function CreatePost({ setPostService, setUserPosts, cursor, setReachedBottom, setNextPage }: CreatePostProps) {
     const [section, setSection] = useState<Sections>(Sections.UploadFiles);
-    const [loading, setLoading] = useState<boolean>(false);
     const [errorMessage, setErrorMessage] = useState<string>("");
-    const [uploadedFiles, setUploadedFiles] = useState<File[]>([]);
+    const [uploadedImages, setUploadedImages] = useState<ImageData[]>([]);
     const [thumbnail, setThumbnail] = useState<unknown>();
     const [failedUploads, setFailedUploads] = useState<FailedUpload[]>([]);
+    const postID = useRef<string>("");
 
     // PostDetails states
     const [title, setTitle] = useState<string>("");
@@ -112,18 +112,19 @@ function CreatePost({ setPostService, setUserPosts, cursor, setReachedBottom, se
         return post;
     }
 
-    async function createPost(): Promise<void> {
+    async function createPost(): Promise<string | undefined> {
         const post: PostData = constructPost();
         const minPrice = post.packages.reduce((acc, cur) => Math.min(cur.amount, acc), Infinity);
-        setLoading(true);
 
         try {
-            const resp = await axios.post<{ postID: string, message: string }>(`/api/posts/create`, {
+            const resp = await axios.post<{ postID: string, message: string }>(`/api/posts`, {
                 startingPrice: minPrice,
                 post: post
             });
-
+            
+            postID.current = resp.data.postID;
             const addedImages = await addPostImages(resp.data.postID);
+
             if (addedImages) {
                 setErrorMessage("");
                 setPostService(false);
@@ -135,40 +136,36 @@ function CreatePost({ setPostService, setUserPosts, cursor, setReachedBottom, se
         }
         catch (err: any) {
             const errorMessage = getAPIErrorMessage(err as AxiosError<{ message: string }>);
-            setErrorMessage(errorMessage);
-        }
-        finally {
-            setLoading(false);
+            return errorMessage;
         }
     }
 
     async function addPostImages(postID: string): Promise<boolean> {
         const failed = [];
 
-        for (let i = 0; i < uploadedFiles.length; i++) {
+        for (let i = 0; i < uploadedImages.length; i++) {
             try {
-                const parsedImage = await parseImage(uploadedFiles[i]);
-                if (parsedImage !== thumbnail) {
+                if (uploadedImages[i].image !== thumbnail) {
                     await axios.post(`/api/posts/${postID}`, {
                         isThumbnail: false,
-                        image: parsedImage,
-                        imageNum: i
+                        image: uploadedImages[i].image,
+                        imageNum: i + 1
                     });
                 }
             }
             catch (err: any) {
                 const errorMessage = getAPIErrorMessage(err as AxiosError<{ message: string }>);
                 failed.push({
-                    file: uploadedFiles[i], 
-                    index: i,
-                    errorMessage: errorMessage
+                    imageData: uploadedImages[i], 
+                    errorMessage: errorMessage,
+                    index: i
                 });
             }
         }
 
         setFailedUploads(failed);
         if (failed.length > 0) {
-            setErrorMessage(`Failed to upload ${failed.length} ${failed.length === 1 ? "image" : "images"}.`);
+            setErrorMessage(`Unable to upload ${failed.length} ${failed.length === 1 ? "image" : "images"} to our servers.`);
             return false;
         }
 
@@ -181,8 +178,8 @@ function CreatePost({ setPostService, setUserPosts, cursor, setReachedBottom, se
                 <UploadPostFiles 
                     setPostService={setPostService} 
                     setSection={setSection}
-                    uploadedFiles={uploadedFiles} 
-                    setUploadedFiles={setUploadedFiles}
+                    uploadedImages={uploadedImages} 
+                    setUploadedImages={setUploadedImages}
                 />
             );
         case Sections.ChooseThumbnail:
@@ -190,7 +187,7 @@ function CreatePost({ setPostService, setUserPosts, cursor, setReachedBottom, se
                 <ChooseThumbnail 
                     setSection={setSection} 
                     setPostService={setPostService}
-                    uploadedFiles={uploadedFiles}
+                    uploadedImages={uploadedImages}
                     thumbnail={thumbnail}
                     setThumbnail={setThumbnail}
                 />
@@ -198,44 +195,80 @@ function CreatePost({ setPostService, setUserPosts, cursor, setReachedBottom, se
         case Sections.BasicPackage:
             return (
                 <Package 
-                    setSection={setSection} setRevisions={setBasicRevisions} setFeatures={setBasicFeatures}
-                    setDeliveryTime={setBasicDeliveryTime} setDescription={setBasicDescription} 
-                    setPostService={setPostService} setAmount={setBasicAmount} features={basicFeatures} 
-                    back={Sections.ChooseThumbnail} next={Sections.StandardPackage} deliveryTime={basicDeliveryTime} 
-                    title={"Basic package details"} revisions={basicRevisions} description={basicDescription}
+                    setSection={setSection} 
+                    setRevisions={setBasicRevisions} 
+                    setFeatures={setBasicFeatures}
+                    setDeliveryTime={setBasicDeliveryTime} 
+                    setDescription={setBasicDescription} 
+                    setPostService={setPostService} 
+                    setAmount={setBasicAmount} 
+                    features={basicFeatures} 
+                    back={Sections.ChooseThumbnail} 
+                    next={Sections.StandardPackage} 
+                    deliveryTime={basicDeliveryTime} 
+                    title={"Basic package details"} 
+                    revisions={basicRevisions} 
+                    description={basicDescription}
                     amount={basicAmount}
                 />
             );
         case Sections.StandardPackage:
             return (
                 <Package 
-                    setSection={setSection} setRevisions={setStandardRevisions} setFeatures={setStandardFeatures}
-                    setDeliveryTime={setStandardDeliveryTime} setDescription={setStandardDescription} 
-                    setPostService={setPostService} setAmount={setStandardAmount} features={standardFeatures} 
-                    back={Sections.BasicPackage} skip={Sections.PostDetails} next={Sections.SuperiorPackage} 
-                    deliveryTime={standardDeliveryTime} revisions={standardRevisions} description={standardDescription} 
-                    title={"Standard package details"} amount={standardAmount}
+                    setSection={setSection} 
+                    setRevisions={setStandardRevisions} 
+                    setFeatures={setStandardFeatures}
+                    setDeliveryTime={setStandardDeliveryTime} 
+                    setDescription={setStandardDescription} 
+                    setPostService={setPostService} 
+                    setAmount={setStandardAmount} 
+                    features={standardFeatures} 
+                    back={Sections.BasicPackage} 
+                    skip={Sections.PostDetails} 
+                    next={Sections.SuperiorPackage} 
+                    deliveryTime={standardDeliveryTime} 
+                    revisions={standardRevisions} 
+                    description={standardDescription} 
+                    title={"Standard package details"} 
+                    amount={standardAmount}
                 />
             );
         case Sections.SuperiorPackage:
             return (
                 <Package 
-                    setSection={setSection} setRevisions={setSuperiorRevisions} setFeatures={setSuperiorFeatures}
-                    setDeliveryTime={setSuperiorDeliveryTime} setDescription={setSuperiorDescription} setPostService={setPostService}
-                    setAmount={setSuperiorAmount} features={superiorFeatures} back={Sections.StandardPackage} skip={Sections.PostDetails} 
-                    next={Sections.PostDetails} deliveryTime={superiorDeliveryTime} revisions={superiorRevisions} 
-                    description={superiorDescription} title={"Superior package details"} amount={superiorAmount}
+                    setSection={setSection} 
+                    setRevisions={setSuperiorRevisions} 
+                    setFeatures={setSuperiorFeatures}
+                    setDeliveryTime={setSuperiorDeliveryTime} 
+                    setDescription={setSuperiorDescription} 
+                    setPostService={setPostService}
+                    setAmount={setSuperiorAmount} 
+                    features={superiorFeatures} 
+                    back={Sections.StandardPackage} 
+                    skip={Sections.PostDetails} 
+                    next={Sections.PostDetails} 
+                    deliveryTime={superiorDeliveryTime} 
+                    revisions={superiorRevisions} 
+                    description={superiorDescription} 
+                    title={"Superior package details"} 
+                    amount={superiorAmount}
                 />
             );
         default:
             return (
                 <PostDetails 
-                    setPostService={setPostService} setSection={setSection}
-                    setAbout={setAbout} setTitle={setTitle}
-                    about={about} title={title} 
-                    errorMessage={errorMessage} loading={loading}
+                    setPostService={setPostService} 
+                    setSection={setSection}
+                    setAbout={setAbout} 
+                    setTitle={setTitle}
+                    about={about} 
+                    title={title} 
+                    errorMessage={errorMessage}
+                    setErrorMessage={setErrorMessage}
                     createPost={createPost}
                     failedUploads={failedUploads}
+                    setFailedUploads={setFailedUploads}
+                    postID={postID.current}
                 />
             );
     }

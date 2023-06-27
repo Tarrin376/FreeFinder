@@ -2,7 +2,7 @@ import { getSellerPostsHandler, updateSellerDetailsHandler } from "../services/S
 
 export async function getSellerPosts(req, res) {
     try {
-        const response = await getSellerPostsHandler(req.params.id, req.body.cursor, req.query.sort);
+        const response = await getSellerPostsHandler(req.params.username, req.body.cursor, req.query.sort);
         res.json({ posts: response.posts, cursor: response.cursor, message: "success", last: response.last });
     }
     catch (err) {

@@ -14,29 +14,29 @@ export function usePaginateData<T>(pageRef: React.RefObject<HTMLDivElement>, url
     useScrollEvent(pageRef, loading, reachedBottom, setNextPage);
 
     useEffect(() => {
-        try {
-            setLoading(true);
-            setTimeout(() => {
-                (async (): Promise<void> => {
+        setLoading(true);
+        setTimeout(() => {
+            (async (): Promise<void> => {
+                try {
                     const resp = await axios.post<{ posts: T[], cursor: string, last: boolean }>(url, { cursor: cursor.current });
                     setPosts((state) => [...state, ...resp.data.posts]);
-
+    
                     if (resp.data.last) {
                         setReachedBottom(true);
                     } else {
                         cursor.current = resp.data.cursor;
                     }
-
+    
                     setErrorMessage("");
                     setLoading(false);
-                })();
-            }, 1000);
-        }
-        catch(err: any) {
-            const errorMessage = getAPIErrorMessage(err as AxiosError<{ message: string }>)
-            setErrorMessage(errorMessage);
-            setLoading(false);
-        }
+                }
+                catch(err: any) {
+                    const errorMessage = getAPIErrorMessage(err as AxiosError<{ message: string }>)
+                    setErrorMessage(errorMessage);
+                    setLoading(false);
+                }
+            })();
+        }, 1000);
     }, [nextPage, url, cursor]);
 
     return { 

@@ -34,7 +34,7 @@ export async function deleteUserSession(_, res) {
 
 export async function updateProfilePicture(req, res) {
     try {
-        const updated = await updateProfilePictureHandler(req, req.body.profilePic);
+        const updated = await updateProfilePictureHandler(req);
         req.userData = updated;
 
         const sign = await cookieJwtSign(req, res);

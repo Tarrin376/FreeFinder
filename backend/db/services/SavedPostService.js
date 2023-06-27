@@ -3,9 +3,11 @@ import { Prisma } from '@prisma/client';
 import { paginationLimit } from "../index.js";
 import { sortPosts } from '../utils/sortPosts.js';
 import { DBError } from "../customErrors/DBError.js";
+import { checkUser } from "../utils/checkUser.js";
 
-export async function savePostHandler(postID, userID) {
+export async function savePostHandler(postID, userID, username) {
     try {
+        checkUser(userID, username);
         await prisma.savedPost.create({
             data: {
                 userID: userID,
@@ -21,6 +23,7 @@ export async function savePostHandler(postID, userID) {
         } else if (err instanceof Prisma.PrismaClientKnownRequestError && err.code === 'P2002') {
             throw new DBError("Post already saved.", 409);
         } else {
+            console.log(err);
             throw new DBError("Something went wrong when trying to save this post. Please try again.", 500);
         }
     }
@@ -31,12 +34,9 @@ export async function savePostHandler(postID, userID) {
 
 export async function getSavedPostsHandler(req) {
     try {
-        if (req.userData.userID !== req.userID) {
-            throw new DBError("You are not authorized to view this user's saved posts.", 403);
-        }
-
-        if (req.body.cursor === "") return firstQuerySavedPosts(req.userID, req.query.sort);
-        else return secondQuerySavedPosts(req.userID, req.body.cursor, req.query.sort);
+        checkUser(req.userData.userID, req.username);
+        if (req.body.cursor === "") return firstQuerySavedPosts(req.userData.userID, req.query.sort);
+        else return secondQuerySavedPosts(req.userData.userID, req.body.cursor, req.query.sort);
     }
     catch (err) {
         if (err instanceof DBError) {
@@ -79,7 +79,11 @@ export async function firstQuerySavedPosts(userID, sortBy) {
                             numReviews: true
                         }
                     },
-                    images: true
+                    images: {
+                        orderBy: {
+                            imageNum: 'asc'
+                        }
+                    }
                 }
             }
         }
@@ -137,7 +141,11 @@ export async function secondQuerySavedPosts(userID, cursor, sortBy) {
                             numReviews: true
                         }
                     },
-                    images: true
+                    images: {
+                        orderBy: {
+                            imageNum: 'asc'
+                        }
+                    }
                 }
             }
         }
@@ -161,8 +169,9 @@ export async function secondQuerySavedPosts(userID, cursor, sortBy) {
     };
 }
 
-export async function deleteSavedPostHandler(postID, userID) {
+export async function deleteSavedPostHandler(postID, userID, username) {
     try {
+        checkUser(userID, username);
         await prisma.savedPost.delete({
             where: {
                 userID_postID: {

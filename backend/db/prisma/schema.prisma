@@ -63,10 +63,10 @@ model Post {
 }
 
 model PostImage {
-    isThumbnail Boolean @default(false)
-    post        Post    @relation("Images", fields: [postID], references: [postID], onDelete: Cascade)
-    postID      String
-    url         String
+    post     Post   @relation("Images", fields: [postID], references: [postID], onDelete: Cascade)
+    postID   String
+    url      String
+    imageNum Int    @default(0)
 
     @@id([postID, url])
 }

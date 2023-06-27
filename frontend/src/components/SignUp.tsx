@@ -2,10 +2,10 @@ import PopUpWrapper from "../layouts/PopUpWrapper";
 import { useState, useRef } from 'react';
 import ErrorMessage from "./ErrorMessage";
 import CountriesDropdown from "./CountriesDropdown";
-import LoadingButton from "./LoadingButton";
 import { SignUpForm } from "../types/SignUpForm";
 import axios, { AxiosError } from "axios";
 import { getAPIErrorMessage } from "../utils/getAPIErrorMessage";
+import Button from "./Button";
 
 export const emailPattern: RegExp = new RegExp("[a-z0-9]+@[a-zA-Z]+[.][a-z]+$");
 
@@ -30,16 +30,13 @@ function SignUp({ setLogIn, setSignUp, setAccountCreated }: SignUpProps) {
     const [form, setForm] = useState<SignUpForm>(initialFormValues);
     const [errorMessage, setErrorMessage] = useState<string>("");
     const countryRef = useRef<HTMLSelectElement>(null);
-    const [loading, setLoading] = useState<boolean>(false);
 
-    async function createAccount(e: React.MouseEvent<HTMLButtonElement>): Promise<void> {
-        e.preventDefault();
-        if (!countryRef.current || !countryRef.current!.value || loading) {
+    async function createAccount(): Promise<string | undefined> {
+        if (!countryRef.current || !countryRef.current!.value) {
             return;
         }
 
         try {
-            setLoading(true);
             await axios.post<{ message: string }>(`/api/users`, {
                 email: form.emailFirst, 
                 username: form.username, 
@@ -53,10 +50,7 @@ function SignUp({ setLogIn, setSignUp, setAccountCreated }: SignUpProps) {
         }
         catch (e: any) {
             const errorMessage = getAPIErrorMessage(e as AxiosError<{ message: string }>);
-            setErrorMessage(errorMessage);
-        }
-        finally {
-            setLoading(false);
+            return errorMessage;
         }
     }
 
@@ -134,10 +128,14 @@ function SignUp({ setLogIn, setSignUp, setAccountCreated }: SignUpProps) {
                         selected={"🇬🇧 United Kingdom"} 
                     />
                 </div>
-                <LoadingButton
-                    loading={loading} text="Create Account" loadingText="Checking details" 
-                    callback={createAccount} styles={!isValidForm() ? "invalid-button main-btn" : "main-btn"} 
-                    disabled={!isValidForm()} loadingColour="bg-main-black"
+                <Button
+                    action={createAccount}
+                    completedText="Account created"
+                    defaultText="Create account"
+                    loadingText="Checking details"
+                    styles={!isValidForm() ? "invalid-button main-btn" : "main-btn"}
+                    textColor="text-main-white"
+                    setErrorMessage={setErrorMessage}
                 />
                 <p className="mt-6 text-side-text-gray text-[15px]">Already have an account? 
                     <span className="text-main-blue ml-2 cursor-pointer hover:text-main-black" onClick={openLogIn}>

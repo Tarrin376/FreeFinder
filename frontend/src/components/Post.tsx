@@ -7,10 +7,11 @@ import { getTimePosted, getSeconds } from '../utils/getTimePosted';
 import { actionSuccessful } from '../utils/actionSuccessful';
 import axios, { AxiosError } from "axios";
 import { getAPIErrorMessage } from '../utils/getAPIErrorMessage';
+import Button from './Button';
 
 interface PostProps {
     postInfo: IPost,
-    userID: string,
+    username: string,
     canRemove?: {
         deletingPost: boolean,
         setDeletingPost: React.Dispatch<React.SetStateAction<boolean>>,
@@ -18,7 +19,7 @@ interface PostProps {
     }
 }
 
-function Post({ postInfo, userID, canRemove }: PostProps) {
+function Post({ postInfo, username, canRemove }: PostProps) {
     const [errorMessage, setErrorMessage] = useState<string>("");
     const [successMessage, setSuccessMessage] = useState<string>("");
     const seconds = getSeconds(postInfo.createdAt);
@@ -30,7 +31,7 @@ function Post({ postInfo, userID, canRemove }: PostProps) {
                 return;
             }
 
-            await axios.post<{ message: string }>(`/api/users/${userID}/saved-posts/${postInfo.postID}`);
+            await axios.post<{ message: string }>(`/api/users/${username}/saved-posts/${postInfo.postID}`);
             actionSuccessful(setSuccessMessage, "Saved post", "");
         }
         catch (err: any) {
@@ -39,22 +40,21 @@ function Post({ postInfo, userID, canRemove }: PostProps) {
         }
     }
 
-    async function removePost(): Promise<void> {
+    async function removePost(): Promise<string | undefined> {
         if (!canRemove || canRemove.deletingPost) {
             return;
         }
-    
+
         try {
             canRemove.setDeletingPost(true);
             await axios.delete<{ message: string }>(`${canRemove.removeURL}${postInfo.postID}`);
+            canRemove.setDeletingPost(false);
             setHide(true);
         }
         catch (err: any) {
             const errorMessage = getAPIErrorMessage(err as AxiosError<{ message: string }>);
-            actionSuccessful(setErrorMessage, errorMessage, "");
-        }
-        finally {
             canRemove.setDeletingPost(false);
+            return errorMessage;
         }
     }
 
@@ -117,10 +117,16 @@ function Post({ postInfo, userID, canRemove }: PostProps) {
                 <div className="mt-3 flex items-center justify-between relative">
                     <p>Starting at: <span className="text-main-blue">£{postInfo.startingPrice}</span></p>
                     {canRemove &&
-                    <button className="bg-error-red text-error-text hover:bg-error-red-hover btn-primary 
-                    p-[3px] px-[8px] h-fit cursor-pointer text-[15px]" onClick={() => removePost()}>
-                        Remove
-                    </button>}
+                    <Button
+                        action={removePost}
+                        completedText="Removed"
+                        defaultText="Remove"
+                        loadingText="Removing"
+                        styles="red-btn text-[15px] h-[33px]"
+                        textColor="text-error-text"
+                        hideLoadingIcon={true}
+                        setErrorMessage={setErrorMessage}
+                    />}
                 </div>
             </div>
         </div>

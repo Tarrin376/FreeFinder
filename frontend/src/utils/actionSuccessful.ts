@@ -2,5 +2,5 @@ export function actionSuccessful(setCompleted: React.Dispatch<React.SetStateActi
     setCompleted(before);
     setTimeout(() => {
         setCompleted(after);
-    }, 3000);
+    }, 3500);
 }

@@ -15,10 +15,10 @@ import
 
 const userRouter = Router();
 
-userRouter.use('/:userID/saved-posts', savedPostRouter);
+userRouter.use('/:username/saved-posts', savedPostRouter);
 
-userRouter.param('userID', (req, _, next, value) => {
-    req.userID = value;
+userRouter.param('username', (req, _, next, value) => {
+    req.username = value;
     next();
 });
 
@@ -31,10 +31,10 @@ userRouter.get('/jwt-auth', cookieJwtAuth, (req, res) => {
     return res.json({ userData: req.userData });
 });
 
-userRouter.put('/:userID', cookieJwtAuth, updateUser);
-userRouter.put('/:userID/profile-picture', cookieJwtAuth, updateProfilePicture);
-userRouter.put('/:userID/password', cookieJwtAuth, updatePassword);
+userRouter.put('/:username', cookieJwtAuth, updateUser);
+userRouter.put('/:username/profile-picture', cookieJwtAuth, updateProfilePicture);
+userRouter.put('/:username/password', cookieJwtAuth, updatePassword);
 
-userRouter.delete('/:userID', cookieJwtAuth, deleteUser);
+userRouter.delete('/:username', cookieJwtAuth, deleteUser);
 
 export default userRouter;

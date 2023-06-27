@@ -8,18 +8,22 @@ import Post from '../../components/Post';
 import PostsWrapper from '../../components/PostsWrapper';
 import NoResultsFound from '../../components/NoResultsFound';
 import { sortPosts } from '../../utils/sortPosts';
+import { useNavigateErrorPage } from '../../hooks/useNavigateErrorPage';
+import { useLocation } from 'react-router-dom';
 
 function SavedServicesView() {
     const userContext = useContext(UserContext);
     const [sortBy, setSortBy] = useState<string>(sortPosts["most recent"]);
     const pageRef = useRef<HTMLDivElement>(null);
 
-    const url = `/api/users/${userContext.userData.userID}/saved-posts?sort=${sortBy}`;
     const [deletingPost, setDeletingPost] = useState<boolean>(false);
     const cursor = useRef<string>("");
+    const location = useLocation();
 
     const [nextPage, setNextPage] = useState<boolean>(false);
-    const posts = usePaginateData<IPost>(pageRef, url, nextPage, setNextPage, cursor);
+    const posts = usePaginateData<IPost>(pageRef, `/api/users${location.pathname}?sort=${sortBy}`, nextPage, setNextPage, cursor);
+    
+    useNavigateErrorPage("Uh oh!", posts.errorMessage);
 
     return (
         <div ref={pageRef}>
@@ -41,12 +45,12 @@ function SavedServicesView() {
                     return (
                         <Post 
                             postInfo={post} 
-                            userID={userContext.userData.userID} 
+                            username={userContext.userData.username}
                             key={post.postID}
                             canRemove={{
                                 deletingPost: deletingPost,
                                 setDeletingPost: setDeletingPost,
-                                removeURL: `/api/users/${userContext.userData.userID}/saved-posts/`
+                                removeURL: `/api/users${location.pathname}/`
                             }}
                         />
                     );

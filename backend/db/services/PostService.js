@@ -16,13 +16,12 @@ export async function createPostHandler(postData, startingPrice, userID) {
             }
         });
 
-        const upload = cloudinary.uploader.upload(postData.thumbnail, { public_id: `FreeFinder/PostImages/${userID}-thumbnail` });
+        const upload = cloudinary.uploader.upload(postData.thumbnail, { public_id: `FreeFinder/PostImages/${userID}-0` });
         const success = await upload.then((data) => data);
 
         await prisma.postImage.create({
             data: {
                 url: success.secure_url,
-                isThumbnail: true,
                 postID: res.postID
             }
         });
@@ -33,6 +32,7 @@ export async function createPostHandler(postData, startingPrice, userID) {
         return res.postID;
     }
     catch (err) {
+        console.log(err);
         if (err instanceof DBError) {
             throw err;
         } else if (err instanceof Prisma.PrismaClientValidationError) {
@@ -56,7 +56,7 @@ export async function addPostImageHandler(req) {
                 postedBy: true
             }
         });
-
+        
         if (!post) {
             throw new DBError("Post not found.", 404);
         }
@@ -74,9 +74,9 @@ export async function addPostImageHandler(req) {
 
         await prisma.postImage.create({
             data: {
-                isThumbnail: req.body.isThumbnail,
                 postID: req.params.id,
-                url: success.secure_url
+                url: success.secure_url,
+                imageNum: req.body.imageNum
             }
         });
     }
@@ -153,7 +153,11 @@ export async function getPostHandler(postID) {
                         numOrders: true
                     }
                 },
-                images: true
+                images: {
+                    orderBy: {
+                        imageNum: 'asc'
+                    }
+                }
             }
         });
         

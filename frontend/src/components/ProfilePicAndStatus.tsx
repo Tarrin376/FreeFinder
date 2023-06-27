@@ -59,13 +59,20 @@ function ProfilePicAndStatus(props: ProfilePicAndStatusProps) {
 
     async function uploadPhoto(e: React.ChangeEvent<HTMLInputElement>): Promise<void> {
         const files = e.target.files;
-        if (!files || !props.setLoading) {
+        if (!files || !props.setLoading || !props.setErrorMessage) {
             return;
         }
 
         props.setLoading(true);
-        const base64Str = await parseImage(files[0]);
-        updatePhoto(base64Str);
+        const profilePic = files[0];
+
+        if (profilePic.type === "image/gif" || profilePic.type === "image/jpeg" || profilePic.type === "image/png") {
+            const base64Str = await parseImage(files[0]);
+            updatePhoto(base64Str);
+        } else {
+            props.setErrorMessage(`Image format '${profilePic.type}' is not supported.`);
+            props.setLoading(false);
+        }
     }
 
     return (
