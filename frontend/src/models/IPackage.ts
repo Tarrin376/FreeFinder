@@ -5,5 +5,6 @@ export interface IPackage {
     description: string,
     amount: number,
     numOrders: number,
-    type: string
+    type: string,
+    packageTitle: string
 }

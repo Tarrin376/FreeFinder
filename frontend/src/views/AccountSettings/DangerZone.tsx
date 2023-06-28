@@ -1,7 +1,7 @@
-import { IUserContext } from "../../context/UserContext";
+import { IUserContext } from "../../providers/UserContext";
 import { useState } from 'react';
 import ErrorMessage from "../../components/ErrorMessage";
-import { initialState } from "../../context/UserContext";
+import { initialState } from "../../providers/UserContext";
 import axios, { AxiosError } from "axios";
 import { getAPIErrorMessage } from "../../utils/getAPIErrorMessage";
 import Button from "../../components/Button";

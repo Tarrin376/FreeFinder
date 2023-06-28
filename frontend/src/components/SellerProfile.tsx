@@ -1,6 +1,6 @@
 import PopUpWrapper from "../layouts/PopUpWrapper";
 import { useState, useContext } from 'react';
-import { IUserContext, UserContext } from "../context/UserContext";
+import { IUserContext, UserContext } from "../providers/UserContext";
 import ErrorMessage from "./ErrorMessage";
 import axios, { AxiosError } from "axios";
 import { ISeller } from "../models/ISeller";
@@ -24,7 +24,7 @@ function SellerProfile({ setSellerProfilePopUp }: SellerProfileProps) {
 
     async function updateSellerDetails(): Promise<string | undefined> {
         try {
-            const resp = await axios.put<{ updatedData: ISeller, message: string }>(`/api/sellers/${userContext.userData.userID}`, {
+            const resp = await axios.put<{ updatedData: ISeller, message: string }>(`/api/sellers/${userContext.userData.username}`, {
                 description: description,
             });
 

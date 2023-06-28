@@ -1,4 +1,4 @@
-import { IUserContext } from "../../context/UserContext";
+import { IUserContext } from "../../providers/UserContext";
 import { useState, useRef } from 'react';
 import ErrorMessage from "../../components/ErrorMessage";
 import CountriesDropdown from "../../components/CountriesDropdown";
@@ -52,7 +52,8 @@ function UserProfile({  userContext }: { userContext: IUserContext }) {
                     <p className="mb-2">Country</p>
                     <CountriesDropdown 
                         countryRef={countryRef} 
-                        selected={userContext.userData.country} 
+                        selected={userContext.userData.country}
+                        title="Country"
                     />
                 </div>
                 <Button

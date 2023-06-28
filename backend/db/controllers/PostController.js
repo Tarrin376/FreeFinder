@@ -1,4 +1,4 @@
-import { createPostHandler, getPostHandler, deletePostHandler, addPostImageHandler } from "../services/PostService.js";
+import { createPostHandler, getPostHandler, deletePostHandler, addImageHandler } from "../services/PostService.js";
 
 export async function createPost(req, res) {
     try {
@@ -30,9 +30,9 @@ export async function deletePost(req, res) {
     }
 }
 
-export async function addPostImage(req, res) {
+export async function addImage(req, res) {
     try {
-        await addPostImageHandler(req);
+        await addImageHandler(req);
         res.status(201).json({ message: "success" });
     }
     catch (err) {

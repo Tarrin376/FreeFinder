@@ -81,6 +81,7 @@ model Package {
     features     String[]
     amount       Decimal     @db.Money
     numOrders    Int         @default(0)
+    packageTitle String
 
     @@id([postID, type])
 }

@@ -1,7 +1,7 @@
 import BlankProfile from '../assets/blank.jpg';
 import EditIcon from '../assets/edit.png';
 import { useRef, useContext, useState } from 'react';
-import { IUserContext, UserContext } from '../context/UserContext';
+import { IUserContext, UserContext } from '../providers/UserContext';
 import { fetchUpdatedUser } from '../utils/fetchUpdatedUser';
 import OutsideClickHandler from 'react-outside-click-handler';
 import { parseImage } from '../utils/parseImage';

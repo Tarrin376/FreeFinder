@@ -1,6 +1,6 @@
 import ProfilePicAndStatus from "./ProfilePicAndStatus";
-import { IUserContext } from "../context/UserContext";
-import { initialState } from "../context/UserContext";
+import { IUserContext } from "../providers/UserContext";
+import { initialState } from "../providers/UserContext";
 import { useState } from 'react';
 import { fetchUpdatedUser } from "../utils/fetchUpdatedUser";
 import OutsideClickHandler from "react-outside-click-handler";

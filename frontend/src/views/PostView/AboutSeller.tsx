@@ -5,9 +5,9 @@ import UserIcon from '../../assets/user-icon-svgrepo-com.svg';
 
 function AboutSeller({ postData }: { postData: PostPage }) {
     return (
-        <section className="bg-main-white border border-light-border-gray shadow-info-component rounded-[8px] p-4 pt-3 w-[400px] 
-        h-[calc(100vh-210px)] flex flex-col overflow-y-scroll">
-            <div className="flex-grow">
+        <section className="bg-main-white border border-light-border-gray shadow-info-component 
+        rounded-[8px] p-4 pt-3 flex flex-col h-fit">
+            <div>
                 <div className="border-b border-b-light-gray pb-4 relative">
                     <h3 className="text-xl mb-4">About this seller</h3>
                     <ProfilePicAndStatus 
@@ -40,14 +40,12 @@ function AboutSeller({ postData }: { postData: PostPage }) {
                     </div>
                 </div>
             </div>
-            <div>
-                <button className="btn-primary w-[100%] h-[45px] bg-main-blue hover:bg-main-blue-hover text-main-white mb-4 mt-1">
-                    Contact Seller
-                </button>
-                <button className="btn-primary w-[100%] h-[45px] bg-very-light-gray hover:bg-very-light-gray-hover">
-                    {`Reviews (${postData.postedBy.numReviews})`}
-                </button>
-            </div>
+            <button className="btn-primary w-[100%] h-[45px] bg-main-blue hover:bg-main-blue-hover text-main-white mb-4 mt-1">
+                Contact Seller
+            </button>
+            <button className="btn-primary w-[100%] h-[45px] bg-very-light-gray hover:bg-very-light-gray-hover">
+                {`Reviews (${postData.postedBy.numReviews})`}
+            </button>
         </section>
     );
 }

@@ -1,7 +1,7 @@
 function PostSkeleton() {
     return (
-        <div className="bg-main-white border-light-border-gray w-[295px] rounded-[8px] relative overflow-hidden shadow-post">
-            <div className="w-full h-[215px] loading rounded-t-[8px] rounded-b-none"></div>
+        <div className="bg-main-white border-light-border-gray w-[270px] rounded-[8px] relative overflow-hidden shadow-post">
+            <div className="w-full h-[200px] loading rounded-t-[8px] rounded-b-none"></div>
             <div className="py-3 px-3">
                 <div className="flex items-center mb-2 gap-3 relative">
                     <div className="w-12 h-12 loading rounded-full" />

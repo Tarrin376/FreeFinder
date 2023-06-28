@@ -32,7 +32,6 @@ export async function createPostHandler(postData, startingPrice, userID) {
         return res.postID;
     }
     catch (err) {
-        console.log(err);
         if (err instanceof DBError) {
             throw err;
         } else if (err instanceof Prisma.PrismaClientValidationError) {
@@ -46,7 +45,7 @@ export async function createPostHandler(postData, startingPrice, userID) {
     }
 }
 
-export async function addPostImageHandler(req) {
+export async function addImageHandler(req) {
     try {
         const post = await prisma.post.findUnique({ 
             where: { 
@@ -104,7 +103,8 @@ export async function createPostPackage(packageData, postID, type) {
                 description: packageData.description,
                 features: packageData.features,
                 amount: packageData.amount,
-                type: type
+                type: type,
+                packageTitle: packageData.packageTitle,
             }
         });
     }
@@ -150,7 +150,8 @@ export async function getPostHandler(postID) {
                         amount: true,
                         type: true,
                         features: true,
-                        numOrders: true
+                        numOrders: true,
+                        packageTitle: true
                     }
                 },
                 images: {

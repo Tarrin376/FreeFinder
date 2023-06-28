@@ -10,12 +10,14 @@ import
     deleteUser,
     updatePassword,
     authenticateUser,
-    deleteUserSession
+    deleteUserSession,
+    getUserPosts
 } from '../controllers/UserController.js';
 
 const userRouter = Router();
 
 userRouter.use('/:username/saved-posts', savedPostRouter);
+userRouter.post('/:username/posts', getUserPosts);
 
 userRouter.param('username', (req, _, next, value) => {
     req.username = value;

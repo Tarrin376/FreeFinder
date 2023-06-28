@@ -2,14 +2,14 @@ import { useEffect, useState } from 'react';
 import { useScrollEvent } from './useScrollEvent';
 import axios, { AxiosError } from "axios";
 import { getAPIErrorMessage } from '../utils/getAPIErrorMessage';
+import { PaginateData } from '../types/PaginateData';
 
-export function usePaginateData<T>(pageRef: React.RefObject<HTMLDivElement>, url: string, nextPage: boolean, 
-    setNextPage: React.Dispatch<React.SetStateAction<boolean>>, cursor: React.MutableRefObject<string>) {
-
+export function usePaginateData<T>(pageRef: React.RefObject<HTMLDivElement>, url: string, cursor: React.MutableRefObject<string>): PaginateData<T> {
     const [reachedBottom, setReachedBottom] = useState<boolean>(false);
     const [loading, setLoading] = useState<boolean>(false);
     const [errorMessage, setErrorMessage] = useState<string>("");
     const [posts, setPosts] = useState<T[]>([]);
+    const [nextPage, setNextPage] = useState<boolean>(false);
 
     useScrollEvent(pageRef, loading, reachedBottom, setNextPage);
 

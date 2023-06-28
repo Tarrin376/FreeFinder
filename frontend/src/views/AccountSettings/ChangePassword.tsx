@@ -1,4 +1,4 @@
-import { IUserContext } from "../../context/UserContext";
+import { IUserContext } from "../../providers/UserContext";
 import { useState } from 'react';
 import ErrorMessage from "../../components/ErrorMessage";
 import axios, { AxiosError } from "axios";

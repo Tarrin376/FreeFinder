@@ -9,6 +9,7 @@ interface PackageProps {
     setDeliveryTime: React.Dispatch<React.SetStateAction<number>>,
     setDescription: React.Dispatch<React.SetStateAction<string>>,
     setPostService: React.Dispatch<React.SetStateAction<boolean>>,
+    setPackageTitle: React.Dispatch<React.SetStateAction<string>>,
     setAmount: React.Dispatch<React.SetStateAction<number>>,
     features: string[],
     back: Sections,
@@ -18,19 +19,19 @@ interface PackageProps {
     revisions: string,
     description: string,
     title: string,
+    packageTitle: string,
     amount: number
 }
+
+export const MAX_PRICE: number = 2500;
 
 const MAX_REVISIONS = 5;
 const MAX_FEATURES = 10;
 const MAX_DELIVERY_DAYS = 360;
-const MAX_PRICE: number = 2500;
- 
-function Package({ setSection, setRevisions, setFeatures, setDeliveryTime, setDescription, setPostService, setAmount, features, back, 
-    skip, next, deliveryTime, revisions, description, title, amount }: PackageProps) {
 
+function Package(props: PackageProps) {
     function updateFeatureInput(index: number, value: string): void {
-        setFeatures((state) => {
+        props.setFeatures((state) => {
             const cpy = [...state];
             cpy[index] = value.trimStart();
             return cpy;
@@ -38,65 +39,93 @@ function Package({ setSection, setRevisions, setFeatures, setDeliveryTime, setDe
     }
 
     function addNewFeature(): void {
-        if (features.length < MAX_FEATURES) {
-            setFeatures((state) => [...state, ""]);
+        if (props.features.length < MAX_FEATURES) {
+            props.setFeatures((state) => [...state, ""]);
         }
     }
 
     function updateDeliveryTime(e: React.ChangeEvent<HTMLInputElement>): void {
         const deliveryTime = e.target.value;
         if (checkIsNumeric(deliveryTime, MAX_DELIVERY_DAYS)) {
-            setDeliveryTime(+deliveryTime);
+            props.setDeliveryTime(+deliveryTime);
         } else {
-            setDeliveryTime(0);
+            props.setDeliveryTime(0);
         }
     }
 
     function updateDescription(e: React.ChangeEvent<HTMLTextAreaElement>): void {
         const description = e.target.value.trimStart();
-        setDescription(description);
+        props.setDescription(description);
     }
 
     function updateRevision(e: React.ChangeEvent<HTMLInputElement>): void {
         const revision = e.target.value;
-        setRevisions(revision);
+        props.setRevisions(revision);
     }
 
     function updatePackageAmount(e: React.ChangeEvent<HTMLInputElement>): void {
         const packageAmount = e.target.value;
         if (checkIsNumeric(packageAmount, MAX_PRICE)) {
-            setAmount(+packageAmount);
+            props.setAmount(+packageAmount);
         } else {
-            setAmount(0);
+            props.setAmount(0);
         }
     }
 
     function checkInputs(): boolean {
-        return description.length > 0 && deliveryTime > 0 && amount > 0;
+        return props.description.length > 0 && props.deliveryTime > 0 && props.amount > 0 && props.packageTitle.length > 0;
     }
 
     function skipPackage(): void {
-        setDeliveryTime(0);
-        setDescription("");
-        setRevisions("1");
-        setAmount(0);
+        props.setDeliveryTime(0);
+        props.setDescription("");
+        props.setRevisions("1");
+        props.setAmount(0);
+        props.setPackageTitle("");
 
-        if (skip !== undefined) {
-            setSection(skip);
+        if (props.skip !== undefined) {
+            props.setSection(props.skip);
         }
     }
 
+    function updateTitle(e: React.ChangeEvent<HTMLInputElement>): void {
+        const pkgTitle = e.target.value;
+        props.setPackageTitle(pkgTitle);
+    }
+
     return (
-        <PopUpWrapper setIsOpen={setPostService} title={title}>
+        <PopUpWrapper setIsOpen={props.setPostService} title={props.title}>
+            <h3 className="mb-2">Title</h3>
+            <input 
+                type="text"
+                placeholder="Enter title of package"
+                className="search-bar mb-4"
+                onChange={updateTitle}
+                value={props.packageTitle}
+            />
             <h3 className="mb-2">Package cost (estimate)</h3>
             <div className="flex items-center search-bar mb-4">
                 <p className="select-none">£</p>
-                <input type="text" min={1} max={2500} value={amount > 0 ? amount : ""} className="w-full h-full 
-                focus:outline-none placeholder-search-text bg-transparent ml-3" onChange={updatePackageAmount} />
+                <input 
+                    type="text" 
+                    min={1} 
+                    max={2500} 
+                    value={props.amount > 0 ? props.amount : ""} 
+                    className="w-full h-full focus:outline-none 
+                    placeholder-search-text bg-transparent ml-3" 
+                    onChange={updatePackageAmount} 
+                />
             </div>
             <h3 className="mb-2">Delivery time (in days)</h3>
-            <input type="text" min={1} max={360} placeholder="Must be between 1 and 360 days"
-            className="search-bar mb-4" onChange={updateDeliveryTime} value={deliveryTime > 0 ? deliveryTime : ""} />
+            <input 
+                type="text" 
+                min={1} 
+                max={360} 
+                placeholder="Must be between 1 and 360 days"
+                className="search-bar mb-4" 
+                onChange={updateDeliveryTime} 
+                value={props.deliveryTime > 0 ? props.deliveryTime : ""} 
+            />
             <h3 className="mb-2">Amount of revisions</h3>
             <ul className="items-center w-fit text-sm flex bg-[#f8f9fa] rounded-[8px] px-2 mb-4">
                 {new Array(MAX_REVISIONS).fill(true).map((_, index) => {
@@ -104,7 +133,7 @@ function Package({ setSection, setRevisions, setFeatures, setDeliveryTime, setDe
                         <RevisionListItem 
                             curRevision={"" + (index + 1)} 
                             updateRevision={updateRevision} 
-                            revisions={revisions} 
+                            revisions={props.revisions} 
                             key={index}
                         />
                     );
@@ -112,25 +141,31 @@ function Package({ setSection, setRevisions, setFeatures, setDeliveryTime, setDe
                 <RevisionListItem 
                     curRevision={"unlimited"} 
                     updateRevision={updateRevision} 
-                    revisions={revisions}
+                    revisions={props.revisions}
                 />
             </ul>
             <h3 className="mb-2">Brief description of the package</h3>
-            <textarea placeholder="Write about the basic package here" className="w-full search-bar mb-4" 
-            rows={5} maxLength={250} onChange={updateDescription} value={description} />
-            <h3 className="mb-1">Features that come with your basic package</h3>
+            <textarea 
+                placeholder="Write about the basic package here" 
+                className="w-full search-bar mb-4" 
+                rows={5} 
+                maxLength={250} 
+                onChange={updateDescription} 
+                value={props.description} 
+            />
+            <h3 className="mb-1">{`Features that come with your ${props.title.toLowerCase()}`}</h3>
             <p className="text-side-text-gray mb-3">Features added:
-                <span className={features.length === MAX_FEATURES ? 'text-error-text' : 'text-[#36BF54]'}>
-                    {` ${features.length} / ${MAX_FEATURES}`}
+                <span className={props.features.length === MAX_FEATURES ? 'text-error-text' : 'text-[#36BF54]'}>
+                    {` ${props.features.length} / ${MAX_FEATURES}`}
                 </span>
             </p>
             <button className="btn-primary bg-main-black hover:bg-main-black-hover 
             text-main-white w-[140px] px-3 mb-5" onClick={addNewFeature}>
                 Add Feature
             </button>
-            {features.length > 0 && 
+            {props.features.length > 0 && 
             <div className="flex flex-col gap-2 max-h-[200px] overflow-scroll scrollbar-hide p-[8px] bg-[#f8f9fa] rounded-[8px]">
-                {features.map((value, index) => {
+                {props.features.map((value, index) => {
                     return (
                         <input type="text" className="search-bar" value={value} placeholder={"E.g. Video Thumbnail included"}
                         onChange={(e) => updateFeatureInput(index, e.target.value)} key={index} />
@@ -138,17 +173,17 @@ function Package({ setSection, setRevisions, setFeatures, setDeliveryTime, setDe
                 })}
             </div>}
             <div className="flex gap-3 justify-end mt-[35px]">
-                {skip !== undefined && <button className="bg-main-white border-2 border-light-gray 
+                {props.skip !== undefined && <button className="bg-main-white border-2 border-light-gray 
                 btn-primary w-[110px] px-3 hover:bg-main-white-hover" onClick={skipPackage}>
                     Skip
                 </button>}
                 <button className="bg-main-white border-2 border-light-gray btn-primary 
-                w-[110px] px-3hover:bg-main-white-hover" onClick={() => setSection(back)}>
+                w-[110px] px-3hover:bg-main-white-hover" onClick={() => props.setSection(props.back)}>
                     Back
                 </button>
                 <button className={`btn-primary bg-main-blue hover:bg-main-blue-hover 
                 text-main-white w-[110px] px-3 ${!checkInputs() ? "invalid-button" : ""}`}
-                onClick={() => setSection(next)} disabled={!checkInputs()}>
+                onClick={() => props.setSection(props.next)} disabled={!checkInputs()}>
                     Next
                 </button>
             </div>

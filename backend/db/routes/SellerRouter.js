@@ -1,10 +1,10 @@
 import { Router } from 'express';
-import { getSellerPosts, updateSellerDetails } from '../controllers/SellerController.js';
+import { updateSellerDetails, getSellerDetails } from '../controllers/SellerController.js';
 import { cookieJwtAuth } from '../middleware/cookieJwtAuth.js';
 
 const sellerRouter = Router();
 
-sellerRouter.post('/:username/posts', cookieJwtAuth, getSellerPosts);
-sellerRouter.put('/:userID', cookieJwtAuth, updateSellerDetails);
+sellerRouter.put('/:username', cookieJwtAuth, updateSellerDetails);
+sellerRouter.get('/:username', getSellerDetails);
 
 export default sellerRouter;

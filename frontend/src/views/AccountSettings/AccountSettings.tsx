@@ -1,4 +1,4 @@
-import { IUserContext } from "../../context/UserContext";
+import { IUserContext } from "../../providers/UserContext";
 import PopUpWrapper from "../../layouts/PopUpWrapper";
 import ProfilePicAndStatus from "../../components/ProfilePicAndStatus";
 import { useState } from 'react';

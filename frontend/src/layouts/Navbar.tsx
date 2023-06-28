@@ -1,13 +1,14 @@
 import SearchIcon from '../assets/search.png';
-import { useState, useContext } from 'react';
+import { useState, useContext, useRef } from 'react';
 import SignUp from '../components/SignUp';
 import LogIn from '../components/LogIn';
 import AccountCreated from '../components/AccountCreated';
-import { IUserContext, UserContext } from '../context/UserContext';
-import { Outlet, Link } from 'react-router-dom';
+import { IUserContext, UserContext } from '../providers/UserContext';
+import { Outlet } from 'react-router-dom';
 import ProfileMenu from '../components/ProfileMenu';
 import AccountSettings from '../views/AccountSettings/AccountSettings';
 import SellerProfile from '../components/SellerProfile';
+import { useNavigate } from 'react-router-dom';
 
 function Navbar() {
     const [signUp, setSignUp] = useState<boolean>(false);
@@ -16,6 +17,16 @@ function Navbar() {
     const userContext = useContext<IUserContext>(UserContext);
     const [settingsPopUp, setSettingsPopUp] = useState<boolean>(false);
     const [sellerProfilePopUp, setSellerProfilePopUp] = useState<boolean>(false);
+    const navigate = useNavigate();
+    const selected = useRef<HTMLLIElement>();
+
+    const goToPage = (e: React.MouseEvent<HTMLLIElement>, url: string) => {
+        const target = e.currentTarget;
+        if (selected.current) selected.current.classList.remove('selected-nav-element');
+        target.classList.add('selected-nav-element');
+        selected.current = target;
+        navigate(url);
+    }
     
     return (
         <>
@@ -24,27 +35,31 @@ function Navbar() {
             {logIn && <LogIn setLogIn={setLogIn} setSignUp={setSignUp} />}
             {accountCreated && <AccountCreated setAccountCreated={setAccountCreated} />}
             {sellerProfilePopUp && <SellerProfile setSellerProfilePopUp={setSellerProfilePopUp} />}
-            <nav className="px-5 h-[90px] border-b border-b-light-gray bg-white">
+            <nav className="px-20 h-[90px] border-b border-b-very-light-gray bg-white">
                 <div className="max-w-screen-xxl m-auto h-full flex gap-8 items-center">
-                    <div className="flex xl:gap-16 lg:gap-12 items-center justify-between">
-                        <div className="text-main-blue text-2xl"><Link to="/">FreeFinder</Link></div>
-                        <ul className="flex items-center xl:gap-11 lg:gap-9 xl:ml-14 lg:ml-5">
-                            <li className="nav-item">Browse</li>
-                            <li className="nav-item">Orders</li>
-                            <Link to={`${userContext.userData.username}/saved-posts`}>
-                                <li className="nav-item">Saved posts</li>
-                            </Link>
-                            <Link to={`${userContext.userData.username}/posts`}>
-                                <li className="nav-item">My Posts</li>
-                            </Link>
-                            <div className="flex items-center border-2 border-light-gray 
-                                rounded-[8px] px-3 h-10 xl:w-96 lg:w-80 bg-transparent">
-                                <img src={SearchIcon} alt="search-icon" className="w-5 h-5 cursor-pointer"/>
-                                <input type="text" placeholder="Search for sellers" className="w-full h-full 
-                                focus:outline-none placeholder-search-text bg-transparent ml-3" />
-                            </div>
-                        </ul>
-                    </div>
+                    <ul className="flex items-center xl:gap-14 lg:gap-9">
+                        <li className="text-main-blue text-2xl cursor-pointer mr-6" onClick={(e) => goToPage(e, `/`)}>FreeFinder</li>
+                        <li className="nav-item">Browse</li>
+                        {userContext.userData.seller &&
+                        <>
+                            <li className="nav-item">Client orders</li>
+                        </>}
+                        {userContext.userData.userID !== "" &&
+                        <>
+                            <li className="nav-item">My orders</li>
+                            <li className="nav-item" onClick={(e) => goToPage(e, `${userContext.userData.username}/saved-posts`)}>Saved posts</li>
+                            <li className="nav-item" onClick={(e) => goToPage(e, `${userContext.userData.username}/posts`)}>My posts</li>
+                        </>}
+                        <div className="flex items-center border border-light-gray 
+                            rounded-[8px] px-3 h-10 xl:w-96 lg:w-80 bg-transparent max-w-[330px]">
+                            <img src={SearchIcon} alt="" className="w-5 h-5 cursor-pointer"/>
+                            <input 
+                                type="text" 
+                                placeholder="Search for sellers" 
+                                className="focus:outline-none placeholder-search-text bg-transparent ml-3" 
+                            />
+                        </div>
+                    </ul>
                     <div className="flex ml-auto gap-4 items-center">
                         {userContext.userData.username === "" ? 
                         <AccountOptions setLogIn={setLogIn} setSignUp={setSignUp} /> :
@@ -56,9 +71,7 @@ function Navbar() {
                     </div>
                 </div>
             </nav>
-            <div className="page">
-                <Outlet />
-            </div>
+            <Outlet />
         </>
     );
 }

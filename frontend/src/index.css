@@ -57,6 +57,9 @@
     .red-btn {
         @apply bg-error-red hover:bg-error-red-hover btn-primary text-error-text;
     }
+    .selected-nav-element {
+        @apply !text-main-blue;
+    }
 }
 
 @layer base {
@@ -67,6 +70,6 @@
         overflow-y: scroll;
     }
     .page {
-        @apply max-w-screen-xxl m-auto px-10 min-h-[calc(100vh-90px)] bg-[#fafbfd] py-14;
+        @apply max-w-screen-xxl m-auto px-20 py-11 min-h-[100vh] bg-[#fafbfd];
     }
 }

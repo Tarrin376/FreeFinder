@@ -34,14 +34,14 @@ function Packages({ packages }: { packages: IPackage[] }) {
     }
 
     return (
-        <div className="bg-main-white relative rounded-[8px] border border-light-border-gray w-[370px] shadow-info-component">
+        <div className="bg-main-white relative rounded-[8px] border border-light-border-gray shadow-info-component">
             {curPkg &&
             <>
                 <div className="flex justify-evenly overflow-hidden">
                     {packages.sort((a, b) => a.type.localeCompare(b.type)).map((cur, index) => {
                         return (
-                            <button className={`h-[50px] border-b-2 ${cur.type === curPkg.type ? " border-main-blue bg-[#2375e109]" : "border-light-gray"} 
-                            flex-grow basis-0`} onClick={() => selectPackage(cur)} key={index}>
+                            <button className={`h-[50px] border-b-2 ${cur.type === curPkg.type ? " border-main-blue bg-[#2375e109]" : 
+                            "border-light-gray"} flex-grow basis-0`} onClick={() => selectPackage(cur)} key={index}>
                                 {capitalizePkgType(cur.type)}
                             </button>
                         );
@@ -50,11 +50,14 @@ function Packages({ packages }: { packages: IPackage[] }) {
                 <div className="p-6 overflow-y-scroll h-[calc(100%-50px)] flex flex-col justify-between">
                     <div>
                         <div className="flex justify-between items-center mt-[-6px]">
-                            <h3 className="text-[23px]">{capitalizePkgType(curPkg.type)} package</h3>
-                            {isMostPopular(curPkg.type) && <p className="bg-[#fbb6fd] w-fit text-[15px] px-3 py-[1px] rounded-[5px]">Popular</p>}
+                            <h3 className="text-[23px]">{`${capitalizePkgType(curPkg.type)} package`}</h3>
+                            {isMostPopular(curPkg.type) && 
+                            <p className="bg-[#fbb6fd] w-fit text-[15px] px-3 py-[1px] rounded-[5px]">
+                                Popular
+                            </p>}
                         </div>
                         <p className="text-[35px]">£{curPkg.amount}</p>
-                        <p className="text-side-text-gray mb-4 pb-4 border-b border-b-light-gray">One time payment with no extra charges</p>
+                        <p className="text-side-text-gray mb-4 pb-4 border-b border-b-light-gray font-semibold">{curPkg.packageTitle}</p>
                         <p className="mt-1 mb-4 pb-4 border-b border-b-light-gray text-paragraph-text">{curPkg.description}</p>
                         <div className="flex items-center gap-2 mb-1">
                             <img src={DeliveryTimeIcon} alt="" width="20px" height="20px" />

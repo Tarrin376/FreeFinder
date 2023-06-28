@@ -126,6 +126,7 @@ function SignUp({ setLogIn, setSignUp, setAccountCreated }: SignUpProps) {
                     <CountriesDropdown 
                         countryRef={countryRef} 
                         selected={"🇬🇧 United Kingdom"} 
+                        title="Country"
                     />
                 </div>
                 <Button

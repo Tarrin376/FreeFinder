@@ -52,6 +52,7 @@ function CreatePost({ setPostService, setUserPosts, cursor, setReachedBottom, se
     const [basicDeliveryTime, setBasicDeliveryTime] = useState<number>(0);
     const [basicAmount, setBasicAmount] = useState<number>(0);
     const [basicDescription, setBasicDescription] = useState<string>("");
+    const [basicPackageTitle, setBasicPackageTitle] = useState<string>("");
 
     // StandardPackage states
     const [standardRevisions, setStandardRevisions] = useState<string>("1");
@@ -59,13 +60,15 @@ function CreatePost({ setPostService, setUserPosts, cursor, setReachedBottom, se
     const [standardDeliveryTime, setStandardDeliveryTime] = useState<number>(0);
     const [standardAmount, setStandardAmount] = useState<number>(0);
     const [standardDescription, setStandardDescription] = useState<string>("");
+    const [standardPackageTitle, setStandardPackageTitle] = useState<string>("");
 
-    // StandardPackage states
+    // SuperiorPackage states
     const [superiorRevisions, setSuperiorRevisions] = useState<string>("1");
     const [superiorFeatures, setSuperiorFeatures] = useState<string[]>([]);
     const [superiorDeliveryTime, setSuperiorDeliveryTime] = useState<number>(0);
     const [superiorAmount, setSuperiorAmount] = useState<number>(0);
     const [superiorDescription, setSuperiorDescription] = useState<string>("");
+    const [superiorPackageTitle, setSuperiorPackageTitle] = useState<string>("");
 
     function constructPost(): PostData {
         const post: PostData = { 
@@ -81,6 +84,7 @@ function CreatePost({ setPostService, setUserPosts, cursor, setReachedBottom, se
                     amount: basicAmount,
                     numOrders: 0,
                     type: "BASIC",
+                    packageTitle: basicPackageTitle
                 }
             ]
         };
@@ -93,7 +97,8 @@ function CreatePost({ setPostService, setUserPosts, cursor, setReachedBottom, se
                 description: standardDescription,
                 amount: standardAmount,
                 numOrders: 0,
-                type: "STANDARD"
+                type: "STANDARD",
+                packageTitle: standardPackageTitle
             });
         }
 
@@ -105,7 +110,8 @@ function CreatePost({ setPostService, setUserPosts, cursor, setReachedBottom, se
                 description: superiorDescription,
                 amount: superiorAmount,
                 numOrders: 0,
-                type: "SUPERIOR"
+                type: "SUPERIOR",
+                packageTitle: superiorPackageTitle
             });
         }
 
@@ -121,7 +127,7 @@ function CreatePost({ setPostService, setUserPosts, cursor, setReachedBottom, se
                 startingPrice: minPrice,
                 post: post
             });
-            
+
             postID.current = resp.data.postID;
             const addedImages = await addPostImages(resp.data.postID);
 
@@ -202,14 +208,16 @@ function CreatePost({ setPostService, setUserPosts, cursor, setReachedBottom, se
                     setDescription={setBasicDescription} 
                     setPostService={setPostService} 
                     setAmount={setBasicAmount} 
+                    setPackageTitle={setBasicPackageTitle}
                     features={basicFeatures} 
                     back={Sections.ChooseThumbnail} 
                     next={Sections.StandardPackage} 
                     deliveryTime={basicDeliveryTime} 
-                    title={"Basic package details"} 
+                    title={"Basic package"} 
                     revisions={basicRevisions} 
                     description={basicDescription}
                     amount={basicAmount}
+                    packageTitle={basicPackageTitle}
                 />
             );
         case Sections.StandardPackage:
@@ -222,6 +230,7 @@ function CreatePost({ setPostService, setUserPosts, cursor, setReachedBottom, se
                     setDescription={setStandardDescription} 
                     setPostService={setPostService} 
                     setAmount={setStandardAmount} 
+                    setPackageTitle={setStandardPackageTitle}
                     features={standardFeatures} 
                     back={Sections.BasicPackage} 
                     skip={Sections.PostDetails} 
@@ -229,8 +238,9 @@ function CreatePost({ setPostService, setUserPosts, cursor, setReachedBottom, se
                     deliveryTime={standardDeliveryTime} 
                     revisions={standardRevisions} 
                     description={standardDescription} 
-                    title={"Standard package details"} 
+                    title={"Standard package"} 
                     amount={standardAmount}
+                    packageTitle={standardPackageTitle}
                 />
             );
         case Sections.SuperiorPackage:
@@ -243,6 +253,7 @@ function CreatePost({ setPostService, setUserPosts, cursor, setReachedBottom, se
                     setDescription={setSuperiorDescription} 
                     setPostService={setPostService}
                     setAmount={setSuperiorAmount} 
+                    setPackageTitle={setSuperiorPackageTitle}
                     features={superiorFeatures} 
                     back={Sections.StandardPackage} 
                     skip={Sections.PostDetails} 
@@ -250,8 +261,9 @@ function CreatePost({ setPostService, setUserPosts, cursor, setReachedBottom, se
                     deliveryTime={superiorDeliveryTime} 
                     revisions={superiorRevisions} 
                     description={superiorDescription} 
-                    title={"Superior package details"} 
+                    title={"Superior package"} 
                     amount={superiorAmount}
+                    packageTitle={superiorPackageTitle}
                 />
             );
         default:

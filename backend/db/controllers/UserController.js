@@ -6,6 +6,7 @@ import
     updateProfilePictureHandler, 
     deleteUserHandler,
     updatePasswordHandler,
+    getUserPostsHandler
 } 
 from '../services/UserService.js';
 import { cookieJwtSign } from '../middleware/cookieJwtSign.js';
@@ -92,6 +93,16 @@ export async function updatePassword(req, res) {
     try {
         await updatePasswordHandler(req);
         res.json({ message: "success" });
+    }
+    catch (err) {
+        res.status(err.code).json({ message: err.message });
+    }
+}
+
+export async function getUserPosts(req, res) {
+    try {
+        const response = await getUserPostsHandler(req);
+        res.json({ posts: response.posts, cursor: response.cursor, message: "success", last: response.last });
     }
     catch (err) {
         res.status(err.code).json({ message: err.message });

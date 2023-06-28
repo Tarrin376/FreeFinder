@@ -12,6 +12,7 @@ import { IPostImage } from "../../models/IPostImage";
 import BackIcon from "../../assets/back.png";
 import NextIcon from "../../assets/next.png";
 import { useNavigateErrorPage } from "../../hooks/useNavigateErrorPage";
+import PageWrapper from "../../wrappers/PageWrapper";
 
 function PostView() {
     const [postData, setPostData] = useState<PostPage>();
@@ -45,9 +46,9 @@ function PostView() {
     }
 
     return (
-        <div className="flex justify-between gap-16">
-            <div>
-                <div>
+        <PageWrapper>
+            <div className="flex justify-between gap-32">
+                <div className="flex-grow">
                     <p className="text-main-blue mb-2">Website design</p>
                     <h1 className="text-3xl mb-4 max-w-[80%] break-all">{postData.title}</h1>
                     <div className="flex gap-3 items-center">
@@ -71,8 +72,8 @@ function PostView() {
                             </p>
                         </div>
                     </div>
-                    <div className="flex w-fit gap-12 mt-8">
-                        <div className="w-[700px]">
+                    <div className="flex gap-12 mt-8">
+                        <div className="w-full">
                             <div className="bg-main-white w-full h-[500px] rounded-[8px] bg-contain bg-no-repeat bg-center 
                             border border-light-border-gray shadow-info-component flex items-center justify-between p-4" 
                             style={{ backgroundImage: `url(${postData.images[selectedImage].url})` }}>
@@ -99,18 +100,20 @@ function PostView() {
                                 })}
                             </div>
                         </div>
-                        <Packages packages={postData.packages} />
                     </div>
+                    <section className="mt-8 mb-8">
+                        <h2 className="text-2xl mb-3">About this service</h2>
+                        <p className="text-paragraph-text leading-7 break-all">
+                            {postData.about}
+                        </p>
+                    </section>
                 </div>
-                <section className="mt-8 mb-8">
-                    <h2 className="text-2xl mb-3">About this service</h2>
-                    <p className="text-paragraph-text leading-7 break-all">
-                        {postData.about}
-                    </p>
-                </section>
+                <div className="w-[380px] flex flex-col gap-6">
+                    <Packages packages={postData.packages} />
+                    <AboutSeller postData={postData} />
+                </div>
             </div>
-            <AboutSeller postData={postData} />
-        </div>
+        </PageWrapper>
     );
 }
 
