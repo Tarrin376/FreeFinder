@@ -1,5 +1,4 @@
 import { useState, useRef } from 'react';
-import { IPost } from "../../models/IPost";
 import UploadPostFiles from "./UploadPostFiles";
 import PostDetails from "./PostDetails";
 import ChooseThumbnail from './ChooseThumbnail';
@@ -12,10 +11,7 @@ import { ImageData } from '../../types/ImageData';
 
 interface CreatePostProps {
     setPostService: React.Dispatch<React.SetStateAction<boolean>>,
-    setUserPosts: React.Dispatch<React.SetStateAction<IPost[]>>,
-    setReachedBottom: React.Dispatch<React.SetStateAction<boolean>>,
-    setNextPage: React.Dispatch<React.SetStateAction<boolean>>,
-    cursor:  React.MutableRefObject<string>
+    resetState: () => void
 }
 
 export type PostData = {
@@ -34,7 +30,7 @@ export enum Sections {
     SuperiorPackage
 }
 
-function CreatePost({ setPostService, setUserPosts, cursor, setReachedBottom, setNextPage }: CreatePostProps) {
+function CreatePost({ setPostService, resetState }: CreatePostProps) {
     const [section, setSection] = useState<Sections>(Sections.UploadFiles);
     const [errorMessage, setErrorMessage] = useState<string>("");
     const [uploadedImages, setUploadedImages] = useState<ImageData[]>([]);
@@ -134,10 +130,7 @@ function CreatePost({ setPostService, setUserPosts, cursor, setReachedBottom, se
             if (addedImages) {
                 setErrorMessage("");
                 setPostService(false);
-                cursor.current = "";
-                setUserPosts([]);
-                setReachedBottom(false);
-                setNextPage((state) => !state);
+                resetState();
             }
         }
         catch (err: any) {

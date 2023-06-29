@@ -76,29 +76,28 @@ function ProfilePicAndStatus(props: ProfilePicAndStatusProps) {
     }
 
     return (
-        <div className={props.loading ? '' : `${props.profileStatus === 'ONLINE' ? 'before:bg-green-500' : 'before:bg-side-text-gray'} 
-        before:w-[18px] before:h-[18px] before:absolute before:top-[33px] before:left-[0px] before:border-[3px] before:border-main-white 
+        <div className={props.loading || props.showEdit ? '' : `${props.profileStatus === 'ONLINE' ? 'before:bg-green-500' : 'before:bg-side-text-gray'} 
+        before:w-[18px] before:h-[18px] before:absolute before:top-[30px] before:left-[0px] before:border-[3px] before:border-main-white 
         before:content[''] before:rounded-full ${props.statusStyles}`}>
             {props.loading ? 
             <div className={`w-12 h-12 rounded-full loading ${props.imgStyles}`}>
             </div> : 
             <img 
-                src={props.profilePicURL === "" ? BlankProfile : props.profilePicURL} 
-                alt="" 
+                src={props.profilePicURL === "" ? BlankProfile : props.profilePicURL} alt="" 
                 className={`w-12 h-12 rounded-full object-cover ${props.imgStyles} border border-b-nav-search-gray`} 
             />}
             {props.showEdit && !props.loading &&
                 <>
-                    <button className="flex gap-1 items-center absolute text-xs top-[60px] right-0 bg-main-white hover:bg-main-white-hover border-2 border-light-gray 
-                    btn-primary p-1 px-2 h-fit cursor-pointer"
+                    <button className="flex gap-1 items-center absolute top-[60px] right-0 bg-main-white hover:bg-main-white-hover border
+                     border-light-gray btn-primary p-[4px] px-2 h-fit cursor-pointer"
                     onClick={() => setProfileDropdown(true)}>
                         <img src={EditIcon} alt="edit" className="w-4 h-4" />
-                        <p className="text-main-black">Edit</p>
+                        <p className="text-main-black text-xs">Edit</p>
                     </button>
                     {profileDropdown && 
                     <OutsideClickHandler onOutsideClick={() => setProfileDropdown(false)}>
-                        <div className="absolute bg-main-white right-0 mt-3 flex flex-col rounded-[8px] overflow-hidden border-2 border-light-gray 
-                        shadow-profile-page-container">
+                        <div className="absolute bg-main-white right-0 mt-3 flex flex-col rounded-[8px] 
+                        overflow-hidden border border-light-gray shadow-profile-page-container">
                             <p className="text-xs cursor-pointer hover:bg-main-white-hover 
                             profile-menu-element pt-[6px] pb-[6px]" onClick={triggerUpload}>
                                 Upload photo...

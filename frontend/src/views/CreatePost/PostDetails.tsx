@@ -119,8 +119,7 @@ function PostDetails(props: PostDetailsProps) {
                 maxLength={1500} 
             />
             <div className="flex justify-end gap-3 mt-8">
-                <button className="bg-main-white border-2 border-light-gray btn-primary w-[110px] px-3
-                hover:bg-main-white-hover" onClick={() => props.setSection(Sections.BasicPackage)}>
+                <button className="side-btn" onClick={() => props.setSection(Sections.BasicPackage)}>
                     Back
                 </button>
                 <Button
@@ -128,7 +127,7 @@ function PostDetails(props: PostDetailsProps) {
                     completedText="Post created"
                     defaultText="Post service"
                     loadingText="Creating post"
-                    styles={`w-[185px] px-3 ${!validInputs() ? "invalid-button" : "main-btn !h-10"}`}
+                    styles={`w-[185px] ${!validInputs() ? "invalid-button" : "main-btn !h-[42px]"}`}
                     textColor="text-main-white"
                     setErrorMessage={props.setErrorMessage}
                 />

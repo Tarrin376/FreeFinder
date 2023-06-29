@@ -232,13 +232,13 @@ export async function getUserPostsHandler(req) {
         if (!seller) {
             return { 
                 posts: [],
-                cursor: "", 
+                cursor: "HEAD", 
                 last: true
             };
         }
-
-        if (req.body.cursor === "") return firstQueryUserPosts(seller.sellerID, req.query.sort);
-        else return secondQueryUserPosts(seller.sellerID, req.body.cursor, req.query.sort);
+        
+        if (req.query.cursor === "HEAD") return firstQueryUserPosts(seller.sellerID, req);
+        else return secondQueryUserPosts(seller.sellerID, req.query.cursor, req);
     }
     catch (err) {
         if (err instanceof DBError) {
@@ -254,11 +254,29 @@ export async function getUserPostsHandler(req) {
     }
 }
 
-export async function firstQueryUserPosts(sellerID, sortBy) {
+export async function firstQueryUserPosts(sellerID, req) {
     const posts = await prisma.post.findMany({
         take: paginationLimit,
-        where: { sellerID: sellerID },
-        orderBy: sortPosts[sortBy],
+        orderBy: sortPosts[req.query.sortBy],
+        where: { 
+            sellerID: sellerID,
+            title: {
+                contains: req.query.search
+            },
+            packages: {
+                some: {
+                    amount: {
+                        gte: req.query.min,
+                        lte: req.query.max
+                    }
+                }
+            },
+            postedBy: {
+                user: {
+                    country: req.query.location
+                }
+            }
+        },
         select: { 
             postedBy: {
                 select: {
@@ -288,7 +306,7 @@ export async function firstQueryUserPosts(sellerID, sortBy) {
     if (posts.length === 0) {
         return { 
             posts,
-            cursor: "", 
+            cursor: "HEAD", 
             last: true
         };
     }
@@ -301,16 +319,32 @@ export async function firstQueryUserPosts(sellerID, sortBy) {
     };
 }
 
-export async function secondQueryUserPosts(sellerID, cursor, sortBy) {
+export async function secondQueryUserPosts(sellerID, cursor, req) {
     const posts = await prisma.post.findMany({
         skip: 1,
         take: paginationLimit,
-        orderBy: sortPosts[sortBy],
+        orderBy: sortPosts[req.query.sortBy],
         cursor: { 
             postID: cursor
         },
         where: { 
-            sellerID: sellerID 
+            sellerID: sellerID,
+            title: {
+                contains: req.query.search
+            },
+            packages: {
+                some: {
+                    amount: {
+                        gte: req.query.min,
+                        lte: req.query.max
+                    }
+                }
+            },
+            postedBy: {
+                user: {
+                    country: req.query.location
+                }
+            }
         },
         select: { 
             postedBy: {

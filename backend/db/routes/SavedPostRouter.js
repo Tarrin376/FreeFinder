@@ -4,7 +4,7 @@ import { cookieJwtAuth } from '../middleware/cookieJwtAuth.js';
 
 const savedPostRouter = Router();
 
-savedPostRouter.post('/', cookieJwtAuth, getSavedPosts);
+savedPostRouter.get('/', cookieJwtAuth, getSavedPosts);
 savedPostRouter.post('/:postID', cookieJwtAuth, savePost);
 savedPostRouter.delete('/:postID', cookieJwtAuth, deleteSavedPost);
 

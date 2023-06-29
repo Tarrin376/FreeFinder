@@ -12,7 +12,7 @@ import PageWrapper from '../../wrappers/PageWrapper';
 
 function MyPostsView() {
     const userContext = useContext(UserContext);
-    const filterPostsContext = useContext(FilterPostsContext);
+    const filterContext = useContext(FilterPostsContext);
 
     const [postService, setPostService] = useState<boolean>(false);
     const [deletingPost, setDeletingPost] = useState<boolean>(false);
@@ -21,9 +21,9 @@ function MyPostsView() {
         setPostService(true);
     }
 
-    useNavigateErrorPage("Uh oh!", filterPostsContext?.posts?.errorMessage || "");
+    useNavigateErrorPage("Something isn't quite right...", filterContext?.posts?.errorMessage || "");
 
-    if (!filterPostsContext || !filterPostsContext.posts) {
+    if (!filterContext || !filterContext.posts) {
         return <></>
     }
 
@@ -32,10 +32,7 @@ function MyPostsView() {
             {postService && 
             <CreatePost 
                 setPostService={setPostService} 
-                setUserPosts={filterPostsContext.posts.setPosts} 
-                cursor={filterPostsContext.cursor} 
-                setReachedBottom={filterPostsContext.posts.setReachedBottom} 
-                setNextPage={filterPostsContext.posts.setNextPage}
+                resetState={filterContext.posts.resetState}
             />}
             <PageWrapper>
                 <h1 className="text-2xl mb-6">My Posts</h1>
@@ -43,9 +40,9 @@ function MyPostsView() {
                 hover:bg-main-blue-hover block mb-12">
                     Create new post
                 </button>
-                {(filterPostsContext.posts.loading || filterPostsContext.posts.posts.length > 0) && 
+                {(filterContext.posts.loading || filterContext.posts.allPosts.length > 0) && 
                 <PostsWrapper>
-                    {filterPostsContext.posts.posts.map((post: IPost) => {
+                    {filterContext.posts.allPosts.map((post: IPost) => {
                         return (
                             <Post 
                                 postInfo={post} 
@@ -59,13 +56,25 @@ function MyPostsView() {
                             />
                         );
                     })}
-                    {filterPostsContext.posts.loading && new Array(10).fill(true).map((_, index) => <PostSkeleton key={index} />)}
+                    {filterContext.posts.loading && new Array(10).fill(true).map((_, index) => <PostSkeleton key={index} />)}
                 </PostsWrapper>}
-                {!filterPostsContext.posts.loading && filterPostsContext.posts.posts.length === 0 && 
+                {!filterContext.posts.loading && filterContext.posts.allPosts.length === 0 &&
                 <NoResultsFound 
-                    title="Sorry, we could not find any of your posts." 
+                    title="Sorry, we could not find any of your posts."
                     message="If you are searching for a post, check your spelling and try again."
                 />}
+                {!filterContext.posts.loading && 
+                filterContext.nextPage.pageNumber % 2 === 0 && 
+                !filterContext.posts.reachedBottom &&
+                <button className="m-auto block side-btn w-fit" onClick={filterContext.posts.goToNextPage}>
+                    Show more results
+                </button>}
+                {!filterContext.posts.loading && 
+                filterContext.posts.reachedBottom && 
+                filterContext.posts.allPosts.length > 0 &&
+                <p className="text-center text-side-text-gray">
+                    You've reached the end of the list.
+                </p>}
             </PageWrapper>
         </>
     )

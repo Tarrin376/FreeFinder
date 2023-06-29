@@ -1,7 +1,8 @@
 
 interface PriceProps {
     value: React.MutableRefObject<number>,
-    title: string
+    title: string,
+
 }
 
 function Price({ value, title }: PriceProps) {
@@ -9,6 +10,8 @@ function Price({ value, title }: PriceProps) {
         const nextValue = e.target.value;
         if (nextValue.match(new RegExp(`[0-9]+$`))) {
             value.current = parseInt(nextValue);
+        } else if (nextValue === "") {
+            value.current = 0;
         }
     }
 

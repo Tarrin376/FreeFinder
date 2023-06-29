@@ -26,7 +26,7 @@ function ChooseThumbnail({ setSection, setPostService, uploadedImages, thumbnail
                         ${imageData.image === thumbnail ? "border-main-blue" : ""}`} 
                         style={{ backgroundImage: `url(${imageData.image})` }} key={index} onClick={() => changeThumbnail(imageData.image)}>
                             {imageData.image === thumbnail && 
-                            <p className="absolute top-5 right-5 bg-light-green text-main-white rounded-[5px] px-3">
+                            <p className="absolute top-5 right-5 bg-light-green text-main-white rounded-[5px] px-3 py-[1px]">
                                 Thumbnail
                             </p>}
                         </div>
@@ -34,8 +34,7 @@ function ChooseThumbnail({ setSection, setPostService, uploadedImages, thumbnail
                 })}
             </div>}
             <div className="flex gap-3 justify-end">
-                <button className="bg-main-white border-2 border-light-gray btn-primary w-[110px] px-3
-                hover:bg-main-white-hover" onClick={() => setSection(Sections.UploadFiles)}>
+                <button className="side-btn" onClick={() => setSection(Sections.UploadFiles)}>
                     Back
                 </button>
                 <button className={`btn-primary bg-main-blue hover:bg-main-blue-hover text-main-white w-[110px] px-3

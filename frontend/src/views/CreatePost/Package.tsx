@@ -173,12 +173,10 @@ function Package(props: PackageProps) {
                 })}
             </div>}
             <div className="flex gap-3 justify-end mt-[35px]">
-                {props.skip !== undefined && <button className="bg-main-white border-2 border-light-gray 
-                btn-primary w-[110px] px-3 hover:bg-main-white-hover" onClick={skipPackage}>
+                {props.skip !== undefined && <button className="side-btn" onClick={skipPackage}>
                     Skip
                 </button>}
-                <button className="bg-main-white border-2 border-light-gray btn-primary 
-                w-[110px] px-3hover:bg-main-white-hover" onClick={() => props.setSection(props.back)}>
+                <button className="side-btn" onClick={() => props.setSection(props.back)}>
                     Back
                 </button>
                 <button className={`btn-primary bg-main-blue hover:bg-main-blue-hover 

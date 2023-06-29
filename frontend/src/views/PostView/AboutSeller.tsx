@@ -2,50 +2,60 @@ import ProfilePicAndStatus from "../../components/ProfilePicAndStatus";
 import { PostPage } from "../../types/PostPage";
 import LocationIcon from '../../assets/location-sign-svgrepo-com(2).svg';
 import UserIcon from '../../assets/user-icon-svgrepo-com.svg';
+import StarGrayIcon from "../../assets/star-gray.png";
 
 function AboutSeller({ postData }: { postData: PostPage }) {
     return (
         <section className="bg-main-white border border-light-border-gray shadow-info-component 
-        rounded-[8px] p-4 pt-3 flex flex-col h-fit">
-            <div>
-                <div className="border-b border-b-light-gray pb-4 relative">
-                    <h3 className="text-xl mb-4">About this seller</h3>
-                    <ProfilePicAndStatus 
-                        profilePicURL={postData.postedBy.user.profilePicURL} 
-                        profileStatus={postData.postedBy.user.status}
-                        statusStyles='before:hidden'
-                        imgStyles="m-auto w-[100px] h-[100px]"
-                    />
-                    <h4 className="text-lg text-center mt-2">
-                        {postData.postedBy.user.username}
-                    </h4>
-                </div>
-                {postData.postedBy.description !== "" &&
-                <div className="border-b border-b-light-gray pb-4 pt-4">
-                    <h4 className="text-[18px] mb-2">Description</h4>
-                    <p className="text-paragraph-text break-all">
-                        {postData.postedBy.description}
-                    </p>
-                </div>}
-                <div className="pb-4 pt-4">
-                    <div className="flex gap-1 items-center">
-                        <img src={LocationIcon} width="20px" height="20px" alt="location" />
-                        <p className="text-side-text-gray">From</p>
-                        <p className="ml-auto text-side-text-gray">{postData.postedBy.user.country}</p>
+        rounded-[8px] p-6 h-fit w-full">
+            <div className="mb-4 flex gap-5">
+                <ProfilePicAndStatus 
+                    profilePicURL={postData.postedBy.user.profilePicURL} 
+                    profileStatus={postData.postedBy.user.status}
+                    statusStyles='before:hidden'
+                    imgStyles="w-[75px] h-[75px]"
+                />
+                <div className="flex-grow flex justify-between">
+                    <div>
+                        <p className="text-main-blue">{postData.postedBy.user.username}</p>
+                        <p>Verified seller</p>
+                        <p className="text-side-text-gray">{postData.postedBy.user.country}</p>
                     </div>
-                    <div className="flex gap-1 items-center mt-2">
-                        <img src={UserIcon} width="20px" height="20px" alt="location" />
-                        <p className="text-side-text-gray">Member since</p>
-                        <p className="ml-auto text-side-text-gray">{new Date(postData.postedBy.user.memberDate).toLocaleDateString()}</p>
-                    </div>
+                    <svg 
+                        viewBox="0 0 32 32" 
+                        xmlns="http://www.w3.org/2000/svg" 
+                        className="block fill-[#00000086] h-[24px] w-[24px] stroke-white stroke-2 cursor-pointer" 
+                        aria-hidden="true" 
+                        role="presentation" 
+                        focusable="false">
+                        <path d="m16 28c7-4.733 14-10 14-17 0-1.792-.683-3.583-2.05-4.95-1.367-1.366-3.158-2.05-4.95-2.05-1.791 0-3.583.684-4.949 2.05l-2.051 2.051-2.05-2.051c-1.367-1.366-3.158-2.05-4.95-2.05-1.791 0-3.583.684-4.949 2.05-1.367 1.367-2.051 3.158-2.051 4.95 0 7 7 12.267 14 17z">
+                        </path>
+                    </svg>
                 </div>
             </div>
-            <button className="btn-primary w-[100%] h-[45px] bg-main-blue hover:bg-main-blue-hover text-main-white mb-4 mt-1">
-                Contact Seller
-            </button>
-            <button className="btn-primary w-[100%] h-[45px] bg-very-light-gray hover:bg-very-light-gray-hover">
-                {`Reviews (${postData.postedBy.numReviews})`}
-            </button>
+            {postData.postedBy.description !== "" &&
+            <p className="text-paragraph-text break-all">
+                {postData.postedBy.description}
+            </p>}
+            <div className="flex gap-2 items-center mt-4">
+                <img src={LocationIcon} width="20px" height="20px" alt="location" />
+                <p className="text-side-text-gray">From</p>
+                <p className="ml-auto text-side-text-gray">{postData.postedBy.user.country}</p>
+            </div>
+            <div className="flex gap-2 items-center mt-2">
+                <img src={UserIcon} width="20px" height="20px" alt="location" />
+                <p className="text-side-text-gray">Member since</p>
+                <p className="ml-auto text-side-text-gray">{new Date(postData.postedBy.user.memberDate).toLocaleDateString()}</p>
+            </div>
+            <div className="flex gap-2 items-center mt-2">
+                <img src={StarGrayIcon} width="20px" height="20px" alt="location" />
+                <p className="text-side-text-gray">Seller rating</p>
+                <p className="ml-auto text-side-text-gray">{postData.postedBy.rating}</p>
+            </div>
+            <div className="w-full flex items-center justify-between mt-4">
+                <button className="side-btn">Save seller</button>
+                <button className="red-btn">Report seller</button>
+            </div>
         </section>
     );
 }

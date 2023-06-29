@@ -23,7 +23,6 @@ export async function savePostHandler(postID, userID, username) {
         } else if (err instanceof Prisma.PrismaClientKnownRequestError && err.code === 'P2002') {
             throw new DBError("Post already saved.", 409);
         } else {
-            console.log(err);
             throw new DBError("Something went wrong when trying to save this post. Please try again.", 500);
         }
     }
@@ -35,8 +34,8 @@ export async function savePostHandler(postID, userID, username) {
 export async function getSavedPostsHandler(req) {
     try {
         checkUser(req.userData.userID, req.username);
-        if (req.body.cursor === "") return firstQuerySavedPosts(req.userData.userID, req.query.sort);
-        else return secondQuerySavedPosts(req.userData.userID, req.body.cursor, req.query.sort);
+        if (req.query.cursor === "HEAD") return firstQuerySavedPosts(req.userData.userID, req.query.sort);
+        else return secondQuerySavedPosts(req.userData.userID, req.query.cursor, req.query.sort);
     }
     catch (err) {
         if (err instanceof DBError) {
@@ -92,7 +91,7 @@ export async function firstQuerySavedPosts(userID, sortBy) {
     if (saved.length === 0) {
         return { 
             posts: saved, 
-            cursor: "", 
+            cursor: "HEAD", 
             last: true
         };
     }

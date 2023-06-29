@@ -69,7 +69,7 @@ function Post({ postInfo, username, canRemove }: PostProps) {
     }
 
     return (
-        <div className="bg-main-white border border-light-border-gray w-[270px] rounded-[8px] relative overflow-hidden shadow-post">
+        <div className="bg-main-white border border-light-border-gray w-[290px] rounded-[8px] relative overflow-hidden shadow-post">
             <p className={`absolute z-10 px-7 py-[11px] w-[100%] transition-all ease-out duration-100 text-center select-none  ${errorMessage !== "" ? 
             'bg-error-text text-main-white' : successMessage ? 'action-btn hover:!bg-[#36BF54]' : '!py-[0px]'}`}>
                 {errorMessage !== "" ? errorMessage : successMessage !== "" ? successMessage : ""}
@@ -86,7 +86,7 @@ function Post({ postInfo, username, canRemove }: PostProps) {
                 <path d="m16 28c7-4.733 14-10 14-17 0-1.792-.683-3.583-2.05-4.95-1.367-1.366-3.158-2.05-4.95-2.05-1.791 0-3.583.684-4.949 2.05l-2.051 2.051-2.05-2.051c-1.367-1.366-3.158-2.05-4.95-2.05-1.791 0-3.583.684-4.949 2.05-1.367 1.367-2.051 3.158-2.051 4.95 0 7 7 12.267 14 17z">
                 </path>
             </svg>}
-            <img src={postInfo.images[0].url} className="w-full h-[200px] rounded-t-[8px] object-cover" alt="placeholder" />
+            <img src={postInfo.images[0].url} className="w-full h-[215px] rounded-t-[8px] object-cover" alt="placeholder" />
             <div className="py-3 px-3">
                 <div className="flex items-center mb-2 gap-3 relative">
                     <ProfilePicAndStatus 
@@ -107,15 +107,15 @@ function Post({ postInfo, username, canRemove }: PostProps) {
                         </p>
                     </div>
                 </div>
-                <p className="text-side-text-gray text-[15px] mb-1">
+                <p className="text-side-text-gray text-[14px] mb-1">
                     {getTimePosted(postInfo.createdAt)}
                     {seconds < 60 * 60 * 24 && 
-                    <span className="bg-[#ec79f0] text-main-white w-fit text-[14px] px-2 ml-3 rounded-[5px]">
+                    <span className="bg-[#ec79f0] text-main-white w-fit text-[14px] px-3 py-[1px] ml-3 rounded-[6px]">
                         New
                     </span>}
                 </p>
                 <div className="pb-2 border-b border-b-very-light-gray h-[60px]">
-                    <p className="text-[17px] nav-item leading-6 overflow-hidden text-ellipsis line-clamp-2 break-all"
+                    <p className="text-[16px] nav-item leading-6 overflow-hidden text-ellipsis line-clamp-2 break-all"
                     onClick={openPostView}>
                         {postInfo.title}
                     </p>
@@ -128,7 +128,7 @@ function Post({ postInfo, username, canRemove }: PostProps) {
                         completedText={canRemove.unsave ? "Unsaved" : "Removed"}
                         defaultText={canRemove.unsave ? "Unsave" : "Remove"}
                         loadingText={canRemove.unsave ? "Unsaving" : "Removing"}
-                        styles="red-btn text-[15px] h-[33px]"
+                        styles="red-btn h-[33px] rounded-[6px]"
                         textColor="text-error-text"
                         hideLoadingIcon={true}
                         setErrorMessage={setErrorMessage}

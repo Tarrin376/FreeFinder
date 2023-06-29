@@ -1,8 +1,9 @@
 export type PaginateData<T> = {
-    posts: T[],
+    allPosts: T[],
     errorMessage: string,
     loading: boolean,
-    setReachedBottom: React.Dispatch<React.SetStateAction<boolean>>,
-    setNextPage: React.Dispatch<React.SetStateAction<boolean>>,
-    setPosts: React.Dispatch<React.SetStateAction<T[]>>
+    nextPage: { pageNumber: number },
+    reachedBottom: boolean,
+    resetState: () => void,
+    goToNextPage: () => void
 }

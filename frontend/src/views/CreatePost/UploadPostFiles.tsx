@@ -101,8 +101,7 @@ function UploadPostFiles({ setPostService, setSection, uploadedImages, setUpload
                     return (
                         <File file={image.file} key={index} description="You can download this file to verify that it is the correct one.">
                             <a href={URL.createObjectURL(image.file)} download={image.file.name}>
-                                <button className="bg-main-white border-2 border-light-gray btn-primary w-[120px] px-3
-                                hover:bg-main-white-hover">
+                                <button className="side-btn">
                                     Download
                                 </button>
                             </a>

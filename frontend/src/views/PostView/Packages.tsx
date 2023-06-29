@@ -34,7 +34,7 @@ function Packages({ packages }: { packages: IPackage[] }) {
     }
 
     return (
-        <div className="bg-main-white relative rounded-[8px] border border-light-border-gray shadow-info-component">
+        <div className="bg-main-white relative rounded-[8px] border border-light-border-gray shadow-info-component min-w-[390px] h-[670px]">
             {curPkg &&
             <>
                 <div className="flex justify-evenly overflow-hidden">
@@ -78,9 +78,14 @@ function Packages({ packages }: { packages: IPackage[] }) {
                             })}
                         </ul>
                     </div>
-                    <button className="btn-primary w-[100%] min-h-[45px] bg-main-blue hover:bg-main-blue-hover text-main-white mt-5">
-                        Request An Order
-                    </button>
+                    <div>
+                        <button className="main-btn w-[100%] bg-main-blue hover:bg-main-blue-hover text-main-white mb-3 mt-5">
+                            Request An Order
+                        </button>
+                        <button className="side-btn h-[45px] w-full">
+                            Contact Seller
+                        </button>
+                    </div>
                 </div>
             </>}
         </div>
