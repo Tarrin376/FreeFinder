@@ -47,7 +47,7 @@ function PostView() {
 
     return (
         <PageWrapper>
-            <p className="text-main-blue mb-2">Website design</p>
+            <p className="text-main-blue mb-2 mt-12">Website design</p>
             <h1 className="text-3xl mb-4 max-w-[80%] break-all">{postData.title}</h1>
             <div className="flex gap-3 items-center">
                 <div className="relative">

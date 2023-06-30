@@ -1,4 +1,4 @@
-import PopUpWrapper from "../../layouts/PopUpWrapper";
+import PopUpWrapper from "../../wrappers/PopUpWrapper";
 import { useRef } from 'react';
 import DragAndDrop from "../../components/DragAndDrop";
 import Storage from '../../assets/storage.png';

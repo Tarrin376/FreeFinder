@@ -7,7 +7,7 @@ module.exports = {
     extend: {
         colors: {
             'main-blue': '#2374E1',
-            'bg-light': '#fafbfd',
+            'bg-light': '#fbfbfd',
             'main-blue-hover': '#2f7ce3',
             'main-white': '#fefefe',
             'light-gray': '#e1e3e8',
@@ -46,7 +46,7 @@ module.exports = {
         md: '768px',
         lg: '976px',
         xl: '1338px',
-        xxl: '1600px'
+        xxl: '1495px'
     },
   },
   plugins: [

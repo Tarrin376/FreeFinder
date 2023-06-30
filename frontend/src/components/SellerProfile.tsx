@@ -1,4 +1,4 @@
-import PopUpWrapper from "../layouts/PopUpWrapper";
+import PopUpWrapper from "../wrappers/PopUpWrapper";
 import { useState, useContext } from 'react';
 import { IUserContext, UserContext } from "../providers/UserContext";
 import ErrorMessage from "./ErrorMessage";

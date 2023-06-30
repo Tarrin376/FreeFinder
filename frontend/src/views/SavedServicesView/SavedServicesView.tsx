@@ -7,7 +7,8 @@ import PostsWrapper from '../../wrappers/PostsWrapper';
 import NoResultsFound from '../../components/NoResultsFound';
 import { useNavigateErrorPage } from '../../hooks/useNavigateErrorPage';
 import PageWrapper from '../../wrappers/PageWrapper';
-import { FilterPostsContext } from '../../providers/FilterPostsContext';
+import { FilterPostsContext } from '../../providers/FilterPostsProvider';
+import PostsScrollInfo from '../../components/PostsScrollInfo';
 
 function SavedServicesView() {
     const userContext = useContext(UserContext);
@@ -21,8 +22,8 @@ function SavedServicesView() {
     }
 
     return (
-        <PageWrapper>
-            <h1 className="text-2xl mb-11">My Saved Posts</h1>
+        <PageWrapper styles="min-h-[calc(100vh-180px)]">
+            <h1 className="text-2xl mb-6">My Saved Posts</h1>
             {(filterContext.posts.loading || filterContext.posts.allPosts.length > 0) && 
             <PostsWrapper>
                 {filterContext.posts.allPosts.map((post: IPost) => {
@@ -41,24 +42,13 @@ function SavedServicesView() {
                     );
                 })}
                 {filterContext.posts.loading && new Array(10).fill(true).map((_, index) => <PostSkeleton key={index} />)}
+                <PostsScrollInfo posts={filterContext.posts} page={filterContext.page} />
             </PostsWrapper>}
             {!filterContext.posts.loading && filterContext.posts.allPosts.length === 0 &&
             <NoResultsFound 
                 title="Sorry, we could not find any of your saved posts."
-                message="If you are searching for a post, check your spelling and try again."
+                message="If you are searching for a post, check your filters and try again."
             />}
-            {!filterContext.posts.loading && 
-            filterContext.nextPage.pageNumber % 2 === 0 && 
-            !filterContext.posts.reachedBottom &&
-            <button className="m-auto block side-btn w-fit" onClick={filterContext.posts.goToNextPage}>
-                Show more results
-            </button>}
-            {!filterContext.posts.loading && 
-            filterContext.posts.reachedBottom && 
-            filterContext.posts.allPosts.length > 0 &&
-            <p className="text-center text-side-text-gray">
-                You've reached the end of the list.
-            </p>}
         </PageWrapper>
     )
 }

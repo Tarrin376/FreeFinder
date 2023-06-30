@@ -1,6 +1,6 @@
 import { Sections } from "./CreatePost";
 import { checkIsNumeric } from "../../utils/checkIsNumeric";
-import PopUpWrapper from "../../layouts/PopUpWrapper";
+import PopUpWrapper from "../../wrappers/PopUpWrapper";
 
 interface PackageProps {
     setSection: React.Dispatch<React.SetStateAction<Sections>>,
@@ -103,7 +103,7 @@ function Package(props: PackageProps) {
                 onChange={updateTitle}
                 value={props.packageTitle}
             />
-            <h3 className="mb-2">Package cost (estimate)</h3>
+            <h3 className="mb-2">Package cost</h3>
             <div className="flex items-center search-bar mb-4">
                 <p className="select-none">£</p>
                 <input 
@@ -173,10 +173,10 @@ function Package(props: PackageProps) {
                 })}
             </div>}
             <div className="flex gap-3 justify-end mt-[35px]">
-                {props.skip !== undefined && <button className="side-btn" onClick={skipPackage}>
+                {props.skip !== undefined && <button className="side-btn w-[110px]" onClick={skipPackage}>
                     Skip
                 </button>}
-                <button className="side-btn" onClick={() => props.setSection(props.back)}>
+                <button className="side-btn w-[110px]" onClick={() => props.setSection(props.back)}>
                     Back
                 </button>
                 <button className={`btn-primary bg-main-blue hover:bg-main-blue-hover 

@@ -69,7 +69,7 @@ function Post({ postInfo, username, canRemove }: PostProps) {
     }
 
     return (
-        <div className="bg-main-white border border-light-border-gray w-[290px] rounded-[8px] relative overflow-hidden shadow-post">
+        <div className="bg-transparent w-[270px] rounded-[8px] relative overflow-hidden">
             <p className={`absolute z-10 px-7 py-[11px] w-[100%] transition-all ease-out duration-100 text-center select-none  ${errorMessage !== "" ? 
             'bg-error-text text-main-white' : successMessage ? 'action-btn hover:!bg-[#36BF54]' : '!py-[0px]'}`}>
                 {errorMessage !== "" ? errorMessage : successMessage !== "" ? successMessage : ""}
@@ -86,8 +86,8 @@ function Post({ postInfo, username, canRemove }: PostProps) {
                 <path d="m16 28c7-4.733 14-10 14-17 0-1.792-.683-3.583-2.05-4.95-1.367-1.366-3.158-2.05-4.95-2.05-1.791 0-3.583.684-4.949 2.05l-2.051 2.051-2.05-2.051c-1.367-1.366-3.158-2.05-4.95-2.05-1.791 0-3.583.684-4.949 2.05-1.367 1.367-2.051 3.158-2.051 4.95 0 7 7 12.267 14 17z">
                 </path>
             </svg>}
-            <img src={postInfo.images[0].url} className="w-full h-[215px] rounded-t-[8px] object-cover" alt="placeholder" />
-            <div className="py-3 px-3">
+            <img src={postInfo.images[0].url} className="w-full h-[255px] rounded-[8px] border border-light-border-gray object-cover" alt="placeholder" />
+            <div className="mt-3">
                 <div className="flex items-center mb-2 gap-3 relative">
                     <ProfilePicAndStatus 
                         profilePicURL={postInfo.postedBy.user.profilePicURL} 

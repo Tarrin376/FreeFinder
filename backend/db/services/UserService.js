@@ -232,13 +232,12 @@ export async function getUserPostsHandler(req) {
         if (!seller) {
             return { 
                 posts: [],
-                cursor: "HEAD", 
+                cursor: undefined, 
                 last: true
             };
         }
         
-        if (req.query.cursor === "HEAD") return firstQueryUserPosts(seller.sellerID, req);
-        else return secondQueryUserPosts(seller.sellerID, req.query.cursor, req);
+        return queryUserPosts(seller.sellerID, req);
     }
     catch (err) {
         if (err instanceof DBError) {
@@ -254,15 +253,14 @@ export async function getUserPostsHandler(req) {
     }
 }
 
-export async function firstQueryUserPosts(sellerID, req) {
+export async function queryUserPosts(sellerID, req) {
     const posts = await prisma.post.findMany({
+        skip: req.query.cursor ? 1 : undefined,
+        cursor: req.query.cursor ? { postID: req.query.cursor } : undefined,
         take: paginationLimit,
-        orderBy: sortPosts[req.query.sortBy],
-        where: { 
+        orderBy: sortPosts[req.query.sort],
+        where: {
             sellerID: sellerID,
-            title: {
-                contains: req.query.search
-            },
             packages: {
                 some: {
                     amount: {
@@ -272,9 +270,12 @@ export async function firstQueryUserPosts(sellerID, req) {
                 }
             },
             postedBy: {
-                user: {
+                user: { 
                     country: req.query.location
                 }
+            },
+            title: { 
+                contains: req.query.search 
             }
         },
         select: { 
@@ -296,8 +297,8 @@ export async function firstQueryUserPosts(sellerID, req) {
             title: true,
             postID: true,
             images: {
-                where: {
-                    imageNum: 0
+                where: { 
+                    imageNum: 0 
                 }
             }
         }
@@ -306,7 +307,7 @@ export async function firstQueryUserPosts(sellerID, req) {
     if (posts.length === 0) {
         return { 
             posts,
-            cursor: "HEAD", 
+            cursor: undefined, 
             last: true
         };
     }
@@ -316,74 +317,5 @@ export async function firstQueryUserPosts(sellerID, req) {
         posts, 
         cursor: posts[minNum].postID, 
         last: minNum < paginationLimit - 1 
-    };
-}
-
-export async function secondQueryUserPosts(sellerID, cursor, req) {
-    const posts = await prisma.post.findMany({
-        skip: 1,
-        take: paginationLimit,
-        orderBy: sortPosts[req.query.sortBy],
-        cursor: { 
-            postID: cursor
-        },
-        where: { 
-            sellerID: sellerID,
-            title: {
-                contains: req.query.search
-            },
-            packages: {
-                some: {
-                    amount: {
-                        gte: req.query.min,
-                        lte: req.query.max
-                    }
-                }
-            },
-            postedBy: {
-                user: {
-                    country: req.query.location
-                }
-            }
-        },
-        select: { 
-            postedBy: {
-                select: {
-                    user: {
-                        select: {
-                            profilePicURL: true,
-                            status: true,
-                            username: true,
-                        }
-                    },
-                    rating: true,
-                },
-            },
-            createdAt: true,
-            numReviews: true,
-            startingPrice: true,
-            title: true,
-            postID: true,
-            images: {
-                where: {
-                    imageNum: 0
-                }
-            }
-        }
-    });
-
-    if (posts.length === 0) {
-        return { 
-            posts, 
-            cursor, 
-            last: true
-        };
-    }
-
-    const minNum = Math.min(paginationLimit - 1, posts.length - 1);
-    return { 
-        posts, 
-        cursor: posts[minNum].postID, 
-        last: minNum < paginationLimit - 1
     };
 }

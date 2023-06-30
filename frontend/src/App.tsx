@@ -6,23 +6,23 @@ import SavedServicesView from './views/SavedServicesView/SavedServicesView';
 import ErrorView from './views/ErrorView/ErrorView';
 import MyPostsView from './views/MyPostsView/MyPostsView';
 import PostView from './views/PostView/PostView';
-import FilterPostsProvider from './providers/FilterPostsContext';
+import FilterPostsProvider from './providers/FilterPostsProvider';
 
 function App() {
     return (
-        <div className="bg-[#fafbfd]">
+        <div className="bg-bg-light">
             <UserProvider>
                 <BrowserRouter>
                     <Routes>
                         <Route path="/" element={<Navbar />}>
                             <Route index element={<HomeView />} />
                             <Route path=":username?/saved-posts" element={
-                                <FilterPostsProvider>
+                                <FilterPostsProvider key={`saved-posts`}>
                                     <SavedServicesView />
                                 </FilterPostsProvider>} 
                             />
                             <Route path=":username?/posts" element={
-                                <FilterPostsProvider>
+                                <FilterPostsProvider key={`posts`}>
                                     <MyPostsView />
                                 </FilterPostsProvider>} 
                             />

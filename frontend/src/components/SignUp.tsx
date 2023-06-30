@@ -1,4 +1,4 @@
-import PopUpWrapper from "../layouts/PopUpWrapper";
+import PopUpWrapper from "../wrappers/PopUpWrapper";
 import { useState, useRef } from 'react';
 import ErrorMessage from "./ErrorMessage";
 import CountriesDropdown from "./CountriesDropdown";

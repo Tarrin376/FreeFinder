@@ -1,4 +1,4 @@
-import PopUpWrapper from "../../layouts/PopUpWrapper";
+import PopUpWrapper from "../../wrappers/PopUpWrapper";
 import ErrorMessage from "../../components/ErrorMessage";
 import { categories } from "../../utils/jobCategories";
 import { Sections } from "./CreatePost";

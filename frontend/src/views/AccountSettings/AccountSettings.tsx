@@ -1,5 +1,5 @@
 import { IUserContext } from "../../providers/UserContext";
-import PopUpWrapper from "../../layouts/PopUpWrapper";
+import PopUpWrapper from "../../wrappers/PopUpWrapper";
 import ProfilePicAndStatus from "../../components/ProfilePicAndStatus";
 import { useState } from 'react';
 import ErrorMessage from "../../components/ErrorMessage";

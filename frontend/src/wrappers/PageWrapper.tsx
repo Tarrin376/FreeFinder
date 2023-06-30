@@ -1,11 +1,12 @@
 
 interface PageWrapperProps {
-    children?: React.ReactNode
+    children?: React.ReactNode,
+    styles?: string
 }
 
-function PageWrapper({ children }: PageWrapperProps) {
+function PageWrapper({ children, styles }: PageWrapperProps) {
     return (
-        <div className="page">
+        <div className={`page ${styles}`}>
             {children}
         </div>
     )

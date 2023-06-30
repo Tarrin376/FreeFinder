@@ -34,8 +34,7 @@ export async function savePostHandler(postID, userID, username) {
 export async function getSavedPostsHandler(req) {
     try {
         checkUser(req.userData.userID, req.username);
-        if (req.query.cursor === "HEAD") return firstQuerySavedPosts(req.userData.userID, req.query.sort);
-        else return secondQuerySavedPosts(req.userData.userID, req.query.cursor, req.query.sort);
+        return querySavedPosts(req);
     }
     catch (err) {
         if (err instanceof DBError) {
@@ -51,14 +50,39 @@ export async function getSavedPostsHandler(req) {
     }
 }
 
-export async function firstQuerySavedPosts(userID, sortBy) {
+export async function querySavedPosts(req) {
     const saved = await prisma.savedPost.findMany({
+        skip: req.query.cursor ? 1 : undefined,
+        cursor: req.query.cursor ? { 
+            userID_postID: {
+                userID: req.userData.userID,
+                postID: req.query.cursor
+            }
+        } : undefined,
         take: paginationLimit,
         where: {
-            userID: userID
+            userID: req.userData.userID,
+            post: {
+                packages: {
+                    some: {
+                        amount: {
+                            gte: req.query.min,
+                            lte: req.query.max
+                        }
+                    }
+                },
+                postedBy: {
+                    user: { 
+                        country: req.query.location
+                    }
+                },
+                title: { 
+                    contains: req.query.search 
+                }
+            }
         },
         orderBy: {
-            post: sortPosts[sortBy]
+            post: sortPosts[req.query.sort]
         },
         select: {
             post: {
@@ -91,7 +115,7 @@ export async function firstQuerySavedPosts(userID, sortBy) {
     if (saved.length === 0) {
         return { 
             posts: saved, 
-            cursor: "HEAD", 
+            cursor: undefined, 
             last: true
         };
     }
@@ -103,68 +127,6 @@ export async function firstQuerySavedPosts(userID, sortBy) {
         posts, 
         cursor: saved[minNum].post.postID,
         last: minNum < paginationLimit - 1 
-    };
-}
-
-export async function secondQuerySavedPosts(userID, cursor, sortBy) {
-    const saved = await prisma.savedPost.findMany({
-        skip: 1,
-        orderBy: {
-            post: sortPosts[sortBy]
-        },
-        where: {
-            userID: userID
-        },
-        cursor: { 
-            userID_postID: {
-                userID: userID,
-                postID: cursor
-            }
-        },
-        take: paginationLimit,
-        select: {
-            post: {
-                include: {
-                    postedBy: {
-                        select: {
-                            user: {
-                                select: {
-                                    profilePicURL: true,
-                                    status: true,
-                                    username: true,
-                                    userID: true,
-                                }
-                            },
-                            rating: true,
-                            description: true,
-                            numReviews: true
-                        }
-                    },
-                    images: {
-                        orderBy: {
-                            imageNum: 'asc'
-                        }
-                    }
-                }
-            }
-        }
-    });
-
-    if (saved.length === 0) {
-        return { 
-            posts: saved, 
-            cursor, 
-            last: true
-        };
-    }
-
-    const minNum = Math.min(paginationLimit - 1, saved.length - 1);
-    const posts = saved.map((cur) => cur.post);
-
-    return { 
-        posts, 
-        cursor: saved[minNum].post.postID,
-        last: minNum < paginationLimit - 1
     };
 }
 

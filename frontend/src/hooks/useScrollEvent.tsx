@@ -1,13 +1,15 @@
 import { useEffect } from "react";
 
+export const MOD = 5;
+
 export function useScrollEvent(pageRef: React.RefObject<HTMLDivElement>, loading: boolean, reachedBottom: boolean, 
-    goToNextPage: () => void, pageNumber: number) {
+    goToNextPage: () => void, page: number) {
 
     function loadMoreContent(): void {
         let documentHeight = document.body.scrollHeight;
         let currentScroll = window.scrollY + window.innerHeight;
 
-        if (currentScroll + 200 >= documentHeight && !reachedBottom && !loading && pageNumber % 2 !== 0) {
+        if (currentScroll + 200 >= documentHeight && !reachedBottom && !loading && page % MOD !== 0) {
             goToNextPage();
         }
     }

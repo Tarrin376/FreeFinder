@@ -1,9 +1,12 @@
-function PostsWrapper({ children }: { children?: React.ReactNode }) {
+
+interface PostWrapperProps {
+    children?: React.ReactNode,
+}
+
+function PostsWrapper({ children }: PostWrapperProps) {
     return (
-        <div className="flex flex-col gap-7 items-center pb-11">
-            <div className="flex gap-[25px] items-start flex-wrap w-full">
-                {children}
-            </div>
+        <div className="flex gap-[23px] items-start flex-wrap w-full">
+            {children}
         </div>
     );
 }

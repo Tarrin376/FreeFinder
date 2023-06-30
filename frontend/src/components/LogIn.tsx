@@ -1,4 +1,4 @@
-import PopUpWrapper from "../layouts/PopUpWrapper";
+import PopUpWrapper from "../wrappers/PopUpWrapper";
 import { useState, useContext } from 'react';
 import ErrorMessage from "./ErrorMessage";
 import { IUserContext, UserContext } from "../providers/UserContext";
@@ -59,7 +59,7 @@ function LogIn({ setLogIn, setSignUp }: LogInProps) {
                 <Button
                     action={logInAttempt}
                     completedText="Logged in"
-                    defaultText="Login"
+                    defaultText="Log In"
                     loadingText="Logging in"
                     styles="main-btn"
                     textColor="text-main-white"

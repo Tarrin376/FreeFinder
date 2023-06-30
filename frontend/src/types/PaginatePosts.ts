@@ -1,8 +1,7 @@
-export type PaginateData<T> = {
+export type PaginatePosts<T> = {
     allPosts: T[],
     errorMessage: string,
     loading: boolean,
-    nextPage: { pageNumber: number },
     reachedBottom: boolean,
     resetState: () => void,
     goToNextPage: () => void

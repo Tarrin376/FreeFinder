@@ -2,15 +2,15 @@ import { useEffect, useState, useRef } from 'react';
 import { useScrollEvent } from './useScrollEvent';
 import axios, { AxiosError } from "axios";
 import { getAPIErrorMessage } from '../utils/getAPIErrorMessage';
-import { PaginateData } from '../types/PaginateData';
+import { PaginatePosts } from '../types/PaginatePosts';
 
 export function usePaginatePosts<T>(
     pageRef: React.RefObject<HTMLDivElement>, 
-    cursor: React.MutableRefObject<string>,
+    cursor: React.MutableRefObject<string | undefined>,
     url: string,
-    nextPage: { pageNumber: number },
-    setNextPage: React.Dispatch<React.SetStateAction<{ pageNumber: number }>>)
-: PaginateData<T> {
+    page: number,
+    setPage: React.Dispatch<React.SetStateAction<number>>)
+: PaginatePosts<T> {
 
     const reachedBottom = useRef<boolean>(false);
     const [loading, setLoading] = useState<boolean>(false);
@@ -18,51 +18,49 @@ export function usePaginatePosts<T>(
     const [allPosts, setAllPosts] = useState<T[]>([]);
 
     function resetState() {
-        cursor.current = "HEAD";
+        cursor.current = undefined;
         reachedBottom.current = false;
         setAllPosts([]);
-        setNextPage({ pageNumber: 1 });
+        setPage(1);
     }
 
     function goToNextPage() {
-        setNextPage((cur) => {
-            return { pageNumber: cur.pageNumber + 1 };
-        })
+        setPage((cur) => cur + 1);
     }
 
-    useScrollEvent(pageRef, loading, reachedBottom.current, goToNextPage, nextPage.pageNumber);
+    useScrollEvent(pageRef, loading, reachedBottom.current, goToNextPage, page);
 
     useEffect(() => {
-        console.log(url);
+        if (loading) {
+            return;
+        }
+        
         setLoading(true);
         (async (): Promise<void> => {
             try {
-                const resp = await axios.get<{ posts: T[], cursor: string, last: boolean }>(`${url}&cursor=${cursor.current}`);
+                const resp = await axios.get<{ posts: T[], cursor: string, last: boolean }>(url + (cursor.current ? `&cursor=${cursor.current}` : ``));
                 setAllPosts((state) => [...state, ...resp.data.posts]);
+                cursor.current = resp.data.cursor;
 
                 if (resp.data.last) {
                     reachedBottom.current = true;
-                } else {
-                    cursor.current = resp.data.cursor;
                 }
 
                 setErrorMessage("");
+                setLoading(false);
             }
             catch(err: any) {
                 const errorMessage = getAPIErrorMessage(err as AxiosError<{ message: string }>)
                 setErrorMessage(errorMessage);
-            }
-            finally {
                 setLoading(false);
             }
         })();
-    }, [url, nextPage, cursor]);
+    }, [url, cursor]);
 
     return { 
         allPosts, 
         errorMessage, 
         loading,
-        nextPage,
         reachedBottom: reachedBottom.current,
         resetState,
         goToNextPage,

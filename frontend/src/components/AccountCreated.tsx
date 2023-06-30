@@ -1,4 +1,4 @@
-import PopUpWrapper from "../layouts/PopUpWrapper";
+import PopUpWrapper from "../wrappers/PopUpWrapper";
 
 interface AccountCreatedProps {
     setAccountCreated: React.Dispatch<React.SetStateAction<boolean>>
