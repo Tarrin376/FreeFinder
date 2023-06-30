@@ -1,6 +1,6 @@
 import { useState, useEffect } from 'react';
 
-export function useWindowSize() {
+export function useWindowSize(): number {
     const [windowSize, setWindowSize] = useState<number>(0);
 
     function updateWindowSize(): void {

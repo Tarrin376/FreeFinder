@@ -179,6 +179,8 @@ function CreatePost({ setPostService, resetState }: CreatePostProps) {
                     setSection={setSection}
                     uploadedImages={uploadedImages} 
                     setUploadedImages={setUploadedImages}
+                    thumbnail={thumbnail}
+                    setThumbnail={setThumbnail}
                 />
             );
         case Sections.ChooseThumbnail:

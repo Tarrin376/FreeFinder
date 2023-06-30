@@ -18,7 +18,7 @@ function LogIn({ setLogIn, setSignUp }: LogInProps) {
     const [errorMessage, setErrorMessage] = useState<string>("");
     const userContext = useContext<IUserContext>(UserContext);
 
-    function closeLoginPopUp() {
+    function closeLoginPopUp(): void {
         setLogIn(false);
     }
 

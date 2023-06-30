@@ -86,7 +86,7 @@ export async function querySavedPosts(req) {
         },
         select: {
             post: {
-                include: {
+                select: {
                     postedBy: {
                         select: {
                             user: {
@@ -94,17 +94,23 @@ export async function querySavedPosts(req) {
                                     profilePicURL: true,
                                     status: true,
                                     username: true,
-                                    userID: true,
                                 }
                             },
                             rating: true,
-                            description: true,
-                            numReviews: true
                         }
                     },
+                    createdAt: true,
+                    numReviews: true,
+                    startingPrice: true,
+                    title: true,
+                    postID: true,
                     images: {
-                        orderBy: {
-                            imageNum: 'asc'
+                        where: { 
+                            imageNum: 0 
+                        },
+                        select: {
+                            url: true,
+                            imageNum: true
                         }
                     }
                 }

@@ -31,7 +31,7 @@ function PostDetails(props: PostDetailsProps) {
         return props.title.trim().length > 0 && props.about.trim().length > 0;
     }
 
-    function toggleFailedUploads() {
+    function toggleFailedUploads(): void {
         setShowFailedUploads((cur) => !cur);
     }
 

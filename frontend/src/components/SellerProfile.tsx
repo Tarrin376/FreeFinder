@@ -18,7 +18,7 @@ function SellerProfile({ setSellerProfilePopUp }: SellerProfileProps) {
     const userContext = useContext<IUserContext>(UserContext);
     const [errorMessage, setErrorMessage] = useState<string>("");
 
-    function closeSellerProfilePopUp() {
+    function closeSellerProfilePopUp(): void {
         setSellerProfilePopUp(false);
     }
 

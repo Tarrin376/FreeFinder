@@ -2,8 +2,12 @@ import { prisma } from "../services/UserService.js";
 import { DBError } from "../customErrors/DBError.js";
 
 export async function checkUser(userID, username) {
-    const user = await prisma.user.findUnique({ where: { username: username }});
-        
+    const user = await prisma.user.findUnique({ 
+        where: { 
+            username: username 
+        }
+    });
+    
     if (!user) {
         throw new DBError("User not found.", 404);
     }

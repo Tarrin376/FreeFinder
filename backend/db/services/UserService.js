@@ -299,6 +299,10 @@ export async function queryUserPosts(sellerID, req) {
             images: {
                 where: { 
                     imageNum: 0 
+                },
+                select: {
+                    url: true,
+                    imageNum: true
                 }
             }
         }

@@ -54,6 +54,10 @@ function FilterPostsProvider({ children }: FilterPostsContextProps) {
         setPostService(true);
     }
 
+    function searchHandler(): void {
+        posts.resetState();
+    }
+
     return (
         <>
             {postService && 
@@ -64,11 +68,11 @@ function FilterPostsProvider({ children }: FilterPostsContextProps) {
             <div className="flex">
                 <div className="h-[calc(100vh-90px)] min-w-[350px] bg-main-white border-r border-light-border-gray p-7">
                     <button onClick={openPostService} className="btn-primary text-main-white bg-main-blue w-full px-5 h-[45px] 
-                    hover:bg-main-blue-hover mb-[40px] mt-[27px] flex items-center justify-center gap-2">
+                    hover:bg-main-blue-hover flex items-center justify-center gap-2 mb-[45px]">
                         <img src={AddIcon} alt="" className="w-[17px] h-[17px]" />
                         Create new post
                     </button>
-                    <h2 className="text-[22px]">Details</h2>
+                    <h2 className="text-[23px]">Details</h2>
                 </div>
                 <div className="flex-grow">
                     <div className="border-b border-b-very-light-gray bg-white">
@@ -107,13 +111,13 @@ function FilterPostsProvider({ children }: FilterPostsContextProps) {
                             </div>
                             <div className="pl-6">
                                 <button className="btn-primary text-main-white bg-main-blue w-[160px] h-[45px] hover:bg-main-blue-hover"
-                                onClick={posts.resetState}>
+                                onClick={searchHandler}>
                                     Search
                                 </button>
                             </div>
                         </div>
                     </div>
-                    <div className="flex-grow max-h-[calc(100vh-180px)] overflow-y-scroll" ref={pageRef}>
+                    <div className="h-[calc(100vh-180px)] overflow-y-scroll" ref={pageRef}>
                         <FilterPostsContext.Provider value={{ cursor, posts, page, setPage, endpoint: `/api/users${location.pathname}` }}>
                             {children}
                         </FilterPostsContext.Provider>

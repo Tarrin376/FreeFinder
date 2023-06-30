@@ -46,7 +46,7 @@ function MyPostsView() {
             {!filterContext.posts.loading && filterContext.posts.allPosts.length === 0 &&
             <NoResultsFound 
                 title="Sorry, we could not find any of your posts."
-                message="If you are searching for a post, check your filters and try again."
+                message="If you are searching for a post, please check your filters and try again."
             />}
         </PageWrapper>
     )

@@ -18,9 +18,11 @@ interface UploadPostFilesProps {
     setSection: React.Dispatch<React.SetStateAction<Sections>>,
     setUploadedImages: React.Dispatch<React.SetStateAction<ImageData[]>>,
     uploadedImages: ImageData[],
+    thumbnail: unknown,
+    setThumbnail: React.Dispatch<React.SetStateAction<unknown>>
 }
 
-function UploadPostFiles({ setPostService, setSection, uploadedImages, setUploadedImages }: UploadPostFilesProps) {
+function UploadPostFiles({ setPostService, setSection, uploadedImages, setUploadedImages, thumbnail, setThumbnail }: UploadPostFilesProps) {
     const inputFileRef = useRef<HTMLInputElement>(null);
     const [errorMessage, setErrorMessage] = useState<string>("");
 
@@ -74,6 +76,7 @@ function UploadPostFiles({ setPostService, setSection, uploadedImages, setUpload
     }
 
     function deleteImage(image: ImageData): void {
+        if (image.image === thumbnail) setThumbnail(undefined);
         setUploadedImages((state) => state.filter((x) => x !== image));
     }
 

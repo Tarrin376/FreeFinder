@@ -9,7 +9,7 @@ interface PopUpWrapperProps {
 }
 
 function PopUpWrapper({ children, setIsOpen, title, styles } : PopUpWrapperProps) {
-    function closePopUp() {
+    function closePopUp(): void {
         setIsOpen(false);
     }
 
@@ -19,7 +19,7 @@ function PopUpWrapper({ children, setIsOpen, title, styles } : PopUpWrapperProps
                 <div className={`bg-main-white absolute p-9 rounded-[8px] shadow-pop-up left-[50%] top-[50%] translate-x-[-50%] 
                 translate-y-[-50%] max-w-[540px] w-[95%] overflow-y-scroll max-h-[92%] scrollbar-hide ${styles}`}>
                     <div className="flex items-center w-full justify-between mb-7">
-                        <h1 className="text-[26px]">{title}</h1>
+                        <h1 className="text-[23px]">{title}</h1>
                         <img src={CloseIcon} className="w-4 h-4 cursor-pointer" onClick={closePopUp} alt="close" />
                     </div>
                     {children}

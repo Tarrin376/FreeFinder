@@ -37,7 +37,7 @@ function Navbar() {
             {sellerProfilePopUp && <SellerProfile setSellerProfilePopUp={setSellerProfilePopUp} />}
             <nav className="flex gap-8 items-center px-7 h-[90px] border-b border-b-very-light-gray bg-white">
                 <ul className="flex items-center xl:gap-14 lg:gap-9">
-                    <li className="text-main-blue text-2xl cursor-pointer mr-8" onClick={(e) => goToPage(e, `/`)}>FreeFinder</li>
+                    <li className="text-main-blue text-[23px] cursor-pointer mr-8" onClick={(e) => goToPage(e, `/`)}>FreeFinder</li>
                     <li className="nav-item">Browse all</li>
                     {userContext.userData.seller &&
                     <>

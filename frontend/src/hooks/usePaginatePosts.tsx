@@ -17,14 +17,14 @@ export function usePaginatePosts<T>(
     const [errorMessage, setErrorMessage] = useState<string>("");
     const [allPosts, setAllPosts] = useState<T[]>([]);
 
-    function resetState() {
+    function resetState(): void {
         cursor.current = undefined;
         reachedBottom.current = false;
         setAllPosts([]);
         setPage(1);
     }
 
-    function goToNextPage() {
+    function goToNextPage(): void {
         setPage((cur) => cur + 1);
     }
 
