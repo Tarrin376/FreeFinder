@@ -1,3 +1,4 @@
+import NothingFoundIcon from '../assets/nothing-found.png';
 
 interface NoResultsFoundProps {
     title: string,
@@ -7,7 +8,8 @@ interface NoResultsFoundProps {
 function NoResultsFound({ title, message }: NoResultsFoundProps) {
     return (
         <div className="w-full m-auto">
-            <h1 className="text-center mb-3 text-[26px]">{title}</h1>
+            <img src={NothingFoundIcon} className="w-[64px] h-[64px] block m-auto mb-4" alt="" />
+            <h1 className="text-center mb-1 text-[18px]">{title}</h1>
             <p className="text-center">{message}</p>
         </div>
     )

@@ -6,9 +6,9 @@ module.exports = {
   theme: {
     extend: {
         colors: {
-            'main-blue': '#2374E1',
-            'bg-light': '#fbfbfd',
-            'main-blue-hover': '#2f7ce3',
+            'main-blue': '#157718',
+            'bg-light': '#fafafa',
+            'main-blue-hover': '#167e19',
             'main-white': '#fefefe',
             'light-gray': '#e1e3e8',
             'nav-search-gray': '#cdcdcd',
@@ -26,6 +26,7 @@ module.exports = {
             'light-green': '#36BF54',
             'light-border-gray': '#e2e2e2',
             'disabled-gray': '#E0E0E0',
+            'highlight': '#e0f9e0'
         },
         dropShadow: {
             'search-bar': '0px 0px 1px #DDDDDD',

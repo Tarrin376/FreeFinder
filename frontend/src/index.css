@@ -4,15 +4,15 @@
 
 @layer components {
     .btn-primary {
-        @apply transition ease-in-out duration-200 rounded-[8px] px-6 h-[42px] pb-[1px];
+        @apply transition-all ease-in-out duration-200 rounded-[8px] px-6 h-[42px] pb-[1px];
     }
     .nav-item {
-        @apply transition ease-linear duration-100 hover:text-main-blue cursor-pointer;
+        @apply hover:text-main-blue hover:font-semibold cursor-pointer;
     }
     .search-bar {
         @apply border border-light-gray rounded-[8px] p-3 w-full 
         bg-main-white block placeholder-side-text-gray focus:outline-none focus:outline-1
-        focus:outline-offset-0 focus:outline-light-gray;
+        focus:outline-light-gray transition ease-linear duration-100;
     }
     .invalid-input {
         @apply focus:outline-2 focus:!outline-error-text focus:border-transparent border-b border-error-text bg-[#FFF7F6]
@@ -62,7 +62,7 @@
         @apply bg-error-red hover:bg-error-red-hover btn-primary text-error-text;
     }
     .selected-nav-element {
-        @apply !text-main-blue;
+        @apply !text-main-blue font-semibold;
     }
 }
 

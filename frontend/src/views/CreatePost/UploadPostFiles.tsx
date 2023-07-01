@@ -86,7 +86,7 @@ function UploadPostFiles({ setPostService, setSection, uploadedImages, setUpload
                 <div className="absolute top-[50%] left-[50%] translate-x-[-50%] translate-y-[-50%]">
                     <img src={Storage} className="block m-auto w-[50px] h-[50px] mb-3" alt="storage" />
                     <p className="text-center">Drag and Drop file here or</p>
-                    <p className="underline cursor-pointer text-center text-main-blue" onClick={triggerFileUpload}>Choose file</p>
+                    <p className="underline cursor-pointer text-center" onClick={triggerFileUpload}>Choose file</p>
                 </div>
             </DragAndDrop>
             <div className="flex items-center justify-between mt-3">

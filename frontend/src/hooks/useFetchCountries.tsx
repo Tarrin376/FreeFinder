@@ -1,6 +1,6 @@
 import { useEffect, useState } from 'react';
 import { Country } from '../types/Country';
-import axios, { AxiosError } from "axios";
+import axios, { AxiosError } from 'axios';
 import { getAPIErrorMessage } from '../utils/getAPIErrorMessage';
 
 export function useFetchCountries(): {

@@ -20,7 +20,7 @@ function PopUpWrapper({ children, setIsOpen, title, styles } : PopUpWrapperProps
                 translate-y-[-50%] max-w-[540px] w-[95%] overflow-y-scroll max-h-[92%] scrollbar-hide ${styles}`}>
                     <div className="flex items-center w-full justify-between mb-7">
                         <h1 className="text-[23px]">{title}</h1>
-                        <img src={CloseIcon} className="w-4 h-4 cursor-pointer" onClick={closePopUp} alt="close" />
+                        <img src={CloseIcon} className="w-6 h-6 cursor-pointer" onClick={closePopUp} alt="close" />
                     </div>
                     {children}
                 </div>

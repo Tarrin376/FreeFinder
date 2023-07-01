@@ -40,7 +40,7 @@ function Packages({ packages }: { packages: IPackage[] }) {
                 <div className="flex justify-evenly overflow-hidden">
                     {packages.sort((a, b) => a.type.localeCompare(b.type)).map((cur, index) => {
                         return (
-                            <button className={`h-[50px] border-b-2 ${cur.type === curPkg.type ? " border-main-blue bg-[#2375e109]" : 
+                            <button className={`h-[50px] border-b-2 ${cur.type === curPkg.type ? " border-main-blue bg-[#e0f9e03a]" : 
                             "border-light-gray"} flex-grow basis-0`} onClick={() => selectPackage(cur)} key={index}>
                                 {capitalizePkgType(cur.type)}
                             </button>

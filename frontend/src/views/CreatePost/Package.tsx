@@ -160,11 +160,11 @@ function Package(props: PackageProps) {
                 </span>
             </p>
             <button className="btn-primary bg-main-black hover:bg-main-black-hover 
-            text-main-white w-[140px] px-3 mb-5" onClick={addNewFeature}>
+            text-main-white w-[140px] px-3" onClick={addNewFeature}>
                 Add Feature
             </button>
             {props.features.length > 0 && 
-            <div className="flex flex-col gap-2 max-h-[200px] overflow-scroll scrollbar-hide p-[8px] bg-[#f8f9fa] rounded-[8px]">
+            <div className="flex flex-col gap-2 max-h-[200px] mt-5 overflow-scroll scrollbar-hide p-[8px] bg-[#f8f9fa] rounded-[8px]">
                 {props.features.map((value, index) => {
                     return (
                         <input type="text" className="search-bar" value={value} placeholder={"E.g. Video Thumbnail included"}
@@ -173,7 +173,8 @@ function Package(props: PackageProps) {
                 })}
             </div>}
             <div className="flex gap-3 justify-end mt-[35px]">
-                {props.skip !== undefined && <button className="side-btn w-[110px]" onClick={skipPackage}>
+                {props.skip !== undefined && 
+                <button className="side-btn w-[110px]" onClick={skipPackage}>
                     Skip
                 </button>}
                 <button className="side-btn w-[110px]" onClick={() => props.setSection(props.back)}>

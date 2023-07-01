@@ -8,8 +8,8 @@ export function usePaginatePosts<T>(
     pageRef: React.RefObject<HTMLDivElement>, 
     cursor: React.MutableRefObject<string | undefined>,
     url: string,
-    page: number,
-    setPage: React.Dispatch<React.SetStateAction<number>>)
+    page: { value: number },
+    setPage: React.Dispatch<React.SetStateAction<{ value: number }>>)
 : PaginatePosts<T> {
 
     const reachedBottom = useRef<boolean>(false);
@@ -21,14 +21,16 @@ export function usePaginatePosts<T>(
         cursor.current = undefined;
         reachedBottom.current = false;
         setAllPosts([]);
-        setPage(1);
+        setPage({ value: 1 });
     }
 
     function goToNextPage(): void {
-        setPage((cur) => cur + 1);
+        setPage((cur) => {
+            return { value: cur.value + 1 };
+        });
     }
 
-    useScrollEvent(pageRef, loading, reachedBottom.current, goToNextPage, page);
+    useScrollEvent(pageRef, loading, reachedBottom.current, goToNextPage, page.value);
 
     useEffect(() => {
         if (loading) {
@@ -55,7 +57,7 @@ export function usePaginatePosts<T>(
                 setLoading(false);
             }
         })();
-    }, [url, cursor]);
+    }, [url, cursor, page]);
 
     return { 
         allPosts, 

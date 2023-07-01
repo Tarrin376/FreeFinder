@@ -42,7 +42,7 @@ function SavedServicesView() {
                     );
                 })}
                 {filterContext.posts.loading && new Array(10).fill(true).map((_, index) => <PostSkeleton key={index} />)}
-                <PostsScrollInfo posts={filterContext.posts} page={filterContext.page} />
+                <PostsScrollInfo posts={filterContext.posts} page={filterContext.page.value} />
             </PostsWrapper>}
             {!filterContext.posts.loading && filterContext.posts.allPosts.length === 0 &&
             <NoResultsFound 

@@ -20,8 +20,8 @@ type filterPosts = {
     cursor: React.MutableRefObject<string | undefined>,
     posts: PaginatePosts<IPost> | undefined,
     endpoint: string,
-    page: number,
-    setPage: React.Dispatch<React.SetStateAction<number>>
+    page: { value: number },
+    setPage: React.Dispatch<React.SetStateAction<{ value: number }>>
 }
 
 export const FilterPostsContext = createContext<filterPosts | undefined>(undefined);
@@ -35,12 +35,12 @@ function FilterPostsProvider({ children }: FilterPostsContextProps) {
     const location = useLocation();
     const searchRef = useRef<HTMLInputElement>(null);
     const countryRef = useRef<HTMLSelectElement>(null);
-    const [page, setPage] = useState<number>(1);
+    const [page, setPage] = useState<{ value: number }>({ value: 1 });
     const [postService, setPostService] = useState<boolean>(false);
 
     const search = searchRef.current?.value !== undefined ? searchRef.current.value : "";
     const sellerLocation = countryRef.current?.value && countryRef.current.value !== "Any" ? `&location=${countryRef.current.value}` : "";
-    const url = `/api/users${location.pathname}?search=${search}&sort=${sortPosts[sort.current]}&min=${min.current}&max=${max.current}&page=${page}${sellerLocation}`;
+    const url = `/api/users${location.pathname}?search=${search}&sort=${sortPosts[sort.current]}&min=${min.current}&max=${max.current}${sellerLocation}`;
 
     const posts = usePaginatePosts<IPost>(
         pageRef, 
