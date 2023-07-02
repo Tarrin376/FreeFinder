@@ -44,7 +44,11 @@ function AccountSettings({ setSettingsPopUp, userContext }: SettingsProps) {
 
     return (
         <PopUpWrapper setIsOpen={setSettingsPopUp} title={"Account Settings"}>
-            {errorMessage !== "" && <ErrorMessage message={errorMessage} title={"Unable to upload image"} />}
+            {errorMessage !== "" && 
+            <ErrorMessage 
+                message={errorMessage} 
+                title={"Unable to upload image"} 
+            />}
             <div className="flex gap-5">
                 <div className="relative">
                     <ProfilePicAndStatus profilePicURL={userContext.userData.profilePicURL} profileStatus={userContext.userData.status} 

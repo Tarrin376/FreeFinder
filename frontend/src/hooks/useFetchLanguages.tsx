@@ -4,7 +4,10 @@ import { Languages } from '../types/Languages';
 import { getAPIErrorMessage } from '../utils/getAPIErrorMessage';
 import { getUniqueArray } from '../utils/getUniqueArray';
 
-export function useFetchLanguages() {
+export function useFetchLanguages(): {
+    languages: string[],
+    errorMessage: string
+} {
     const [languages, setLanguages] = useState<string[]>([]);
     const [errorMessage, setErrorMessage] = useState<string>("");
 

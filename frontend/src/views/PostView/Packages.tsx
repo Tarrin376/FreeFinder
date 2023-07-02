@@ -34,7 +34,7 @@ function Packages({ packages }: { packages: IPackage[] }) {
     }
 
     return (
-        <div className="bg-main-white relative rounded-[8px] border border-light-border-gray shadow-info-component min-w-[390px] h-[670px]">
+        <div className="bg-main-white relative rounded-[12px] border border-light-border-gray shadow-info-component min-w-[390px] h-[670px]">
             {curPkg &&
             <>
                 <div className="flex justify-evenly overflow-hidden">

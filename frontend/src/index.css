@@ -7,7 +7,7 @@
         @apply transition-all ease-in-out duration-200 rounded-[8px] px-6 h-[42px] pb-[1px];
     }
     .nav-item {
-        @apply hover:text-main-blue hover:font-semibold cursor-pointer;
+        @apply hover:text-main-blue cursor-pointer;
     }
     .search-bar {
         @apply border border-light-gray rounded-[8px] p-3 w-full 

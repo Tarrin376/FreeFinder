@@ -32,7 +32,7 @@ function MyDetails({ userContext } : { userContext: IUserContext }) {
             const updated = await fetchUpdatedUser({ 
                 ...userContext.userData, 
                 email: firstEmail 
-            });
+            }, userContext.userData.username);
             
             userContext.setUserData(updated.userData);
         }
@@ -44,13 +44,17 @@ function MyDetails({ userContext } : { userContext: IUserContext }) {
 
     return (
         <>
-            <h1 className="text-[23px]">My Details</h1>
+            <h1 className="text-[20px]">My Details</h1>
             <p className="text-side-text-gray mt-1 pb-4 border-b border-b-nav-search-gray mb-7">
                 Change your details
             </p>
             <div className="flex flex-col gap-4">
                 <div>
-                    {errorMessage !== "" && <ErrorMessage message={errorMessage} title="Failed to update email address" />}
+                    {errorMessage !== "" && 
+                    <ErrorMessage 
+                        message={errorMessage} 
+                        title="Failed to update email address" 
+                    />}
                     <p className="mb-2">Email address</p>
                     <input 
                         type="text" 
@@ -84,7 +88,7 @@ function MyDetails({ userContext } : { userContext: IUserContext }) {
                     defaultText="Update details"
                     loadingText="Checking details"
                     styles={(!validFirst || !validSecond || firstEmail !== secondEmail) ? "invalid-button mt-3 main-btn" : "main-btn mt-3"}
-                    textColor="text-main-white"
+                    textStyles="text-main-white"
                     setErrorMessage={setErrorMessage}
                 />
             </div>

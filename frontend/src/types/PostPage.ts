@@ -12,6 +12,7 @@ export type PostPage = {
         rating: number,
         description: string,
         numReviews: number,
+        languages: string[],
         user: {
             username: string,
             country: string,

@@ -1,36 +1,42 @@
-import { PrismaClient, Prisma } from '@prisma/client';
+import { Prisma } from '@prisma/client';
 import bcrypt from 'bcrypt';
-import { env } from 'process';
-import pkg from 'cloudinary';
 import { DBError } from '../customErrors/DBError.js';
 import { checkUser } from '../utils/checkUser.js';
 import { paginationLimit } from "../index.js";
 import { sortPosts } from '../utils/sortPosts.js';
-
-export const prisma = new PrismaClient();
-export const cloudinary = pkg.v2;
-
-cloudinary.config({
-    cloud_name: env.CLOUDINARY_CLOUD_NAME,
-    api_secret: env.CLOUDINARY_API_SECRET,
-    api_key: env.CLOUDINARY_API_KEY
-});
+import { deleteCloudinaryResource } from '../utils/deleteCloudinaryResource.js';
+import { cloudinary } from '../index.js';
+import { prisma } from '../index.js';
 
 export async function updateProfilePictureHandler(req) {
     try {
-        checkUser(req.userData.userID, req.username);
-        const upload = cloudinary.uploader.upload(req.body.profilePic, { public_id: `FreeFinder/ProfilePictures/${req.userData.userID}` });
-        const success = await upload.then((data) => data);
+        await checkUser(req.userData.userID, req.username);
+
+        const result = await new Promise(async (resolve, reject) => {
+            const upload = cloudinary.uploader.upload(req.body.profilePic, { 
+                public_id: `FreeFinder/ProfilePictures/${req.userData.userID}` 
+            }, (err, result) => {
+                if (err) {
+                    reject(new DBError(err.message, err.http_code));
+                } else {
+                    resolve(result);
+                }
+            });
+
+            const success = await upload.then((data) => data);
+            return success;
+        });
         
         const updated = await prisma.user.update({
             where: { userID: req.userData.userID },
-            data: { profilePicURL: success.secure_url },
+            data: { profilePicURL: result.secure_url },
             include: {
                 seller: {
                     select: {
                         description: true,
                         rating: true,
-                        sellerID: true
+                        sellerID: true,
+                        languages: true
                     }
                 },
             }
@@ -57,7 +63,7 @@ export async function updateProfilePictureHandler(req) {
 
 export async function updatePasswordHandler(req) {
     try {
-        checkUser(req.userData.userID, req.username);
+        await checkUser(req.userData.userID, req.username);
         const hash = await bcrypt.hash(req.body.password, 10);
 
         await prisma.user.update({
@@ -124,6 +130,7 @@ export async function findUserHandler(usernameOrEmail, password) {
                         description: true,
                         rating: true,
                         sellerID: true,
+                        languages: true
                     }
                 },
             }
@@ -135,7 +142,7 @@ export async function findUserHandler(usernameOrEmail, password) {
 
         const passwordMatch = await bcrypt.compare(password, res.hash);
         if (!passwordMatch) {
-            throw new DBError("Password entered is incorrect. Ensure that you have entered it correctly.", 403)
+            throw new DBError("The password you entered is incorrect. Check that you entered it correctly.", 403)
         } else {
             const {hash, ...filtered} = res;
             return filtered;
@@ -157,7 +164,7 @@ export async function findUserHandler(usernameOrEmail, password) {
 
 export async function updateUserHandler(req) {
     try {
-        checkUser(req.userData.userID, req.username);
+        await checkUser(req.userData.userID, req.username);
         const {seller, ...res} = req.body;
         const userData = res;
 
@@ -169,7 +176,8 @@ export async function updateUserHandler(req) {
                     select: {
                         description: true,
                         rating: true,
-                        sellerID: true
+                        sellerID: true,
+                        languages: true
                     }
                 },
             }
@@ -196,12 +204,10 @@ export async function updateUserHandler(req) {
 
 export async function deleteUserHandler(req) {
     try {
-        checkUser(req.userData.userID, req.username);
-        await prisma.user.delete({ 
-            where: { 
-                userID: req.userData.userID 
-            } 
-        });
+        await checkUser(req.userData.userID, req.username);
+        await deleteCloudinaryResource(`FreeFinder/ProfilePictures/${req.userData.userID}`, "file");
+        await deleteCloudinaryResource(`FreeFinder/PostImages/${req.userData.userID}`, "folder");
+        await prisma.user.delete({ where: { userID: req.userData.userID } });
     }
     catch (err) {
         if (err instanceof DBError) {
@@ -298,11 +304,11 @@ export async function queryUserPosts(sellerID, req) {
             postID: true,
             images: {
                 where: { 
-                    imageNum: 0 
+                    isThumbnail: true
                 },
                 select: {
                     url: true,
-                    imageNum: true
+                    isThumbnail: true
                 }
             }
         }

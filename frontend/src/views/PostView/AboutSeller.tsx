@@ -3,11 +3,12 @@ import { PostPage } from "../../types/PostPage";
 import LocationIcon from '../../assets/location-sign-svgrepo-com(2).svg';
 import UserIcon from '../../assets/user-icon-svgrepo-com.svg';
 import StarGrayIcon from "../../assets/star-gray.png";
+import Options from "../../components/Options";
 
 function AboutSeller({ postData }: { postData: PostPage }) {
     return (
         <section className="bg-main-white border border-light-border-gray shadow-info-component 
-        rounded-[8px] p-6 h-fit w-full">
+        rounded-[12px] p-6 h-fit w-full">
             <div className="mb-4 flex gap-5">
                 <ProfilePicAndStatus 
                     profilePicURL={postData.postedBy.user.profilePicURL} 
@@ -39,19 +40,24 @@ function AboutSeller({ postData }: { postData: PostPage }) {
             </p>}
             <div className="flex gap-2 items-center mt-4">
                 <img src={LocationIcon} width="20px" height="20px" alt="location" />
-                <p className="text-side-text-gray">From</p>
-                <p className="ml-auto text-side-text-gray">{postData.postedBy.user.country}</p>
+                <p className="text-side-text-gray">Lives in</p>
+                <p className="ml-auto">{postData.postedBy.user.country}</p>
             </div>
             <div className="flex gap-2 items-center mt-2">
                 <img src={UserIcon} width="20px" height="20px" alt="location" />
                 <p className="text-side-text-gray">Member since</p>
-                <p className="ml-auto text-side-text-gray">{new Date(postData.postedBy.user.memberDate).toLocaleDateString()}</p>
+                <p className="ml-auto">{new Date(postData.postedBy.user.memberDate).toLocaleDateString()}</p>
             </div>
-            <div className="flex gap-2 items-center mt-2">
+            <div className="flex gap-2 items-center mt-2 mb-3">
                 <img src={StarGrayIcon} width="20px" height="20px" alt="location" />
                 <p className="text-side-text-gray">Seller rating</p>
-                <p className="ml-auto text-side-text-gray">{postData.postedBy.rating}</p>
+                <p className="ml-auto">{postData.postedBy.rating}</p>
             </div>
+            <p>Seller speaks</p>
+            <Options 
+                options={postData.postedBy.languages} 
+                styles="mt-2 mb-6" 
+            />
             <div className="w-full flex items-center justify-between mt-4">
                 <button className="side-btn">Save seller</button>
                 <button className="red-btn">Report seller</button>

@@ -1,4 +1,4 @@
-import { prisma } from "./UserService.js";
+import { prisma } from '../index.js';
 import { Prisma } from '@prisma/client';
 import { paginationLimit } from "../index.js";
 import { sortPosts } from '../utils/sortPosts.js';
@@ -7,7 +7,7 @@ import { checkUser } from "../utils/checkUser.js";
 
 export async function savePostHandler(postID, userID, username) {
     try {
-        checkUser(userID, username);
+        await checkUser(userID, username);
         await prisma.savedPost.create({
             data: {
                 userID: userID,
@@ -33,7 +33,7 @@ export async function savePostHandler(postID, userID, username) {
 
 export async function getSavedPostsHandler(req) {
     try {
-        checkUser(req.userData.userID, req.username);
+        await checkUser(req.userData.userID, req.username);
         return querySavedPosts(req);
     }
     catch (err) {
@@ -106,11 +106,11 @@ export async function querySavedPosts(req) {
                     postID: true,
                     images: {
                         where: { 
-                            imageNum: 0 
+                            isThumbnail: true
                         },
                         select: {
                             url: true,
-                            imageNum: true
+                            isThumbnail: true
                         }
                     }
                 }
@@ -138,7 +138,7 @@ export async function querySavedPosts(req) {
 
 export async function deleteSavedPostHandler(postID, userID, username) {
     try {
-        checkUser(userID, username);
+        await checkUser(userID, username);
         await prisma.savedPost.delete({
             where: {
                 userID_postID: {

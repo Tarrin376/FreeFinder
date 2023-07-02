@@ -1,5 +1,6 @@
 import { useRef, useState, useEffect } from "react";
-import LoadingIcon from '../assets/Infinity-1s-200px.svg';
+import WhiteLoadingIcon from '../assets/loading-white.svg';
+import RedLoadingIcon from '../assets/loading-red.svg';
 
 interface ButtonProps {
     action: () => Promise<string | undefined>,
@@ -8,10 +9,10 @@ interface ButtonProps {
     loadingText: string,
     styles: string,
     children?: React.ReactNode,
-    textColor: string,
-    hideLoadingIcon?: boolean,
+    textStyles: string,
     setErrorMessage: React.Dispatch<React.SetStateAction<string>>,
-    whenComplete?: () => void
+    whenComplete?: () => void,
+    redLoadingIcon?: boolean
 }
 
 function Button(props: ButtonProps) {
@@ -21,9 +22,14 @@ function Button(props: ButtonProps) {
   
     const handleAction = async (e: React.MouseEvent<HTMLButtonElement>) => {
         e.preventDefault();
-        setBtnText(props.loadingText);
         
+        if (disabled) {
+            return;
+        }
+        
+        setBtnText(props.loadingText);
         const error = await props.action();
+
         if (!error) {
             setBtnText(props.completedText);
         } else {
@@ -33,7 +39,8 @@ function Button(props: ButtonProps) {
             setTimeout(() => {
                 props.setErrorMessage("");
                 setDisabled(false);
-            }, 3500);
+            }, 5000);
+
             setBtnText(props.defaultText);
         }
     }
@@ -63,15 +70,16 @@ function Button(props: ButtonProps) {
         <button className={`${props.styles} ${btnText !== props.defaultText ? "pointer-events-none" : ""} 
         ${disabled ? "pointer-events-none invalid-button" : ""}`} 
         ref={btnRef} onClick={handleAction} type="submit">
-            <div className="flex items-center justify-center gap-3">
-                {btnText === props.loadingText && !props.hideLoadingIcon ? <img src={LoadingIcon} className="w-8 mt-[1px]" alt="..." />
-                : props.children && btnText === props.defaultText && props.children}
-                <p className={disabled ? "text-disabled-gray" : props.textColor}>
-                    {`${btnText}${props.hideLoadingIcon && btnText === props.loadingText ? "..." : ""}`}
+            <div className="flex items-center justify-center gap-[10px]">
+                {btnText === props.loadingText ? 
+                <img src={props.redLoadingIcon ? RedLoadingIcon : WhiteLoadingIcon} className="w-8 mt-[1px]" alt="" /> :
+                props.children && btnText === props.defaultText && props.children}
+                <p className={disabled ? "text-disabled-gray" : props.textStyles}>
+                    {btnText}
                 </p>
             </div>
         </button>
     )
-  };
-  
-  export default Button;
+};
+
+export default Button;

@@ -7,7 +7,7 @@ import { ISeller } from "../models/ISeller";
 import { getAPIErrorMessage } from "../utils/getAPIErrorMessage";
 import Button from "./Button";
 import { useFetchLanguages } from "../hooks/useFetchLanguages";
-import CloseIcon from "../assets/close.png";
+import Options from "./Options";
 
 const MAX_DESC_CHARS = 250;
 
@@ -21,7 +21,7 @@ function SellerProfile({ setSellerProfilePopUp }: SellerProfileProps) {
     const [errorMessage, setErrorMessage] = useState<string>("");
     const [language, setLanguage] = useState<string>("");
     const [matchedLanguages, setMatchedLanguages] = useState<string[][]>([]);
-    const [selectedLanguages, setSelectedLanguages] = useState<string[]>([]);
+    const [selectedLanguages, setSelectedLanguages] = useState<string[]>(userContext.userData.seller?.languages ? userContext.userData.seller.languages : []);
     const allLanguages = useFetchLanguages();
     
     function closeSellerProfilePopUp(): void {
@@ -32,6 +32,7 @@ function SellerProfile({ setSellerProfilePopUp }: SellerProfileProps) {
         try {
             const resp = await axios.put<{ updatedData: ISeller, message: string }>(`/api/sellers/${userContext.userData.username}`, {
                 description: description,
+                languages: selectedLanguages
             });
 
             userContext.setUserData({ 
@@ -74,20 +75,23 @@ function SellerProfile({ setSellerProfilePopUp }: SellerProfileProps) {
     }
 
     function removeLanguage(language: string): void {
-        console.log(language);
         setSelectedLanguages((selected: string[]) => selected.filter((curLang: string) => curLang !== language));
     }
 
     return (
         <PopUpWrapper setIsOpen={setSellerProfilePopUp} title={"Seller Profile"}>
-            {errorMessage !== "" && <ErrorMessage message={errorMessage} title={"Unable to update seller profile"} />}
+            {errorMessage !== "" && 
+            <ErrorMessage 
+                message={errorMessage} 
+                title={"Unable to update seller profile"} 
+            />}
             <p className="mb-2">
                 Seller description 
                 <span className="text-side-text-gray">
                     {` (Max ${MAX_DESC_CHARS} characters)`}
                 </span>
             </p>
-            <textarea rows={7} className="search-bar mb-4" defaultValue={userContext.userData.seller.description} 
+            <textarea rows={7} className="search-bar mb-4" defaultValue={userContext.userData.seller?.description} 
             maxLength={MAX_DESC_CHARS} onChange={(e) => setDescription(e.target.value)} />
             <p className="mb-2">Languages you speak</p>
             <input 
@@ -107,10 +111,11 @@ function SellerProfile({ setSellerProfilePopUp }: SellerProfileProps) {
 
                         return (
                             <p className="font-semibold cursor-pointer transition-all ease-linear duration-100 hover:px-2"
-                            onClick={() => addLanguage(cur[0])}>
+                            onClick={() => addLanguage(cur[0])} key={cur[0]}>
                                 {result.map((char: string, curIndex: number) => {
                                     return (
-                                        <span className={curIndex >= index && curIndex < index + language.length ? "bg-highlight" : ""}>
+                                        <span className={curIndex >= index && curIndex < index + language.length ? "bg-highlight" : ""}
+                                        key={curIndex}>
                                             {char}
                                         </span>
                                     )
@@ -121,24 +126,18 @@ function SellerProfile({ setSellerProfilePopUp }: SellerProfileProps) {
                 </div>
             </div>}
             {selectedLanguages.length > 0 &&
-            <div className="mt-4 flex items-center gap-3 flex-wrap">
-                {selectedLanguages.map((cur: string) => {
-                    return (
-                        <div className="rounded-full py-1 px-3 bg-highlight flex items-center gap-2 cursor-pointer" 
-                        onClick={() => removeLanguage(cur)}>
-                            <p className="text-sm">{cur}</p>
-                            <img src={CloseIcon} className="w-[13px] h-[13px] mt-[1px]" alt="" />
-                        </div>
-                    )
-                })}
-            </div>}
+            <Options 
+                options={selectedLanguages} 
+                removeOption={removeLanguage}
+                styles="mt-4"
+            />}
             <Button
                 action={updateSellerDetails}
                 completedText="Seller profile updated"
                 defaultText="Update seller profile"
                 loadingText="Updating seller profile"
-                styles="main-btn mt-[35px]"
-                textColor="text-main-white"
+                styles={`main-btn mt-[35px] ${selectedLanguages.length === 0 ? "invalid-button" : ""}`}
+                textStyles="text-main-white"
                 setErrorMessage={setErrorMessage}
                 whenComplete={closeSellerProfilePopUp}
             />

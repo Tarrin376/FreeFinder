@@ -8,5 +8,5 @@ export interface IUser {
     status: string,
     userID: string,
     memberDate: Date,
-    seller: ISeller
+    seller: ISeller | null
 }

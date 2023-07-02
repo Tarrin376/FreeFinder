@@ -23,7 +23,7 @@ function SavedServicesView() {
 
     return (
         <PageWrapper styles="min-h-[calc(100vh-180px)]">
-            <h1 className="text-2xl mb-6">My Saved Posts</h1>
+            <h1 className="text-[20px] mb-6">My Saved Posts</h1>
             {(filterContext.posts.loading || filterContext.posts.allPosts.length > 0) && 
             <PostsWrapper>
                 {filterContext.posts.allPosts.map((post: IPost) => {

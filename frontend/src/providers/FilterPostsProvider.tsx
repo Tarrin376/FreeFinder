@@ -69,10 +69,10 @@ function FilterPostsProvider({ children }: FilterPostsContextProps) {
                 <div className="h-[calc(100vh-90px)] min-w-[350px] bg-main-white border-r border-light-border-gray p-7">
                     <button onClick={openPostService} className="btn-primary text-main-white bg-main-blue w-full px-5 h-[45px] 
                     hover:bg-main-blue-hover flex items-center justify-center gap-2 mb-[45px]">
-                        <img src={AddIcon} alt="" className="w-[17px] h-[17px]" />
+                        <img src={AddIcon} alt="" className="w-[16px] h-[16px]" />
                         Create new post
                     </button>
-                    <h2 className="text-[23px]">Details</h2>
+                    <h2 className="text-[20px]">Details</h2>
                 </div>
                 <div className="flex-grow">
                     <div className="border-b border-b-very-light-gray bg-white">

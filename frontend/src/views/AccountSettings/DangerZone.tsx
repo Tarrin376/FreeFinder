@@ -10,14 +10,14 @@ function DangerZone({ userContext, setSettingsPopUp }: { userContext: IUserConte
     setSettingsPopUp: React.Dispatch<React.SetStateAction<boolean>> }) {
     const [errorMessage, setErrorMessage] = useState<string>("");
 
-    const closeSettingsPopUp = () => {
+    const resetUserState = () => {
+        userContext.setUserData(initialState.userData);
         setSettingsPopUp(false);
     }
 
     async function deleteAccount(): Promise<string | undefined> {
         try {
             await axios.delete<{ message: string }>(`/api/users/${userContext.userData.username}`);
-            userContext.setUserData(initialState.userData);
         }
         catch(err: any) {
             const errorMessage = getAPIErrorMessage(err as AxiosError<{ message: string }>);
@@ -27,8 +27,12 @@ function DangerZone({ userContext, setSettingsPopUp }: { userContext: IUserConte
 
     return (
         <>
-            {errorMessage !== "" && <ErrorMessage message={errorMessage} title="Failed to delete account" />}
-            <h1 className="text-[23px] text-error-text">Delete account</h1>
+            {errorMessage !== "" && 
+            <ErrorMessage 
+                message={errorMessage} 
+                title="Failed to delete account" 
+            />}
+            <h1 className="text-[20px] text-error-text">Delete account</h1>
             <p className="text-side-text-gray mt-1 pb-4">
                 Once you delete your account, there is no going back. Please be certain.
             </p>
@@ -38,9 +42,10 @@ function DangerZone({ userContext, setSettingsPopUp }: { userContext: IUserConte
                 defaultText="Delete account"
                 loadingText="Deleting account"
                 styles="red-btn"
-                textColor="text-error-text"
+                textStyles="text-error-text"
                 setErrorMessage={setErrorMessage}
-                whenComplete={closeSettingsPopUp}
+                whenComplete={resetUserState}
+                redLoadingIcon={true}
             />
         </>
     );

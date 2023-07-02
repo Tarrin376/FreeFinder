@@ -1,14 +1,14 @@
 import { IUser } from "../models/IUser";
 import axios from "axios";
 
-export async function fetchUpdatedUser(data: IUser, profilePic?: string | unknown): Promise<{ message: string, userData: IUser }> {
+export async function fetchUpdatedUser(data: IUser, username: string, profilePic?: string | unknown): Promise<{ message: string, userData: IUser }> {
     if (profilePic !== undefined) {
-        const response = await updateProfilePic(profilePic, data.username);
+        const response = await updateProfilePic(profilePic, username);
         data = response.userData;
     }
     
     try {
-        const resp = await axios.put<{ userData: IUser, message: string }>(`/api/users/${data.username}`, {
+        const resp = await axios.put<{ userData: IUser, message: string }>(`/api/users/${username}`, {
             ...data,
             profilePicURL: profilePic === "" ? profilePic : data.profilePicURL
         });

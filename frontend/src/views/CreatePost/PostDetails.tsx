@@ -17,11 +17,13 @@ interface PostDetailsProps {
     createPost: () => Promise<string | undefined>,
     setErrorMessage: React.Dispatch<React.SetStateAction<string>>,
     setFailedUploads: React.Dispatch<React.SetStateAction<FailedUpload[]>>,
+    setCreatedPost: React.Dispatch<React.SetStateAction<boolean>>,
     about: string,
     title: string,
     errorMessage: string,
     failedUploads: FailedUpload[],
-    postID: string
+    postID: string,
+    createdPost: boolean
 }
 
 function PostDetails(props: PostDetailsProps) {
@@ -37,11 +39,7 @@ function PostDetails(props: PostDetailsProps) {
 
     async function retryFileUpload(upload: FailedUpload): Promise<string | undefined> {
         try {
-            await axios.post(`/api/posts/${props.postID}`, {
-                isThumbnail: false,
-                image: upload.imageData.image,
-                imageNum: upload.index
-            });
+            await axios.post(`/api/posts/${props.postID}`, { image: upload.imageData.image });
         }
         catch (err: any) {
             const errorMessage = getAPIErrorMessage(err as AxiosError<{ message: string }>);
@@ -52,6 +50,16 @@ function PostDetails(props: PostDetailsProps) {
     function ignoreUpload(upload: FailedUpload) {
         if (props.failedUploads.length === 1) props.setErrorMessage("");
         props.setFailedUploads((cur) => cur.filter((x: FailedUpload) => x.imageData.image !== upload.imageData.image));
+    }
+
+    async function deletePost(): Promise<string | undefined> {
+        try {
+            await axios.delete<{ message: string }>(`/api/posts/${props.postID}`);
+        }
+        catch (err: any) {
+            const errorMessage = getAPIErrorMessage(err as AxiosError<{ message: string }>);
+            return errorMessage;
+        }
     }
 
     return (
@@ -71,7 +79,7 @@ function PostDetails(props: PostDetailsProps) {
                 {props.failedUploads.map((upload: FailedUpload, index: number) => {
                     return (
                         <File file={upload.imageData.file} key={index} description={upload.errorMessage} error={true}>
-                            <button className="bg-main-white border-2 border-light-gray btn-primary w-[120px] px-3
+                            <button className="bg-main-white border-2 border-light-gray btn-primary min-w-[120px] px-3
                             hover:bg-main-white-hover" onClick={() => ignoreUpload(upload)}>
                                 Ignore
                             </button>
@@ -80,18 +88,18 @@ function PostDetails(props: PostDetailsProps) {
                                 completedText="Uploaded"
                                 defaultText="Retry"
                                 loadingText="Retrying"
-                                styles="red-btn w-[120px] px-3"
-                                textColor="text-error-text"
-                                hideLoadingIcon={true}
+                                styles="red-btn w-[130px] px-3"
+                                textStyles="text-error-text"
                                 setErrorMessage={props.setErrorMessage}
                                 whenComplete={() => ignoreUpload(upload)}
+                                redLoadingIcon={true}
                             />
                         </File>
                     )
                 })}
             </div>}
             <h3 className="mb-2 mt-6">What category does your service fall under?</h3>
-            <select className="p-2 search-bar cursor-pointer mb-4">
+            <select className="search-bar cursor-pointer mb-4">
                 {Object.keys(categories).map((category, index) => {
                     return (
                         <option key={index}>
@@ -119,18 +127,31 @@ function PostDetails(props: PostDetailsProps) {
                 maxLength={1500} 
             />
             <div className="flex justify-end gap-3 mt-8">
-                <button className="side-btn" onClick={() => props.setSection(Sections.BasicPackage)}>
+                <button className="side-btn w-[110px]" onClick={() => props.setSection(Sections.BasicPackage)}>
                     Back
                 </button>
+                {props.createdPost ?
+                <Button 
+                    action={deletePost}
+                    completedText="Post deleted"
+                    defaultText="Delete post"
+                    loadingText="Deleting post"
+                    styles="red-btn btn-primary"
+                    textStyles="text-error-text"
+                    setErrorMessage={props.setErrorMessage}
+                    whenComplete={() => props.setPostService(false)}
+                    redLoadingIcon={true}
+                /> :
                 <Button
                     action={props.createPost}
                     completedText="Post created"
                     defaultText="Post service"
                     loadingText="Creating post"
                     styles={`w-[185px] ${!validInputs() ? "invalid-button" : "main-btn !h-[42px]"}`}
-                    textColor="text-main-white"
+                    textStyles="text-main-white"
                     setErrorMessage={props.setErrorMessage}
-                />
+                    whenComplete={() => props.setCreatedPost(true)}
+                />}
             </div>
         </PopUpWrapper>
     );

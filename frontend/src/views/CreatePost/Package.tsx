@@ -127,7 +127,7 @@ function Package(props: PackageProps) {
                 value={props.deliveryTime > 0 ? props.deliveryTime : ""} 
             />
             <h3 className="mb-2">Amount of revisions</h3>
-            <ul className="items-center w-fit text-sm flex bg-[#f8f9fa] rounded-[8px] px-2 mb-4">
+            <ul className="items-center w-fit text-sm flex bg-[#f7f7f7] rounded-[8px] px-2 mb-4">
                 {new Array(MAX_REVISIONS).fill(true).map((_, index) => {
                     return (
                         <RevisionListItem 
@@ -164,7 +164,7 @@ function Package(props: PackageProps) {
                 Add Feature
             </button>
             {props.features.length > 0 && 
-            <div className="flex flex-col gap-2 max-h-[200px] mt-5 overflow-scroll scrollbar-hide p-[8px] bg-[#f8f9fa] rounded-[8px]">
+            <div className="flex flex-col gap-2 max-h-[200px] mt-5 overflow-scroll scrollbar-hide p-[8px] bg-[#f7f7f7] rounded-[8px]">
                 {props.features.map((value, index) => {
                     return (
                         <input type="text" className="search-bar" value={value} placeholder={"E.g. Video Thumbnail included"}

@@ -2,8 +2,8 @@ import { createPostHandler, getPostHandler, deletePostHandler, addImageHandler }
 
 export async function createPost(req, res) {
     try {
-        const postID = await createPostHandler(req.body.post, req.body.startingPrice, req.userData.userID);
-        res.status(201).json({ postID, message: "success" });
+        const result = await createPostHandler(req.body.post, req.body.startingPrice, req.userData.userID);
+        res.status(201).json({ postID: result.postID, seller: result.seller, message: "success" });
     }
     catch (err) {
         res.status(err.code).json({ message: err.message });

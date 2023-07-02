@@ -22,7 +22,7 @@ function UserProfile({  userContext }: { userContext: IUserContext }) {
                 ...userContext.userData, 
                 username, 
                 country: countryRef.current!.value 
-            });
+            }, userContext.userData.username);
 
             userContext.setUserData(updated.userData);
         }
@@ -34,13 +34,17 @@ function UserProfile({  userContext }: { userContext: IUserContext }) {
 
     return (
         <>
-            <h1 className="text-[23px]">Profile</h1>
+            <h1 className="text-[20px]">Profile</h1>
             <p className="text-side-text-gray mt-1 pb-4 border-b border-b-nav-search-gray">
                 Customize your profile
             </p>
             <div className="flex mt-7 flex-col gap-4">
                 <div>
-                    {errorMessage !== "" && <ErrorMessage message={errorMessage} title="Failed to update username" />}
+                    {errorMessage !== "" && 
+                    <ErrorMessage 
+                        message={errorMessage} 
+                        title="Failed to update username" 
+                    />}
                     <p className="mb-2">Username</p>
                     <input type="text" name="change-username" className={`search-bar ${username === "" && "invalid-input"}`} 
                     value={username} onChange={(e) => setUsername(e.target.value)} />
@@ -62,7 +66,7 @@ function UserProfile({  userContext }: { userContext: IUserContext }) {
                     defaultText="Update profile"
                     loadingText="Checking details"
                     styles={username === "" ? "invalid-button main-btn mt-3" : "mt-3 main-btn"}
-                    textColor="text-main-white"
+                    textStyles="text-main-white"
                     setErrorMessage={setErrorMessage}
                 />
             </div>

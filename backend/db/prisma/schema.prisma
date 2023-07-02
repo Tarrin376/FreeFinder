@@ -35,6 +35,7 @@ model Seller {
     posts       Post[]
     description String
     numReviews  Int      @default(0)
+    languages   String[] @default(["english"])
 }
 
 model SavedPost {
@@ -63,10 +64,10 @@ model Post {
 }
 
 model PostImage {
-    post     Post   @relation("Images", fields: [postID], references: [postID], onDelete: Cascade)
-    postID   String
-    url      String
-    imageNum Int    @default(0)
+    post        Post    @relation("Images", fields: [postID], references: [postID], onDelete: Cascade)
+    postID      String
+    url         String
+    isThumbnail Boolean @default(false)
 
     @@id([postID, url])
 }

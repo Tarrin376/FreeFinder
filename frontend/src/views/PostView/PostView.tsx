@@ -23,7 +23,7 @@ function PostView() {
     const updateSelectedImage = (index: number) => {
         setSelectedImage(index);
     }
-
+    
     useNavigateErrorPage("Something isn't quite right...", errorMessage);
     
     useEffect(() => {
@@ -61,7 +61,7 @@ function PostView() {
                     </div>
                     <div>
                         <div className="flex items-center gap-[7px]">
-                            <p className="nav-item">{postData.postedBy.user.username}</p>
+                            <p className="nav-item hover:font-normal">{postData.postedBy.user.username}</p>
                             <img src={StarIcon} className="w-[15px] h-[15px]" alt="star" />
                             <p className="text-[15px]">{postData.postedBy.rating}</p>
                             <p className="text-[15px] text-side-text-gray">({postData.postedBy.numReviews} reviews)</p>
@@ -73,7 +73,7 @@ function PostView() {
                 </div>
                 <div className="flex gap-20 mt-8">
                     <div className="flex-grow">
-                        <div className="bg-main-white w-full h-[550px] rounded-[8px] bg-contain bg-no-repeat bg-center 
+                        <div className="bg-main-white w-full h-[550px] rounded-[12px] bg-contain bg-no-repeat bg-center 
                         border border-light-border-gray shadow-info-component flex items-center justify-between p-4" 
                         style={{ backgroundImage: `url(${postData.images[selectedImage].url})` }}>
                             <button className="carousel-btn" onClick={() => updateSelectedImage(selectedImage === 0 ? postData.images.length - 1 : selectedImage - 1)}>

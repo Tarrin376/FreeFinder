@@ -1,11 +1,22 @@
-import { prisma } from "./UserService.js";
+import { prisma } from '../index.js';
 import { Prisma } from '@prisma/client';
 import { DBError } from "../customErrors/DBError.js";
 import { checkUser } from "../utils/checkUser.js";
 
 export async function findSeller(userID) {
     try {
-        const seller = await prisma.seller.findUnique({ where: { userID: userID } });
+        const seller = await prisma.seller.findUnique({ 
+            where: { 
+                userID: userID 
+            },
+            select: {
+                description: true,
+                rating: true,
+                sellerID: true,
+                languages: true
+            }
+        });
+
         if (!seller) {
             const newSeller = await createSeller(userID);
             return newSeller;
@@ -34,6 +45,12 @@ async function createSeller(id) {
                 userID: id,
                 rating: 0,
                 description: "",
+            },
+            select: {
+                description: true,
+                rating: true,
+                sellerID: true,
+                languages: true
             }
         });
 
@@ -57,18 +74,20 @@ async function createSeller(id) {
 
 export async function updateSellerDetailsHandler(req) {
     try {
-        checkUser(req.userData.userID, req.params.username);
+        await checkUser(req.userData.userID, req.params.username);
         const updatedDetails = await prisma.seller.update({
             where: {
                 userID: req.userData.userID
             },
             data: {
-                description: req.body.description
+                description: req.body.description,
+                languages: req.body.languages
             },
             select: {
                 sellerID: true,
                 description: true,
                 rating: true,
+                languages: true
             }
         });
 

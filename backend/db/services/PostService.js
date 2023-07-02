@@ -1,8 +1,33 @@
 import { Prisma } from '@prisma/client';
-import { prisma } from './UserService.js';
 import { findSeller } from './SellerService.js';
 import { DBError } from "../customErrors/DBError.js";
-import { cloudinary } from './UserService.js';
+import { deleteCloudinaryResource } from '../utils/deleteCloudinaryResource.js';
+import { cloudinary } from '../index.js';
+import { prisma } from '../index.js';
+import { v4 as uuidv4 } from 'uuid';
+
+async function uploadImage(postID, image, url, isThumbnail) {
+    const result = await new Promise(async (resolve, reject) => {
+        const upload = cloudinary.uploader.upload(image, { public_id: url }, (err, result) => {
+            if (err) {
+                reject(new DBError(err.message, err.http_code));
+            } else {
+                resolve(result);
+            }
+        });
+
+        const success = await upload.then((data) => data);
+        return success;
+    });
+
+    await prisma.postImage.create({
+        data: {
+            postID: postID,
+            url: result.secure_url,
+            isThumbnail: isThumbnail
+        }
+    });
+}
 
 export async function createPostHandler(postData, startingPrice, userID) {
     try {
@@ -13,25 +38,30 @@ export async function createPostHandler(postData, startingPrice, userID) {
                 title: postData.title,
                 startingPrice: startingPrice,
                 sellerID: seller.sellerID
+            },
+            select: {
+                postID: true
             }
         });
 
-        const upload = cloudinary.uploader.upload(postData.thumbnail, { public_id: `FreeFinder/PostImages/${userID}-0` });
-        const success = await upload.then((data) => data);
+        await uploadImage(res.postID, postData.thumbnail, `FreeFinder/PostImages/${userID}/${res.postID}/${uuidv4()}`, true);
+        await createPostPackage(postData.packages[0], res.postID, postData.packages[0].type);
 
-        await prisma.postImage.create({
-            data: {
-                url: success.secure_url,
-                postID: res.postID
-            }
-        });
+        if (postData.packages.length >= 2) {
+            await createPostPackage(postData.packages[1], res.postID, postData.packages[1].type);
+        }
 
-        createPostPackage(postData.packages[0], res.postID, postData.packages[0].type);
-        if (postData.packages.length >= 2) createPostPackage(postData.packages[1], res.postID, postData.packages[1].type);
-        if (postData.packages.length === 3) createPostPackage(postData.packages[2], res.postID, postData.packages[2].type);
-        return res.postID;
+        if (postData.packages.length === 3) {
+            await createPostPackage(postData.packages[2], res.postID, postData.packages[2].type);
+        }
+        
+        return {
+            postID: res.postID,
+            seller: seller
+        };
     }
     catch (err) {
+        console.log("uo");
         if (err instanceof DBError) {
             throw err;
         } else if (err instanceof Prisma.PrismaClientValidationError) {
@@ -51,11 +81,15 @@ export async function addImageHandler(req) {
             where: { 
                 postID: req.params.id 
             },
-            include: {
-                postedBy: true
+            select: {
+                postedBy: {
+                    select: {
+                        userID: true
+                    }
+                }
             }
         });
-        
+
         if (!post) {
             throw new DBError("Post not found.", 404);
         }
@@ -64,20 +98,11 @@ export async function addImageHandler(req) {
             throw new DBError("You are not authorized to add an image to this post.", 403);
         }
 
-        if (req.body.imageNum === undefined) {
-            throw new DBError("Image number not specified.", 400);
-        }
-
-        const upload = cloudinary.uploader.upload(req.body.image, { public_id: `FreeFinder/PostImages/${req.userData.userID}-${req.body.imageNum}` });
-        const success = await upload.then((data) => data);
-
-        await prisma.postImage.create({
-            data: {
-                postID: req.params.id,
-                url: success.secure_url,
-                imageNum: req.body.imageNum
-            }
-        });
+        await uploadImage(
+            req.params.id,
+            req.body.image, 
+            `FreeFinder/PostImages/${req.userData.userID}/${req.params.id}/${uuidv4()}`, 
+            false);
     }
     catch (err) {
         if (err instanceof DBError) {
@@ -109,6 +134,7 @@ export async function createPostPackage(packageData, postID, type) {
         });
     }
     catch (err) {
+        console.log("uo");
         if (err instanceof DBError) {
             throw err;
         }  else if (err instanceof Prisma.PrismaClientValidationError) {
@@ -128,9 +154,9 @@ export async function getPostHandler(postID) {
             where: {
                 postID: postID
             },
-            include: {
+            select: {
                 postedBy: {
-                    include: {
+                    select: {
                         user: {
                             select: {
                                 username: true,
@@ -140,6 +166,10 @@ export async function getPostHandler(postID) {
                                 profilePicURL: true,
                             }
                         },
+                        rating: true,
+                        description: true,
+                        numReviews: true,
+                        languages: true
                     },
                 },
                 packages: {
@@ -155,15 +185,24 @@ export async function getPostHandler(postID) {
                     }
                 },
                 images: {
+                    select: {
+                        url: true,
+                        isThumbnail: true
+                    },
                     orderBy: {
-                        imageNum: 'asc'
+                        isThumbnail: 'desc'
                     }
-                }
+                },
+                startingPrice: true,
+                title: true,
+                createdAt: true,
+                about: true,
+                sellerID: true,
+                postID: true
             }
         });
         
-        const { userID, sellerID, ...postedBy } = postData.postedBy;
-        return { ...postData, postedBy };
+        return postData;
     }
     catch (err) {
         if (err instanceof DBError) {
@@ -186,7 +225,7 @@ export async function deletePostHandler(postID, userID) {
             where: { 
                 userID: userID 
             },
-            include: {
+            select: {
                 seller: {
                     select: {
                         sellerID: true
@@ -201,9 +240,10 @@ export async function deletePostHandler(postID, userID) {
             throw new DBError("Post not found.", 404);
         } else if (post.sellerID !== user.seller.sellerID) {
             throw new DBError("You do not have authorization to delete this post.", 403);
-        } else {
-            await prisma.post.delete({ where: { postID: postID } });
-        }
+        } 
+        
+        await deleteCloudinaryResource(`FreeFinder/PostImages/${userID}/${postID}`, "folder");
+        await prisma.post.delete({ where: { postID: postID } });
     }
     catch (err) {
         if (err instanceof DBError) {

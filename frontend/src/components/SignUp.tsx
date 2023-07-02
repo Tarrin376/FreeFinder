@@ -90,11 +90,15 @@ function SignUp({ setLogIn, setSignUp, setAccountCreated }: SignUpProps) {
         <PopUpWrapper setIsOpen={setSignUp} title={"Create your new account"} styles="!max-w-[470px]">
             <form>
                 <p className="mb-6 text-side-text-gray text-[16px]">Signing up for FreeFinder is fast and 100% free!</p>
-                {errorMessage !== "" && <ErrorMessage message={errorMessage} title={"Account creation failed."} />}
+                {errorMessage !== "" && 
+                <ErrorMessage 
+                    message={errorMessage} 
+                    title={"Account creation failed."} 
+                />}
                 <div className="flex flex-col mb-8">
                     <input 
                         type="email" 
-                        placeholder="Enter your email*" 
+                        placeholder="Enter your email" 
                         className={`search-bar ${!form.validEmailFirst && form.emailFirst !== "" && "invalid-input"}`} 
                         onChange={(e) => checkEmail(e, true)}
                     />
@@ -104,7 +108,7 @@ function SignUp({ setLogIn, setSignUp, setAccountCreated }: SignUpProps) {
                     </p>}
                     <input 
                         type="email" 
-                        placeholder="Confirm your email*" 
+                        placeholder="Confirm your email" 
                         className={`search-bar mt-3 ${!form.validEmailSecond && form.emailSecond !== "" && "invalid-input"}`} 
                         onChange={(e) => checkEmail(e, false)}
                         onPaste={(e) => {
@@ -116,10 +120,15 @@ function SignUp({ setLogIn, setSignUp, setAccountCreated }: SignUpProps) {
                     <p className="text-box-error-message">
                         Email address does not match
                     </p>}
-                    <input type="text" placeholder="Create a username*" className="search-bar mt-3" onChange={(e) => checkUsername(e)} />
+                    <input 
+                        type="text" 
+                        placeholder="Create a username" 
+                        className="search-bar mt-3" 
+                        onChange={(e) => checkUsername(e)} 
+                    />
                     <input 
                         type="password" 
-                        placeholder="Create a password*" 
+                        placeholder="Create a password" 
                         className={`search-bar mt-3 mb-3 ${!form.validPassword && form.password !== "" && "invalid-input"}`} 
                         onChange={(e) => checkPassword(e)} 
                     />
@@ -135,7 +144,7 @@ function SignUp({ setLogIn, setSignUp, setAccountCreated }: SignUpProps) {
                     defaultText="Create account"
                     loadingText="Checking details"
                     styles={!isValidForm() ? "invalid-button main-btn" : "main-btn"}
-                    textColor="text-main-white"
+                    textStyles="text-main-white"
                     setErrorMessage={setErrorMessage}
                 />
                 <p className="mt-6 text-side-text-gray text-[15px]">Already have an account? 

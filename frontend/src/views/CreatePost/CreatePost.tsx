@@ -1,4 +1,4 @@
-import { useState, useRef } from 'react';
+import { useState, useRef, useContext } from 'react';
 import UploadPostFiles from "./UploadPostFiles";
 import PostDetails from "./PostDetails";
 import ChooseThumbnail from './ChooseThumbnail';
@@ -8,6 +8,8 @@ import axios, { AxiosError } from "axios";
 import { getAPIErrorMessage } from "../../utils/getAPIErrorMessage";
 import { FailedUpload } from '../../types/FailedUploaded';
 import { ImageData } from '../../types/ImageData';
+import { ISeller } from '../../models/ISeller';
+import { UserContext } from '../../providers/UserContext';
 
 interface CreatePostProps {
     setPostService: React.Dispatch<React.SetStateAction<boolean>>,
@@ -36,7 +38,9 @@ function CreatePost({ setPostService, resetState }: CreatePostProps) {
     const [uploadedImages, setUploadedImages] = useState<ImageData[]>([]);
     const [thumbnail, setThumbnail] = useState<unknown>();
     const [failedUploads, setFailedUploads] = useState<FailedUpload[]>([]);
+    const [createdPost, setCreatedPost] = useState<boolean>(false);
     const postID = useRef<string>("");
+    const userContext = useContext(UserContext);
 
     // PostDetails states
     const [title, setTitle] = useState<string>("");
@@ -119,7 +123,7 @@ function CreatePost({ setPostService, resetState }: CreatePostProps) {
         const minPrice = post.packages.reduce((acc, cur) => Math.min(cur.amount, acc), Infinity);
 
         try {
-            const resp = await axios.post<{ postID: string, message: string }>(`/api/posts`, {
+            const resp = await axios.post<{ postID: string, seller: ISeller, message: string }>(`/api/posts`, {
                 startingPrice: minPrice,
                 post: post
             });
@@ -131,6 +135,13 @@ function CreatePost({ setPostService, resetState }: CreatePostProps) {
                 setErrorMessage("");
                 setPostService(false);
                 resetState();
+            }
+
+            if (!userContext.userData.seller) {
+                userContext.setUserData({
+                    ...userContext.userData,
+                    seller: resp.data.seller
+                });
             }
         }
         catch (err: any) {
@@ -146,9 +157,7 @@ function CreatePost({ setPostService, resetState }: CreatePostProps) {
             try {
                 if (uploadedImages[i].image !== thumbnail) {
                     await axios.post(`/api/posts/${postID}`, {
-                        isThumbnail: false,
                         image: uploadedImages[i].image,
-                        imageNum: i + 1
                     });
                 }
             }
@@ -156,15 +165,14 @@ function CreatePost({ setPostService, resetState }: CreatePostProps) {
                 const errorMessage = getAPIErrorMessage(err as AxiosError<{ message: string }>);
                 failed.push({
                     imageData: uploadedImages[i], 
-                    errorMessage: errorMessage,
-                    index: i
+                    errorMessage: errorMessage
                 });
             }
         }
 
         setFailedUploads(failed);
         if (failed.length > 0) {
-            setErrorMessage(`Unable to upload ${failed.length} ${failed.length === 1 ? "image" : "images"} to our servers.`);
+            setErrorMessage(`Unable to upload ${failed.length} ${failed.length === 1 ? "image" : "images"}.`);
             return false;
         }
 
@@ -276,6 +284,8 @@ function CreatePost({ setPostService, resetState }: CreatePostProps) {
                     failedUploads={failedUploads}
                     setFailedUploads={setFailedUploads}
                     postID={postID.current}
+                    createdPost={createdPost}
+                    setCreatedPost={setCreatedPost}
                 />
             );
     }

@@ -11,11 +11,7 @@ export const initialState: IUserContext = {
         status: "",
         userID: "",
         memberDate: new Date(),
-        seller: {
-            description: "",
-            rating: 0,
-            sellerID: ""
-        }
+        seller: null
     },
     setUserData: (_: IUser) => {}
 }
@@ -37,11 +33,11 @@ function UserProvider({ children }: { children?: React.ReactNode }) {
                 setUserData(resp.data.userData);
             }
             catch (err: any) {
-                // Do nothing if the user is not logged in.
+                // Do nothing if the user's session has expired or is invalid.
             }
         })();
     }, []);
-
+    
     return (
         <UserContext.Provider value={{userData, setUserData}}>
             {children}

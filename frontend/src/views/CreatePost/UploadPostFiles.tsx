@@ -98,7 +98,11 @@ function UploadPostFiles({ setPostService, setSection, uploadedImages, setUpload
                     {` ${uploadedImages.length} / ${MAX_FILE_UPLOADS}`}
                 </span>
             </p>
-            {errorMessage !== "" && <ErrorMessage message={errorMessage} title="There was a problem uploading some of your files." />}
+            {errorMessage !== "" && 
+            <ErrorMessage 
+                message={errorMessage} 
+                title="There was a problem uploading some of your files." 
+            />}
             <div className="max-h-[250px] items-center overflow-y-scroll mt-6 flex flex-col gap-[15px] scrollbar-hide">
                 {uploadedImages.map((image: ImageData, index: number) => {
                     return (

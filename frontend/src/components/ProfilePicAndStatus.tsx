@@ -36,7 +36,7 @@ function ProfilePicAndStatus(props: ProfilePicAndStatusProps) {
         }
 
         try {
-            const response = await fetchUpdatedUser({...userContext.userData}, profile);
+            const response = await fetchUpdatedUser({...userContext.userData}, userContext.userData.username, profile);
             userContext.setUserData(response.userData);
             props.setErrorMessage("");
         }

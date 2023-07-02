@@ -24,7 +24,7 @@ function ProfileMenu({ userContext, setSettingsPopUp, setSellerProfilePopUp }: P
             const response = await fetchUpdatedUser({
                 ...userContext.userData, 
                 status: toggledStatus
-            });
+            }, userContext.userData.username);
     
             userContext.setUserData({ ...response.userData });
         } 
@@ -42,7 +42,7 @@ function ProfileMenu({ userContext, setSettingsPopUp, setSellerProfilePopUp }: P
             userContext.setUserData(initialState.userData);
         }
         catch (err: any) {
-            // Ignore error message and do nothing
+            // Ignore error message and do nothing if session is invalid or expired.
         }
     }
 
@@ -70,7 +70,8 @@ function ProfileMenu({ userContext, setSettingsPopUp, setSellerProfilePopUp }: P
                     />
                 </div>
                 <OutsideClickHandler onOutsideClick={() => setNavProfileDropdown(false)}>
-                    {navProfileDropdown && <ul className="absolute bg-main-white shadow-profile-page-container 
+                    {navProfileDropdown && 
+                    <ul className="absolute bg-main-white shadow-profile-page-container 
                     mt-2 border-light-gray border-2 rounded-[11px] right-0 z-10 overflow-hidden">
                         <div className="border-b border-light-gray">
                             <p className="whitespace-nowrap p-3 pt-1 pb-1 cursor-default profile-menu-element hover:!bg-main-white">
