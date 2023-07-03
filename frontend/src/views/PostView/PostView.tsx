@@ -55,7 +55,7 @@ function PostView() {
                         <ProfilePicAndStatus 
                             profilePicURL={postData.postedBy.user.profilePicURL} 
                             profileStatus={postData.postedBy.user.status}
-                            statusStyles="before:left-[32px] before:top-[34px] cursor-pointer"
+                            statusStyles="before:left-[33px] before:top-[34px] cursor-pointer"
                             imgStyles="w-[50px] h-[50px]"
                         />
                     </div>

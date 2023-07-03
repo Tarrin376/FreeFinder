@@ -75,7 +75,7 @@ function PostDetails(props: PostDetailsProps) {
                 {showFailedUploads ? "Hide all failed images" : "View all failed images"}
             </p>}
             {showFailedUploads && props.failedUploads.length > 0 && 
-            <div className="max-h-[250px] items-center overflow-y-scroll mt-6 flex flex-col gap-[15px] scrollbar-hide">
+            <div className="max-h-[250px] items-center overflow-y-scroll mt-6 pr-[5px] flex flex-col gap-[15px]">
                 {props.failedUploads.map((upload: FailedUpload, index: number) => {
                     return (
                         <File file={upload.imageData.file} key={index} description={upload.errorMessage} error={true}>
@@ -88,7 +88,7 @@ function PostDetails(props: PostDetailsProps) {
                                 completedText="Uploaded"
                                 defaultText="Retry"
                                 loadingText="Retrying"
-                                styles="red-btn w-[130px] px-3"
+                                styles="red-btn w-[140px] px-3"
                                 textStyles="text-error-text"
                                 setErrorMessage={props.setErrorMessage}
                                 whenComplete={() => ignoreUpload(upload)}
@@ -120,10 +120,9 @@ function PostDetails(props: PostDetailsProps) {
             <h3 className="mb-2">Write about section</h3>
             <textarea 
                 placeholder="Write about your service here" 
-                className="w-full search-bar mb-6" 
+                className="w-full search-bar mb-6 h-[250px]" 
                 value={props.about}
-                onChange={(e) => props.setAbout(e.target.value)} 
-                rows={5} 
+                onChange={(e) => props.setAbout(e.target.value)}  
                 maxLength={1500} 
             />
             <div className="flex justify-end gap-3 mt-8">
@@ -147,7 +146,7 @@ function PostDetails(props: PostDetailsProps) {
                     completedText="Post created"
                     defaultText="Post service"
                     loadingText="Creating post"
-                    styles={`w-[185px] ${!validInputs() ? "invalid-button" : "main-btn !h-[42px]"}`}
+                    styles={`min-w-[185px] w-fit ${!validInputs() ? "invalid-button" : "main-btn !h-[42px]"}`}
                     textStyles="text-main-white"
                     setErrorMessage={props.setErrorMessage}
                     whenComplete={() => props.setCreatedPost(true)}

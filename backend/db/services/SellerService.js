@@ -13,7 +13,13 @@ export async function findSeller(userID) {
                 description: true,
                 rating: true,
                 sellerID: true,
-                languages: true
+                languages: true,
+                sellerLevel: {
+                    select: {
+                        xpRequired: true,
+                        name: true
+                    }
+                }
             }
         });
 
@@ -40,17 +46,34 @@ export async function findSeller(userID) {
 
 async function createSeller(id) {
     try {
+        const newSeller = await prisma.sellerLevel.findFirst({
+            where: {
+                xpRequired: 0
+            }
+        });
+
+        if (!newSeller) {
+            throw new DBError("'New Seller' seller level does not exist.", 400);
+        }
+
         const seller = await prisma.seller.create({
             data: {
                 userID: id,
                 rating: 0,
                 description: "",
+                sellerLevelID: newSeller.id
             },
             select: {
                 description: true,
                 rating: true,
                 sellerID: true,
-                languages: true
+                languages: true,
+                sellerLevel: {
+                    select: {
+                        xpRequired: true,
+                        name: true
+                    }
+                }
             }
         });
 

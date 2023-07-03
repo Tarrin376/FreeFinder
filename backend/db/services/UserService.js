@@ -36,7 +36,14 @@ export async function updateProfilePictureHandler(req) {
                         description: true,
                         rating: true,
                         sellerID: true,
-                        languages: true
+                        languages: true,
+                        sellerXP: true,
+                        sellerLevel: {
+                            select: {
+                                xpRequired: true,
+                                name: true
+                            }
+                        }
                     }
                 },
             }
@@ -130,7 +137,14 @@ export async function findUserHandler(usernameOrEmail, password) {
                         description: true,
                         rating: true,
                         sellerID: true,
-                        languages: true
+                        languages: true,
+                        sellerXP: true,
+                        sellerLevel: {
+                            select: {
+                                xpRequired: true,
+                                name: true
+                            }
+                        }
                     }
                 },
             }
@@ -177,7 +191,14 @@ export async function updateUserHandler(req) {
                         description: true,
                         rating: true,
                         sellerID: true,
-                        languages: true
+                        languages: true,
+                        sellerXP: true,
+                        sellerLevel: {
+                            select: {
+                                xpRequired: true,
+                                name: true
+                            }
+                        }
                     }
                 },
             }
@@ -261,27 +282,33 @@ export async function getUserPostsHandler(req) {
 
 export async function queryUserPosts(sellerID, req) {
     const posts = await prisma.post.findMany({
-        skip: req.query.cursor ? 1 : undefined,
-        cursor: req.query.cursor ? { postID: req.query.cursor } : undefined,
+        skip: req.body.cursor ? 1 : undefined,
+        cursor: req.body.cursor ? { postID: req.body.cursor } : undefined,
         take: paginationLimit,
-        orderBy: sortPosts[req.query.sort],
+        orderBy: sortPosts[req.body.sort],
         where: {
             sellerID: sellerID,
             packages: {
                 some: {
                     amount: {
-                        gte: req.query.min,
-                        lte: req.query.max
+                        gte: req.body.min,
+                        lte: req.body.max
+                    },
+                    deliveryTime: {
+                        lte: req.body.deliveryTime
                     }
                 }
             },
             postedBy: {
-                user: { 
-                    country: req.query.location
-                }
+                user: {
+                    country: req.body.location
+                },
+                languages: req.body.languages.length > 0 ? {
+                    hasSome: req.body.languages
+                } : undefined
             },
             title: { 
-                contains: req.query.search 
+                contains: req.body.search 
             }
         },
         select: { 

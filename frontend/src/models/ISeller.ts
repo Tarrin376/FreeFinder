@@ -2,5 +2,10 @@ export interface ISeller {
     description: string,
     rating: number,
     sellerID: string,
-    languages: string[]
+    languages: string[],
+    sellerXP: number,
+    sellerLevel: {
+        xpRequired: number,
+        name: string
+    }
 }

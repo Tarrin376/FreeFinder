@@ -39,7 +39,7 @@ module.exports = {
             'profile-page-container': '0px 1px 8px -6px rgba(0, 0, 0, 0.62)'
         },
         fontFamily: {
-            railway: ['"Noto Sans"', ...defaultTheme.fontFamily.sans]
+            railway: ['"Rubik"', ...defaultTheme.fontFamily.sans]
         }
     },
     screens: {

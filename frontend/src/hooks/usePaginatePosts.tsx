@@ -9,7 +9,16 @@ export function usePaginatePosts<T>(
     cursor: React.MutableRefObject<string | undefined>,
     url: string,
     page: { value: number },
-    setPage: React.Dispatch<React.SetStateAction<{ value: number }>>)
+    setPage: React.Dispatch<React.SetStateAction<{ value: number }>>,
+    data: {
+        search: string | undefined,
+        sort: string,
+        min: number,
+        max: number,
+        location: string | undefined,
+        languages: string[],
+        deliveryTime: number
+    })
 : PaginatePosts<T> {
 
     const reachedBottom = useRef<boolean>(false);
@@ -40,7 +49,11 @@ export function usePaginatePosts<T>(
         setLoading(true);
         (async (): Promise<void> => {
             try {
-                const resp = await axios.get<{ posts: T[], cursor: string, last: boolean }>(url + (cursor.current ? `&cursor=${cursor.current}` : ``));
+                const resp = await axios.post<{ posts: T[], cursor: string, last: boolean }>(url, {
+                    ...data,
+                    cursor: cursor.current
+                });
+
                 setAllPosts((state) => [...state, ...resp.data.posts]);
                 cursor.current = resp.data.cursor;
 
@@ -57,7 +70,7 @@ export function usePaginatePosts<T>(
                 setLoading(false);
             }
         })();
-    }, [url, cursor, page]);
+    }, [page, url, cursor]);
 
     return { 
         allPosts, 

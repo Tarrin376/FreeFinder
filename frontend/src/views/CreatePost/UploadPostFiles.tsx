@@ -18,8 +18,8 @@ interface UploadPostFilesProps {
     setSection: React.Dispatch<React.SetStateAction<Sections>>,
     setUploadedImages: React.Dispatch<React.SetStateAction<ImageData[]>>,
     uploadedImages: ImageData[],
-    thumbnail: unknown,
-    setThumbnail: React.Dispatch<React.SetStateAction<unknown>>
+    thumbnail: ImageData | undefined,
+    setThumbnail: React.Dispatch<React.SetStateAction<ImageData | undefined>>
 }
 
 function UploadPostFiles({ setPostService, setSection, uploadedImages, setUploadedImages, thumbnail, setThumbnail }: UploadPostFilesProps) {
@@ -76,7 +76,7 @@ function UploadPostFiles({ setPostService, setSection, uploadedImages, setUpload
     }
 
     function deleteImage(image: ImageData): void {
-        if (image.image === thumbnail) setThumbnail(undefined);
+        if (image === thumbnail) setThumbnail(undefined);
         setUploadedImages((state) => state.filter((x) => x !== image));
     }
 
@@ -103,16 +103,16 @@ function UploadPostFiles({ setPostService, setSection, uploadedImages, setUpload
                 message={errorMessage} 
                 title="There was a problem uploading some of your files." 
             />}
-            <div className="max-h-[250px] items-center overflow-y-scroll mt-6 flex flex-col gap-[15px] scrollbar-hide">
+            <div className="max-h-[250px] items-center overflow-y-scroll mt-6 pr-[5px] flex flex-col gap-[15px]">
                 {uploadedImages.map((image: ImageData, index: number) => {
                     return (
                         <File file={image.file} key={index} description="You can download this file to verify that it is the correct one.">
                             <a href={URL.createObjectURL(image.file)} download={image.file.name}>
-                                <button className="side-btn">
+                                <button className="side-btn w-[140px]">
                                     Download
                                 </button>
                             </a>
-                            <button className="bg-error-red text-error-text btn-primary w-[120px] px-3
+                            <button className="bg-error-red text-error-text btn-primary w-[140px] px-3
                             hover:bg-error-red-hover" onClick={() => deleteImage(image)}>
                                 Remove
                             </button>

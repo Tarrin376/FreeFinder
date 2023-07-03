@@ -46,8 +46,13 @@ function UserProfile({  userContext }: { userContext: IUserContext }) {
                         title="Failed to update username" 
                     />}
                     <p className="mb-2">Username</p>
-                    <input type="text" name="change-username" className={`search-bar ${username === "" && "invalid-input"}`} 
-                    value={username} onChange={(e) => setUsername(e.target.value)} />
+                    <input 
+                        type="text" 
+                        name="change-username" 
+                        className={`search-bar ${username === "" && "invalid-input"}`} 
+                        value={username} onChange={(e) => setUsername(e.target.value)} 
+                        maxLength={20}
+                    />
                     <p className="text-box-error-message">
                         {username === "" ? "Username cannot be empty" : ""}
                     </p>

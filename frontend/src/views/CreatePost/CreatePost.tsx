@@ -36,7 +36,7 @@ function CreatePost({ setPostService, resetState }: CreatePostProps) {
     const [section, setSection] = useState<Sections>(Sections.UploadFiles);
     const [errorMessage, setErrorMessage] = useState<string>("");
     const [uploadedImages, setUploadedImages] = useState<ImageData[]>([]);
-    const [thumbnail, setThumbnail] = useState<unknown>();
+    const [thumbnail, setThumbnail] = useState<ImageData | undefined>();
     const [failedUploads, setFailedUploads] = useState<FailedUpload[]>([]);
     const [createdPost, setCreatedPost] = useState<boolean>(false);
     const postID = useRef<string>("");
@@ -74,7 +74,7 @@ function CreatePost({ setPostService, resetState }: CreatePostProps) {
         const post: PostData = { 
             about: about.trim(), 
             title: title.trim(),
-            thumbnail: thumbnail,
+            thumbnail: thumbnail?.image,
             packages: [
                 {
                     revisions: basicRevisions,
@@ -155,7 +155,7 @@ function CreatePost({ setPostService, resetState }: CreatePostProps) {
 
         for (let i = 0; i < uploadedImages.length; i++) {
             try {
-                if (uploadedImages[i].image !== thumbnail) {
+                if (uploadedImages[i] !== thumbnail) {
                     await axios.post(`/api/posts/${postID}`, {
                         image: uploadedImages[i].image,
                     });

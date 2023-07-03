@@ -52,11 +52,11 @@ export async function getSavedPostsHandler(req) {
 
 export async function querySavedPosts(req) {
     const saved = await prisma.savedPost.findMany({
-        skip: req.query.cursor ? 1 : undefined,
-        cursor: req.query.cursor ? { 
+        skip: req.body.cursor ? 1 : undefined,
+        cursor: req.body.cursor ? { 
             userID_postID: {
                 userID: req.userData.userID,
-                postID: req.query.cursor
+                postID: req.body.cursor
             }
         } : undefined,
         take: paginationLimit,
@@ -66,23 +66,29 @@ export async function querySavedPosts(req) {
                 packages: {
                     some: {
                         amount: {
-                            gte: req.query.min,
-                            lte: req.query.max
+                            gte: req.body.min,
+                            lte: req.body.max
+                        },
+                        deliveryTime: {
+                            lte: req.body.deliveryTime
                         }
                     }
                 },
                 postedBy: {
-                    user: { 
-                        country: req.query.location
-                    }
+                    user: {
+                        country: req.body.location
+                    },
+                    languages: req.body.languages.length > 0 ? {
+                        hasSome: req.body.languages
+                    } : undefined
                 },
                 title: { 
-                    contains: req.query.search 
+                    contains: req.body.search 
                 }
             }
         },
         orderBy: {
-            post: sortPosts[req.query.sort]
+            post: sortPosts[req.body.sort]
         },
         select: {
             post: {

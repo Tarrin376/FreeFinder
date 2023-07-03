@@ -59,15 +59,15 @@ function Packages({ packages }: { packages: IPackage[] }) {
                         <p className="text-[35px]">£{curPkg.amount}</p>
                         <p className="text-side-text-gray mb-4 pb-4 border-b border-b-light-gray font-semibold">{curPkg.packageTitle}</p>
                         <p className="mt-1 mb-4 pb-4 border-b border-b-light-gray text-paragraph-text">{curPkg.description}</p>
-                        <div className="flex items-center gap-2 mb-1">
-                            <img src={DeliveryTimeIcon} alt="" width="20px" height="20px" />
-                            <p className="text-side-text-gray">{curPkg.deliveryTime} days delivery</p>
-                        </div>
                         <div className="flex items-center gap-2 mb-2">
+                            <img src={DeliveryTimeIcon} alt="" width="20px" height="20px" />
+                            <p className="text-side-text-gray">{`${curPkg.deliveryTime} ${curPkg.deliveryTime === 1 ? "day" : "days"} delivery`}</p>
+                        </div>
+                        <div className="flex items-center gap-2 pb-4 mb-4 border-b border-b-light-gray">
                             <img src={RevisionsIcon} alt="" width="20px" height="20px" />
                             <p className="text-side-text-gray">{curPkg.revisions} {curPkg.revisions === "1" ? "revision" : "revisions"}</p>
                         </div>
-                        <ul>
+                        <ul className="flex flex-col gap-1">
                             {curPkg.features.map((feature, index) => {
                                 return (
                                     <li className="flex items-center gap-2" key={index}>

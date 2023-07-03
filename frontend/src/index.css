@@ -4,7 +4,7 @@
 
 @layer components {
     .btn-primary {
-        @apply transition-all ease-in-out duration-200 rounded-[8px] px-6 h-[42px] pb-[1px];
+        @apply transition-all ease-in-out duration-200 rounded-[8px] px-6 h-[42px];
     }
     .nav-item {
         @apply hover:text-main-blue cursor-pointer;
@@ -12,7 +12,7 @@
     .search-bar {
         @apply border border-light-gray rounded-[8px] p-3 w-full 
         bg-main-white block placeholder-side-text-gray focus:outline-none focus:outline-1
-        focus:outline-light-gray transition ease-linear duration-100;
+        focus:outline-light-gray;
     }
     .invalid-input {
         @apply focus:outline-2 focus:!outline-error-text focus:border-transparent border-b border-error-text bg-[#FFF7F6]
@@ -24,7 +24,7 @@
         @apply bg-[#36BF54] text-main-white hover:bg-[#45B65E];
     }
     .profile-menu-element {
-        @apply text-main-black bg-main-white hover:bg-main-white-hover whitespace-nowrap p-3 pt-1 pb-1 text-left text-[14px];
+        @apply text-main-black bg-main-white hover:bg-main-white-hover whitespace-nowrap p-3 pt-1 pb-1 text-left text-[15px];
     }
     .settings-selection {
         @apply border-b-[3px] border-b-main-black cursor-pointer pb-4;
@@ -68,12 +68,27 @@
 
 @layer base {
     * {
-        @apply box-border text-main-black font-railway text-[15px];
+        @apply box-border text-main-black font-railway text-[16px];
     }
     html {
         overflow-y: hidden;
     }
     .page {
         @apply max-w-screen-xxl m-auto px-7 py-7 min-h-[calc(100vh-90px)] bg-bg-light;
+    }
+    * {
+        scrollbar-width: thin;
+        scrollbar-color: #879198;
+    }
+    *::-webkit-scrollbar {
+        width: 14px;
+    }
+    *::-webkit-scrollbar-track {
+        background: #f7f7f7;
+    }
+    *::-webkit-scrollbar-thumb {
+        background-color: #879198;
+        border-radius: 20px;
+        border: 3px solid #f7f7f7;
     }
 }

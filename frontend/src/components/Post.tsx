@@ -100,8 +100,8 @@ function Post({ postInfo, username, canRemove }: PostProps) {
                     />
                     <div className="flex-grow">
                         <div className="flex justify-between">
-                            <p>{postInfo.postedBy.user.username}</p>
-                            <div className="flex items-center gap-[7px]">
+                            <p className="whitespace-nowrap text-ellipsis overflow-hidden max-w-[170px]">{postInfo.postedBy.user.username}</p>
+                            <div className="flex items-center justify-end gap-[7px]">
                                 <img src={StarIcon} className="w-[15px] h-[15px] mb-[2px]" alt="star" />
                                 <p className="text-[15px]">{postInfo.postedBy.rating}</p>
                             </div>
@@ -111,13 +111,14 @@ function Post({ postInfo, username, canRemove }: PostProps) {
                         </p>
                     </div>
                 </div>
-                <p className="text-side-text-gray text-[14px] mb-1">
-                    {getTimePosted(postInfo.createdAt)}
+                <div className="flex items-center">
+                    <p className="text-side-text-gray text-[15px]">{getTimePosted(postInfo.createdAt)}</p>
                     {seconds < 60 * 60 * 24 && 
-                    <span className="bg-[#ec79f0] text-main-white w-fit text-[14px] px-3 py-[1px] ml-3 rounded-[6px]">
+                    <p className="bg-[#ec79f0] text-main-white w-fit text-[14px] px-3 py-[1px] ml-3 rounded-[6px]">
                         New
-                    </span>}
-                </p>
+                    </p>}
+                </div>
+                <p className="text-[15px] text-[#610df2] mb-1">New Seller</p>
                 <div className="pb-2 border-b border-b-very-light-gray h-[60px]">
                     <p className="text-[16px] nav-item leading-6 overflow-hidden text-ellipsis line-clamp-2 break-all"
                     onClick={openPostView}>
@@ -133,7 +134,7 @@ function Post({ postInfo, username, canRemove }: PostProps) {
                         defaultText={canRemove.unsave ? "Unsave" : "Remove"}
                         loadingText={canRemove.unsave ? "Unsaving" : "Removing"}
                         styles="red-btn h-[33px] rounded-[6px] px-4"
-                        textStyles="text-error-text text-[14px]"
+                        textStyles="text-error-text text-[15px]"
                         setErrorMessage={setErrorMessage}
                         redLoadingIcon={true}
                     />}

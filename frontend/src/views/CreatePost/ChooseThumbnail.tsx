@@ -6,33 +6,38 @@ interface ChooseThumbnailProps {
     setSection: React.Dispatch<React.SetStateAction<Sections>>,
     setPostService: React.Dispatch<React.SetStateAction<boolean>>,
     uploadedImages: ImageData[],
-    thumbnail: unknown,
-    setThumbnail: React.Dispatch<React.SetStateAction<unknown>>
+    thumbnail: ImageData | undefined,
+    setThumbnail: React.Dispatch<React.SetStateAction<ImageData | undefined>>
 }
 
 function ChooseThumbnail({ setSection, setPostService, uploadedImages, thumbnail, setThumbnail }: ChooseThumbnailProps) {
-    function changeThumbnail(newThumbnail: unknown) {
+    function changeThumbnail(newThumbnail: ImageData) {
         setThumbnail(newThumbnail);
     }
 
     return (
         <PopUpWrapper setIsOpen={setPostService} title={"Choose thumbnail"} styles="flex flex-col">
             {uploadedImages.length > 0 &&
-            <div className="mb-9 flex flex-col gap-9 flex-grow overflow-y-scroll scrollbar-hide">
+            <div className={`flex flex-col gap-9 flex-grow overflow-y-scroll pr-[5px] max-h-[570px] ${!thumbnail ? "mb-9" : ""}`}>
                 {uploadedImages.map((imageData: ImageData, index: number) => {
                     return (
                         <div className={`w-full min-h-[300px] h-[300px] bg-center bg-cover rounded-[8px] relative cursor-pointer 
-                        border-2 border-light-gray hover:border-light-green transition ease-out duration-200 
-                        ${imageData.image === thumbnail ? "border-light-green" : ""}`} 
-                        style={{ backgroundImage: `url(${imageData.image})` }} key={index} onClick={() => changeThumbnail(imageData.image)}>
-                            {imageData.image === thumbnail && 
-                            <p className="absolute top-5 right-5 bg-light-green text-main-white rounded-[5px] px-3 py-[1px]">
+                        border-2 border-light-gray hover:border-side-text-gray transition ease-out duration-200 
+                        ${imageData === thumbnail ? "border-side-text-gray" : ""}`} 
+                        style={{ backgroundImage: `url(${imageData.image})` }} key={index} onClick={() => changeThumbnail(imageData)}>
+                            {imageData === thumbnail &&
+                            <p className="absolute top-5 right-5 bg-[#0f0f0fb4] text-main-white rounded-[5px] px-3 py-[1px]">
                                 Use as thumbnail
                             </p>}
                         </div>
                     )
                 })}
             </div>}
+            {thumbnail !== undefined && 
+            <p className="text-side-text-gray mt-4 mb-9">
+                Selected file:
+                <span className="text-main-blue">{` ${thumbnail.file.name}`}</span>
+            </p>}
             <div className="flex gap-3 justify-end">
                 <button className="side-btn w-[110px]" onClick={() => setSection(Sections.UploadFiles)}>
                     Back

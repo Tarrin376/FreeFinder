@@ -19,11 +19,11 @@ function Options({ options, removeOption, styles }: OptionsProps) {
                 return (
                     <div className={`rounded-full py-1 px-3 bg-highlight flex items-center gap-2 ${removeOption ? "cursor-pointer" : ""}`} 
                     onClick={() => remove(cur)} key={index}>
-                        <p className="text-sm">{cur}</p>
+                        <p className="text-[14px]">{cur}</p>
                         {removeOption && 
                         <img 
                             src={CloseIcon} 
-                            className="w-[13px] h-[13px] mt-[1px]" 
+                            className="w-[13px] h-[13px]" 
                             alt="" 
                         />}
                     </div>

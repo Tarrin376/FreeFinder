@@ -26,16 +26,26 @@ model User {
 }
 
 model Seller {
-    sellerID    String   @id @default(uuid())
-    user        User     @relation(fields: [userID], references: [userID], onDelete: Cascade)
-    userID      String   @unique
-    rating      Float
-    reviews     Review[]
-    orders      Order[]
-    posts       Post[]
-    description String
-    numReviews  Int      @default(0)
-    languages   String[] @default(["english"])
+    sellerID      String      @id @default(uuid())
+    user          User        @relation(fields: [userID], references: [userID], onDelete: Cascade)
+    userID        String      @unique
+    rating        Float
+    reviews       Review[]
+    orders        Order[]
+    posts         Post[]
+    description   String
+    numReviews    Int         @default(0)
+    languages     String[]    @default(["english"])
+    sellerLevel   SellerLevel @relation(fields: [sellerLevelID], references: [id])
+    sellerLevelID String
+    sellerXP      Int         @default(0)
+}
+
+model SellerLevel {
+    id         String   @id @default(uuid())
+    xpRequired Int
+    name       String
+    sellers    Seller[]
 }
 
 model SavedPost {

@@ -89,7 +89,7 @@ export async function addImageHandler(req) {
                 }
             }
         });
-
+        
         if (!post) {
             throw new DBError("Post not found.", 404);
         }

@@ -27,7 +27,7 @@ export const MAX_PRICE: number = 2500;
 
 const MAX_REVISIONS = 5;
 const MAX_FEATURES = 10;
-const MAX_DELIVERY_DAYS = 360;
+export const MAX_DELIVERY_DAYS = 60;
 
 function Package(props: PackageProps) {
     function updateFeatureInput(index: number, value: string): void {
@@ -48,8 +48,6 @@ function Package(props: PackageProps) {
         const deliveryTime = e.target.value;
         if (checkIsNumeric(deliveryTime, MAX_DELIVERY_DAYS)) {
             props.setDeliveryTime(+deliveryTime);
-        } else {
-            props.setDeliveryTime(0);
         }
     }
 
@@ -67,8 +65,6 @@ function Package(props: PackageProps) {
         const packageAmount = e.target.value;
         if (checkIsNumeric(packageAmount, MAX_PRICE)) {
             props.setAmount(+packageAmount);
-        } else {
-            props.setAmount(0);
         }
     }
 
@@ -102,8 +98,9 @@ function Package(props: PackageProps) {
                 className="search-bar mb-4"
                 onChange={updateTitle}
                 value={props.packageTitle}
+                maxLength={70}
             />
-            <h3 className="mb-2">Package cost</h3>
+            <h3 className="mb-2">{`Package cost (£1 - £${MAX_PRICE})`}</h3>
             <div className="flex items-center search-bar mb-4">
                 <p className="select-none">£</p>
                 <input 
@@ -121,7 +118,7 @@ function Package(props: PackageProps) {
                 type="text" 
                 min={1} 
                 max={360} 
-                placeholder="Must be between 1 and 360 days"
+                placeholder={`Must be between 1 and ${MAX_DELIVERY_DAYS} days`}
                 className="search-bar mb-4" 
                 onChange={updateDeliveryTime} 
                 value={props.deliveryTime > 0 ? props.deliveryTime : ""} 
@@ -164,11 +161,17 @@ function Package(props: PackageProps) {
                 Add Feature
             </button>
             {props.features.length > 0 && 
-            <div className="flex flex-col gap-2 max-h-[200px] mt-5 overflow-scroll scrollbar-hide p-[8px] bg-[#f7f7f7] rounded-[8px]">
+            <div className="flex flex-col gap-2 max-h-[200px] mt-5 overflow-y-scroll p-[8px] rounded-[8px]">
                 {props.features.map((value, index) => {
                     return (
-                        <input type="text" className="search-bar" value={value} placeholder={"E.g. Video Thumbnail included"}
-                        onChange={(e) => updateFeatureInput(index, e.target.value)} key={index} />
+                        <input 
+                            type="text" 
+                            className="search-bar" 
+                            value={value} 
+                            placeholder={"E.g. Video Thumbnail included"}
+                            onChange={(e) => updateFeatureInput(index, e.target.value)} key={index}
+                            maxLength={70}
+                        />
                     );
                 })}
             </div>}
