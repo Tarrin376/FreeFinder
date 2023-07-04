@@ -169,7 +169,12 @@ export async function getPostHandler(postID) {
                         rating: true,
                         description: true,
                         numReviews: true,
-                        languages: true
+                        languages: true,
+                        sellerLevel: {
+                            select: {
+                                name: true,
+                            }
+                        }
                     },
                 },
                 packages: {

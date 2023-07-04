@@ -16,6 +16,7 @@ import { deliveryTimes } from '../utils/deliveryTimes';
 import { sellerLevels } from '../utils/sellerLevels';
 import { extraFilters } from '../utils/extraFilters';
 import { UserContext } from './UserContext';
+import { sellerLevelTextStyles } from '../utils/sellerLevelTextStyles';
 
 interface FilterPostsContextProps {
     children?: React.ReactNode,
@@ -47,6 +48,12 @@ function FilterPostsProvider({ children }: FilterPostsContextProps) {
     const [postService, setPostService] = useState<boolean>(false);
     const [selectedLanguages, setSelectedLanguages] = useState<string[]>([]);
     const userContext = useContext(UserContext);
+
+    const nextLevelXP = userContext.userData.seller ? userContext.userData.seller.sellerLevel.nextLevel ? 
+    userContext.userData.seller.sellerLevel.nextLevel.xpRequired : userContext.userData.seller.sellerXP : 0;
+
+    const nextSellerLevel = userContext.userData.seller ? userContext.userData.seller.sellerLevel.nextLevel ? 
+    userContext.userData.seller.sellerLevel.nextLevel.name : userContext.userData.seller.sellerLevel.name : "";
 
     const posts = usePaginatePosts<IPost>(
         pageRef, 
@@ -96,19 +103,32 @@ function FilterPostsProvider({ children }: FilterPostsContextProps) {
                     <>
                         <h2 className="text-[20px] mb-[22px]">Your experience</h2>
                         <div className="mb-7">
-                            <div className="flex items-center justify-between w-full mb-2">
-                                <p className="text-[15px] text-[#610df2] text-center">{userContext.userData.seller.sellerLevel.name}</p>
-                                <p className="text-[15px] text-[#f20d45] text-center">Amateur Seller</p>
+                            <div className="flex items-center justify-between w-full mb-3">
+                                <p className="text-[15px]" style={sellerLevelTextStyles[userContext.userData.seller.sellerLevel.name]}>
+                                    {userContext.userData.seller.sellerLevel.name}
+                                </p>
+                                <p className="text-[15px]" style={sellerLevelTextStyles[nextSellerLevel]}>
+                                    {nextSellerLevel}
+                                </p>
                             </div>
-                            <div className="rounded-full w-full bg-very-light-gray h-[22px] overflow-hidden">
-                                <div className="w-[80%] bg-main-blue h-full rounded-full flex items-center justify-center">
-                                    <p className="text-main-white text-[14px]">{`${userContext.userData.seller.sellerXP}xp`}</p>
+                            <div className="rounded-full w-full bg-very-light-gray h-[17px] overflow-hidden">
+                                <div className="bg-main-blue h-full rounded-full flex items-center justify-center"
+                                style={{ width: `calc(100% / ${nextLevelXP} * ${userContext.userData.seller.sellerXP})`}}>
                                 </div>
+                            </div>
+                            <div className="flex items-center justify-between mt-3">
+                                <p className="bg-[#ec79f0] text-main-white w-fit text-[14px] px-3 py-[1px] rounded-[6px]">
+                                    {`${userContext.userData.seller.sellerXP} xp`}
+                                </p>
+                                <p className="bg-[#ec79f0] text-main-white w-fit text-[14px] px-3 py-[1px] rounded-[6px]">
+                                    {`${nextLevelXP} xp`}
+                                </p>
                             </div>
                         </div>
                     </>}
                     <h2 className="text-[20px] mb-7">More filters</h2>
-                    <div className="overflow-y-scroll max-h-[calc(100%-148px)] pr-[5px]">
+                    <div className="overflow-y-scroll pr-[5px]"
+                    style={{ maxHeight: userContext.userData.seller ? "calc(100vh - 456px)" : "calc(100% - 148px)" }}>
                         <h3 className="text-side-text-gray pt-5 border-t border-light-border-gray mb-3 text-[16px]">Delivery time</h3>
                         <div className="flex flex-col gap-2 border-b border-light-gray pb-5">
                             {Object.keys(deliveryTimes).map((cur: string, index: number) => {
@@ -122,7 +142,7 @@ function FilterPostsProvider({ children }: FilterPostsContextProps) {
                                             defaultChecked={deliveryTimes[cur] === deliveryTime.current}
                                             onChange={() => updateDeliveryTime(deliveryTimes[cur])}
                                         />
-                                        <label htmlFor={cur}>
+                                        <label htmlFor={cur} className="text-[15px]">
                                             {cur}
                                         </label>
                                     </div>
@@ -141,7 +161,7 @@ function FilterPostsProvider({ children }: FilterPostsContextProps) {
                             }}
                         />
                         <h3 className="text-side-text-gray mt-5 mb-3 text-[16px]">Seller level</h3>
-                        <div className="flex flex-col gap-2 border-b border-light-gray pb-5">
+                        <div className="flex flex-col gap-3 border-b border-light-gray pb-5">
                             {Object.keys(sellerLevels).map((sellerLevel: string, index: number) => {
                                 return (
                                     <div className="flex items-center gap-3" key={index}>
@@ -151,7 +171,7 @@ function FilterPostsProvider({ children }: FilterPostsContextProps) {
                                             className="w-[15px] h-[15px] mt-[1px]" 
                                             id={sellerLevel}
                                         />
-                                        <label htmlFor={sellerLevel}>
+                                        <label htmlFor={sellerLevel} className="text-[15px]" style={sellerLevelTextStyles[sellerLevel]}>
                                             {sellerLevel}
                                         </label>
                                     </div>
@@ -170,7 +190,7 @@ function FilterPostsProvider({ children }: FilterPostsContextProps) {
                                             id={filter.filterName}
                                             checked={filter.isChecked}
                                         />
-                                        <label htmlFor={filter.filterName}>
+                                        <label htmlFor={filter.filterName} className="text-[15px]">
                                             {filter.filterName}
                                         </label>
                                     </div>

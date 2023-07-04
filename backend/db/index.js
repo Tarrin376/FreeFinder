@@ -23,9 +23,9 @@ const app = express();
 const PORT = env.PORT || 8000;
 const router = express.Router();
 
-app.use(json({ limit: '5mb' }));
+app.use(json({ limit: 2500000 }));
 app.use(cookieParser());
-app.use(express.urlencoded({ limit: '5mb', extended: false }));
+app.use(express.urlencoded({ extended: false }));
 app.use('/api', router);
 
 router.use('/users', userRouter);

@@ -7,6 +7,10 @@ export async function getSellerLevelsHandler() {
         const sellerLevels = await prisma.sellerLevel.findMany({
             orderBy: {
                 xpRequired: 'asc'
+            },
+            include: {
+                nextLevel: true,
+                prevLevel: true
             }
         });
         
@@ -37,15 +41,31 @@ export async function createSellerLevelHandler(body) {
     }
 }
 
-export async function updateSellerLevelHandler() {
-
+export async function updateSellerLevelHandler(req) {
+    try {
+        await prisma.sellerLevel.update({
+            where: {
+                id: req.params.id
+            },
+            data: {
+                ...req.body
+            }
+        });
+    }
+    catch (err) {
+        if (err instanceof Prisma.PrismaClientValidationError) {
+            throw new DBError("Missing required fields or fields provided are invalid.", 400);
+        } else {
+            throw new DBError("Something went wrong when trying to process your request. Please try again.", 500);
+        }
+    }
 }
 
-export async function deleteSellerLevelHandler(body) {
+export async function deleteSellerLevelHandler(req) {
     try {
         await prisma.sellerLevel.delete({
             where: {
-                id: body.id
+                id: req.params.id
             }
         });
     }

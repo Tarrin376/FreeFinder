@@ -103,6 +103,11 @@ export async function querySavedPosts(req) {
                                 }
                             },
                             rating: true,
+                            sellerLevel: {
+                                select: {
+                                    name: true
+                                }
+                            }
                         }
                     },
                     createdAt: true,

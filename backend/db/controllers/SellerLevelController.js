@@ -27,7 +27,7 @@ export async function createSellerLevel(req, res) {
 
 export async function deleteSellerLevel(req, res) {
     try {
-        await deleteSellerLevelHandler(req.body);
+        await deleteSellerLevelHandler(req);
         res.json({ message: "success" });
     }
     catch (err) {
@@ -36,5 +36,11 @@ export async function deleteSellerLevel(req, res) {
 }
 
 export async function updateSellerLevel(req, res) {
-
+    try {
+        await updateSellerLevelHandler(req);
+        res.json({ message: "success" });
+    }
+    catch (err) {
+        res.status(err.code).json({ message: err.message });
+    }
 }

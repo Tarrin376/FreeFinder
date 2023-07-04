@@ -19,6 +19,9 @@ export type PostPage = {
             memberDate: Date,
             status: string,
             profilePicURL: string,
+        },
+        sellerLevel: {
+            name: string
         }
     },
     packages: IPackage[],

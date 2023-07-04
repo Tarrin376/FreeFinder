@@ -6,6 +6,10 @@ export interface ISeller {
     sellerXP: number,
     sellerLevel: {
         xpRequired: number,
-        name: string
+        name: string,
+        nextLevel?: {
+            xpRequired: number,
+            name: string
+        }
     }
 }

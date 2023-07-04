@@ -42,10 +42,13 @@ model Seller {
 }
 
 model SellerLevel {
-    id         String   @id @default(uuid())
-    xpRequired Int
-    name       String
-    sellers    Seller[]
+    id          String       @id @default(uuid())
+    xpRequired  Int
+    name        String
+    sellers     Seller[]
+    nextLevelID String?      @unique
+    nextLevel   SellerLevel? @relation("LevelHistory", fields: [nextLevelID], references: [id])
+    prevLevel   SellerLevel? @relation("LevelHistory")
 }
 
 model SavedPost {

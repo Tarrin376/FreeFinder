@@ -11,7 +11,7 @@ import { ImageData } from "../../types/ImageData";
 import { parseImage } from "../../utils/parseImage";
 
 const MAX_FILE_UPLOADS: number = 20;
-const MAX_FILE_BYTES = 5000000;
+const MAX_FILE_BYTES = 2000000;
 
 interface UploadPostFilesProps {
     setPostService: React.Dispatch<React.SetStateAction<boolean>>,
@@ -27,7 +27,7 @@ function UploadPostFiles({ setPostService, setSection, uploadedImages, setUpload
     const [errorMessage, setErrorMessage] = useState<string>("");
 
     function checkFile(file: File): boolean {
-        return (file.type === "image/gif" || file.type === "image/jpeg" || file.type === "image/png") && file.size <= MAX_FILE_BYTES;
+        return (file.type === "image/jpeg" || file.type === "image/png") && file.size <= MAX_FILE_BYTES;
     }
 
     async function handleDrop(files: FileList): Promise<void> {

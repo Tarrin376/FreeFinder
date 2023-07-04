@@ -30,7 +30,7 @@ export async function updateProfilePictureHandler(req) {
         const updated = await prisma.user.update({
             where: { userID: req.userData.userID },
             data: { profilePicURL: result.secure_url },
-            include: {
+            select: {
                 seller: {
                     select: {
                         description: true,
@@ -41,16 +41,28 @@ export async function updateProfilePictureHandler(req) {
                         sellerLevel: {
                             select: {
                                 xpRequired: true,
-                                name: true
+                                name: true,
+                                nextLevel: {
+                                    select: {
+                                        xpRequired: true,
+                                        name: true
+                                    }
+                                }
                             }
                         }
                     }
                 },
+                username: true,
+                country: true,
+                profilePicURL: true,
+                email: true,
+                status: true,
+                userID: true,
+                memberDate: true
             }
         });
 
-        const {hash, password, ...res} = updated;
-        return res;
+        return updated;
     }
     catch (err) {
         if (err instanceof DBError) {
@@ -142,11 +154,17 @@ export async function findUserHandler(usernameOrEmail, password) {
                         sellerLevel: {
                             select: {
                                 xpRequired: true,
-                                name: true
+                                name: true,
+                                nextLevel: {
+                                    select: {
+                                        xpRequired: true,
+                                        name: true
+                                    }
+                                }
                             }
                         }
                     }
-                },
+                }
             }
         });
         
@@ -159,6 +177,7 @@ export async function findUserHandler(usernameOrEmail, password) {
             throw new DBError("The password you entered is incorrect. Check that you entered it correctly.", 403)
         } else {
             const {hash, ...filtered} = res;
+            console.log(filtered);
             return filtered;
         }
     }
@@ -185,7 +204,7 @@ export async function updateUserHandler(req) {
         const updated = await prisma.user.update({
             where: { userID: req.userData.userID },
             data: { ...userData },
-            include: {
+            select: {
                 seller: {
                     select: {
                         description: true,
@@ -196,16 +215,28 @@ export async function updateUserHandler(req) {
                         sellerLevel: {
                             select: {
                                 xpRequired: true,
-                                name: true
+                                name: true,
+                                nextLevel: {
+                                    select: {
+                                        xpRequired: true,
+                                        name: true
+                                    }
+                                }
                             }
                         }
                     }
                 },
+                username: true,
+                country: true,
+                profilePicURL: true,
+                email: true,
+                status: true,
+                userID: true,
+                memberDate: true
             }
         });
 
-        const {hash, password, ...filtered} = updated;
-        return filtered;
+        return updated;
     }
     catch (err) {
         if (err instanceof DBError) {
@@ -322,6 +353,11 @@ export async function queryUserPosts(sellerID, req) {
                         }
                     },
                     rating: true,
+                    sellerLevel: {
+                        select: {
+                            name: true
+                        }
+                    }
                 },
             },
             createdAt: true,

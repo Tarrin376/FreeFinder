@@ -11,5 +11,6 @@ const sellerLevelRouter = Router();
 sellerLevelRouter.post('/', createSellerLevel);
 sellerLevelRouter.get('/', getSellerLevels);
 sellerLevelRouter.delete('/:id', deleteSellerLevel);
+sellerLevelRouter.put('/:id', updateSellerLevel);
 
 export default sellerLevelRouter;

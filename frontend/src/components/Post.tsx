@@ -8,6 +8,7 @@ import axios, { AxiosError } from "axios";
 import { getAPIErrorMessage } from '../utils/getAPIErrorMessage';
 import Button from './Button';
 import { useNavigate } from 'react-router-dom';
+import { sellerLevelTextStyles } from '../utils/sellerLevelTextStyles';
 
 interface PostProps {
     postInfo: IPost,
@@ -69,9 +70,9 @@ function Post({ postInfo, username, canRemove }: PostProps) {
     }
 
     return (
-        <div className="bg-transparent w-[270px] rounded-[8px] relative overflow-hidden">
-            <p className={`absolute z-10 px-7 py-[11px] w-[100%] transition-all ease-out duration-100 text-center select-none  ${errorMessage !== "" ? 
-            'bg-error-text text-main-white' : successMessage ? 'action-btn hover:!bg-[#36BF54]' : '!py-[0px]'}`}>
+        <div className="bg-transparent w-[270px] relative">
+            <p className={`absolute rounded-t-[12px] z-10 px-7 py-[11px] w-[100%] transition-all ease-out duration-100 text-center select-none 
+            ${errorMessage !== "" ? 'bg-error-text text-main-white' : successMessage ? 'action-btn hover:!bg-[#36BF54]' : '!py-[0px]'}`}>
                 {errorMessage !== "" ? errorMessage : successMessage !== "" ? successMessage : ""}
             </p>
             {(!canRemove || !canRemove.unsave) && 
@@ -88,7 +89,7 @@ function Post({ postInfo, username, canRemove }: PostProps) {
             </svg>}
             <img 
                 src={postInfo.images[0].url} 
-                className="w-full h-[255px] rounded-[12px] border border-light-border-gray object-cover" 
+                className="w-full h-[255px] rounded-[12px] border border-light-border-gray object-cover z-0" 
                 alt="" 
             />
             <div className="mt-3">
@@ -113,12 +114,14 @@ function Post({ postInfo, username, canRemove }: PostProps) {
                 </div>
                 <div className="flex items-center">
                     <p className="text-side-text-gray text-[15px]">{getTimePosted(postInfo.createdAt)}</p>
-                    {seconds < 60 * 60 * 24 && 
+                    {/* {seconds < 60 * 60 * 24 && 
                     <p className="bg-[#ec79f0] text-main-white w-fit text-[14px] px-3 py-[1px] ml-3 rounded-[6px]">
                         New
-                    </p>}
+                    </p>} */}
                 </div>
-                <p className="text-[15px] text-[#610df2] mb-1">New Seller</p>
+                <p className="text-[15px] mb-1 mt-[2px]" style={sellerLevelTextStyles[postInfo.postedBy.sellerLevel.name]}>
+                    {postInfo.postedBy.sellerLevel.name}
+                </p>
                 <div className="pb-2 border-b border-b-very-light-gray h-[60px]">
                     <p className="text-[16px] nav-item leading-6 overflow-hidden text-ellipsis line-clamp-2 break-all"
                     onClick={openPostView}>

@@ -14,10 +14,17 @@ export async function findSeller(userID) {
                 rating: true,
                 sellerID: true,
                 languages: true,
+                sellerXP: true,
                 sellerLevel: {
                     select: {
                         xpRequired: true,
-                        name: true
+                        name: true,
+                        nextLevel: {
+                            select: {
+                                xpRequired: true,
+                                name: true
+                            }
+                        }
                     }
                 }
             }
@@ -68,10 +75,17 @@ async function createSeller(id) {
                 rating: true,
                 sellerID: true,
                 languages: true,
+                sellerXP: true,
                 sellerLevel: {
                     select: {
                         xpRequired: true,
-                        name: true
+                        name: true,
+                        nextLevel: {
+                            select: {
+                                xpRequired: true,
+                                name: true
+                            }
+                        }
                     }
                 }
             }
@@ -110,7 +124,20 @@ export async function updateSellerDetailsHandler(req) {
                 sellerID: true,
                 description: true,
                 rating: true,
-                languages: true
+                languages: true,
+                sellerXP: true,
+                sellerLevel: {
+                    select: {
+                        xpRequired: true,
+                        name: true,
+                        nextLevel: {
+                            select: {
+                                xpRequired: true,
+                                name: true
+                            }
+                        }
+                    }
+                }
             }
         });
 

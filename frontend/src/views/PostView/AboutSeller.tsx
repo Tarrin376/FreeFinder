@@ -4,6 +4,7 @@ import LocationIcon from '../../assets/location-sign-svgrepo-com(2).svg';
 import UserIcon from '../../assets/user-icon-svgrepo-com.svg';
 import StarGrayIcon from "../../assets/star-gray.png";
 import Options from "../../components/Options";
+import { sellerLevelTextStyles } from "../../utils/sellerLevelTextStyles";
 
 function AboutSeller({ postData }: { postData: PostPage }) {
     return (
@@ -18,11 +19,17 @@ function AboutSeller({ postData }: { postData: PostPage }) {
                 />
                 <div className="flex-grow flex justify-between">
                     <div>
-                        <p className="text-main-blue">{postData.postedBy.user.username}</p>
-                        <p>Verified seller</p>
-                        <p className="text-side-text-gray">{postData.postedBy.user.country}</p>
+                        <p>
+                            {postData.postedBy.user.username}
+                        </p>
+                        <p className="text-[15px] mt-1 mb-1" style={sellerLevelTextStyles[postData.postedBy.sellerLevel.name]}>
+                            {postData.postedBy.sellerLevel.name}
+                        </p>
+                        <p className="text-side-text-gray text-[15px]">
+                            {postData.postedBy.user.country}
+                        </p>
                     </div>
-                    <svg 
+                    <svg
                         viewBox="0 0 32 32" 
                         xmlns="http://www.w3.org/2000/svg" 
                         className="block fill-[#00000086] h-[24px] w-[24px] stroke-white stroke-2 cursor-pointer" 
