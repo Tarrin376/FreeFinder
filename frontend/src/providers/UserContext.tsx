@@ -38,8 +38,6 @@ function UserProvider({ children }: { children?: React.ReactNode }) {
         })();
     }, []);
     
-    console.log(userData);
-    
     return (
         <UserContext.Provider value={{userData, setUserData}}>
             {children}

@@ -5,7 +5,7 @@ interface PostWrapperProps {
 
 function PostsWrapper({ children }: PostWrapperProps) {
     return (
-        <div className="flex gap-[23px] items-start flex-wrap w-full">
+        <div className="flex gap-[22px] items-start flex-wrap w-full">
             {children}
         </div>
     );

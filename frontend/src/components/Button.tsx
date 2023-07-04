@@ -20,9 +20,7 @@ function Button(props: ButtonProps) {
     const [btnText, setBtnText] = useState(props.defaultText);
     const [disabled, setDisabled] = useState<boolean>(false);
   
-    const handleAction = async (e: React.MouseEvent<HTMLButtonElement>) => {
-        e.preventDefault();
-        
+    const handleAction = async () => {
         if (disabled) {
             return;
         }

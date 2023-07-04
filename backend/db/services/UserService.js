@@ -177,7 +177,6 @@ export async function findUserHandler(usernameOrEmail, password) {
             throw new DBError("The password you entered is incorrect. Check that you entered it correctly.", 403)
         } else {
             const {hash, ...filtered} = res;
-            console.log(filtered);
             return filtered;
         }
     }
@@ -295,7 +294,7 @@ export async function getUserPostsHandler(req) {
             };
         }
         
-        return queryUserPosts(seller.sellerID, req);
+        return queryUserPosts(seller.sellerID, req.body);
     }
     catch (err) {
         if (err instanceof DBError) {
@@ -311,35 +310,41 @@ export async function getUserPostsHandler(req) {
     }
 }
 
-export async function queryUserPosts(sellerID, req) {
+export async function queryUserPosts(sellerID, body) {
     const posts = await prisma.post.findMany({
-        skip: req.body.cursor ? 1 : undefined,
-        cursor: req.body.cursor ? { postID: req.body.cursor } : undefined,
+        skip: body.cursor ? 1 : undefined,
+        cursor: body.cursor ? { postID: body.cursor } : undefined,
         take: paginationLimit,
-        orderBy: sortPosts[req.body.sort],
+        orderBy: sortPosts[body.sort],
         where: {
             sellerID: sellerID,
             packages: {
                 some: {
                     amount: {
-                        gte: req.body.min,
-                        lte: req.body.max
+                        gte: body.min,
+                        lte: body.max
                     },
                     deliveryTime: {
-                        lte: req.body.deliveryTime
+                        lte: body.deliveryTime
                     }
                 }
             },
             postedBy: {
                 user: {
-                    country: req.body.location
+                    country: body.location
                 },
-                languages: req.body.languages.length > 0 ? {
-                    hasSome: req.body.languages
-                } : undefined
+                languages: body.languages.length > 0 ? {
+                    hasSome: body.languages
+                } : undefined,
+                sellerLevel: {
+                    name: body.sellerLevels.length > 0 ? {
+                        in: body.sellerLevels
+                    } : undefined
+                }
             },
             title: { 
-                contains: req.body.search 
+                contains: body.search,
+                mode: 'insensitive'
             }
         },
         select: { 

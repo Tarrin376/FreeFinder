@@ -10,7 +10,7 @@
         @apply hover:text-main-blue cursor-pointer;
     }
     .search-bar {
-        @apply border border-light-gray rounded-[8px] p-3 w-full 
+        @apply border border-light-border-gray rounded-[8px] p-3 w-full 
         bg-main-white block placeholder-side-text-gray focus:outline-none focus:outline-1
         focus:outline-light-gray;
     }
@@ -33,7 +33,7 @@
         @apply pb-4 cursor-pointer;
     }
     .loading {
-        @apply animate-pulse bg-light-gray rounded-[8px];
+        @apply animate-pulse bg-very-light-gray rounded-[8px];
     }
     .main-btn {
         @apply bg-main-black text-main-white hover:bg-main-blue w-full !h-12 loading-btn;
@@ -74,7 +74,7 @@
         overflow-y: hidden;
     }
     .page {
-        @apply max-w-screen-xxl m-auto px-7 py-7 min-h-[calc(100vh-90px)] bg-bg-light;
+        @apply xxl:max-w-[1494px] xl:max-w-[1202px] lg:max-w-[910px] md:max-w-[618px] m-auto px-7 py-7 min-h-[calc(100vh-90px)];
     }
     * {
         scrollbar-width: thin;

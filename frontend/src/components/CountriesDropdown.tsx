@@ -15,9 +15,12 @@ function CountriesDropdown({ countryRef, selected, styles, title, anyLocation }:
     return (
         <div className={`search-bar py-2 ${styles}`}>
             <p className="text-[13px] text-side-text-gray h-fit tracking-wide select-none">{title}</p>
-            <select className={`w-full cursor-pointer mt-1 rounded-[8px] focus:outline-none ${allCountries.countries.length > 0 ? 
-            'bg-main-white' : 'loading'}`} ref={countryRef}>
-                {anyLocation && <option selected={true}>Any country</option>}
+            <select className={`w-full cursor-pointer mt-1 rounded-[8px] focus:outline-none 
+            ${allCountries.countries.length > 0 ? 'bg-main-white' : 'loading'}`} ref={countryRef}>
+                {anyLocation && allCountries.countries.length > 0 && 
+                <option selected={true}>
+                    Any country
+                </option>}
                 {allCountries.countries.map((country: Country) => {
                     return (
                         <option key={country.name.common} selected={selected === `${country.flag} ${country.name.common}` && !anyLocation}>

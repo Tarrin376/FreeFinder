@@ -88,71 +88,69 @@ function SignUp({ setLogIn, setSignUp, setAccountCreated }: SignUpProps) {
 
     return (
         <PopUpWrapper setIsOpen={setSignUp} title={"Create your new account"} styles="!max-w-[470px]">
-            <form>
-                <p className="mb-6 text-side-text-gray text-[16px]">Signing up for FreeFinder is fast and 100% free!</p>
-                {errorMessage !== "" && 
-                <ErrorMessage 
-                    message={errorMessage} 
-                    title={"Account creation failed."} 
-                />}
-                <div className="flex flex-col mb-8">
-                    <input 
-                        type="email" 
-                        placeholder="Enter your email" 
-                        className={`search-bar ${!form.validEmailFirst && form.emailFirst !== "" && "invalid-input"}`} 
-                        onChange={(e) => checkEmail(e, true)}
-                    />
-                    {!form.validEmailFirst && form.emailFirst !== "" && 
-                    <p className="text-box-error-message">
-                        Please use a valid email address
-                    </p>}
-                    <input 
-                        type="email" 
-                        placeholder="Confirm your email" 
-                        className={`search-bar mt-3 ${!form.validEmailSecond && form.emailSecond !== "" && "invalid-input"}`} 
-                        onChange={(e) => checkEmail(e, false)}
-                        onPaste={(e) => {
-                            e.preventDefault();
-                            return false;
-                        }}
-                    />
-                    {!form.validEmailSecond && form.emailSecond !== "" && 
-                    <p className="text-box-error-message">
-                        Email address does not match
-                    </p>}
-                    <input 
-                        type="text" 
-                        placeholder="Create a username" 
-                        className="search-bar mt-3" 
-                        onChange={(e) => checkUsername(e)} 
-                    />
-                    <input 
-                        type="password" 
-                        placeholder="Create a password" 
-                        className={`search-bar mt-3 mb-3 ${!form.validPassword && form.password !== "" && "invalid-input"}`} 
-                        onChange={(e) => checkPassword(e)} 
-                    />
-                    <CountriesDropdown 
-                        countryRef={countryRef} 
-                        selected={"🇬🇧 United Kingdom"} 
-                        title="Country"
-                    />
-                </div>
-                <Button
-                    action={createAccount}
-                    completedText="Account created"
-                    defaultText="Create account"
-                    loadingText="Checking details"
-                    styles={!isValidForm() ? "invalid-button main-btn" : "main-btn"}
-                    textStyles="text-main-white"
-                    setErrorMessage={setErrorMessage}
+            <p className="mb-6 text-side-text-gray text-[16px]">Signing up for FreeFinder is fast and 100% free!</p>
+            {errorMessage !== "" && 
+            <ErrorMessage 
+                message={errorMessage} 
+                title={"Account creation failed."} 
+            />}
+            <div className="flex flex-col mb-8">
+                <input 
+                    type="email" 
+                    placeholder="Enter your email" 
+                    className={`search-bar ${!form.validEmailFirst && form.emailFirst !== "" && "invalid-input"}`} 
+                    onChange={(e) => checkEmail(e, true)}
                 />
-                <p className="mt-6 text-side-text-gray text-[15px]">Already have an account? 
-                    <span className="text-main-blue ml-2 cursor-pointer hover:text-main-black" onClick={openLogIn}>
-                        Log In
-                    </span>
-                </p>
-            </form>
+                {!form.validEmailFirst && form.emailFirst !== "" && 
+                <p className="text-box-error-message">
+                    Please use a valid email address
+                </p>}
+                <input 
+                    type="email" 
+                    placeholder="Confirm your email" 
+                    className={`search-bar mt-3 ${!form.validEmailSecond && form.emailSecond !== "" && "invalid-input"}`} 
+                    onChange={(e) => checkEmail(e, false)}
+                    onPaste={(e) => {
+                        e.preventDefault();
+                        return false;
+                    }}
+                />
+                {!form.validEmailSecond && form.emailSecond !== "" && 
+                <p className="text-box-error-message">
+                    Email address does not match
+                </p>}
+                <input 
+                    type="text" 
+                    placeholder="Create a username" 
+                    className="search-bar mt-3" 
+                    onChange={(e) => checkUsername(e)} 
+                />
+                <input 
+                    type="password" 
+                    placeholder="Create a password" 
+                    className={`search-bar mt-3 mb-3 ${!form.validPassword && form.password !== "" && "invalid-input"}`} 
+                    onChange={(e) => checkPassword(e)} 
+                />
+                <CountriesDropdown 
+                    countryRef={countryRef} 
+                    selected={"🇬🇧 United Kingdom"} 
+                    title="Country"
+                />
+            </div>
+            <Button
+                action={createAccount}
+                completedText="Account created"
+                defaultText="Create account"
+                loadingText="Checking details"
+                styles={!isValidForm() ? "invalid-button main-btn" : "main-btn"}
+                textStyles="text-main-white"
+                setErrorMessage={setErrorMessage}
+            />
+            <p className="mt-6 text-side-text-gray text-[15px]">Already have an account? 
+                <span className="text-main-blue ml-2 cursor-pointer hover:text-main-black" onClick={openLogIn}>
+                    Log In
+                </span>
+            </p>
         </PopUpWrapper>
     );
 }

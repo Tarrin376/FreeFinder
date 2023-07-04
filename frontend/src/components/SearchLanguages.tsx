@@ -102,7 +102,7 @@ function SearchLanguages({ setSelectedLanguages, selectedLanguages, searchBarSty
                 styles="mt-4"
             />}
             {applyChanges && applyChangesBtn &&
-            <button className={`main-btn w-fit px-3 !h-9 !text-[14px] mt-4 ${applyChanges.disabled ? "invalid-btn" : ""}`} 
+            <button className={`main-btn w-fit px-3 !h-9 !text-[14px] mt-4 ${applyChanges.disabled ? "invalid-button" : ""}`} 
             onClick={applyAll}>
                 Apply changes
             </button>}

@@ -16,7 +16,7 @@ import
 
 const userRouter = Router();
 
-userRouter.use('/:username/saved-posts', savedPostRouter);
+userRouter.use('/:username/saved', savedPostRouter);
 userRouter.post('/:username/posts', getUserPosts);
 
 userRouter.param('username', (req, _, next, value) => {

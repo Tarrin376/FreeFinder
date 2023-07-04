@@ -80,10 +80,16 @@ export async function querySavedPosts(req) {
                     },
                     languages: req.body.languages.length > 0 ? {
                         hasSome: req.body.languages
-                    } : undefined
+                    } : undefined,
+                    sellerLevel: {
+                        name: req.body.sellerLevels.length > 0 ? {
+                            in: req.body.sellerLevels
+                        } : undefined
+                    }
                 },
                 title: { 
-                    contains: req.body.search 
+                    contains: req.body.search,
+                    mode: 'insensitive'
                 }
             }
         },

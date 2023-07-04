@@ -16,13 +16,13 @@ function Price({ value, title }: PriceProps) {
     }
 
     return (
-        <div className="border border-light-border-gray rounded-[8px] w-[200px] px-3 py-2">
+        <div className="border border-light-border-gray rounded-[8px] w-[150px] px-3 py-2">
             <p className="text-[13px] text-side-text-gray">{title}</p>
             <div className="flex items-center">
                 <p>£</p>
                 <input 
                     type="text" 
-                    className="bg-transparent ml-2 mt-[3px] focus:outline-none" 
+                    className="bg-transparent ml-2 mt-[3px] w-full focus:outline-none" 
                     defaultValue={value.current} 
                     onChange={updateValue} 
                 />

@@ -22,6 +22,12 @@ interface FilterPostsContextProps {
     children?: React.ReactNode,
 }
 
+interface SellerLevelsProps {
+    setAllSellerLevels: React.Dispatch<React.SetStateAction<string[]>>,
+    disabled: boolean,
+    searchHandler: () => void
+}
+
 type filterPosts = {
     cursor: React.MutableRefObject<string | undefined>,
     posts: PaginatePosts<IPost> | undefined,
@@ -47,6 +53,7 @@ function FilterPostsProvider({ children }: FilterPostsContextProps) {
     const [page, setPage] = useState<{ value: number }>({ value: 1 });
     const [postService, setPostService] = useState<boolean>(false);
     const [selectedLanguages, setSelectedLanguages] = useState<string[]>([]);
+    const [allSellerLevels, setAllSellerLevels] = useState<string[]>([]);
     const userContext = useContext(UserContext);
 
     const nextLevelXP = userContext.userData.seller ? userContext.userData.seller.sellerLevel.nextLevel ? 
@@ -68,7 +75,8 @@ function FilterPostsProvider({ children }: FilterPostsContextProps) {
             max: max.current,
             location: countryRef.current?.value === "Any country" ? undefined : countryRef.current?.value,
             languages: selectedLanguages,
-            deliveryTime: deliveryTime.current
+            deliveryTime: deliveryTime.current,
+            sellerLevels: allSellerLevels
         }
     );
 
@@ -93,7 +101,7 @@ function FilterPostsProvider({ children }: FilterPostsContextProps) {
                 resetState={posts.resetState} 
             />}
             <div className="flex">
-                <div className="h-[calc(100vh-90px)] w-[380px] bg-main-white border-r border-light-border-gray p-7">
+                <div className="h-[calc(100vh-90px)] min-w-[360px] w-fit bg-main-white border-r border-light-border-gray p-7">
                     <button onClick={openPostService} className="btn-primary text-main-white bg-main-blue w-full px-5 h-[45px] 
                     hover:bg-main-blue-hover flex items-center justify-center gap-2 mb-[45px]">
                         <img src={AddIcon} alt="" className="w-[16px] h-[16px]" />
@@ -117,18 +125,18 @@ function FilterPostsProvider({ children }: FilterPostsContextProps) {
                                 </div>
                             </div>
                             <div className="flex items-center justify-between mt-3">
-                                <p className="bg-[#ec79f0] text-main-white w-fit text-[14px] px-3 py-[1px] rounded-[6px]">
+                                <p className="bg-light-green text-main-white w-fit text-[14px] px-3 py-[1px] rounded-[6px]">
                                     {`${userContext.userData.seller.sellerXP} xp`}
                                 </p>
-                                <p className="bg-[#ec79f0] text-main-white w-fit text-[14px] px-3 py-[1px] rounded-[6px]">
+                                <p className="bg-light-green text-main-white w-fit text-[14px] px-3 py-[1px] rounded-[6px]">
                                     {`${nextLevelXP} xp`}
                                 </p>
                             </div>
                         </div>
                     </>}
-                    <h2 className="text-[20px] mb-7">More filters</h2>
-                    <div className="overflow-y-scroll pr-[5px]"
-                    style={{ maxHeight: userContext.userData.seller ? "calc(100vh - 456px)" : "calc(100% - 148px)" }}>
+                    <h2 className="text-[20px] mb-[22px]">More filters</h2>
+                    <div className="overflow-y-scroll pr-[5px]" style={{ maxHeight: userContext.userData.seller ? 
+                    "calc(100vh - 456px)" : "calc(100% - 148px)" }}>
                         <h3 className="text-side-text-gray pt-5 border-t border-light-border-gray mb-3 text-[16px]">Delivery time</h3>
                         <div className="flex flex-col gap-2 border-b border-light-gray pb-5">
                             {Object.keys(deliveryTimes).map((cur: string, index: number) => {
@@ -160,24 +168,11 @@ function FilterPostsProvider({ children }: FilterPostsContextProps) {
                                 disabled: posts.loading
                             }}
                         />
-                        <h3 className="text-side-text-gray mt-5 mb-3 text-[16px]">Seller level</h3>
-                        <div className="flex flex-col gap-3 border-b border-light-gray pb-5">
-                            {Object.keys(sellerLevels).map((sellerLevel: string, index: number) => {
-                                return (
-                                    <div className="flex items-center gap-3" key={index}>
-                                        <input 
-                                            type="checkbox" 
-                                            name="seller-level" 
-                                            className="w-[15px] h-[15px] mt-[1px]" 
-                                            id={sellerLevel}
-                                        />
-                                        <label htmlFor={sellerLevel} className="text-[15px]" style={sellerLevelTextStyles[sellerLevel]}>
-                                            {sellerLevel}
-                                        </label>
-                                    </div>
-                                )
-                            })}
-                        </div>
+                        <SellerLevels 
+                            setAllSellerLevels={setAllSellerLevels} 
+                            disabled={posts.loading} 
+                            searchHandler={searchHandler}
+                        />
                         <h3 className="text-side-text-gray mt-5 mb-3 text-[16px]">Extra</h3>
                         <div className="flex flex-col gap-2 border-b border-light-gray pb-5">
                             {extraFilters.map((filter, index) => {
@@ -201,7 +196,7 @@ function FilterPostsProvider({ children }: FilterPostsContextProps) {
                 </div>
                 <div className="flex-grow">
                     <div className="border-b border-b-very-light-gray bg-white">
-                        <div className="h-[90px] max-w-screen-xxl m-auto flex items-center px-7">
+                        <div className="h-[90px] max-w-[1494px] m-auto flex items-center px-7">
                             <div className="flex flex-grow items-center border-r border-light-gray h-full pr-6">
                                 <img src={SearchIcon} alt="" className="w-[17px] h-[17px] cursor-pointer"/>
                                 <input 
@@ -226,7 +221,7 @@ function FilterPostsProvider({ children }: FilterPostsContextProps) {
                                 <CountriesDropdown 
                                     countryRef={countryRef} 
                                     selected={"Any country"}
-                                    styles="max-w-[300px]"
+                                    styles="w-[240px]"
                                     title="Seller lives in"
                                     anyLocation={true}
                                 />
@@ -235,7 +230,8 @@ function FilterPostsProvider({ children }: FilterPostsContextProps) {
                                 <SortBy sortBy={sort} />
                             </div>
                             <div className="pl-6">
-                                <button className="btn-primary text-main-white bg-main-blue w-[160px] h-[45px] hover:bg-main-blue-hover"
+                                <button className={`btn-primary text-main-white bg-main-blue w-[160px] h-[45px] hover:bg-main-blue-hover
+                                ${posts.loading ? "invalid-button" : ""}`}
                                 onClick={searchHandler}>
                                     Search
                                 </button>
@@ -248,6 +244,52 @@ function FilterPostsProvider({ children }: FilterPostsContextProps) {
                         </FilterPostsContext.Provider>
                     </div>
                 </div>
+            </div>
+        </>
+    )
+}
+
+function SellerLevels({ setAllSellerLevels, disabled, searchHandler }: SellerLevelsProps) {
+    const [applyChangesBtn, setApplyChangesBtn] = useState<boolean>(false);
+
+    function updateSellerLevels(sellerLevel: string): void {
+        setApplyChangesBtn(true);
+        setAllSellerLevels((cur) => {
+            if (cur.includes(sellerLevel)) return cur.filter((level: string) => level !== sellerLevel);
+            else return [...cur, sellerLevel];
+        });
+    }
+
+    function applyChanges() {
+        searchHandler();
+        setApplyChangesBtn(false);
+    }
+
+    return (
+        <>
+            <h3 className="text-side-text-gray mt-5 mb-3 text-[16px]">Seller level</h3>
+            <div className="flex flex-col gap-3 border-b border-light-gray pb-5">
+                {sellerLevels.map((sellerLevel: string, index: number) => {
+                    return (
+                        <div className="flex items-center gap-3" key={index}>
+                            <input 
+                                type="checkbox" 
+                                name="seller-level" 
+                                className="w-[15px] h-[15px] mt-[1px]" 
+                                id={sellerLevel}
+                                onClick={() => updateSellerLevels(sellerLevel)}
+                            />
+                            <label htmlFor={sellerLevel} className="text-[15px]" style={sellerLevelTextStyles[sellerLevel]}>
+                                {sellerLevel}
+                            </label>
+                        </div>
+                    )
+                })}
+                {applyChangesBtn &&
+                <button className={`main-btn w-fit px-3 !h-9 !text-[14px] mt-2 ${disabled ? "invalid-button" : ""}`} 
+                onClick={applyChanges}>
+                    Apply changes
+                </button>}
             </div>
         </>
     )

@@ -17,7 +17,8 @@ export function usePaginatePosts<T>(
         max: number,
         location: string | undefined,
         languages: string[],
-        deliveryTime: number
+        deliveryTime: number,
+        sellerLevels: string[]
     })
 : PaginatePosts<T> {
 
@@ -47,29 +48,31 @@ export function usePaginatePosts<T>(
         }
         
         setLoading(true);
-        (async (): Promise<void> => {
-            try {
-                const resp = await axios.post<{ posts: T[], cursor: string, last: boolean }>(url, {
-                    ...data,
-                    cursor: cursor.current
-                });
-
-                setAllPosts((state) => [...state, ...resp.data.posts]);
-                cursor.current = resp.data.cursor;
-
-                if (resp.data.last) {
-                    reachedBottom.current = true;
+        setTimeout(() => {
+            (async (): Promise<void> => {
+                try {
+                    const resp = await axios.post<{ posts: T[], cursor: string, last: boolean }>(url, {
+                        ...data,
+                        cursor: cursor.current
+                    });
+    
+                    setAllPosts((state) => [...state, ...resp.data.posts]);
+                    cursor.current = resp.data.cursor;
+    
+                    if (resp.data.last) {
+                        reachedBottom.current = true;
+                    }
+    
+                    setErrorMessage("");
+                    setLoading(false);
                 }
-
-                setErrorMessage("");
-                setLoading(false);
-            }
-            catch(err: any) {
-                const errorMessage = getAPIErrorMessage(err as AxiosError<{ message: string }>)
-                setErrorMessage(errorMessage);
-                setLoading(false);
-            }
-        })();
+                catch(err: any) {
+                    const errorMessage = getAPIErrorMessage(err as AxiosError<{ message: string }>)
+                    setErrorMessage(errorMessage);
+                    setLoading(false);
+                }
+            })();
+        }, 3000);
     }, [page, url, cursor]);
 
     return { 

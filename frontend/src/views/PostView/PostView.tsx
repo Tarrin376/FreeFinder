@@ -48,33 +48,33 @@ function PostView() {
     return (
         <div className="overflow-y-scroll h-[calc(100vh-90px)]">
             <PageWrapper>
-                <p className="text-main-blue mb-2 mt-12">Website design</p>
-                <h1 className="text-3xl mb-4 max-w-[80%] break-all">{postData.title}</h1>
-                <div className="flex gap-3 items-center">
-                    <div className="relative">
-                        <ProfilePicAndStatus 
-                            profilePicURL={postData.postedBy.user.profilePicURL} 
-                            profileStatus={postData.postedBy.user.status}
-                            statusStyles="before:left-[33px] before:top-[34px] cursor-pointer"
-                            imgStyles="w-[50px] h-[50px]"
-                        />
-                    </div>
-                    <div>
-                        <div className="flex items-center gap-[7px]">
-                            <p className="nav-item hover:font-normal">{postData.postedBy.user.username}</p>
-                            <img src={StarIcon} className="w-[15px] h-[15px]" alt="star" />
-                            <p className="text-[15px]">{postData.postedBy.rating}</p>
-                            <p className="text-[15px] text-side-text-gray">({postData.postedBy.numReviews} reviews)</p>
-                        </div>
-                        <p className="text-side-text-gray text-[15px]">
-                            {getTimePosted(postData.createdAt)}
-                        </p>
-                    </div>
-                </div>
-                <div className="flex gap-20 mt-8">
+                <div className="flex gap-20">
                     <div className="flex-grow">
-                        <div className="bg-main-white w-full h-[550px] rounded-[12px] bg-contain bg-no-repeat bg-center 
-                        border border-light-border-gray shadow-info-component flex items-center justify-between p-4" 
+                        <p className="text-main-blue mb-2 mt-12">Website design</p>
+                        <h1 className="text-3xl mb-4">{postData.title}</h1>
+                        <div className="flex gap-3 items-center mb-6">
+                            <div className="relative">
+                                <ProfilePicAndStatus 
+                                    profilePicURL={postData.postedBy.user.profilePicURL} 
+                                    profileStatus={postData.postedBy.user.status}
+                                    statusStyles="before:left-[33px] before:top-[34px] cursor-pointer"
+                                    imgStyles="w-[50px] h-[50px]"
+                                />
+                            </div>
+                            <div>
+                                <div className="flex items-center gap-[7px]">
+                                    <p className="nav-item hover:font-normal">{postData.postedBy.user.username}</p>
+                                    <img src={StarIcon} className="w-[15px] h-[15px]" alt="star" />
+                                    <p className="text-[15px]">{postData.postedBy.rating}</p>
+                                    <p className="text-[15px] text-side-text-gray">({postData.postedBy.numReviews} reviews)</p>
+                                </div>
+                                <p className="text-side-text-gray text-[15px]">
+                                    {getTimePosted(postData.createdAt)}
+                                </p>
+                            </div>
+                        </div>
+                        <div className="bg-very-light-gray w-full h-[550px] rounded-[12px] bg-contain bg-no-repeat bg-center 
+                        border border-very-light-gray shadow-info-component flex items-center justify-between p-4" 
                         style={{ backgroundImage: `url(${postData.images[selectedImage].url})` }}>
                             <button className="carousel-btn" onClick={() => updateSelectedImage(selectedImage === 0 ? postData.images.length - 1 : selectedImage - 1)}>
                                 <img src={BackIcon} alt="" className="w-[30px] h-[30px]"></img>
@@ -90,8 +90,8 @@ function PostView() {
                                         src={image.url} 
                                         alt="" 
                                         className={`w-[112px] h-[80px] inline-block rounded-[8px] object-contain cursor-pointer
-                                        bg-[#f5f6f8] border border-light-border-gray ${index > 0 ? "ml-3" : ""}
-                                        ${selectedImage === index ? "border-side-text-gray" : ""}`}
+                                        bg-[#f5f6f8] border border-very-light-gray ${index > 0 ? "ml-3" : ""}
+                                        ${selectedImage === index ? "border-light-border-gray" : ""}`}
                                         key={index}
                                         onClick={() => updateSelectedImage(index)}
                                     />
@@ -106,7 +106,12 @@ function PostView() {
                         </section>
                         <AboutSeller postData={postData} />
                     </div>
-                    <Packages packages={postData.packages} />
+                    <div>
+                        <Packages packages={postData.packages} />
+                        <button className="main-btn mt-[26px] shadow-pop-up">
+                            {`See Seller Reviews (${postData.postedBy.numReviews})`}
+                        </button>
+                    </div>
                 </div>
             </PageWrapper>
         </div>

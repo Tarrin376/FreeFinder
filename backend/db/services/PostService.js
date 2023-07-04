@@ -61,7 +61,6 @@ export async function createPostHandler(postData, startingPrice, userID) {
         };
     }
     catch (err) {
-        console.log("uo");
         if (err instanceof DBError) {
             throw err;
         } else if (err instanceof Prisma.PrismaClientValidationError) {
@@ -134,7 +133,6 @@ export async function createPostPackage(packageData, postID, type) {
         });
     }
     catch (err) {
-        console.log("uo");
         if (err instanceof DBError) {
             throw err;
         }  else if (err instanceof Prisma.PrismaClientValidationError) {

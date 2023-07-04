@@ -100,6 +100,8 @@ function CreatePost({ setPostService, resetState }: CreatePostProps) {
                 type: "STANDARD",
                 packageTitle: standardPackageTitle
             });
+        } else {
+            return post;
         }
 
         if (superiorDeliveryTime > 0) {

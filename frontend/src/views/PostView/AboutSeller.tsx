@@ -22,11 +22,11 @@ function AboutSeller({ postData }: { postData: PostPage }) {
                         <p>
                             {postData.postedBy.user.username}
                         </p>
-                        <p className="text-[15px] mt-1 mb-1" style={sellerLevelTextStyles[postData.postedBy.sellerLevel.name]}>
-                            {postData.postedBy.sellerLevel.name}
-                        </p>
                         <p className="text-side-text-gray text-[15px]">
                             {postData.postedBy.user.country}
+                        </p>
+                        <p className="text-[15px] mt-[2px]" style={sellerLevelTextStyles[postData.postedBy.sellerLevel.name]}>
+                            {postData.postedBy.sellerLevel.name}
                         </p>
                     </div>
                     <svg

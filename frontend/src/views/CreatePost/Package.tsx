@@ -24,10 +24,10 @@ interface PackageProps {
 }
 
 export const MAX_PRICE: number = 2500;
+export const MAX_DELIVERY_DAYS = 60;
 
 const MAX_REVISIONS = 5;
 const MAX_FEATURES = 10;
-export const MAX_DELIVERY_DAYS = 60;
 
 function Package(props: PackageProps) {
     function updateFeatureInput(index: number, value: string): void {
