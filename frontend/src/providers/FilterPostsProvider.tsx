@@ -101,7 +101,7 @@ function FilterPostsProvider({ children }: FilterPostsContextProps) {
                 resetState={posts.resetState} 
             />}
             <div className="flex">
-                <div className="h-[calc(100vh-90px)] min-w-[360px] w-fit bg-main-white border-r border-light-border-gray p-7">
+                <div className="h-[calc(100vh-90px)] w-[360px] bg-main-white border-r border-light-border-gray p-7">
                     <button onClick={openPostService} className="btn-primary text-main-white bg-main-blue w-full px-5 h-[45px] 
                     hover:bg-main-blue-hover flex items-center justify-center gap-2 mb-[45px]">
                         <img src={AddIcon} alt="" className="w-[16px] h-[16px]" />
