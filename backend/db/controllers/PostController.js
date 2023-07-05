@@ -1,4 +1,10 @@
-import { createPostHandler, getPostHandler, deletePostHandler, addImageHandler } from "../services/PostService.js";
+import { 
+    createPostHandler, 
+    getPostHandler, 
+    deletePostHandler,
+    addImageHandler, 
+    getPostsHandler 
+} from "../services/PostService.js";
 
 export async function createPost(req, res) {
     try {
@@ -34,6 +40,16 @@ export async function addImage(req, res) {
     try {
         await addImageHandler(req);
         res.status(201).json({ message: "success" });
+    }
+    catch (err) {
+        res.status(err.code).json({ message: err.message });
+    }
+}
+
+export async function getPosts(req, res) {
+    try {
+        const posts = await getPostsHandler(req);
+        res.json({ ...posts, message: "success" });
     }
     catch (err) {
         res.status(err.code).json({ message: err.message });

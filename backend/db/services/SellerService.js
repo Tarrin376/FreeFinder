@@ -151,7 +151,7 @@ export async function updateSellerDetailsHandler(req) {
         } else if (err instanceof Prisma.PrismaClientKnownRequestError && err.code === "P2025") {
             throw new DBError("Seller not found.", 404);
         } else {
-            throw new DBError("Something went wrong when trying to process your request. Please try again.", 500);
+            throw new DBError("Something went wrong when trying update your seller details. Please try again.", 500);
         }
     }
     finally {
@@ -161,4 +161,49 @@ export async function updateSellerDetailsHandler(req) {
 
 export async function getSellerDetailsHandler(username) {
 
+}
+
+export async function getSellersHandler(search, limit) {
+    try {
+        const sellers = await prisma.seller.findMany({
+            take: limit ? parseInt(limit) : undefined,
+            where: {
+                user: {
+                    username: search ? {
+                        contains: search,
+                        mode: 'insensitive'
+                    } : undefined
+                }
+            },
+            select: {
+                user: {
+                    select: {
+                        username: true,
+                        profilePicURL: true,
+                        country: true,
+                        status: true,
+                    }
+                },
+                sellerLevel: {
+                    select: {
+                        name: true
+                    }
+                }
+            },
+            orderBy: {
+                reviews: {
+                    _count: 'desc'
+                }
+            }
+        });
+        
+        return sellers;
+    }
+    catch (err) {
+        if (err instanceof Prisma.PrismaClientValidationError) {
+            throw new DBError("Missing required fields or fields provided are invalid.", 400);
+        } else {
+            throw new DBError("Something went wrong when trying find sellers. Please try again.", 500);
+        }
+    }
 }

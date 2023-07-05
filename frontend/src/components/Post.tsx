@@ -26,6 +26,8 @@ function Post({ postInfo, username, canRemove }: PostProps) {
     const [successMessage, setSuccessMessage] = useState<string>("");
     const seconds = getSeconds(postInfo.createdAt);
     const [hide, setHide] = useState<boolean>(false);
+    const [saved, setSaved] = useState<boolean>(false);
+
     const navigate = useNavigate();
 
     async function savePost(): Promise<void> {
@@ -33,13 +35,17 @@ function Post({ postInfo, username, canRemove }: PostProps) {
             if (errorMessage !== "" || successMessage !== "") {
                 return;
             }
-
+            
+            setSaved(true);
             await axios.post<{ message: string }>(`/api/users/${username}/saved/${postInfo.postID}`);
             actionSuccessful(setSuccessMessage, "Saved post", "");
         }
         catch (err: any) {
             const errorMessage = getAPIErrorMessage(err as AxiosError<{ message: string }>);
             actionSuccessful(setErrorMessage, errorMessage, "");
+        }
+        finally {
+            setSaved(false);
         }
     }
 
@@ -80,7 +86,9 @@ function Post({ postInfo, username, canRemove }: PostProps) {
                 viewBox="0 0 32 32" 
                 xmlns="http://www.w3.org/2000/svg" 
                 onClick={savePost}
-                className="block fill-[#00000086] h-[24px] w-[24px] stroke-white stroke-2 overflow-visible right-3 top-3 absolute cursor-pointer" 
+                className="block fill-[#00000086] w-[24px] h-[24px] stroke-white stroke-2 overflow-visible right-3 top-3 
+                absolute cursor-pointer transition-all linear duration-100"
+                style={saved ? { scale: '0.90' } : {}}
                 aria-hidden="true" 
                 role="presentation" 
                 focusable="false">

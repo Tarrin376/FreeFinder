@@ -9,7 +9,7 @@ import cookieParser from 'cookie-parser';
 import pkg from 'cloudinary';
 import { PrismaClient } from '@prisma/client';
 
-export const paginationLimit = 10;
+export const paginationLimit = 20;
 export const prisma = new PrismaClient();
 export const cloudinary = pkg.v2;
 

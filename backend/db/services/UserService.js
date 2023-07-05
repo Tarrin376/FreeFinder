@@ -7,6 +7,8 @@ import { sortPosts } from '../utils/sortPosts.js';
 import { deleteCloudinaryResource } from '../utils/deleteCloudinaryResource.js';
 import { cloudinary } from '../index.js';
 import { prisma } from '../index.js';
+import { getPostFilters } from '../utils/getPostFilters.js';
+import { getPostsCount } from '../utils/getPostsCount.js';
 
 export async function updateProfilePictureHandler(req) {
     try {
@@ -278,6 +280,7 @@ export async function deleteUserHandler(req) {
 
 export async function getUserPostsHandler(req) {
     try {
+        await checkUser(req.userData.userID, req.username);
         const seller = await prisma.seller.findFirst({ 
             where: { 
                 user: {
@@ -294,7 +297,7 @@ export async function getUserPostsHandler(req) {
             };
         }
         
-        return queryUserPosts(seller.sellerID, req.body);
+        return await queryUserPosts(seller.sellerID, req);
     }
     catch (err) {
         if (err instanceof DBError) {
@@ -310,42 +313,16 @@ export async function getUserPostsHandler(req) {
     }
 }
 
-export async function queryUserPosts(sellerID, body) {
+export async function queryUserPosts(sellerID, req) {
+    const postFilters = getPostFilters(req);
     const posts = await prisma.post.findMany({
-        skip: body.cursor ? 1 : undefined,
-        cursor: body.cursor ? { postID: body.cursor } : undefined,
+        skip: req.body.cursor ? 1 : undefined,
+        cursor: req.body.cursor ? { postID: req.body.cursor } : undefined,
         take: paginationLimit,
-        orderBy: sortPosts[body.sort],
+        orderBy: sortPosts[req.body.sort],
         where: {
             sellerID: sellerID,
-            packages: {
-                some: {
-                    amount: {
-                        gte: body.min,
-                        lte: body.max
-                    },
-                    deliveryTime: {
-                        lte: body.deliveryTime
-                    }
-                }
-            },
-            postedBy: {
-                user: {
-                    country: body.location
-                },
-                languages: body.languages.length > 0 ? {
-                    hasSome: body.languages
-                } : undefined,
-                sellerLevel: {
-                    name: body.sellerLevels.length > 0 ? {
-                        in: body.sellerLevels
-                    } : undefined
-                }
-            },
-            title: { 
-                contains: body.search,
-                mode: 'insensitive'
-            }
+            ...postFilters
         },
         select: { 
             postedBy: {
@@ -382,18 +359,25 @@ export async function queryUserPosts(sellerID, body) {
         }
     });
 
+    const count = req.body.cursor ? -1 : await getPostsCount({
+        sellerID: sellerID,
+        ...postFilters
+    });
+
     if (posts.length === 0) {
         return { 
-            posts,
+            posts: [],
             cursor: undefined, 
-            last: true
+            last: true,
+            count: count
         };
     }
     
     const minNum = Math.min(paginationLimit - 1, posts.length - 1);
     return { 
-        posts, 
+        posts: posts, 
         cursor: posts[minNum].postID, 
-        last: minNum < paginationLimit - 1 
+        last: minNum < paginationLimit - 1,
+        count: count 
     };
 }

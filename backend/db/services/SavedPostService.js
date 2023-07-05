@@ -4,6 +4,8 @@ import { paginationLimit } from "../index.js";
 import { sortPosts } from '../utils/sortPosts.js';
 import { DBError } from "../customErrors/DBError.js";
 import { checkUser } from "../utils/checkUser.js";
+import { getPostsCount } from '../utils/getPostsCount.js';
+import { getPostFilters } from '../utils/getPostFilters.js';
 
 export async function savePostHandler(postID, userID, username) {
     try {
@@ -34,7 +36,7 @@ export async function savePostHandler(postID, userID, username) {
 export async function getSavedPostsHandler(req) {
     try {
         await checkUser(req.userData.userID, req.username);
-        return querySavedPosts(req);
+        return await querySavedPosts(req);
     }
     catch (err) {
         if (err instanceof DBError) {
@@ -51,6 +53,7 @@ export async function getSavedPostsHandler(req) {
 }
 
 export async function querySavedPosts(req) {
+    const postFilters = getPostFilters(req);
     const saved = await prisma.savedPost.findMany({
         skip: req.body.cursor ? 1 : undefined,
         cursor: req.body.cursor ? { 
@@ -63,34 +66,7 @@ export async function querySavedPosts(req) {
         where: {
             userID: req.userData.userID,
             post: {
-                packages: {
-                    some: {
-                        amount: {
-                            gte: req.body.min,
-                            lte: req.body.max
-                        },
-                        deliveryTime: {
-                            lte: req.body.deliveryTime
-                        }
-                    }
-                },
-                postedBy: {
-                    user: {
-                        country: req.body.location
-                    },
-                    languages: req.body.languages.length > 0 ? {
-                        hasSome: req.body.languages
-                    } : undefined,
-                    sellerLevel: {
-                        name: req.body.sellerLevels.length > 0 ? {
-                            in: req.body.sellerLevels
-                        } : undefined
-                    }
-                },
-                title: { 
-                    contains: req.body.search,
-                    mode: 'insensitive'
-                }
+                ...postFilters
             }
         },
         orderBy: {
@@ -135,11 +111,21 @@ export async function querySavedPosts(req) {
         }
     });
 
+    const count = req.body.cursor ? -1 : await prisma.savedPost.count({
+        where: {
+            userID: req.userData.userID,
+            post: {
+                ...postFilters
+            }
+        }
+    });
+
     if (saved.length === 0) {
         return { 
-            posts: saved, 
+            posts: [], 
             cursor: undefined, 
-            last: true
+            last: true,
+            count: count
         };
     }
 
@@ -147,9 +133,10 @@ export async function querySavedPosts(req) {
     const posts = saved.map((cur) => cur.post);
 
     return { 
-        posts, 
+        posts: posts, 
         cursor: saved[minNum].post.postID,
-        last: minNum < paginationLimit - 1 
+        last: minNum < paginationLimit - 1,
+        count: count
     };
 }
 

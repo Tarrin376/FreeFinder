@@ -17,7 +17,10 @@ export async function getSellerLevelsHandler() {
         return sellerLevels;
     }
     catch (err) {
-        throw new DBError("Something went wrong when trying to process your request. Please try again.", 500);
+        throw new DBError("Something went wrong when trying retrieve all of the seller levels. Please try again.", 500);
+    }
+    finally {
+        await prisma.$disconnect();
     }
 }
 
@@ -36,8 +39,11 @@ export async function createSellerLevelHandler(body) {
         if (err instanceof Prisma.PrismaClientValidationError) {
             throw new DBError("Missing required fields or fields provided are invalid.", 400);
         } else {
-            throw new DBError("Something went wrong when trying to process your request. Please try again.", 500);
+            throw new DBError("Something went wrong when trying to create this seller level. Please try again.", 500);
         }
+    }
+    finally {
+        await prisma.$disconnect();
     }
 }
 
@@ -56,8 +62,11 @@ export async function updateSellerLevelHandler(req) {
         if (err instanceof Prisma.PrismaClientValidationError) {
             throw new DBError("Missing required fields or fields provided are invalid.", 400);
         } else {
-            throw new DBError("Something went wrong when trying to process your request. Please try again.", 500);
+            throw new DBError("Something went wrong when trying to update this seller level. Please try again.", 500);
         }
+    }
+    finally {
+        await prisma.$disconnect();
     }
 }
 
@@ -70,10 +79,9 @@ export async function deleteSellerLevelHandler(req) {
         });
     }
     catch (err) {
-        if (err instanceof Prisma.PrismaClientValidationError) {
-            throw new DBError("Missing required fields or fields provided are invalid.", 400);
-        } else {
-            throw new DBError("Something went wrong when trying to process your request. Please try again.", 500);
-        }
+        throw new DBError("Something went wrong when trying to delete this seller level. Please try again.", 500);
+    }
+    finally {
+        await prisma.$disconnect();
     }
 }

@@ -17,7 +17,7 @@ import
 const userRouter = Router();
 
 userRouter.use('/:username/saved', savedPostRouter);
-userRouter.post('/:username/posts', getUserPosts);
+userRouter.post('/:username/posts', cookieJwtAuth, getUserPosts);
 
 userRouter.param('username', (req, _, next, value) => {
     req.username = value;

@@ -23,6 +23,7 @@ export function usePaginatePosts<T>(
 : PaginatePosts<T> {
 
     const reachedBottom = useRef<boolean>(false);
+    const count = useRef<number>(-1);
     const [loading, setLoading] = useState<boolean>(false);
     const [errorMessage, setErrorMessage] = useState<string>("");
     const [allPosts, setAllPosts] = useState<T[]>([]);
@@ -51,7 +52,7 @@ export function usePaginatePosts<T>(
         setTimeout(() => {
             (async (): Promise<void> => {
                 try {
-                    const resp = await axios.post<{ posts: T[], cursor: string, last: boolean }>(url, {
+                    const resp = await axios.post<{ posts: T[], cursor: string, last: boolean, count: number }>(url, {
                         ...data,
                         cursor: cursor.current
                     });
@@ -61,6 +62,10 @@ export function usePaginatePosts<T>(
     
                     if (resp.data.last) {
                         reachedBottom.current = true;
+                    }
+
+                    if (resp.data.count !== -1) {
+                        count.current = resp.data.count;
                     }
     
                     setErrorMessage("");
@@ -80,6 +85,7 @@ export function usePaginatePosts<T>(
         errorMessage, 
         loading,
         reachedBottom: reachedBottom.current,
+        count: count.current,
         resetState,
         goToNextPage,
     };

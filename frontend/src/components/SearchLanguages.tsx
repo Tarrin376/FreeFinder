@@ -1,6 +1,7 @@
 import { useState } from "react";
 import { useFetchLanguages } from "../hooks/useFetchLanguages";
 import Options from "./Options";
+import HighlightedSubstring from "./HighlightedSubstring";
 
 interface SearchLanguagesProps {
     setSelectedLanguages: React.Dispatch<React.SetStateAction<string[]>>,
@@ -73,24 +74,16 @@ function SearchLanguages({ setSelectedLanguages, selectedLanguages, searchBarSty
             />
             {matchedLanguages.length > 0 &&
             <div className="border-b border-x border-light-gray rounded-b-[8px] max-h-[300px] overflow-y-scroll p-4">
-                <p className="text-[16px] text-side-text-gray mb-2">{`Results for '${language}'`}</p>
                 <div className="flex flex-col gap-1">
                     {matchedLanguages.map((cur: string[]) => {
                         const index = parseInt(cur[1]);
-                        const result = cur[0].split('');
-
                         return (
-                            <p className="cursor-pointer transition-all ease-linear duration-100 hover:px-2"
-                            onClick={() => addLanguage(cur[0])} key={cur[0]}>
-                                {result.map((char: string, curIndex: number) => {
-                                    return (
-                                        <span className={curIndex >= index && curIndex < index + language.length ? "bg-highlight" : ""}
-                                        key={curIndex}>
-                                            {char}
-                                        </span>
-                                    )
-                                })}
-                            </p>
+                            <HighlightedSubstring
+                                action={addLanguage}
+                                word={cur[0]}
+                                substring={language}
+                                foundAt={index}
+                            />
                         )
                     })}
                 </div>

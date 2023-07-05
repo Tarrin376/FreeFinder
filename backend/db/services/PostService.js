@@ -5,6 +5,10 @@ import { deleteCloudinaryResource } from '../utils/deleteCloudinaryResource.js';
 import { cloudinary } from '../index.js';
 import { prisma } from '../index.js';
 import { v4 as uuidv4 } from 'uuid';
+import { paginationLimit } from '../index.js';
+import { sortPosts } from '../utils/sortPosts.js';
+import { getPostsCount } from '../utils/getPostsCount.js';
+import { getPostFilters } from '../utils/getPostFilters.js';
 
 async function uploadImage(postID, image, url, isThumbnail) {
     const result = await new Promise(async (resolve, reject) => {
@@ -262,4 +266,84 @@ export async function deletePostHandler(postID, userID) {
     finally {
         prisma.$disconnect();
     }
+}
+
+export async function getPostsHandler(req) {
+    try {
+        return await queryPosts(req);
+    }
+    catch (err) {
+        if (err instanceof DBError) {
+            throw err;
+        } else if (err instanceof Prisma.PrismaClientValidationError) {
+            throw new DBError("Missing required fields or fields provided are invalid.", 400);
+        } else {
+            throw new DBError("Something went wrong when trying to get more posts. Please try again.", 500);
+        }
+    }
+    finally {
+        await prisma.$disconnect();
+    }
+}
+
+async function queryPosts(req) {
+    const postFilters = getPostFilters(req);
+    const posts = await prisma.post.findMany({
+        skip: req.body.cursor ? 1 : undefined,
+        cursor: req.body.cursor ? { postID: req.body.cursor } : undefined,
+        take: paginationLimit,
+        where: postFilters,
+        orderBy: sortPosts[req.body.sort],
+        select: {
+            postedBy: {
+                select: {
+                    user: {
+                        select: {
+                            profilePicURL: true,
+                            status: true,
+                            username: true,
+                        }
+                    },
+                    rating: true,
+                    sellerLevel: {
+                        select: {
+                            name: true
+                        }
+                    }
+                }
+            },
+            createdAt: true,
+            numReviews: true,
+            startingPrice: true,
+            title: true,
+            postID: true,
+            images: {
+                where: { 
+                    isThumbnail: true
+                },
+                select: {
+                    url: true,
+                    isThumbnail: true
+                }
+            }
+        }
+    });
+
+    const count = req.body.cursor ? -1 : await getPostsCount(postFilters);
+    if (posts.length === 0) {
+        return { 
+            posts: posts, 
+            cursor: undefined, 
+            last: true,
+            count: count
+        };
+    }
+
+    const minNum = Math.min(paginationLimit - 1, posts.length - 1);
+    return { 
+        posts: posts, 
+        cursor: posts[minNum].postID,
+        last: minNum < paginationLimit - 1,
+        count: count
+    };
 }

@@ -16,7 +16,7 @@ module.exports = {
             'very-light-gray-hover': '#E6E6E6',
             'main-black': '#292929',
             'paragraph-text': '#4b4b4b',
-            'side-text-gray': '#879198',
+            'side-text-gray': '#9c9c9c',
             'main-black-hover': '#323232',
             'pop-up-bg': 'rgba(0, 0, 0, 0.16)',
             'main-white-hover': '#f9f9f9',
@@ -39,7 +39,7 @@ module.exports = {
             'profile-page-container': '0px 1px 8px -6px rgba(0, 0, 0, 0.62)'
         },
         fontFamily: {
-            railway: ['"Rubik"', ...defaultTheme.fontFamily.sans]
+            railway: ['"Mulish"', ...defaultTheme.fontFamily.sans]
         }
     },
     screens: {

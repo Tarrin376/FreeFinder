@@ -34,8 +34,8 @@ function Packages({ packages }: { packages: IPackage[] }) {
     }
 
     return (
-        <div className="bg-main-white relative rounded-[12px] border border-light-border-gray shadow-info-component min-w-[390px] h-[670px]
-        mt-12">
+        <div className="bg-main-white relative rounded-[12px] border border-light-border-gray 
+        shadow-info-component min-w-[390px] h-[635px] mt-12">
             {curPkg &&
             <>
                 <div className="flex justify-evenly overflow-hidden">
@@ -51,9 +51,11 @@ function Packages({ packages }: { packages: IPackage[] }) {
                 <div className="p-6 overflow-y-scroll h-[calc(100%-50px)] flex flex-col justify-between">
                     <div>
                         <div className="flex justify-between items-center mt-[-6px]">
-                            <h3 className="text-[23px]">{`${capitalizePkgType(curPkg.type)} package`}</h3>
+                            <h3 className="text-[23px]">
+                                {`${capitalizePkgType(curPkg.type)} package`}
+                            </h3>
                             {isMostPopular(curPkg.type) && 
-                            <p className="bg-[#fbb6fd] w-fit text-[15px] px-3 py-[1px] rounded-[5px]">
+                            <p className="bg-light-green w-fit text-[15px] px-3 py-[1px] rounded-[5px]">
                                 Popular
                             </p>}
                         </div>

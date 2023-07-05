@@ -74,7 +74,7 @@
         overflow-y: hidden;
     }
     .page {
-        @apply xxl:max-w-[1494px] xl:max-w-[1202px] lg:max-w-[910px] md:max-w-[618px] m-auto px-7 py-7 min-h-[calc(100vh-90px)];
+        @apply max-w-[1494px] m-auto px-7 py-7 min-h-[calc(100vh-90px)];
     }
     * {
         scrollbar-width: thin;

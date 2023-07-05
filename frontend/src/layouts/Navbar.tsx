@@ -1,4 +1,3 @@
-import SearchIcon from '../assets/search.png';
 import { useState, useContext, useRef } from 'react';
 import SignUp from '../components/SignUp';
 import LogIn from '../components/LogIn';
@@ -9,6 +8,7 @@ import ProfileMenu from '../components/ProfileMenu';
 import AccountSettings from '../views/AccountSettings/AccountSettings';
 import SellerProfile from '../components/SellerProfile';
 import { useNavigate } from 'react-router-dom';
+import SearchSellers from '../components/SearchSellers';
 
 function Navbar() {
     const [signUp, setSignUp] = useState<boolean>(false);
@@ -42,7 +42,7 @@ function Navbar() {
             <nav className="flex gap-8 items-center px-7 h-[90px] border-b border-b-very-light-gray bg-white">
                 <ul className="flex items-center gap-14">
                     <li className="text-main-blue text-[23px] cursor-pointer mr-8 font-normal" onClick={(e) => goToPage(e, `/`)}>FreeFinder</li>
-                    <li className="nav-item">Browse all</li>
+                    <li className="nav-item" onClick={(e) => goToPage(e, 'posts/all')}>Browse all</li>
                     {userContext.userData.seller &&
                     <>
                         <li className="nav-item">Client orders</li>
@@ -53,15 +53,7 @@ function Navbar() {
                         <li className="nav-item" onClick={(e) => goToPage(e, `${userContext.userData.username}/saved`)}>Saved posts</li>
                         <li className="nav-item" onClick={(e) => goToPage(e, `${userContext.userData.username}/posts`)}>My posts</li>
                     </>}
-                    <div className="flex items-center border border-light-gray 
-                        rounded-[8px] px-3 h-10 bg-transparent w-[320px]">
-                        <img src={SearchIcon} alt="" className="w-5 h-5 cursor-pointer"/>
-                        <input 
-                            type="text" 
-                            placeholder="Search for sellers" 
-                            className="focus:outline-none placeholder-search-text bg-transparent ml-3" 
-                        />
-                    </div>
+                    <SearchSellers />
                 </ul>
                 <div className="flex ml-auto gap-4 items-center">
                     {userContext.userData.username === "" ? 

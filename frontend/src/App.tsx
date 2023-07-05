@@ -7,6 +7,7 @@ import ErrorView from './views/ErrorView/ErrorView';
 import MyPostsView from './views/MyPostsView/MyPostsView';
 import PostView from './views/PostView/PostView';
 import FilterPostsProvider from './providers/FilterPostsProvider';
+import BrowseAllView from './views/BrowseAll/BrowseAllView';
 
 function App() {
     return (
@@ -17,12 +18,17 @@ function App() {
                         <Route path="/" element={<Navbar />}>
                             <Route index element={<HomeView />} />
                             <Route path=":username?/saved" element={
-                                <FilterPostsProvider key={`saved`}>
+                                <FilterPostsProvider key={`saved`} urlPrefix="/users">
                                     <SavedServicesView />
                                 </FilterPostsProvider>} 
                             />
+                            <Route path="posts/all" element={
+                                <FilterPostsProvider key={`posts`} urlPrefix="">
+                                    <BrowseAllView />
+                                </FilterPostsProvider>
+                            } />
                             <Route path=":username?/posts" element={
-                                <FilterPostsProvider key={`posts`}>
+                                <FilterPostsProvider key={`my-posts`} urlPrefix="/users">
                                     <MyPostsView />
                                 </FilterPostsProvider>} 
                             />

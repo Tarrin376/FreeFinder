@@ -102,7 +102,7 @@ export async function updatePassword(req, res) {
 export async function getUserPosts(req, res) {
     try {
         const response = await getUserPostsHandler(req);
-        res.json({ posts: response.posts, cursor: response.cursor, message: "success", last: response.last });
+        res.json({...response, message: "success" });
     }
     catch (err) {
         res.status(err.code).json({ message: err.message });
