@@ -42,7 +42,7 @@ function Posts({ canRemove, noResultsFoundTitle }: PostsProps) {
                 {filterContext.search && 
                 <span className="text-[20px]">
                     {` for `}
-                    <span className="font-semibold text-[20px]">{filterContext.search}</span>
+                    <span className="font-bold text-[20px]">{filterContext.search}</span>
                 </span>}
             </h1>}
             {(filterContext.posts.loading || filterContext.posts.allPosts.length > 0) && 

@@ -60,7 +60,7 @@ function Packages({ packages }: { packages: IPackage[] }) {
                             </p>}
                         </div>
                         <p className="text-[35px]">£{curPkg.amount}</p>
-                        <p className="text-side-text-gray mb-4 pb-4 border-b border-b-light-gray font-semibold">{curPkg.packageTitle}</p>
+                        <p className="text-side-text-gray mb-4 pb-4 border-b border-b-light-gray font-bold">{curPkg.packageTitle}</p>
                         <p className="mt-1 mb-4 pb-4 border-b border-b-light-gray text-paragraph-text">{curPkg.description}</p>
                         <div className="flex items-center gap-2 mb-2">
                             <img src={DeliveryTimeIcon} alt="" width="20px" height="20px" />

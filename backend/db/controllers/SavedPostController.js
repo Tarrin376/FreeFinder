@@ -2,7 +2,6 @@ import { savePostHandler, getSavedPostsHandler, deleteSavedPostHandler } from ".
 
 export async function savePost(req, res) {
     try {
-        console.log(req.userData, req.username);
         await savePostHandler(req.params.postID, req.userData.userID, req.username);
         res.status(201).json({ message: "success" });
     }

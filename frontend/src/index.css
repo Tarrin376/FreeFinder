@@ -62,7 +62,7 @@
         @apply bg-error-red hover:bg-error-red-hover btn-primary text-error-text;
     }
     .selected-nav-element {
-        @apply !text-main-blue font-semibold;
+        @apply !text-main-blue;
     }
 }
 

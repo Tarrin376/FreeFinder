@@ -16,7 +16,7 @@ function HighlightedSubstring({ styles, action, word, substring, foundAt }: High
             {chars.map((char: string, curIndex: number) => {
                 return (
                     <span className={curIndex >= foundAt && curIndex < foundAt + substring.length ?
-                    "text-main-black" : "text-side-text-gray"}
+                    "text-main-black bg-highlight" : "text-side-text-gray"}
                     key={curIndex}>
                         {char}
                     </span>
