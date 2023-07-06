@@ -9,6 +9,7 @@ import { getAPIErrorMessage } from '../utils/getAPIErrorMessage';
 import Button from './Button';
 import { useNavigate } from 'react-router-dom';
 import { sellerLevelTextStyles } from '../utils/sellerLevelTextStyles';
+import Carousel from './Carousel';
 
 interface PostProps {
     postInfo: IPost,
@@ -27,6 +28,7 @@ function Post({ postInfo, username, canRemove }: PostProps) {
     const seconds = getSeconds(postInfo.createdAt);
     const [hide, setHide] = useState<boolean>(false);
     const [saved, setSaved] = useState<boolean>(false);
+    const [selectedImage, setSelectedImage] = useState<number>(0);
 
     const navigate = useNavigate();
 
@@ -67,7 +69,7 @@ function Post({ postInfo, username, canRemove }: PostProps) {
         }
     }
 
-    const openPostView = () => {
+    function openPostView() {
         navigate(`/posts/${postInfo.postID}`);
     }
 
@@ -77,8 +79,9 @@ function Post({ postInfo, username, canRemove }: PostProps) {
 
     return (
         <div className="bg-transparent w-[270px] relative">
-            <p className={`absolute rounded-t-[12px] z-10 px-7 py-[11px] w-[100%] transition-all ease-out duration-100 text-center select-none 
-            ${errorMessage !== "" ? 'bg-error-text text-main-white' : successMessage ? 'action-btn hover:!bg-[#36BF54]' : '!py-[0px]'}`}>
+            <p className={`absolute rounded-t-[12px] z-20 px-7 py-[11px] w-[100%] transition-all ease-out duration-100 text-center 
+            ${errorMessage !== "" ? 'bg-error-text text-main-white' 
+            : successMessage ? 'action-btn hover:!bg-[#36BF54]' : '!py-[0px]'}`}>
                 {errorMessage !== "" ? errorMessage : successMessage !== "" ? successMessage : ""}
             </p>
             {(!canRemove || !canRemove.unsave) && 
@@ -87,7 +90,7 @@ function Post({ postInfo, username, canRemove }: PostProps) {
                 xmlns="http://www.w3.org/2000/svg" 
                 onClick={savePost}
                 className="block fill-[#00000086] w-[24px] h-[24px] stroke-white stroke-2 overflow-visible right-3 top-3 
-                absolute cursor-pointer transition-all linear duration-100"
+                absolute cursor-pointer transition-all linear duration-100 z-10"
                 style={saved ? { scale: '0.90' } : {}}
                 aria-hidden="true" 
                 role="presentation" 
@@ -95,14 +98,14 @@ function Post({ postInfo, username, canRemove }: PostProps) {
                 <path d="m16 28c7-4.733 14-10 14-17 0-1.792-.683-3.583-2.05-4.95-1.367-1.366-3.158-2.05-4.95-2.05-1.791 0-3.583.684-4.949 2.05l-2.051 2.051-2.05-2.051c-1.367-1.366-3.158-2.05-4.95-2.05-1.791 0-3.583.684-4.949 2.05-1.367 1.367-2.051 3.158-2.051 4.95 0 7 7 12.267 14 17z">
                 </path>
             </svg>}
-            <div className="bg-very-light-gray rounded-[12px] overflow-hidden border border-very-light-gray">
-                <img 
-                    src={postInfo.images[0].url} 
-                    className="w-full h-[255px] object-cover z-0" 
-                    alt=""
-                    loading="lazy"
-                />
-            </div>
+            <Carousel
+                selectedImage={selectedImage}
+                setSelectedImage={setSelectedImage}
+                images={postInfo.images}
+                btnSize={35}
+                wrapperStyles="bg-very-light-gray rounded-[12px] overflow-hidden border border-very-light-gray"
+                imageStyles="w-full h-[255px] object-cover z-0"
+            />
             <div className="mt-3">
                 <div className="flex items-center mb-2 gap-3 relative">
                     <ProfilePicAndStatus 
@@ -112,9 +115,11 @@ function Post({ postInfo, username, canRemove }: PostProps) {
                     />
                     <div className="flex-grow">
                         <div className="flex justify-between">
-                            <p className="whitespace-nowrap text-ellipsis overflow-hidden max-w-[170px]">{postInfo.postedBy.user.username}</p>
+                            <p className="whitespace-nowrap text-ellipsis overflow-hidden max-w-[170px] hover:text-main-blue cursor-pointer">
+                                {postInfo.postedBy.user.username}
+                            </p>
                             <div className="flex items-center justify-end gap-[7px]">
-                                <img src={StarIcon} className="w-[15px] h-[15px] mb-[2px]" alt="star" />
+                                <img src={StarIcon} className="w-[18px] h-[18px] mb-[2px]" alt="star" />
                                 <p className="text-[15px]">{postInfo.postedBy.rating}</p>
                             </div>
                         </div>

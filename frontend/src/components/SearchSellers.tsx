@@ -5,6 +5,7 @@ import { getAPIErrorMessage } from "../utils/getAPIErrorMessage";
 import { sellerLevelTextStyles } from "../utils/sellerLevelTextStyles";
 import OutsideClickHandler from "react-outside-click-handler";
 import ProfilePicAndStatus from "./ProfilePicAndStatus";
+import HighlightedSubstring from "./HighlightedSubstring";
 
 const queryLimit = 6;
 
@@ -26,6 +27,7 @@ function SearchSellers() {
     const [errorMessage, setErrorMessage] = useState<string>("");
     const searchRef = useRef<HTMLInputElement>(null);
     const [hide, setHide] = useState<boolean>(true);
+    const searchQuery = searchRef.current?.value ? searchRef.current.value : "";
 
     async function getMatchedSellers(query: string): Promise<SellerData[] | undefined> {
         try {
@@ -40,73 +42,88 @@ function SearchSellers() {
     }
 
     async function searchHandler(e: React.ChangeEvent<HTMLInputElement>): Promise<void> {
-        const search = e.target.value;
-        const matchedSellers = await getMatchedSellers(search);
+        const query = e.target.value;
+        const matchedSellers = await getMatchedSellers(query);
 
         if (matchedSellers !== undefined) {
-            if (search === "") setSellers([]);
+            if (query === "") setSellers([]);
             else setSellers(matchedSellers);
         }
     }
 
-    console.log(sellers);
-
     return (
-        <div className="relative">
-            <OutsideClickHandler onOutsideClick={() => setHide(true)}>
+        <OutsideClickHandler onOutsideClick={() => setHide(true)}>
+            <div className="relative">
                 <div className={`flex items-center border border-light-gray 
-                rounded-[8px] ${searchRef.current?.value && !hide ? "rounded-b-none" : ""} px-3 h-10 bg-transparent w-[400px]`}>
+                rounded-[8px] ${searchQuery && !hide ? "rounded-b-none" : ""} px-3 h-10 bg-transparent w-[400px]`}>
                     <img src={SearchIcon} alt="" className="w-5 h-5 cursor-pointer"/>
                     <input 
                         type="text" 
                         placeholder="Search for sellers" 
-                        className="focus:outline-none placeholder-search-text bg-transparent ml-3"
+                        className="focus:outline-none placeholder-search-text bg-transparent ml-3 w-full"
                         onChange={searchHandler}
                         ref={searchRef}
                         onFocus={() => setHide(false)}
                     />
                 </div>
-            </OutsideClickHandler>
-            {searchRef.current?.value && !hide &&
-            <div className="border-b border-x border-light-gray rounded-b-[8px] p-2 bg-main-white absolute w-full">
-                {errorMessage ? 
-                <p className="text-center text-side-text-gray">{errorMessage}</p> :
-                sellers.length === 0 ? 
-                <p className="text-center text-side-text-gray">
-                    No results found for
-                    <span>{` ${searchRef.current?.value}`}</span>
-                </p> :
-                <div className="flex flex-col gap-1">
-                    {sellers.map((seller: SellerData) => {
-                        return (
-                            <div className="flex items-center gap-3 cursor-pointer hover:bg-[#f7f7f7] p-2 rounded-[6px]
-                            transition-all ease-out duration-100">
-                                <div className="relative">
-                                    <ProfilePicAndStatus
-                                        profilePicURL={seller.user.profilePicURL}
-                                        profileStatus={seller.user.status}
-                                        statusStyles="before:left-[30px]"
-                                    />
-                                </div>
-                                <div>
-                                    <div className="flex items-center gap-2">
-                                        <p className="text-[15px]">{seller.user.username}</p>
-                                        <p className="text-[14px] seller-level"
-                                        style={sellerLevelTextStyles[seller.sellerLevel.name]}>
-                                            {seller.sellerLevel.name}
+                {searchQuery && !hide &&
+                <div className="border-b border-x border-light-gray rounded-b-[8px] p-2 bg-main-white absolute w-full z-20">
+                    {errorMessage ? 
+                    <p className="text-center text-side-text-gray">{errorMessage}</p> :
+                    sellers.length === 0 && 
+                    <p className="text-center text-side-text-gray">
+                        No results found
+                    </p>}
+                    {!errorMessage && sellers.length > 0 &&
+                    <div className="flex flex-col">
+                        <p className="ml-2 mt-2 mb-1 text-side-text-gray">
+                            Search results for
+                            <span>{` ${searchQuery}`}</span>
+                        </p>
+                        {sellers.map((seller: SellerData) => {
+                            return (
+                                <div className="flex items-center gap-3 cursor-pointer hover:bg-[#f7f7f7] p-2 rounded-[6px]
+                                transition-all ease-out duration-100">
+                                    <div className="relative">
+                                        <ProfilePicAndStatus
+                                            profilePicURL={seller.user.profilePicURL}
+                                            profileStatus={seller.user.status}
+                                            statusStyles="before:left-[35px] before:top-[37px]"
+                                            imgStyles="w-[53px] h-[53px]"
+                                        />
+                                    </div>
+                                    <div>
+                                        <div className="flex items-center gap-2">
+                                            <HighlightedSubstring
+                                                word={seller.user.username}
+                                                substring={searchQuery}
+                                                foundAt={seller.user.username.toLowerCase().indexOf(searchQuery.toLowerCase())}
+                                                styles="hover:!px-0"
+                                            />
+                                            <p className="text-[14px] seller-level"
+                                            style={sellerLevelTextStyles[seller.sellerLevel.name]}>
+                                                {seller.sellerLevel.name}
+                                            </p>
+                                        </div>
+                                        <p className="text-[14px] text-side-text-gray 
+                                        whitespace-nowrap text-ellipsis overflow-hidden w-[300px] mt-[2px]">
+                                            {seller.summary}
+                                        </p>
+                                        <p className="text-[14px] text-side-text-gray">
+                                            {seller.user.country}
                                         </p>
                                     </div>
-                                    <p className="text-[14px] text-side-text-gray mt-[2px] 
-                                    whitespace-nowrap text-ellipsis overflow-hidden w-[300px]">
-                                        {seller.summary}
-                                    </p>
                                 </div>
-                            </div>
-                        )
-                    })}
+                            )
+                        })}
+                    </div>}
+                    {sellers.length === queryLimit &&
+                    <button className="m-auto block side-btn h-[35px] mt-[10px] mb-[10px]">
+                        See more
+                    </button>}
                 </div>}
-            </div>}
-        </div>
+            </div>
+        </OutsideClickHandler>
     )
 }
 

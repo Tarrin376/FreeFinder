@@ -98,12 +98,12 @@ export async function querySavedPosts(req) {
                     title: true,
                     postID: true,
                     images: {
-                        where: { 
-                            isThumbnail: true
-                        },
                         select: {
                             url: true,
                             isThumbnail: true
+                        },
+                        orderBy: {
+                            isThumbnail: 'desc'
                         }
                     }
                 }
@@ -111,7 +111,7 @@ export async function querySavedPosts(req) {
         }
     });
 
-    const count = req.body.cursor ? -1 : await prisma.savedPost.count({
+    const count = req.body.cursor ? 0 : await prisma.savedPost.count({
         where: {
             userID: req.userData.userID,
             post: {

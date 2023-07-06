@@ -303,7 +303,7 @@ function ExtraFilters() {
 
 function MainFiltersBar({ searchRef, min, max, countryRef, sort, loading, searchHandler }: MainFiltersBarProps) {
     return (
-        <div className="h-[90px] max-w-[1494px] m-auto flex items-center px-[22.5px] pr-[35px]">
+        <div className="h-[90px] max-w-[1494px] m-auto flex items-center px-[22.5px]">
             <div className="flex flex-grow items-center border-r border-light-gray h-full pr-6">
                 <img src={SearchIcon} alt="" className="w-[17px] h-[17px] cursor-pointer"/>
                 <input 

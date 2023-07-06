@@ -27,6 +27,6 @@ export function getPostFilters(req) {
         title: { 
             contains: req.body.search,
             mode: 'insensitive'
-        }
+        },
     }
 }

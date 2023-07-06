@@ -75,14 +75,14 @@ function SearchLanguages({ setSelectedLanguages, selectedLanguages, searchBarSty
             {matchedLanguages.length > 0 &&
             <div className="border-b border-x border-light-gray rounded-b-[8px] max-h-[300px] overflow-y-scroll p-4 bg-main-white">
                 <div className="flex flex-col gap-1">
-                    {matchedLanguages.map((cur: string[]) => {
-                        const index = parseInt(cur[1]);
+                    {matchedLanguages.map((cur: string[], index: number) => {
                         return (
                             <HighlightedSubstring
                                 action={addLanguage}
                                 word={cur[0]}
                                 substring={language}
-                                foundAt={index}
+                                foundAt={parseInt(cur[1])}
+                                key={index}
                             />
                         )
                     })}

@@ -9,20 +9,15 @@ import Packages from "./Packages";
 import axios, { AxiosError } from "axios";
 import { getAPIErrorMessage } from "../../utils/getAPIErrorMessage";
 import { IPostImage } from "../../models/IPostImage";
-import BackIcon from "../../assets/back.png";
-import NextIcon from "../../assets/next.png";
 import { useNavigateErrorPage } from "../../hooks/useNavigateErrorPage";
 import PageWrapper from "../../wrappers/PageWrapper";
+import Carousel from "../../components/Carousel";
 
 function PostView() {
     const [postData, setPostData] = useState<PostPage>();
     const [selectedImage, setSelectedImage] = useState<number>(0);
     const [errorMessage, setErrorMessage] = useState<string>("");
     const location = useLocation();
-
-    const updateSelectedImage = (index: number) => {
-        setSelectedImage(index);
-    }
     
     useNavigateErrorPage("Something isn't quite right...", errorMessage);
     
@@ -64,7 +59,7 @@ function PostView() {
                             <div>
                                 <div className="flex items-center gap-[7px]">
                                     <p className="nav-item hover:font-normal">{postData.postedBy.user.username}</p>
-                                    <img src={StarIcon} className="w-[15px] h-[15px]" alt="star" />
+                                    <img src={StarIcon} className="w-[18px] h-[18px]" alt="star" />
                                     <p className="text-[15px]">{postData.postedBy.rating}</p>
                                     <p className="text-[15px] text-side-text-gray">({postData.postedBy.numReviews} reviews)</p>
                                 </div>
@@ -73,16 +68,15 @@ function PostView() {
                                 </p>
                             </div>
                         </div>
-                        <div className="bg-very-light-gray w-full h-[550px] rounded-[12px] bg-contain bg-no-repeat bg-center 
-                        border border-very-light-gray shadow-info-component flex items-center justify-between p-4" 
-                        style={{ backgroundImage: `url(${postData.images[selectedImage].url})` }}>
-                            <button className="carousel-btn" onClick={() => updateSelectedImage(selectedImage === 0 ? postData.images.length - 1 : selectedImage - 1)}>
-                                <img src={BackIcon} alt="" className="w-[30px] h-[30px]"></img>
-                            </button>
-                            <button className="carousel-btn" onClick={() => updateSelectedImage((selectedImage + 1) % postData.images.length)}>
-                                <img src={NextIcon} alt="" className="w-[30px] h-[30px]"></img>
-                            </button>
-                        </div>
+                        <Carousel
+                            selectedImage={selectedImage}
+                            setSelectedImage={setSelectedImage}
+                            images={postData.images}
+                            btnSize={50}
+                            wrapperStyles="bg-very-light-gray w-full rounded-[12px] border border-very-light-gray 
+                            shadow-info-component flex items-center justify-between p-4"
+                            imageStyles="object-contain object-center h-[550px] w-full"
+                        />
                         <div className="mt-5 w-full whitespace-nowrap overflow-x-scroll pb-5">
                             {postData.images.map((image: IPostImage, index: number) => {
                                 return (
@@ -93,7 +87,7 @@ function PostView() {
                                         bg-[#f5f6f8] border border-very-light-gray ${index > 0 ? "ml-3" : ""}
                                         ${selectedImage === index ? "border-light-border-gray" : ""}`}
                                         key={index}
-                                        onClick={() => updateSelectedImage(index)}
+                                        onClick={() => setSelectedImage(index)}
                                     />
                                 )
                             })}

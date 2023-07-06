@@ -16,7 +16,7 @@ export function useScrollEvent(pageRef: React.RefObject<HTMLDivElement>, loading
 
     useEffect(() => {
         if (pageRef && pageRef.current) {
-            pageRef.current.addEventListener('wheel', loadMoreContent);
+            pageRef.current.addEventListener('wheel', loadMoreContent, { passive: true });
         }
 
         const cur = pageRef.current;

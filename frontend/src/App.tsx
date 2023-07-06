@@ -8,6 +8,7 @@ import MyPostsView from './views/MyPostsView/MyPostsView';
 import PostView from './views/PostView/PostView';
 import FilterPostsProvider from './providers/FilterPostsProvider';
 import BrowseAllView from './views/BrowseAll/BrowseAllView';
+import SellerProfileView from './views/SellerProfileView/SellerProfileView';
 
 function App() {
     return (
@@ -17,6 +18,7 @@ function App() {
                     <Routes>
                         <Route path="/" element={<Navbar />}>
                             <Route index element={<HomeView />} />
+                            <Route path="sellers/:username" element={<SellerProfileView />} />
                             <Route path=":username?/saved" element={
                                 <FilterPostsProvider key={`saved`} urlPrefix="/users">
                                     <SavedServicesView />

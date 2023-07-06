@@ -110,7 +110,89 @@ export async function updateSellerDetailsHandler(req) {
 }
 
 export async function getSellerDetailsHandler(username) {
-
+    try {
+        const sellerDetails = await prisma.seller.findMany({
+            where: {
+                user: {
+                    username: username
+                }
+            },
+            select: {
+                rating: true,
+                reviews: {
+                    select: {
+                        reviewer: {
+                            select: {
+                                username: true,
+                                country: true
+                            }
+                        },
+                        reviewBody: true,
+                        createdAt: true,
+                        rating: true,
+                        postID: true
+                    }
+                },
+                posts: {
+                    select: {
+                        postedBy: {
+                            select: {
+                                user: {
+                                    select: {
+                                        profilePicURL: true,
+                                        status: true,
+                                        username: true,
+                                    }
+                                },
+                                rating: true,
+                                sellerLevel: {
+                                    select: {
+                                        name: true
+                                    }
+                                }
+                            }
+                        },
+                        createdAt: true,
+                        numReviews: true,
+                        startingPrice: true,
+                        title: true,
+                        postID: true,
+                        images: {
+                            select: {
+                                url: true,
+                                isThumbnail: true
+                            },
+                            orderBy: {
+                                isThumbnail: 'desc'
+                            }
+                        }
+                    }
+                },
+                description: true,
+                summary: true,
+                numReviews: true,
+                languages: true,
+                sellerLevel: {
+                    select: {
+                        name: true
+                    }
+                }
+            }
+        });
+        
+        if (sellerDetails.length === 1) {
+            return sellerDetails[0];
+        } else {
+            throw new DBError("Seller not found.", 404);
+        }
+    }
+    catch (err) {
+        if (err instanceof DBError) {
+            throw err;
+        } else {
+            console.log(err);
+        }
+    }
 }
 
 export async function getSellersHandler(search, limit) {

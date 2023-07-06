@@ -1,7 +1,7 @@
 import ProfilePicAndStatus from "../../components/ProfilePicAndStatus";
 import { PostPage } from "../../types/PostPage";
-import LocationIcon from '../../assets/location-sign-svgrepo-com(2).svg';
-import UserIcon from '../../assets/user-icon-svgrepo-com.svg';
+import LocationIcon from '../../assets/location.png';
+import UserIcon from '../../assets/user.png';
 import StarGrayIcon from "../../assets/star-gray.png";
 import Options from "../../components/Options";
 import { sellerLevelTextStyles } from "../../utils/sellerLevelTextStyles";
@@ -19,15 +19,18 @@ function AboutSeller({ postData }: { postData: PostPage }) {
                 />
                 <div className="flex-grow flex justify-between">
                     <div>
-                        <p>
-                            {postData.postedBy.user.username}
+                        <div className="flex items-center gap-2">
+                            <p>{postData.postedBy.user.username}</p>
+                            <p className="text-[14px] seller-level" 
+                            style={sellerLevelTextStyles[postData.postedBy.sellerLevel.name]}>
+                                {postData.postedBy.sellerLevel.name}
+                            </p>
+                        </div>
+                        <p className="text-side-text-gray text-[15px] mt-[2px]">
+                            {postData.postedBy.summary}
                         </p>
                         <p className="text-side-text-gray text-[15px]">
                             {postData.postedBy.user.country}
-                        </p>
-                        <p className="text-[15px] mt-[5px] seller-level" 
-                        style={sellerLevelTextStyles[postData.postedBy.sellerLevel.name]}>
-                            {postData.postedBy.sellerLevel.name}
                         </p>
                     </div>
                     <svg
@@ -42,10 +45,7 @@ function AboutSeller({ postData }: { postData: PostPage }) {
                     </svg>
                 </div>
             </div>
-            {postData.postedBy.description !== "" &&
-            <p>
-                {postData.postedBy.description}
-            </p>}
+            {postData.postedBy.description !== "" && <p>{postData.postedBy.description}</p>}
             <div className="flex gap-2 items-center mt-4">
                 <img src={LocationIcon} width="20px" height="20px" alt="location" />
                 <p className="text-side-text-gray">Lives in</p>
@@ -56,7 +56,7 @@ function AboutSeller({ postData }: { postData: PostPage }) {
                 <p className="text-side-text-gray">Member since</p>
                 <p className="ml-auto">{new Date(postData.postedBy.user.memberDate).toLocaleDateString()}</p>
             </div>
-            <div className="flex gap-2 items-center mt-2 mb-3">
+            <div className="flex gap-2 items-center mt-2 mb-4">
                 <img src={StarGrayIcon} width="20px" height="20px" alt="location" />
                 <p className="text-side-text-gray">Seller rating</p>
                 <p className="ml-auto">{postData.postedBy.rating}</p>
@@ -64,9 +64,9 @@ function AboutSeller({ postData }: { postData: PostPage }) {
             <p>Seller speaks</p>
             <Options 
                 options={postData.postedBy.languages} 
-                styles="mt-2 mb-6" 
+                styles="mt-2" 
             />
-            <div className="w-full flex items-center justify-between mt-4">
+            <div className="w-full flex items-center justify-between mt-6">
                 <button className="side-btn">Save seller</button>
                 <button className="red-btn">Report seller</button>
             </div>

@@ -23,7 +23,7 @@ export function usePaginatePosts<T>(
 : PaginatePosts<T> {
 
     const reachedBottom = useRef<boolean>(false);
-    const count = useRef<number>(-1);
+    const count = useRef<number>(0);
     const [loading, setLoading] = useState<boolean>(false);
     const [errorMessage, setErrorMessage] = useState<string>("");
     const [allPosts, setAllPosts] = useState<T[]>([]);
@@ -63,7 +63,7 @@ export function usePaginatePosts<T>(
                     reachedBottom.current = true;
                 }
 
-                if (resp.data.count !== -1) {
+                if (resp.data.count !== 0) {
                     count.current = resp.data.count;
                 }
 

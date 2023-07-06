@@ -36,7 +36,7 @@
         @apply animate-pulse bg-very-light-gray rounded-[8px];
     }
     .main-btn {
-        @apply bg-main-black text-main-white hover:bg-main-blue w-full !h-12 loading-btn;
+        @apply bg-main-black text-main-white hover:bg-main-black-hover w-full !h-12 loading-btn;
     }
     .loading-btn {
         @apply btn-primary flex items-center justify-center gap-2;
@@ -49,8 +49,8 @@
         @apply text-error-text mt-1 text-[15px];
     }
     .carousel-btn {
-        @apply btn-primary !p-0 w-[50px] h-[50px] bg-main-white rounded-full shadow-profile-page-container border border-light-border-gray 
-        flex items-center justify-center hover:shadow-medium;
+        @apply btn-primary !p-0 bg-main-white rounded-full shadow-profile-page-container border border-light-border-gray 
+        flex items-center justify-center opacity-90 hover:scale-110 hover:opacity-100;
     }
     .success-btn {
         @apply hover:!bg-light-green !bg-light-green;

@@ -245,6 +245,7 @@ export async function getUserPostsHandler(req) {
 }
 
 export async function queryUserPosts(req) {
+    console.log(req.userData.userID);
     const postFilters = getPostFilters(req);
     const posts = await prisma.post.findMany({
         skip: req.body.cursor ? 1 : undefined,
@@ -252,10 +253,11 @@ export async function queryUserPosts(req) {
         take: paginationLimit,
         orderBy: sortPosts[req.body.sort],
         where: {
+            ...postFilters,
             postedBy: {
+                ...postFilters.postedBy,
                 userID: req.userData.userID
             },
-            ...postFilters
         },
         select: { 
             postedBy: {
@@ -281,22 +283,23 @@ export async function queryUserPosts(req) {
             title: true,
             postID: true,
             images: {
-                where: { 
-                    isThumbnail: true
-                },
                 select: {
                     url: true,
                     isThumbnail: true
+                },
+                orderBy: {
+                    isThumbnail: 'desc'
                 }
             }
         }
     });
 
-    const count = req.body.cursor ? -1 : await getPostsCount({
+    const count = req.body.cursor ? 0 : await getPostsCount({
+        ...postFilters,
         postedBy: {
+            ...postFilters.postedBy,
             userID: req.userData.userID
         },
-        ...postFilters
     });
 
     if (posts.length === 0) {

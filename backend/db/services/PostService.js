@@ -170,6 +170,7 @@ export async function getPostHandler(postID) {
                         },
                         rating: true,
                         description: true,
+                        summary: true,
                         numReviews: true,
                         languages: true,
                         sellerLevel: {
@@ -318,18 +319,18 @@ async function queryPosts(req) {
             title: true,
             postID: true,
             images: {
-                where: { 
-                    isThumbnail: true
-                },
                 select: {
                     url: true,
                     isThumbnail: true
+                },
+                orderBy: {
+                    isThumbnail: 'desc'
                 }
             }
         }
     });
 
-    const count = req.body.cursor ? -1 : await getPostsCount(postFilters);
+    const count = req.body.cursor ? 0 : await getPostsCount(postFilters);
     if (posts.length === 0) {
         return { 
             posts: posts, 

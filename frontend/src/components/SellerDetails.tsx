@@ -8,19 +8,19 @@ import { getAPIErrorMessage } from "../utils/getAPIErrorMessage";
 import Button from "./Button";
 import SearchLanguages from "./SearchLanguages";
 
-const MAX_DESC_CHARS = 250;
+const MAX_DESC_CHARS = 400;
 const MAX_SUMMARY_CHARS = 50;
 
-interface SellerProfileProps {
+interface SellerDetailsProps {
     setSellerProfilePopUp: React.Dispatch<React.SetStateAction<boolean>>,
 }
 
-function SellerProfile({ setSellerProfilePopUp }: SellerProfileProps) {
-    const [description, setDescription] = useState<string>("");
-    const [summary, setSummary] = useState<string>("");
+function SellerDetails({ setSellerProfilePopUp }: SellerDetailsProps) {
     const userContext = useContext<IUserContext>(UserContext);
+    const [description, setDescription] = useState<string>(userContext.userData.seller!.description);
+    const [summary, setSummary] = useState<string>(userContext.userData.seller!.summary);
     const [errorMessage, setErrorMessage] = useState<string>("");
-    const [selectedLanguages, setSelectedLanguages] = useState<string[]>(userContext.userData.seller?.languages ? userContext.userData.seller.languages : []);
+    const [selectedLanguages, setSelectedLanguages] = useState<string[]>(userContext.userData.seller!.languages);
     
     function closeSellerProfilePopUp(): void {
         setSellerProfilePopUp(false);
@@ -62,7 +62,7 @@ function SellerProfile({ setSellerProfilePopUp }: SellerProfileProps) {
                 className="search-bar mb-4" 
                 placeholder="Summarize your work"
                 onChange={(e) => setSummary(e.target.value)}
-                defaultValue={userContext.userData.seller?.summary}
+                value={summary}
                 maxLength={MAX_SUMMARY_CHARS}
             />
             <p className="mb-2">
@@ -74,7 +74,7 @@ function SellerProfile({ setSellerProfilePopUp }: SellerProfileProps) {
             <textarea
                 rows={7} 
                 className="search-bar mb-4" 
-                defaultValue={userContext.userData.seller?.description}
+                value={description}
                 maxLength={MAX_DESC_CHARS} 
                 onChange={(e) => setDescription(e.target.value)}
                 placeholder="Describe what services you provide and what you can offer"
@@ -98,4 +98,4 @@ function SellerProfile({ setSellerProfilePopUp }: SellerProfileProps) {
     );
 }
 
-export default SellerProfile;
+export default SellerDetails;
