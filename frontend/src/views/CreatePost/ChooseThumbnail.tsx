@@ -16,7 +16,7 @@ function ChooseThumbnail({ setSection, setPostService, uploadedImages, thumbnail
     }
 
     return (
-        <PopUpWrapper setIsOpen={setPostService} title={"Choose thumbnail"} styles="flex flex-col">
+        <PopUpWrapper setIsOpen={setPostService} title="Choose thumbnail" styles="flex flex-col">
             {uploadedImages.length > 0 &&
             <div className={`flex flex-col gap-9 flex-grow overflow-y-scroll pr-[5px] max-h-[570px] ${!thumbnail ? "mb-9" : ""}`}>
                 {uploadedImages.map((imageData: ImageData, index: number) => {

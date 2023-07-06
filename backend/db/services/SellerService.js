@@ -2,6 +2,7 @@ import { prisma } from '../index.js';
 import { Prisma } from '@prisma/client';
 import { DBError } from "../customErrors/DBError.js";
 import { checkUser } from "../utils/checkUser.js";
+import { sellerProperties } from '../utils/sellerProperties.js';
 
 export async function findSeller(userID) {
     try {
@@ -9,25 +10,7 @@ export async function findSeller(userID) {
             where: { 
                 userID: userID 
             },
-            select: {
-                description: true,
-                rating: true,
-                sellerID: true,
-                languages: true,
-                sellerXP: true,
-                sellerLevel: {
-                    select: {
-                        xpRequired: true,
-                        name: true,
-                        nextLevel: {
-                            select: {
-                                xpRequired: true,
-                                name: true
-                            }
-                        }
-                    }
-                }
-            }
+            ...sellerProperties,
         });
 
         if (!seller) {
@@ -38,6 +21,7 @@ export async function findSeller(userID) {
         }
     }
     catch (err) {
+        console.log(err);
         if (err instanceof DBError) {
             throw err;
         } else if (err instanceof Prisma.PrismaClientValidationError) {
@@ -60,7 +44,7 @@ async function createSeller(id) {
         });
 
         if (!newSeller) {
-            throw new DBError("'New Seller' seller level does not exist.", 400);
+            throw new DBError("Newbie seller level does not exist.", 400);
         }
 
         const seller = await prisma.seller.create({
@@ -68,27 +52,10 @@ async function createSeller(id) {
                 userID: id,
                 rating: 0,
                 description: "",
+                summary: "",
                 sellerLevelID: newSeller.id
             },
-            select: {
-                description: true,
-                rating: true,
-                sellerID: true,
-                languages: true,
-                sellerXP: true,
-                sellerLevel: {
-                    select: {
-                        xpRequired: true,
-                        name: true,
-                        nextLevel: {
-                            select: {
-                                xpRequired: true,
-                                name: true
-                            }
-                        }
-                    }
-                }
-            }
+            ...sellerProperties,
         });
 
         return seller;
@@ -118,27 +85,10 @@ export async function updateSellerDetailsHandler(req) {
             },
             data: {
                 description: req.body.description,
-                languages: req.body.languages
+                languages: req.body.languages,
+                summary: req.body.summary
             },
-            select: {
-                sellerID: true,
-                description: true,
-                rating: true,
-                languages: true,
-                sellerXP: true,
-                sellerLevel: {
-                    select: {
-                        xpRequired: true,
-                        name: true,
-                        nextLevel: {
-                            select: {
-                                xpRequired: true,
-                                name: true
-                            }
-                        }
-                    }
-                }
-            }
+            ...sellerProperties,
         });
 
         return updatedDetails;
@@ -188,7 +138,8 @@ export async function getSellersHandler(search, limit) {
                     select: {
                         name: true
                     }
-                }
+                },
+                summary: true,
             },
             orderBy: {
                 reviews: {

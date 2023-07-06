@@ -79,9 +79,11 @@ function ProfilePicAndStatus(props: ProfilePicAndStatusProps) {
     }
 
     return (
-        <div className={props.loading || props.showEdit ? '' : `${props.profileStatus === 'ONLINE' ? 'before:bg-green-500' : 'before:bg-side-text-gray'} 
-        before:w-[18px] before:h-[18px] before:absolute before:top-[33px] before:left-[0px] before:border-[3px] before:border-main-white 
-        before:content[''] before:rounded-full ${props.statusStyles}`}>
+        <div className={props.loading || props.showEdit ? '' : 
+        `${props.profileStatus === 'ONLINE' ? 'before:bg-green-500' : 
+        'before:bg-side-text-gray'} 
+        before:w-[18px] before:h-[18px] before:absolute before:top-[33px] before:left-[0px] 
+        before:border-[3px] before:border-main-white before:content[''] before:rounded-full ${props.statusStyles}`}>
             {props.loading ? 
             <div className={`w-12 h-12 rounded-full loading ${props.imgStyles}`}>
             </div> : 

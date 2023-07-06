@@ -6,7 +6,7 @@ interface AccountCreatedProps {
 
 function AccountCreated({ setAccountCreated }: AccountCreatedProps) {
     return (
-        <PopUpWrapper setIsOpen={setAccountCreated} title={""}>
+        <PopUpWrapper setIsOpen={setAccountCreated} title="">
             <h1 className="text-[26px] mb-2 text-center">Account successfully created!</h1>
             <p className=" text-side-text-gray text-center max-w-[440px]">
                 You can now search the market for talent, customize your profile, and sell your services to the world!

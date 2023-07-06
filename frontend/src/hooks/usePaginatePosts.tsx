@@ -49,35 +49,33 @@ export function usePaginatePosts<T>(
         }
         
         setLoading(true);
-        setTimeout(() => {
-            (async (): Promise<void> => {
-                try {
-                    const resp = await axios.post<{ posts: T[], cursor: string, last: boolean, count: number }>(url, {
-                        ...data,
-                        cursor: cursor.current
-                    });
-    
-                    setAllPosts((state) => [...state, ...resp.data.posts]);
-                    cursor.current = resp.data.cursor;
-    
-                    if (resp.data.last) {
-                        reachedBottom.current = true;
-                    }
+        (async (): Promise<void> => {
+            try {
+                const resp = await axios.post<{ posts: T[], cursor: string, last: boolean, count: number }>(url, {
+                    ...data,
+                    cursor: cursor.current
+                });
 
-                    if (resp.data.count !== -1) {
-                        count.current = resp.data.count;
-                    }
-    
-                    setErrorMessage("");
-                    setLoading(false);
+                setAllPosts((state) => [...state, ...resp.data.posts]);
+                cursor.current = resp.data.cursor;
+
+                if (resp.data.last) {
+                    reachedBottom.current = true;
                 }
-                catch(err: any) {
-                    const errorMessage = getAPIErrorMessage(err as AxiosError<{ message: string }>)
-                    setErrorMessage(errorMessage);
-                    setLoading(false);
+
+                if (resp.data.count !== -1) {
+                    count.current = resp.data.count;
                 }
-            })();
-        }, 3000);
+
+                setErrorMessage("");
+                setLoading(false);
+            }
+            catch(err: any) {
+                const errorMessage = getAPIErrorMessage(err as AxiosError<{ message: string }>)
+                setErrorMessage(errorMessage);
+                setLoading(false);
+            }
+        })();
     }, [page, url, cursor]);
 
     return { 

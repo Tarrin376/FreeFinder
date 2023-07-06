@@ -5,6 +5,7 @@ import { useState } from 'react';
 import { fetchUpdatedUser } from "../utils/fetchUpdatedUser";
 import OutsideClickHandler from "react-outside-click-handler";
 import axios from "axios";
+import NotificationIcon from "../assets/notification.png";
 
 interface ProfileMenuProps {
     userContext: IUserContext,
@@ -57,10 +58,15 @@ function ProfileMenu({ userContext, setSettingsPopUp, setSellerProfilePopUp }: P
     }
 
     return (
-        <div className="flex gap-4 items-center">
-            <div>
-                <p className="text-right text-[14px]">{userContext.userData.username}</p>
-                <p className="text-right text-main-blue text-[14px]">{userContext.userData.email}</p>
+        <div className="flex gap-7 items-center">
+            <div className="flex gap-3 items-center cursor-pointer">
+                <div className="relative">
+                    <img src={NotificationIcon} className="w-[30px] h-[30px]" alt="notifications" />
+                    <span className="absolute top-0 right-[1px] flex h-3 w-3">
+                        <span className="animate-ping absolute inline-flex h-full w-full rounded-full bg-error-text opacity-75"></span>
+                        <span className="relative inline-flex rounded-full h-3 w-3 bg-error-text"></span>
+                    </span>
+                </div>
             </div>
             <div className="cursor-pointer relative">
                 <div onClick={() => setNavProfileDropdown(true)}>

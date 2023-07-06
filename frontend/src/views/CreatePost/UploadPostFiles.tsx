@@ -81,7 +81,7 @@ function UploadPostFiles({ setPostService, setSection, uploadedImages, setUpload
     }
 
     return (
-        <PopUpWrapper setIsOpen={setPostService} title={"Upload post images"}>
+        <PopUpWrapper setIsOpen={setPostService} title="Upload post images">
             <DragAndDrop handleDrop={handleDrop}>
                 <div className="absolute top-[50%] left-[50%] translate-x-[-50%] translate-y-[-50%]">
                     <img src={Storage} className="block m-auto w-[50px] h-[50px] mb-3" alt="storage" />

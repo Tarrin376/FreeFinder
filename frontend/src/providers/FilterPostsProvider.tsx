@@ -106,9 +106,9 @@ function FilterPostsProvider({ children, urlPrefix }: FilterPostsContextProps) {
                 resetState={posts.resetState} 
             />}
             <div className="flex">
-                <div className="h-[calc(100vh-90px)] w-[360px] bg-main-white border-r border-light-border-gray p-7">
+                <div className="h-[calc(100vh-90px)] w-[360px] bg-main-white border-r border-light-border-gray p-[22.5px]">
                     <button onClick={openPostService} className="btn-primary text-main-white bg-main-blue w-full px-5 h-[45px] 
-                    hover:bg-main-blue-hover flex items-center justify-center gap-2 mb-[45px]">
+                    hover:bg-main-blue-hover flex items-center justify-center gap-2 mb-[50.5px]">
                         <img src={AddIcon} alt="" className="w-[16px] h-[16px]" />
                         Create new post
                     </button>
@@ -139,7 +139,7 @@ function FilterPostsProvider({ children, urlPrefix }: FilterPostsContextProps) {
                         <div className="border-b border-very-light-gray pb-5 mb-5 min-[1309px]:hidden">
                             <CountriesDropdown 
                                 countryRef={countryRef} 
-                                selected={"Any country"}
+                                selected="Any country"
                                 styles="w-full"
                                 title="Seller lives in"
                                 anyLocation={true}
@@ -228,7 +228,7 @@ function SellerLevels({ setAllSellerLevels, disabled, searchHandler }: SellerLev
                                 id={sellerLevel}
                                 onClick={() => updateSellerLevels(sellerLevel)}
                             />
-                            <label htmlFor={sellerLevel} className="text-[15px]" style={sellerLevelTextStyles[sellerLevel]}>
+                            <label htmlFor={sellerLevel} className="text-[15px] seller-level" style={sellerLevelTextStyles[sellerLevel]}>
                                 {sellerLevel}
                             </label>
                         </div>
@@ -303,7 +303,7 @@ function ExtraFilters() {
 
 function MainFiltersBar({ searchRef, min, max, countryRef, sort, loading, searchHandler }: MainFiltersBarProps) {
     return (
-        <div className="h-[90px] max-w-[1494px] m-auto flex items-center px-7 pr-[35px]">
+        <div className="h-[90px] max-w-[1494px] m-auto flex items-center px-[22.5px] pr-[35px]">
             <div className="flex flex-grow items-center border-r border-light-gray h-full pr-6">
                 <img src={SearchIcon} alt="" className="w-[17px] h-[17px] cursor-pointer"/>
                 <input 
@@ -327,7 +327,7 @@ function MainFiltersBar({ searchRef, min, max, countryRef, sort, loading, search
             <div className="h-full border-r border-very-light-gray px-6 flex items-center max-[1308px]:hidden">
                 <CountriesDropdown 
                     countryRef={countryRef} 
-                    selected={"Any country"}
+                    selected="Any country"
                     styles="w-[240px]"
                     title="Seller lives in"
                     anyLocation={true}
@@ -336,7 +336,7 @@ function MainFiltersBar({ searchRef, min, max, countryRef, sort, loading, search
             <div className="h-full border-r border-very-light-gray px-6 flex items-center">
                 <SortBy sortBy={sort} />
             </div>
-            <div className="pl-6">
+            <div className="pl-[22.5px]">
                 <button className={`btn-primary text-main-white bg-main-blue w-[160px] h-[45px] hover:bg-main-blue-hover
                 ${loading ? "invalid-button" : ""}`}
                 onClick={searchHandler}>

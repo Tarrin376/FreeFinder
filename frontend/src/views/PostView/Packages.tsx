@@ -61,7 +61,7 @@ function Packages({ packages }: { packages: IPackage[] }) {
                         </div>
                         <p className="text-[35px]">£{curPkg.amount}</p>
                         <p className="text-side-text-gray mb-4 pb-4 border-b border-b-light-gray font-bold">{curPkg.packageTitle}</p>
-                        <p className="mt-1 mb-4 pb-4 border-b border-b-light-gray text-paragraph-text">{curPkg.description}</p>
+                        <p className="mt-1 mb-4 pb-4 border-b border-b-light-gray">{curPkg.description}</p>
                         <div className="flex items-center gap-2 mb-2">
                             <img src={DeliveryTimeIcon} alt="" width="20px" height="20px" />
                             <p className="text-side-text-gray">{`${curPkg.deliveryTime} ${curPkg.deliveryTime === 1 ? "day" : "days"} delivery`}</p>
@@ -75,7 +75,7 @@ function Packages({ packages }: { packages: IPackage[] }) {
                                 return (
                                     <li className="flex items-center gap-2" key={index}>
                                         <img src={FeatureIcon} width="20px" height="20px" alt="" />
-                                        <p className="text-paragraph-text break-all">{feature}</p>
+                                        <p>{feature}</p>
                                     </li>
                                 );
                             })}

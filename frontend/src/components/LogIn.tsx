@@ -48,12 +48,12 @@ function LogIn({ setLogIn, setSignUp }: LogInProps) {
     }
 
     return (
-        <PopUpWrapper setIsOpen={setLogIn} title={"Welcome back!"} styles="!max-w-[470px]">
+        <PopUpWrapper setIsOpen={setLogIn} title="Welcome back!" styles="!max-w-[470px]">
             <p className="mb-6 text-side-text-gray text-[16px]">Enter your details below</p>
             {errorMessage !== "" && 
             <ErrorMessage 
                 message={errorMessage} 
-                title={"There was a problem signing in."} 
+                title="There was a problem signing in."
             />}
             <div className="flex gap-3 flex-col mb-8">
                 <input type="text" placeholder="Your email or username" className="search-bar" onChange={(e) => setUsernameOrEmail(e.target.value)} />

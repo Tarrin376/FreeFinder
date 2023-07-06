@@ -108,7 +108,7 @@ function Post({ postInfo, username, canRemove }: PostProps) {
                     <ProfilePicAndStatus 
                         profilePicURL={postInfo.postedBy.user.profilePicURL} 
                         profileStatus={postInfo.postedBy.user.status}
-                        statusStyles='before:left-[30px] cursor-pointer'
+                        statusStyles="before:left-[30px] cursor-pointer"
                     />
                     <div className="flex-grow">
                         <div className="flex justify-between">
@@ -125,11 +125,11 @@ function Post({ postInfo, username, canRemove }: PostProps) {
                 </div>
                 <p className="text-side-text-gray text-[15px]">{getTimePosted(postInfo.createdAt)}</p>
                 <div className="flex items-center mb-2 mt-[2px]">
-                    <p className="text-[15px]" style={sellerLevelTextStyles[postInfo.postedBy.sellerLevel.name]}>
+                    <p className="text-[14px] seller-level" style={sellerLevelTextStyles[postInfo.postedBy.sellerLevel.name]}>
                         {postInfo.postedBy.sellerLevel.name}
                     </p>
                     {seconds < 60 * 60 * 24 && 
-                    <p className="bg-light-green text-main-white text-[15px] px-3 ml-[10px] rounded-[6px]">
+                    <p className="bg-[#e6ebff] text-[#4E73F8] text-[14px] px-3 ml-[10px] rounded-[6px]">
                         New
                     </p>}
                 </div>

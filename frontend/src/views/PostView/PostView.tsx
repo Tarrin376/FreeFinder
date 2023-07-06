@@ -100,7 +100,7 @@ function PostView() {
                         </div>
                         <section className="mt-8 mb-10 w-full">
                             <h2 className="text-2xl mb-3">About this service</h2>
-                            <p className="text-paragraph-text leading-7 break-all">
+                            <p className="leading-7">
                                 {postData.about}
                             </p>
                         </section>

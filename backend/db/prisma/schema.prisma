@@ -34,6 +34,7 @@ model Seller {
     orders        Order[]
     posts         Post[]
     description   String
+    summary       String
     numReviews    Int         @default(0)
     languages     String[]    @default(["english"])
     sellerLevel   SellerLevel @relation(fields: [sellerLevelID], references: [id])

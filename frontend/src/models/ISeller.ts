@@ -4,6 +4,7 @@ export interface ISeller {
     sellerID: string,
     languages: string[],
     sellerXP: number,
+    summary: string,
     sellerLevel: {
         xpRequired: number,
         name: string,

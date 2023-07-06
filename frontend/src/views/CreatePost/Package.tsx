@@ -127,8 +127,8 @@ function Package(props: PackageProps) {
             <ul className="items-center w-fit text-sm flex bg-[#f7f7f7] rounded-[8px] px-2 mb-4">
                 {new Array(MAX_REVISIONS).fill(true).map((_, index) => {
                     return (
-                        <RevisionListItem 
-                            curRevision={"" + (index + 1)} 
+                        <RevisionListItem
+                            curRevision={(index + 1).toString()} 
                             updateRevision={updateRevision} 
                             revisions={props.revisions} 
                             key={index}
@@ -136,7 +136,7 @@ function Package(props: PackageProps) {
                     );
                 })}
                 <RevisionListItem 
-                    curRevision={"unlimited"} 
+                    curRevision="unlimited" 
                     updateRevision={updateRevision} 
                     revisions={props.revisions}
                 />
@@ -168,7 +168,7 @@ function Package(props: PackageProps) {
                             type="text" 
                             className="search-bar" 
                             value={value} 
-                            placeholder={"E.g. Video Thumbnail included"}
+                            placeholder="E.g. Video Thumbnail included"
                             onChange={(e) => updateFeatureInput(index, e.target.value)} key={index}
                             maxLength={70}
                         />

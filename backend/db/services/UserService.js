@@ -9,6 +9,7 @@ import { cloudinary } from '../index.js';
 import { prisma } from '../index.js';
 import { getPostFilters } from '../utils/getPostFilters.js';
 import { getPostsCount } from '../utils/getPostsCount.js';
+import { sellerProperties } from '../utils/sellerProperties.js';
 
 export async function updateProfilePictureHandler(req) {
     try {
@@ -34,25 +35,7 @@ export async function updateProfilePictureHandler(req) {
             data: { profilePicURL: result.secure_url },
             select: {
                 seller: {
-                    select: {
-                        description: true,
-                        rating: true,
-                        sellerID: true,
-                        languages: true,
-                        sellerXP: true,
-                        sellerLevel: {
-                            select: {
-                                xpRequired: true,
-                                name: true,
-                                nextLevel: {
-                                    select: {
-                                        xpRequired: true,
-                                        name: true
-                                    }
-                                }
-                            }
-                        }
-                    }
+                    ...sellerProperties,
                 },
                 username: true,
                 country: true,
@@ -147,26 +130,8 @@ export async function findUserHandler(usernameOrEmail, password) {
             },
             include: {
                 seller: {
-                    select: {
-                        description: true,
-                        rating: true,
-                        sellerID: true,
-                        languages: true,
-                        sellerXP: true,
-                        sellerLevel: {
-                            select: {
-                                xpRequired: true,
-                                name: true,
-                                nextLevel: {
-                                    select: {
-                                        xpRequired: true,
-                                        name: true
-                                    }
-                                }
-                            }
-                        }
-                    }
-                }
+                    ...sellerProperties,
+                },
             }
         });
         
@@ -207,25 +172,7 @@ export async function updateUserHandler(req) {
             data: { ...userData },
             select: {
                 seller: {
-                    select: {
-                        description: true,
-                        rating: true,
-                        sellerID: true,
-                        languages: true,
-                        sellerXP: true,
-                        sellerLevel: {
-                            select: {
-                                xpRequired: true,
-                                name: true,
-                                nextLevel: {
-                                    select: {
-                                        xpRequired: true,
-                                        name: true
-                                    }
-                                }
-                            }
-                        }
-                    }
+                    ...sellerProperties,
                 },
                 username: true,
                 country: true,
@@ -281,23 +228,7 @@ export async function deleteUserHandler(req) {
 export async function getUserPostsHandler(req) {
     try {
         await checkUser(req.userData.userID, req.username);
-        const seller = await prisma.seller.findFirst({ 
-            where: { 
-                user: {
-                    username: req.params.username
-                }
-            }
-        });
-
-        if (!seller) {
-            return { 
-                posts: [],
-                cursor: undefined, 
-                last: true
-            };
-        }
-        
-        return await queryUserPosts(seller.sellerID, req);
+        return await queryUserPosts(req);
     }
     catch (err) {
         if (err instanceof DBError) {
@@ -313,7 +244,7 @@ export async function getUserPostsHandler(req) {
     }
 }
 
-export async function queryUserPosts(sellerID, req) {
+export async function queryUserPosts(req) {
     const postFilters = getPostFilters(req);
     const posts = await prisma.post.findMany({
         skip: req.body.cursor ? 1 : undefined,
@@ -321,7 +252,9 @@ export async function queryUserPosts(sellerID, req) {
         take: paginationLimit,
         orderBy: sortPosts[req.body.sort],
         where: {
-            sellerID: sellerID,
+            postedBy: {
+                userID: req.userData.userID
+            },
             ...postFilters
         },
         select: { 
@@ -360,7 +293,9 @@ export async function queryUserPosts(sellerID, req) {
     });
 
     const count = req.body.cursor ? -1 : await getPostsCount({
-        sellerID: sellerID,
+        postedBy: {
+            userID: req.userData.userID
+        },
         ...postFilters
     });
 

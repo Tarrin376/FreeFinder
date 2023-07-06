@@ -25,7 +25,8 @@ function AboutSeller({ postData }: { postData: PostPage }) {
                         <p className="text-side-text-gray text-[15px]">
                             {postData.postedBy.user.country}
                         </p>
-                        <p className="text-[15px] mt-[2px]" style={sellerLevelTextStyles[postData.postedBy.sellerLevel.name]}>
+                        <p className="text-[15px] mt-[5px] seller-level" 
+                        style={sellerLevelTextStyles[postData.postedBy.sellerLevel.name]}>
                             {postData.postedBy.sellerLevel.name}
                         </p>
                     </div>
@@ -42,7 +43,7 @@ function AboutSeller({ postData }: { postData: PostPage }) {
                 </div>
             </div>
             {postData.postedBy.description !== "" &&
-            <p className="text-paragraph-text break-all">
+            <p>
                 {postData.postedBy.description}
             </p>}
             <div className="flex gap-2 items-center mt-4">

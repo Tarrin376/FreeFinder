@@ -39,7 +39,7 @@ function Navbar() {
             {logIn && <LogIn setLogIn={setLogIn} setSignUp={setSignUp} />}
             {accountCreated && <AccountCreated setAccountCreated={setAccountCreated} />}
             {sellerProfilePopUp && <SellerProfile setSellerProfilePopUp={setSellerProfilePopUp} />}
-            <nav className="flex gap-8 items-center px-7 h-[90px] border-b border-b-very-light-gray bg-white">
+            <nav className="flex gap-8 items-center px-7 h-[90px] border-b border-b-very-light-gray bg-main-white">
                 <ul className="flex items-center gap-14">
                     <li className="text-main-blue text-[23px] cursor-pointer mr-8 font-normal" onClick={(e) => goToPage(e, `/`)}>FreeFinder</li>
                     <li className="nav-item" onClick={(e) => goToPage(e, 'posts/all')}>Browse all</li>

@@ -63,11 +63,11 @@ function PostDetails(props: PostDetailsProps) {
     }
 
     return (
-        <PopUpWrapper setIsOpen={props.setPostService} title={"Enter post details"}>
+        <PopUpWrapper setIsOpen={props.setPostService} title="Enter post details">
             {props.errorMessage !== "" && 
             <ErrorMessage 
                 message={props.errorMessage} 
-                title={"Failed to complete action."} 
+                title="Failed to complete action."
                 styles="!mb-6"
             />}
             {props.failedUploads.length > 0 && 

@@ -11,25 +11,25 @@ function SellerExperience({ level, nextLevel, nextLevelXP, sellerXP }: SellerExp
     return (
         <div className="mb-7">
             <div className="flex items-center justify-between w-full mb-3">
-                <p className="text-[15px]" style={sellerLevelTextStyles[level]}>
+                <p className="text-[15px] seller-level" style={sellerLevelTextStyles[level]}>
                     {level}
                 </p>
                 {nextLevel !== level &&
-                <p className="text-[15px]" style={sellerLevelTextStyles[nextLevel]}>
+                <p className="text-[15px] seller-level" style={sellerLevelTextStyles[nextLevel]}>
                     {nextLevel}
                 </p>}
             </div>
             <div className="rounded-full w-full bg-very-light-gray h-[17px] overflow-hidden">
-                <div className="bg-main-blue h-full rounded-full flex items-center justify-center"
-                style={{ width: `calc(100% / ${nextLevelXP} * ${sellerXP})`}}>
+                <div className="bg-gradient-to-r from-main-blue to-light-green h-full rounded-full flex 
+                items-center justify-center" style={{ width: `calc(100% / ${nextLevelXP} * ${sellerXP} + 200px)`}}>
                 </div>
             </div>
             <div className="flex items-center justify-between mt-3">
-                <p className="bg-light-green text-main-white w-fit text-[14px] px-3 py-[1px] rounded-[6px]">
+                <p className="bg-main-blue text-main-white w-fit text-[14px] px-3 py-[1px] rounded-[6px]">
                     {`${sellerXP} xp`}
                 </p>
                 {nextLevel !== level &&
-                <p className="bg-light-green text-main-white w-fit text-[14px] px-3 py-[1px] rounded-[6px]">
+                <p className="bg-main-blue text-main-white w-fit text-[14px] px-3 py-[1px] rounded-[6px]">
                     {`${nextLevelXP} xp`}
                 </p>}
             </div>

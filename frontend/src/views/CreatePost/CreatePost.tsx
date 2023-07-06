@@ -218,7 +218,7 @@ function CreatePost({ setPostService, resetState }: CreatePostProps) {
                     back={Sections.ChooseThumbnail} 
                     next={Sections.StandardPackage} 
                     deliveryTime={basicDeliveryTime} 
-                    title={"Basic package"} 
+                    title="Basic package"
                     revisions={basicRevisions} 
                     description={basicDescription}
                     amount={basicAmount}
@@ -243,7 +243,7 @@ function CreatePost({ setPostService, resetState }: CreatePostProps) {
                     deliveryTime={standardDeliveryTime} 
                     revisions={standardRevisions} 
                     description={standardDescription} 
-                    title={"Standard package"} 
+                    title="Standard package"
                     amount={standardAmount}
                     packageTitle={standardPackageTitle}
                 />
@@ -266,7 +266,7 @@ function CreatePost({ setPostService, resetState }: CreatePostProps) {
                     deliveryTime={superiorDeliveryTime} 
                     revisions={superiorRevisions} 
                     description={superiorDescription} 
-                    title={"Superior package"} 
+                    title="Superior package"
                     amount={superiorAmount}
                     packageTitle={superiorPackageTitle}
                 />

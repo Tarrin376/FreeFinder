@@ -87,12 +87,12 @@ function SignUp({ setLogIn, setSignUp, setAccountCreated }: SignUpProps) {
     }
 
     return (
-        <PopUpWrapper setIsOpen={setSignUp} title={"Create your new account"} styles="!max-w-[470px]">
+        <PopUpWrapper setIsOpen={setSignUp} title="Create your new account" styles="!max-w-[470px]">
             <p className="mb-6 text-side-text-gray text-[16px]">Signing up for FreeFinder is fast and 100% free!</p>
             {errorMessage !== "" && 
             <ErrorMessage 
                 message={errorMessage} 
-                title={"Account creation failed."} 
+                title="Account creation failed."
             />}
             <div className="flex flex-col mb-8">
                 <input 
@@ -133,7 +133,7 @@ function SignUp({ setLogIn, setSignUp, setAccountCreated }: SignUpProps) {
                 />
                 <CountriesDropdown 
                     countryRef={countryRef} 
-                    selected={"🇬🇧 United Kingdom"} 
+                    selected="🇬🇧 United Kingdom"
                     title="Country"
                 />
             </div>
