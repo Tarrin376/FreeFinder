@@ -1,15 +1,16 @@
-import { IUserContext } from "../../providers/UserContext";
-import { useState } from 'react';
+import { useState, useContext } from 'react';
 import ErrorMessage from "../../components/ErrorMessage";
 import axios, { AxiosError } from "axios";
 import { getAPIErrorMessage } from "../../utils/getAPIErrorMessage";
 import Button from "../../components/Button";
+import { UserContext } from '../../providers/UserContext';
 
-function ChangePassword({ userContext }: { userContext: IUserContext }) {
+function ChangePassword() {
     const [currentPass, setCurrentPass] = useState<string>("");
     const [newPass, setNewPass] = useState<string>("");
     const [confirmNewPass, setConfirmNewPass] = useState<string>("");
     const [errorMessage, setErrorMessage] = useState<string>("");
+    const userContext = useContext(UserContext);
 
     const [validNewPass, setValidNewPass] = useState<boolean>(false);
     const [validConfirmNewPass, setValidConfirmNewPass] = useState<boolean>(false);

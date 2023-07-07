@@ -21,7 +21,6 @@ export async function findSeller(userID) {
         }
     }
     catch (err) {
-        console.log(err);
         if (err instanceof DBError) {
             throw err;
         } else if (err instanceof Prisma.PrismaClientValidationError) {
@@ -135,23 +134,6 @@ export async function getSellerDetailsHandler(username) {
                 },
                 posts: {
                     select: {
-                        postedBy: {
-                            select: {
-                                user: {
-                                    select: {
-                                        profilePicURL: true,
-                                        status: true,
-                                        username: true,
-                                    }
-                                },
-                                rating: true,
-                                sellerLevel: {
-                                    select: {
-                                        name: true
-                                    }
-                                }
-                            }
-                        },
                         createdAt: true,
                         numReviews: true,
                         startingPrice: true,
@@ -176,6 +158,13 @@ export async function getSellerDetailsHandler(username) {
                     select: {
                         name: true
                     }
+                },
+                user: {
+                    select: {
+                        profilePicURL: true,
+                        status: true,
+                        username: true,
+                    }
                 }
             }
         });
@@ -190,7 +179,7 @@ export async function getSellerDetailsHandler(username) {
         if (err instanceof DBError) {
             throw err;
         } else {
-            console.log(err);
+            throw new DBError("Something went wrong when trying get this seller's details. Please try again.", 500);
         }
     }
 }

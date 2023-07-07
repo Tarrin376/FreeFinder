@@ -1,21 +1,21 @@
 import ProfilePicAndStatus from "./ProfilePicAndStatus";
-import { IUserContext } from "../providers/UserContext";
 import { initialState } from "../providers/UserContext";
-import { useState } from 'react';
+import { useState, useContext } from 'react';
 import { fetchUpdatedUser } from "../utils/fetchUpdatedUser";
 import OutsideClickHandler from "react-outside-click-handler";
 import axios from "axios";
 import NotificationIcon from "../assets/notification.png";
+import { UserContext } from "../providers/UserContext";
 
 interface ProfileMenuProps {
-    userContext: IUserContext,
     setSettingsPopUp: React.Dispatch<React.SetStateAction<boolean>>,
     setSellerProfilePopUp: React.Dispatch<React.SetStateAction<boolean>>
 }
 
-function ProfileMenu({ userContext, setSettingsPopUp, setSellerProfilePopUp }: ProfileMenuProps) {
+function ProfileMenu({ setSettingsPopUp, setSellerProfilePopUp }: ProfileMenuProps) {
     const [disabled, setDisabled] = useState<boolean>(false);
     const [navProfileDropdown, setNavProfileDropdown] = useState<boolean>(false);
+    const userContext = useContext(UserContext);
 
     async function toggleStatus(): Promise<void> {
         const toggledStatus: string = userContext.userData.status === 'ONLINE' ? 'OFFLINE' : 'ONLINE';
@@ -27,7 +27,7 @@ function ProfileMenu({ userContext, setSettingsPopUp, setSellerProfilePopUp }: P
                 status: toggledStatus
             }, userContext.userData.username);
     
-            userContext.setUserData({ ...response.userData });
+            userContext.setUserData(response.userData);
         } 
         catch (err: any) {
             // Ignore error message and do nothing

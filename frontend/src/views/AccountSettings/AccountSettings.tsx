@@ -1,16 +1,15 @@
-import { IUserContext } from "../../providers/UserContext";
 import PopUpWrapper from "../../wrappers/PopUpWrapper";
 import ProfilePicAndStatus from "../../components/ProfilePicAndStatus";
-import { useState } from 'react';
+import { useState, useContext } from 'react';
 import ErrorMessage from "../../components/ErrorMessage";
 import MyDetails from "./MyDetails";
 import UserProfile from "./UserProfile";
 import ChangePassword from "./ChangePassword";
 import DangerZone from "./DangerZone";
+import { UserContext } from "../../providers/UserContext";
 
 interface SettingsProps {
     setSettingsPopUp: React.Dispatch<React.SetStateAction<boolean>>,
-    userContext: IUserContext
 }
 
 enum Options {
@@ -20,10 +19,11 @@ enum Options {
     dangerZone
 }
 
-function AccountSettings({ setSettingsPopUp, userContext }: SettingsProps) {
+function AccountSettings({ setSettingsPopUp }: SettingsProps) {
     const [errorMessage, setErrorMessage] = useState<string>("");
     const [option, setOption] = useState<Options>(Options.details);
     const [loading, setLoading] = useState<boolean>(false);
+    const userContext = useContext(UserContext);
 
     function updateOption(next: Options): void {
         setOption(next);
@@ -32,13 +32,13 @@ function AccountSettings({ setSettingsPopUp, userContext }: SettingsProps) {
     function getOption(): React.ReactElement<any> {
         switch (option) {
             case Options.details:
-                return <MyDetails userContext={userContext} />
+                return <MyDetails />
             case Options.profile:
-                return <UserProfile userContext={userContext} />
+                return <UserProfile />
             case Options.password:
-                return <ChangePassword userContext={userContext} />
+                return <ChangePassword />
             default:
-                return <DangerZone userContext={userContext} setSettingsPopUp={setSettingsPopUp} />
+                return <DangerZone setSettingsPopUp={setSettingsPopUp} />
         }
     }
 
@@ -51,9 +51,16 @@ function AccountSettings({ setSettingsPopUp, userContext }: SettingsProps) {
             />}
             <div className="flex gap-5">
                 <div className="relative">
-                    <ProfilePicAndStatus profilePicURL={userContext.userData.profilePicURL} profileStatus={userContext.userData.status} 
-                    statusStyles="before:left-[55px] before:top-[60px] before:w-5 before:h-5" imgStyles="w-[80px] h-[80px]" showEdit={true} 
-                    setErrorMessage={setErrorMessage} loading={loading} setLoading={setLoading} />
+                    <ProfilePicAndStatus 
+                        profilePicURL={userContext.userData.profilePicURL} 
+                        profileStatus={userContext.userData.status} 
+                        statusStyles="before:left-[55px] before:top-[60px] before:w-5 before:h-5" 
+                        imgStyles="w-[80px] h-[80px]" 
+                        showEdit={true} 
+                        setErrorMessage={setErrorMessage} 
+                        loading={loading} 
+                        setLoading={setLoading} 
+                    />
                 </div>
                 <div>
                     <p>Username: <span className="text-main-blue">{userContext.userData.username}</span></p>

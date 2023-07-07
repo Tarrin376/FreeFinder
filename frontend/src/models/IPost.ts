@@ -1,4 +1,5 @@
-import { IPostImage } from "./IPostImage"
+import { IPostImage } from "./IPostImage";
+import { ISellerLevel } from "./ISellerLevel";
 
 export interface IPost {
     createdAt: Date,
@@ -13,9 +14,7 @@ export interface IPost {
             username: string,
         },
         rating: number,
-        sellerLevel: {
-            name: string
-        }
+        sellerLevel: ISellerLevel
     },
     images: IPostImage[]
 }

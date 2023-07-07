@@ -80,9 +80,8 @@ function ProfilePicAndStatus(props: ProfilePicAndStatusProps) {
 
     return (
         <div className={props.loading || props.showEdit ? '' : 
-        `${props.profileStatus === 'ONLINE' ? 'before:bg-green-500' : 
-        'before:bg-side-text-gray'} 
-        before:w-[18px] before:h-[18px] before:absolute before:top-[33px] before:left-[0px] 
+        `${props.profileStatus === 'ONLINE' ? 'before:bg-green-500' : props.profileStatus === 'AWAY' ? 'before:bg-orange-400' :
+        'before:bg-side-text-gray'} before:w-[18px] before:h-[18px] before:absolute before:top-[33px] before:left-[0px] 
         before:border-[3px] before:border-main-white before:content[''] before:rounded-full ${props.statusStyles}`}>
             {props.loading ? 
             <div className={`w-12 h-12 rounded-full loading ${props.imgStyles}`}>
@@ -101,15 +100,15 @@ function ProfilePicAndStatus(props: ProfilePicAndStatusProps) {
                     </button>
                     {profileDropdown && 
                     <OutsideClickHandler onOutsideClick={() => setProfileDropdown(false)}>
-                        <div className="absolute bg-main-white right-0 mt-3 flex flex-col rounded-[6px] 
-                        border border-light-gray shadow-profile-page-container">
+                        <div className="absolute bg-main-white left-[20px] mt-3 flex flex-col rounded-[6px] 
+                        border border-light-gray shadow-profile-page-container overflow-hidden">
                             <p className="text-xs cursor-pointer hover:bg-main-white-hover 
                             profile-menu-element pt-[6px] pb-[6px]" onClick={triggerUpload}>
-                                {`Upload photo (max ${MAX_PROFILE_PIC_BYTES / 1000000}MB)`}
+                                {`Upload (max ${MAX_PROFILE_PIC_BYTES / 1000000}MB)`}
                             </p>
                             <p className="text-xs cursor-pointer hover:bg-main-white-hover 
                             profile-menu-element pt-[6px] pb-[6px] border-t border-t-light-gray" onClick={removePhoto}>
-                                Remove photo
+                                Remove
                             </p>
                             <input type='file' ref={inputFileRef} className="hidden" onChange={uploadPhoto} />
                         </div>

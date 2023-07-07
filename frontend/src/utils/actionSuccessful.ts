@@ -1,6 +1,7 @@
-export function actionSuccessful(setCompleted: React.Dispatch<React.SetStateAction<any>>, before: any, after: any): void {
+export function actionSuccessful(setCompleted: React.Dispatch<React.SetStateAction<string>>, before: string,
+    after: string, duration?: number): void {
     setCompleted(before);
     setTimeout(() => {
         setCompleted(after);
-    }, 3500);
+    }, duration || 3500);
 }

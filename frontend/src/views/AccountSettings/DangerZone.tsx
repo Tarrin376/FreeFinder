@@ -1,14 +1,14 @@
-import { IUserContext } from "../../providers/UserContext";
-import { useState } from 'react';
+import { useState, useContext } from 'react';
 import ErrorMessage from "../../components/ErrorMessage";
 import { initialState } from "../../providers/UserContext";
 import axios, { AxiosError } from "axios";
 import { getAPIErrorMessage } from "../../utils/getAPIErrorMessage";
 import Button from "../../components/Button";
+import { UserContext } from '../../providers/UserContext';
 
-function DangerZone({ userContext, setSettingsPopUp }: { userContext: IUserContext, 
-    setSettingsPopUp: React.Dispatch<React.SetStateAction<boolean>> }) {
+function DangerZone({ setSettingsPopUp }: { setSettingsPopUp: React.Dispatch<React.SetStateAction<boolean>> }) {
     const [errorMessage, setErrorMessage] = useState<string>("");
+    const userContext = useContext(UserContext);
 
     const resetUserState = () => {
         userContext.setUserData(initialState.userData);

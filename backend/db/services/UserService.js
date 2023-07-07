@@ -119,7 +119,7 @@ export async function registerUserHandler(userData) {
     }
 }
 
-export async function findUserHandler(usernameOrEmail, password) {
+export async function authenticateUserHandler(usernameOrEmail, password) {
     try {
         const res = await prisma.user.findFirst({
             where: {
@@ -142,10 +142,10 @@ export async function findUserHandler(usernameOrEmail, password) {
         const passwordMatch = await bcrypt.compare(password, res.hash);
         if (!passwordMatch) {
             throw new DBError("The password you entered is incorrect. Check that you entered it correctly.", 403)
-        } else {
-            const {hash, ...filtered} = res;
-            return filtered;
         }
+
+        const {hash, ...filtered} = res;
+        return filtered;
     }
     catch (err) {
         if (err instanceof DBError) {
@@ -165,11 +165,10 @@ export async function updateUserHandler(req) {
     try {
         await checkUser(req.userData.userID, req.username);
         const {seller, ...res} = req.body;
-        const userData = res;
 
         const updated = await prisma.user.update({
             where: { userID: req.userData.userID },
-            data: { ...userData },
+            data: { ...res },
             select: {
                 seller: {
                     ...sellerProperties,
@@ -187,6 +186,7 @@ export async function updateUserHandler(req) {
         return updated;
     }
     catch (err) {
+        print(err);
         if (err instanceof DBError) {
             throw err;
         } else if (err instanceof Prisma.PrismaClientValidationError) {
@@ -245,7 +245,6 @@ export async function getUserPostsHandler(req) {
 }
 
 export async function queryUserPosts(req) {
-    console.log(req.userData.userID);
     const postFilters = getPostFilters(req);
     const posts = await prisma.post.findMany({
         skip: req.body.cursor ? 1 : undefined,

@@ -1,7 +1,7 @@
 import 
 { 
     registerUserHandler, 
-    findUserHandler, 
+    authenticateUserHandler, 
     updateUserHandler, 
     updateProfilePictureHandler, 
     deleteUserHandler,
@@ -13,8 +13,13 @@ import { cookieJwtSign } from '../middleware/cookieJwtSign.js';
 
 export async function authenticateUser(req, res) {
     try {
-        const user = await findUserHandler(req.body.usernameOrEmail, req.body.password);
+        const user = await authenticateUserHandler(req.body.usernameOrEmail, req.body.password);
+        req.body = { status: "ONLINE" };
         req.userData = user;
+        req.username = user.username;
+
+        const setOnline = await updateUserHandler(req);
+        req.userData = setOnline;
 
         const sign = await cookieJwtSign(req, res);
         return sign;
@@ -24,8 +29,25 @@ export async function authenticateUser(req, res) {
     }
 }
 
-export async function deleteUserSession(_, res) {
+export async function jwtAuthenticateUser(req, res) {
     try {
+        req.body = { status: "ONLINE" };
+        req.username = req.userData.username;
+
+        const setOnline = await updateUserHandler(req);
+        return res.json({ userData: setOnline });
+    }
+    catch (err) {
+        res.status(err.code).json({ message: err.message });
+    }
+}
+
+export async function deleteUserSession(req, res) {
+    try {
+        req.body = { status: "OFFLINE" };
+        req.username = req.userData.username;
+
+        await updateUserHandler(req);
         return res.clearCookie("access_token").json({ message: "success" });
     }
     catch (err) {

@@ -130,6 +130,7 @@ model Order {
 enum UserStatus {
     ONLINE
     OFFLINE
+    AWAY
 }
 
 enum OrderStatus {

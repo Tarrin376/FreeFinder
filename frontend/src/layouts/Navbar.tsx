@@ -9,6 +9,9 @@ import AccountSettings from '../views/AccountSettings/AccountSettings';
 import SellerDetails from '../components/SellerDetails';
 import { useNavigate } from 'react-router-dom';
 import SearchSellers from '../components/SearchSellers';
+import { useOnlineStatus } from '../hooks/useOnlineStatus';
+import CloseSmallIcon from "../assets/close-small.png";
+import { useToggleAwayStatus } from '../hooks/useToggleAwayStatus';
 
 function Navbar() {
     const [signUp, setSignUp] = useState<boolean>(false);
@@ -32,9 +35,11 @@ function Navbar() {
         navigate(url);
     }
     
+    useToggleAwayStatus();
+    
     return (
         <>
-            {settingsPopUp && <AccountSettings setSettingsPopUp={setSettingsPopUp} userContext={userContext} />}
+            {settingsPopUp && <AccountSettings setSettingsPopUp={setSettingsPopUp} />}
             {signUp && <SignUp setSignUp={setSignUp} setLogIn={setLogIn} setAccountCreated={setAccountCreated} />}
             {logIn && <LogIn setLogIn={setLogIn} setSignUp={setSignUp} />}
             {accountCreated && <AccountCreated setAccountCreated={setAccountCreated} />}
@@ -59,13 +64,15 @@ function Navbar() {
                     {userContext.userData.username === "" ? 
                     <AccountOptions setLogIn={setLogIn} setSignUp={setSignUp} /> :
                     <ProfileMenu 
-                        userContext={userContext} 
                         setSettingsPopUp={setSettingsPopUp} 
                         setSellerProfilePopUp={setSellerProfilePopUp}
                         />}
                 </div>
             </nav>
-            <Outlet />
+            <div>
+                <OnlineStatus />
+                <Outlet />
+            </div>
         </>
     );
 }
@@ -85,6 +92,28 @@ function AccountOptions({ setLogIn, setSignUp }: {
             </button>
         </>
     );
+}
+
+function OnlineStatus() {
+    const { onlineMessage, offlineMessage, closePopUp } = useOnlineStatus();
+
+    if (!onlineMessage && !offlineMessage) {
+        return <></>
+    }
+
+    return (
+        <div className={`w-[100vw] px-7 relative ${onlineMessage ? "bg-light-green " : "bg-error-text"} text-center p-2 z-20`}>
+            <p className="text-main-white">
+                {onlineMessage ? onlineMessage : offlineMessage}
+            </p>
+            <img 
+                src={CloseSmallIcon} 
+                className="text-main-white w-[20px] h-[20px] absolute top-1/2 translate-y-[-50%] right-7 cursor-pointer" 
+                alt="close"
+                onClick={closePopUp}
+            />
+        </div>
+    )
 }
 
 export default Navbar;

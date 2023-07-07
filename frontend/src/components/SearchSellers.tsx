@@ -6,6 +6,7 @@ import { sellerLevelTextStyles } from "../utils/sellerLevelTextStyles";
 import OutsideClickHandler from "react-outside-click-handler";
 import ProfilePicAndStatus from "./ProfilePicAndStatus";
 import HighlightedSubstring from "./HighlightedSubstring";
+import { useNavigate } from "react-router-dom";
 
 const queryLimit = 6;
 
@@ -28,6 +29,7 @@ function SearchSellers() {
     const searchRef = useRef<HTMLInputElement>(null);
     const [hide, setHide] = useState<boolean>(true);
     const searchQuery = searchRef.current?.value ? searchRef.current.value : "";
+    const navigate = useNavigate();
 
     async function getMatchedSellers(query: string): Promise<SellerData[] | undefined> {
         try {
@@ -49,6 +51,10 @@ function SearchSellers() {
             if (query === "") setSellers([]);
             else setSellers(matchedSellers);
         }
+    }
+
+    function navigateToProfile(username: string) {
+        navigate(`/sellers/${username}`, { replace: true });
     }
 
     return (
@@ -83,7 +89,7 @@ function SearchSellers() {
                         {sellers.map((seller: SellerData) => {
                             return (
                                 <div className="flex items-center gap-3 cursor-pointer hover:bg-[#f7f7f7] p-2 rounded-[6px]
-                                transition-all ease-out duration-100">
+                                transition-all ease-out duration-100" onClick={() => navigateToProfile(seller.user.username)}>
                                     <div className="relative">
                                         <ProfilePicAndStatus
                                             profilePicURL={seller.user.profilePicURL}

@@ -1,18 +1,19 @@
-import { IUserContext } from "../../providers/UserContext";
-import { useState } from 'react';
+import { useState, useContext } from 'react';
 import ErrorMessage from "../../components/ErrorMessage";
 import { emailPattern } from "../../components/SignUp";
 import { fetchUpdatedUser } from "../../utils/fetchUpdatedUser";
 import { getAPIErrorMessage } from "../../utils/getAPIErrorMessage";
 import { AxiosError } from "axios";
 import Button from "../../components/Button";
+import { UserContext } from '../../providers/UserContext';
 
-function MyDetails({ userContext } : { userContext: IUserContext }) {
+function MyDetails() {
     const [firstEmail, setFirstEmail] = useState<string>("");
     const [secondEmail, setSecondEmail] = useState<string>("");
     const [validFirst, setValidFirst] = useState<boolean>(false);
     const [validSecond, setValidSecond] = useState<boolean>(false);
     const [errorMessage, setErrorMessage] = useState<string>("");
+    const userContext = useContext(UserContext);
 
     function emailChangeHandler(input: string, setValid: React.Dispatch<React.SetStateAction<boolean>>,
         setEmail: React.Dispatch<React.SetStateAction<string>>): void {

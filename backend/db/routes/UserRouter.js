@@ -10,6 +10,7 @@ import
     deleteUser,
     updatePassword,
     authenticateUser,
+    jwtAuthenticateUser,
     deleteUserSession,
     getUserPosts
 } from '../controllers/UserController.js';
@@ -25,18 +26,15 @@ userRouter.param('username', (req, _, next, value) => {
 });
 
 userRouter.post('/', registerUser);
+
 userRouter.post('/session', authenticateUser);
+userRouter.delete('/session', cookieJwtAuth, deleteUserSession);
+userRouter.get('/jwt-auth', cookieJwtAuth, jwtAuthenticateUser);
+
 userRouter.post('/:usernameOrEmail', findUser);
-userRouter.delete('/session', deleteUserSession);
-
-userRouter.get('/jwt-auth', cookieJwtAuth, (req, res) => {
-    return res.json({ userData: req.userData });
-});
-
 userRouter.put('/:username', cookieJwtAuth, updateUser);
+userRouter.delete('/:username', cookieJwtAuth, deleteUser);
 userRouter.put('/:username/profile-picture', cookieJwtAuth, updateProfilePicture);
 userRouter.put('/:username/password', cookieJwtAuth, updatePassword);
-
-userRouter.delete('/:username', cookieJwtAuth, deleteUser);
 
 export default userRouter;

@@ -37,7 +37,7 @@ function UserProvider({ children }: { children?: React.ReactNode }) {
             }
         })();
     }, []);
-    
+
     return (
         <UserContext.Provider value={{userData, setUserData}}>
             {children}

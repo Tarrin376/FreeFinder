@@ -1,13 +1,14 @@
-import { IUserContext } from "../../providers/UserContext";
-import { useState, useRef } from 'react';
+import { useState, useRef, useContext } from 'react';
 import ErrorMessage from "../../components/ErrorMessage";
 import CountriesDropdown from "../../components/CountriesDropdown";
 import { fetchUpdatedUser } from "../../utils/fetchUpdatedUser";
 import { getAPIErrorMessage } from "../../utils/getAPIErrorMessage";
 import { AxiosError } from "axios";
 import Button from "../../components/Button";
+import { UserContext } from '../../providers/UserContext';
 
-function UserProfile({  userContext }: { userContext: IUserContext }) {
+function UserProfile() {
+    const userContext = useContext(UserContext);
     const [username, setUsername] = useState<string>(userContext.userData.username);
     const [errorMessage, setErrorMessage] = useState<string>("");
     const countryRef = useRef<HTMLSelectElement>(null);
