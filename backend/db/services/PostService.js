@@ -36,6 +36,12 @@ async function uploadImage(postID, image, url, isThumbnail) {
 export async function createPostHandler(postData, startingPrice, userID) {
     try {
         const seller = await findSeller(userID);
+        console.log(seller._count, seller.sellerLevel.postLimit);
+        if (seller._count === seller.sellerLevel.postLimit) {
+            console.log("yo");
+            throw new DBError(`You have ${seller._count} posts listed on your account which is the maximum amount for your current experience level.`);
+        }
+
         const res = await prisma.post.create({
             data: {
                 about: postData.about,

@@ -81,14 +81,9 @@ function Packages({ packages }: { packages: IPackage[] }) {
                             })}
                         </ul>
                     </div>
-                    <div>
-                        <button className="main-btn mb-3 mt-5">
-                            Request An Order
-                        </button>
-                        <button className="side-btn h-[45px] w-full">
-                            Contact Seller
-                        </button>
-                    </div>
+                    <button className="main-btn">
+                        Request An Order
+                    </button>
                 </div>
             </>}
         </div>

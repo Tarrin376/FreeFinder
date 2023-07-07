@@ -66,10 +66,7 @@ function AboutSeller({ postData }: { postData: PostPage }) {
                 options={postData.postedBy.languages} 
                 styles="mt-2" 
             />
-            <div className="w-full flex items-center justify-between mt-6">
-                <button className="side-btn">Save seller</button>
-                <button className="red-btn">Report seller</button>
-            </div>
+            <button className="red-btn mt-6">Report seller</button>
         </section>
     );
 }

@@ -21,7 +21,7 @@ function SellerExperience({ level, nextLevel, nextLevelXP, sellerXP }: SellerExp
             </div>
             <div className="rounded-full w-full bg-very-light-gray h-[17px] overflow-hidden">
                 <div className="bg-gradient-to-r from-main-blue to-light-green h-full rounded-full flex 
-                items-center justify-center" style={{ width: `calc(100% / ${nextLevelXP} * ${sellerXP} + 200px)`}}>
+                items-center justify-center" style={{ width: `calc(100% / ${nextLevelXP} * ${sellerXP})`}}>
                 </div>
             </div>
             <div className="flex items-center justify-between mt-3">

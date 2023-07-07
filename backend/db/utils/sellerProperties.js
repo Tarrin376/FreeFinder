@@ -10,10 +10,11 @@ export const sellerProperties = {
             select: {
                 xpRequired: true,
                 name: true,
+                postLimit: true,
                 nextLevel: {
                     select: {
                         xpRequired: true,
-                        name: true
+                        name: true,
                     }
                 }
             }

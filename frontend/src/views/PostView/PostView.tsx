@@ -12,12 +12,21 @@ import { IPostImage } from "../../models/IPostImage";
 import { useNavigateErrorPage } from "../../hooks/useNavigateErrorPage";
 import PageWrapper from "../../wrappers/PageWrapper";
 import Carousel from "../../components/Carousel";
+import parse from "html-react-parser";
+import { useNavigate } from "react-router-dom";
 
 function PostView() {
     const [postData, setPostData] = useState<PostPage>();
     const [selectedImage, setSelectedImage] = useState<number>(0);
     const [errorMessage, setErrorMessage] = useState<string>("");
     const location = useLocation();
+    const navigate = useNavigate();
+
+    function navigateToProfile() {
+        if (postData) {
+            navigate(`/sellers/${postData.postedBy.user.username}`);
+        }
+    }
     
     useNavigateErrorPage("Something isn't quite right...", errorMessage);
     
@@ -54,14 +63,21 @@ function PostView() {
                                     profileStatus={postData.postedBy.user.status}
                                     statusStyles="before:left-[33px] before:top-[34px] cursor-pointer"
                                     imgStyles="w-[50px] h-[50px]"
+                                    action={navigateToProfile}
                                 />
                             </div>
                             <div>
                                 <div className="flex items-center gap-[7px]">
-                                    <p className="nav-item hover:font-normal">{postData.postedBy.user.username}</p>
+                                    <p className="nav-item hover:font-normal" onClick={navigateToProfile}>
+                                        {postData.postedBy.user.username}
+                                    </p>
                                     <img src={StarIcon} className="w-[18px] h-[18px]" alt="star" />
-                                    <p className="text-[15px]">{postData.postedBy.rating}</p>
-                                    <p className="text-[15px] text-side-text-gray">({postData.postedBy.numReviews} reviews)</p>
+                                    <p className="text-[15px]">
+                                        {postData.postedBy.rating}
+                                    </p>
+                                    <p className="text-[15px] text-side-text-gray">
+                                        ({postData.postedBy.numReviews} reviews)
+                                    </p>
                                 </div>
                                 <p className="text-side-text-gray text-[15px]">
                                     {getTimePosted(postData.createdAt)}
@@ -94,9 +110,7 @@ function PostView() {
                         </div>
                         <section className="mt-8 mb-10 w-full">
                             <h2 className="text-2xl mb-3">About this service</h2>
-                            <p className="leading-7">
-                                {postData.about}
-                            </p>
+                            {parse(postData.about)}
                         </section>
                         <AboutSeller postData={postData} />
                     </div>

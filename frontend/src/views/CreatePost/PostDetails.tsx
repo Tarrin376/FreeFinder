@@ -8,6 +8,7 @@ import File from "../../components/File";
 import Button from "../../components/Button";
 import axios, { AxiosError } from "axios";
 import { getAPIErrorMessage } from "../../utils/getAPIErrorMessage";
+import TextEditor from "../../components/TextEditor";
 
 interface PostDetailsProps {
     setPostService: React.Dispatch<React.SetStateAction<boolean>>,
@@ -118,12 +119,10 @@ function PostDetails(props: PostDetailsProps) {
                 onChange={(e) => props.setTitle(e.target.value)} 
             />
             <h3 className="mb-2">Write about section</h3>
-            <textarea 
-                placeholder="Write about your service here" 
-                className="w-full search-bar mb-6 h-[250px]" 
+            <TextEditor
                 value={props.about}
-                onChange={(e) => props.setAbout(e.target.value)}  
-                maxLength={1500} 
+                setValue={props.setAbout}
+                limit={1500}
             />
             <div className="flex justify-end gap-3 mt-8">
                 <button className="side-btn w-[110px]" onClick={() => props.setSection(Sections.BasicPackage)}>

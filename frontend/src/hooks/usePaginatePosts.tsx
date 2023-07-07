@@ -21,7 +21,6 @@ export function usePaginatePosts<T>(
         sellerLevels: string[]
     })
 : PaginatePosts<T> {
-
     const reachedBottom = useRef<boolean>(false);
     const count = useRef<number>(0);
     const [loading, setLoading] = useState<boolean>(false);
@@ -68,11 +67,12 @@ export function usePaginatePosts<T>(
                 }
 
                 setErrorMessage("");
-                setLoading(false);
             }
             catch(err: any) {
                 const errorMessage = getAPIErrorMessage(err as AxiosError<{ message: string }>)
                 setErrorMessage(errorMessage);
+            }
+            finally {
                 setLoading(false);
             }
         })();

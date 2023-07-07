@@ -10,7 +10,14 @@ export async function findSeller(userID) {
             where: { 
                 userID: userID 
             },
-            ...sellerProperties,
+            select: {
+                ...sellerProperties.select,
+                _count: {
+                    select: {
+                        posts: true
+                    }
+                }
+            }
         });
 
         if (!seller) {
@@ -133,7 +140,25 @@ export async function getSellerDetailsHandler(username) {
                     }
                 },
                 posts: {
+                    take: 10,
                     select: {
+                        postedBy: {
+                            select: {
+                                user: {
+                                    select: {
+                                        profilePicURL: true,
+                                        status: true,
+                                        username: true,
+                                    }
+                                },
+                                rating: true,
+                                sellerLevel: {
+                                    select: {
+                                        name: true
+                                    }
+                                }
+                            }
+                        },
                         createdAt: true,
                         numReviews: true,
                         startingPrice: true,
@@ -164,6 +189,7 @@ export async function getSellerDetailsHandler(username) {
                         profilePicURL: true,
                         status: true,
                         username: true,
+                        country: true
                     }
                 }
             }

@@ -35,7 +35,7 @@ function Posts({ canRemove, noResultsFoundTitle }: PostsProps) {
         <PageWrapper styles="min-h-[calc(100vh-180px)] xxl:max-w-[1494px] xl:max-w-[1202px] lg:max-w-[910px] md:max-w-[618px]">
             {filterContext.posts.loading ? 
             <h1 className="text-[20px] mb-6">
-                Loading results...
+                Finding services...
             </h1> :
             <h1 className="text-[20px] mb-6">
                 {`${filterContext.posts.count} ${filterContext.posts.count === 1 ? "service" : "services"} found`}

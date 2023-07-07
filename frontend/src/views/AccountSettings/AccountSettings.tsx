@@ -69,7 +69,7 @@ function AccountSettings({ setSettingsPopUp }: SettingsProps) {
                 </div>
             </div>
             <div className="mt-9 mb-5">
-                <ul className="border-b border-b-nav-search-gray flex justify-between mt-5">
+                <ul className="border-b border-b-nav-search-gray flex justify-between mt-5 list-none">
                     <li className={option === Options.details ? "settings-selection" : "settings-unselected"}
                     onClick={() => updateOption(Options.details)}>My details</li>
                     <li className={option === Options.profile ? "settings-selection" : "settings-unselected"}

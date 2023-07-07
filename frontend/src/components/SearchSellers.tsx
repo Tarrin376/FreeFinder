@@ -54,7 +54,7 @@ function SearchSellers() {
     }
 
     function navigateToProfile(username: string) {
-        navigate(`/sellers/${username}`, { replace: true });
+        navigate(`/sellers/${username}`);
     }
 
     return (

@@ -50,6 +50,7 @@ model SellerLevel {
     nextLevelID String?      @unique
     nextLevel   SellerLevel? @relation("LevelHistory", fields: [nextLevelID], references: [id])
     prevLevel   SellerLevel? @relation("LevelHistory")
+    postLimit   Int          @default(0)
 }
 
 model SavedPost {

@@ -8,6 +8,7 @@ export interface ISeller {
     sellerLevel: {
         xpRequired: number,
         name: string,
+        postLimit: number,
         nextLevel?: {
             xpRequired: number,
             name: string

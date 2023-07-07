@@ -16,7 +16,8 @@ interface ProfilePicAndStatusProps {
     showEdit?: boolean,
     setErrorMessage?: React.Dispatch<React.SetStateAction<string>>,
     loading?: boolean,
-    setLoading?: React.Dispatch<React.SetStateAction<boolean>>
+    setLoading?: React.Dispatch<React.SetStateAction<boolean>>,
+    action?: () => void
 }
 
 const MAX_PROFILE_PIC_BYTES = 1000000;
@@ -78,11 +79,18 @@ function ProfilePicAndStatus(props: ProfilePicAndStatusProps) {
         }
     }
 
+    function handleAction() {
+        if (props.action) {
+            props.action();
+        }
+    }
+
     return (
         <div className={props.loading || props.showEdit ? '' : 
         `${props.profileStatus === 'ONLINE' ? 'before:bg-green-500' : props.profileStatus === 'AWAY' ? 'before:bg-orange-400' :
         'before:bg-side-text-gray'} before:w-[18px] before:h-[18px] before:absolute before:top-[33px] before:left-[0px] 
-        before:border-[3px] before:border-main-white before:content[''] before:rounded-full ${props.statusStyles}`}>
+        before:border-[3px] before:border-main-white before:content[''] before:rounded-full ${props.statusStyles}`}
+        onClick={handleAction}>
             {props.loading ? 
             <div className={`w-12 h-12 rounded-full loading ${props.imgStyles}`}>
             </div> : 

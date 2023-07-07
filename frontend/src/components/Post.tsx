@@ -19,10 +19,11 @@ interface PostProps {
         setDeletingPost: React.Dispatch<React.SetStateAction<boolean>>,
         removeURL: string,
         unsave?: boolean
-    }
+    },
+    styles?: string
 }
 
-function Post({ postInfo, username, canRemove }: PostProps) {
+function Post({ postInfo, username, canRemove, styles }: PostProps) {
     const [errorMessage, setErrorMessage] = useState<string>("");
     const [successMessage, setSuccessMessage] = useState<string>("");
     const seconds = getSeconds(postInfo.createdAt);
@@ -73,12 +74,16 @@ function Post({ postInfo, username, canRemove }: PostProps) {
         navigate(`/posts/${postInfo.postID}`);
     }
 
+    function navigateToProfile() {
+        navigate(`/sellers/${postInfo.postedBy.user.username}`);
+    }
+
     if (hide) {
         return <></>
     }
 
     return (
-        <div className="bg-transparent w-[270px] relative">
+        <div className={`bg-transparent w-[270px] relative ${styles}`}>
             <p className={`absolute rounded-t-[12px] z-20 px-7 py-[11px] w-[100%] transition-all ease-out duration-100 text-center 
             ${errorMessage !== "" ? 'bg-error-text text-main-white' 
             : successMessage ? 'action-btn hover:!bg-[#36BF54]' : '!py-[0px]'}`}>
@@ -112,10 +117,12 @@ function Post({ postInfo, username, canRemove }: PostProps) {
                         profilePicURL={postInfo.postedBy.user.profilePicURL} 
                         profileStatus={postInfo.postedBy.user.status}
                         statusStyles="before:left-[30px] cursor-pointer"
+                        action={navigateToProfile}
                     />
                     <div className="flex-grow">
                         <div className="flex justify-between">
-                            <p className="whitespace-nowrap text-ellipsis overflow-hidden max-w-[170px] hover:text-main-blue cursor-pointer">
+                            <p className="whitespace-nowrap text-ellipsis overflow-hidden max-w-[170px] 
+                            hover:text-main-blue cursor-pointer" onClick={navigateToProfile}>
                                 {postInfo.postedBy.user.username}
                             </p>
                             <div className="flex items-center justify-end gap-[7px]">
@@ -129,7 +136,7 @@ function Post({ postInfo, username, canRemove }: PostProps) {
                     </div>
                 </div>
                 <p className="text-side-text-gray text-[15px]">{getTimePosted(postInfo.createdAt)}</p>
-                <div className="flex items-center mb-2 mt-[2px]">
+                <div className="flex items-center mb-2 mt-[4px]">
                     <p className="text-[14px] seller-level" style={sellerLevelTextStyles[postInfo.postedBy.sellerLevel.name]}>
                         {postInfo.postedBy.sellerLevel.name}
                     </p>

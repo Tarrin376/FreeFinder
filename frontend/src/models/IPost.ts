@@ -1,5 +1,5 @@
 import { IPostImage } from "./IPostImage";
-import { ISellerLevel } from "./ISellerLevel";
+import { PostedBy } from "../types/PostedBy";
 
 export interface IPost {
     createdAt: Date,
@@ -7,14 +7,6 @@ export interface IPost {
     startingPrice: number,
     title: string,
     numReviews: number,
-    postedBy: {
-        user: {
-            profilePicURL: string,
-            status: string,
-            username: string,
-        },
-        rating: number,
-        sellerLevel: ISellerLevel
-    },
+    postedBy: PostedBy,
     images: IPostImage[]
 }

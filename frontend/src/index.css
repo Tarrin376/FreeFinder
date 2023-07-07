@@ -79,6 +79,14 @@
     .page {
         @apply max-w-[1494px] m-auto p-[22.5px] min-h-[calc(100vh-90px)];
     }
+    ol {
+        list-style-type: decimal;
+        list-style-position: inside;
+    }
+    ul {
+        list-style-type: circle;
+        list-style-position: inside;
+    }
     * {
         scrollbar-width: thin;
         scrollbar-color: #879198;

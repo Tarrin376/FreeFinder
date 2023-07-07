@@ -45,7 +45,7 @@ function Navbar() {
             {accountCreated && <AccountCreated setAccountCreated={setAccountCreated} />}
             {sellerProfilePopUp && <SellerDetails setSellerProfilePopUp={setSellerProfilePopUp} />}
             <nav className="flex gap-8 items-center px-7 h-[90px] border-b border-b-very-light-gray bg-main-white">
-                <ul className="flex items-center gap-14">
+                <ul className="flex items-center gap-14 list-none">
                     <li className="text-main-blue text-[23px] cursor-pointer mr-8 font-normal" onClick={(e) => goToPage(e, `/`)}>FreeFinder</li>
                     <li className="nav-item" onClick={(e) => goToPage(e, 'posts/all')}>Browse all</li>
                     {userContext.userData.seller &&
