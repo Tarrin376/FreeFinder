@@ -6,5 +6,5 @@ export interface IPackage {
     amount: number,
     numOrders: number,
     type: string,
-    packageTitle: string
+    title: string
 }

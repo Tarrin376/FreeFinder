@@ -7,20 +7,24 @@ import { ISeller } from "../models/ISeller";
 import { getAPIErrorMessage } from "../utils/getAPIErrorMessage";
 import Button from "./Button";
 import SearchLanguages from "./SearchLanguages";
+import Options from "./Options";
 
-const MAX_DESC_CHARS = 400;
+const MAX_DESC_CHARS = 650;
 const MAX_SUMMARY_CHARS = 50;
+const MAX_NUMBER_OF_SKILLS = 15;
 
-interface SellerDetailsProps {
+interface ChangeSellerDetailsProps {
     setSellerProfilePopUp: React.Dispatch<React.SetStateAction<boolean>>,
 }
 
-function SellerDetails({ setSellerProfilePopUp }: SellerDetailsProps) {
+function ChangeSellerDetails({ setSellerProfilePopUp }: ChangeSellerDetailsProps) {
     const userContext = useContext<IUserContext>(UserContext);
     const [description, setDescription] = useState<string>(userContext.userData.seller!.description);
     const [summary, setSummary] = useState<string>(userContext.userData.seller!.summary);
-    const [errorMessage, setErrorMessage] = useState<string>("");
     const [selectedLanguages, setSelectedLanguages] = useState<string[]>(userContext.userData.seller!.languages);
+    const [errorMessage, setErrorMessage] = useState<string>("");
+    const [skill, setSkill] = useState<string>("");
+    const [skills, setSkills] = useState<string[]>(userContext.userData.seller!.skills);
     
     function closeSellerProfilePopUp(): void {
         setSellerProfilePopUp(false);
@@ -31,6 +35,7 @@ function SellerDetails({ setSellerProfilePopUp }: SellerDetailsProps) {
             const resp = await axios.put<{ updatedData: ISeller, message: string }>(`/api/sellers/${userContext.userData.username}`, {
                 description: description,
                 languages: selectedLanguages,
+                skills: skills,
                 summary: summary
             });
 
@@ -43,6 +48,21 @@ function SellerDetails({ setSellerProfilePopUp }: SellerDetailsProps) {
             const errorMessage = getAPIErrorMessage(err as AxiosError<{ message: string }>);
             return errorMessage;
         }
+    }
+
+    function addSkill(): void {
+        if (skills.length === MAX_NUMBER_OF_SKILLS) {
+            setErrorMessage(`You cannot have more than ${MAX_NUMBER_OF_SKILLS} skills on your profile.`);
+            return;
+        }
+
+        const newSkill = skill.toLowerCase();
+        setSkills((skills: string[]) => [...skills.filter(x => x !== newSkill), newSkill]);
+        setSkill("");
+    }
+
+    function removeSkill(skill: string): void {
+        setSkills((skills: string[]) => skills.filter(x => x !== skill));
     }
 
     return (
@@ -84,6 +104,25 @@ function SellerDetails({ setSellerProfilePopUp }: SellerDetailsProps) {
                 setSelectedLanguages={setSelectedLanguages} 
                 selectedLanguages={selectedLanguages} 
             />
+            <p className="mb-2 mt-4">Your skills</p>
+            <input 
+                type="text" 
+                className="search-bar"
+                placeholder="Enter a skill"
+                value={skill}
+                onChange={(e) => setSkill(e.target.value)}
+            />
+            {skill !== "" &&
+            <button className="main-btn w-fit !h-[42px] mt-4" onClick={addSkill}>
+                Add skill
+            </button>}
+            <Options
+                options={skills}
+                removeOption={removeSkill}
+                bgColour="bg-[#e6ebff]"
+                textColour="text-[#4E73F8]"
+                styles="mt-4"
+            />
             <Button
                 action={updateSellerDetails}
                 completedText="Seller profile updated"
@@ -98,4 +137,4 @@ function SellerDetails({ setSellerProfilePopUp }: SellerDetailsProps) {
     );
 }
 
-export default SellerDetails;
+export default ChangeSellerDetails;

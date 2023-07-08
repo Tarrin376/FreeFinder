@@ -6,6 +6,8 @@ import OutsideClickHandler from "react-outside-click-handler";
 import axios from "axios";
 import NotificationIcon from "../assets/notification.png";
 import { UserContext } from "../providers/UserContext";
+import { UserStatus } from "../enums/UserStatus";
+import { useNavigate } from "react-router-dom";
 
 interface ProfileMenuProps {
     setSettingsPopUp: React.Dispatch<React.SetStateAction<boolean>>,
@@ -16,9 +18,10 @@ function ProfileMenu({ setSettingsPopUp, setSellerProfilePopUp }: ProfileMenuPro
     const [disabled, setDisabled] = useState<boolean>(false);
     const [navProfileDropdown, setNavProfileDropdown] = useState<boolean>(false);
     const userContext = useContext(UserContext);
+    const navigate = useNavigate();
 
     async function toggleStatus(): Promise<void> {
-        const toggledStatus: string = userContext.userData.status === 'ONLINE' ? 'OFFLINE' : 'ONLINE';
+        const toggledStatus: string = userContext.userData.status === UserStatus.ONLINE ? UserStatus.OFFLINE : UserStatus.ONLINE;
         setDisabled(true);
 
         try {
@@ -57,6 +60,11 @@ function ProfileMenu({ setSettingsPopUp, setSellerProfilePopUp }: ProfileMenuPro
         setSellerProfilePopUp(true);
     }
 
+    function viewProfile(): void {
+        navigate(`/sellers/${userContext.userData.username}`);
+        setNavProfileDropdown(false);
+    }
+
     return (
         <div className="flex gap-7 items-center">
             <div className="flex gap-3 items-center cursor-pointer">
@@ -85,15 +93,19 @@ function ProfileMenu({ setSettingsPopUp, setSellerProfilePopUp }: ProfileMenuPro
                             </p>
                         </div>
                         <div className="border-b border-light-gray flex flex-col">
+                            {userContext.userData.seller &&
+                            <p className="profile-menu-element" onClick={viewProfile}>
+                                View profile
+                            </p>}
                             <p className="profile-menu-element" onClick={openSettings}>
-                                Account Settings
+                                Account settings
                             </p>
                             {userContext.userData.seller && 
                             <p className="profile-menu-element" onClick={openSellerProfile}>
                                 Update seller profile
                             </p>}
                             <button className="profile-menu-element" onClick={toggleStatus} disabled={disabled}>
-                                Appear {userContext.userData.status === 'ONLINE' ? 'offline': 'online'}
+                                Appear {userContext.userData.status === UserStatus.ONLINE ? 'offline': 'online'}
                             </button>
                         </div>
                         <div className="flex flex-col">

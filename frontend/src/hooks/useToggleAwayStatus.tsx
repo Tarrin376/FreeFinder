@@ -2,6 +2,7 @@ import { useRef, useEffect, useCallback, useContext } from "react";
 import { UserContext } from "../providers/UserContext";
 import axios from "axios";
 import { IUser } from "../models/IUser";
+import { UserStatus } from "../enums/UserStatus";
 
 export function useToggleAwayStatus() {
     const userContext = useContext(UserContext);
@@ -10,10 +11,10 @@ export function useToggleAwayStatus() {
     const updateLastActive = useCallback((): void => {
         (async () => {
             try {
-                if (userContext.userData.status === "AWAY") {
+                if (userContext.userData.status === UserStatus.AWAY) {
                     const setToOnline = await axios.put<{ userData: IUser, message: string }>
                     (`/api/users/${userContext.userData.username}`, { 
-                        status: "ONLINE" 
+                        status: UserStatus.ONLINE 
                     });
                     
                     userContext.setUserData(setToOnline.data.userData);
@@ -33,10 +34,10 @@ export function useToggleAwayStatus() {
             (async () => {
                 try {
                     const now = Date.now();
-                    if ((now - lastActive.current) / 1000 >= 120 && userContext.userData.status === "ONLINE") {
+                    if ((now - lastActive.current) / 1000 >= 120 && userContext.userData.status === UserStatus.ONLINE) {
                         const setToAway = await axios.put<{ userData: IUser, message: string }>
                         (`/api/users/${userContext.userData.username}`, { 
-                            status: "AWAY" 
+                            status: UserStatus.AWAY 
                         });
 
                         userContext.setUserData(setToAway.data.userData);

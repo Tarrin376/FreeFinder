@@ -3,6 +3,7 @@ export interface ISeller {
     rating: number,
     sellerID: string,
     languages: string[],
+    skills: string[],
     sellerXP: number,
     summary: string,
     sellerLevel: {

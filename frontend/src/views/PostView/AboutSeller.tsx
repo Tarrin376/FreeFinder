@@ -1,36 +1,46 @@
 import ProfilePicAndStatus from "../../components/ProfilePicAndStatus";
-import { PostPage } from "../../types/PostPage";
-import LocationIcon from '../../assets/location.png';
-import UserIcon from '../../assets/user.png';
-import StarGrayIcon from "../../assets/star-gray.png";
 import Options from "../../components/Options";
 import { sellerLevelTextStyles } from "../../utils/sellerLevelTextStyles";
+import SellerSummaryInfo from "../../components/SellerSummaryInfo";
 
-function AboutSeller({ postData }: { postData: PostPage }) {
+interface AboutSellerProps {
+    description: string,
+    profilePicURL: string,
+    status: string,
+    username: string,
+    sellerLevel: string,
+    summary: string,
+    country: string,
+    memberDate: Date,
+    rating: number,
+    languages: string[],
+    skills: string[]
+}
+
+function AboutSeller(props: AboutSellerProps) {
     return (
-        <section className="bg-main-white border border-light-border-gray shadow-info-component 
-        rounded-[12px] p-6 h-fit w-full">
+        <section className="bg-main-white border border-light-border-gray shadow-info-component rounded-[12px] p-6 w-full">
             <div className="mb-4 flex gap-5">
                 <ProfilePicAndStatus 
-                    profilePicURL={postData.postedBy.user.profilePicURL} 
-                    profileStatus={postData.postedBy.user.status}
+                    profilePicURL={props.profilePicURL} 
+                    profileStatus={props.status}
                     statusStyles='before:hidden'
                     imgStyles="w-[75px] h-[75px]"
                 />
                 <div className="flex-grow flex justify-between">
                     <div>
                         <div className="flex items-center gap-2">
-                            <p>{postData.postedBy.user.username}</p>
+                            <p>{props.username}</p>
                             <p className="text-[14px] seller-level" 
-                            style={sellerLevelTextStyles[postData.postedBy.sellerLevel.name]}>
-                                {postData.postedBy.sellerLevel.name}
+                            style={sellerLevelTextStyles[props.sellerLevel]}>
+                                {props.sellerLevel}
                             </p>
                         </div>
                         <p className="text-side-text-gray text-[15px] mt-[2px]">
-                            {postData.postedBy.summary}
+                            {props.summary}
                         </p>
                         <p className="text-side-text-gray text-[15px]">
-                            {postData.postedBy.user.country}
+                            {props.country}
                         </p>
                     </div>
                     <svg
@@ -45,28 +55,29 @@ function AboutSeller({ postData }: { postData: PostPage }) {
                     </svg>
                 </div>
             </div>
-            {postData.postedBy.description !== "" && <p>{postData.postedBy.description}</p>}
-            <div className="flex gap-2 items-center mt-4">
-                <img src={LocationIcon} width="20px" height="20px" alt="location" />
-                <p className="text-side-text-gray">Lives in</p>
-                <p className="ml-auto">{postData.postedBy.user.country}</p>
-            </div>
-            <div className="flex gap-2 items-center mt-2">
-                <img src={UserIcon} width="20px" height="20px" alt="location" />
-                <p className="text-side-text-gray">Member since</p>
-                <p className="ml-auto">{new Date(postData.postedBy.user.memberDate).toLocaleDateString()}</p>
-            </div>
-            <div className="flex gap-2 items-center mt-2 mb-4">
-                <img src={StarGrayIcon} width="20px" height="20px" alt="location" />
-                <p className="text-side-text-gray">Seller rating</p>
-                <p className="ml-auto">{postData.postedBy.rating}</p>
-            </div>
-            <p>Seller speaks</p>
-            <Options 
-                options={postData.postedBy.languages} 
-                styles="mt-2" 
+            {props.description !== "" && <p>{props.description}</p>}
+            <SellerSummaryInfo 
+                styles="mt-4 mb-4"
+                country={props.country}
+                memberDate={props.memberDate}
+                rating={props.rating}
             />
-            <button className="red-btn mt-6">Report seller</button>
+            <p>{`${props.username} speaks`}</p>
+            <Options 
+                options={props.languages} 
+                styles="mt-2 mb-3"
+                bgColour="bg-highlight"
+            />
+            <p>{`${props.username}${props.username[props.username.length - 1] === 's' ? "'" : "'s"} skills`}</p>
+            <Options 
+                options={props.skills} 
+                styles="mt-2"
+                bgColour="bg-very-light-purple"
+                textColour="text-purple"
+            />
+            <button className="red-btn mt-6">
+                Report seller
+            </button>
         </section>
     );
 }

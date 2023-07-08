@@ -43,12 +43,7 @@ export async function findSeller(userID) {
 
 async function createSeller(id) {
     try {
-        const newSeller = await prisma.sellerLevel.findFirst({
-            where: {
-                xpRequired: 0
-            }
-        });
-
+        const newSeller = await prisma.sellerLevel.findFirst({ where: { xpRequired: 0 } });
         if (!newSeller) {
             throw new DBError("Newbie seller level does not exist.", 400);
         }
@@ -61,7 +56,14 @@ async function createSeller(id) {
                 summary: "",
                 sellerLevelID: newSeller.id
             },
-            ...sellerProperties,
+            select: {
+                ...sellerProperties.select,
+                _count: {
+                    select: {
+                        posts: true
+                    }
+                }
+            }
         });
 
         return seller;
@@ -92,7 +94,8 @@ export async function updateSellerDetailsHandler(req) {
             data: {
                 description: req.body.description,
                 languages: req.body.languages,
-                summary: req.body.summary
+                summary: req.body.summary,
+                skills: req.body.skills
             },
             ...sellerProperties,
         });
@@ -148,7 +151,7 @@ export async function getSellerDetailsHandler(username) {
                                     select: {
                                         profilePicURL: true,
                                         status: true,
-                                        username: true,
+                                        username: true
                                     }
                                 },
                                 rating: true,
@@ -160,7 +163,11 @@ export async function getSellerDetailsHandler(username) {
                             }
                         },
                         createdAt: true,
-                        numReviews: true,
+                        _count: {
+                            select: { 
+                                reviews: true
+                            }
+                        },
                         startingPrice: true,
                         title: true,
                         postID: true,
@@ -177,8 +184,13 @@ export async function getSellerDetailsHandler(username) {
                 },
                 description: true,
                 summary: true,
-                numReviews: true,
+                _count: {
+                    select: { 
+                        reviews: true
+                    }
+                },
                 languages: true,
+                skills: true,
                 sellerLevel: {
                     select: {
                         name: true
@@ -189,7 +201,8 @@ export async function getSellerDetailsHandler(username) {
                         profilePicURL: true,
                         status: true,
                         username: true,
-                        country: true
+                        country: true,
+                        memberDate: true
                     }
                 }
             }

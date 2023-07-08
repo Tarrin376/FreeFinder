@@ -36,10 +36,8 @@ async function uploadImage(postID, image, url, isThumbnail) {
 export async function createPostHandler(postData, startingPrice, userID) {
     try {
         const seller = await findSeller(userID);
-        console.log(seller._count, seller.sellerLevel.postLimit);
-        if (seller._count === seller.sellerLevel.postLimit) {
-            console.log("yo");
-            throw new DBError(`You have ${seller._count} posts listed on your account which is the maximum amount for your current experience level.`);
+        if (seller._count.posts === seller.sellerLevel.postLimit) {
+            throw new DBError(`You have ${seller._count.posts} posts listed on your account which is the maximum amount for your current experience level.`, 403);
         }
 
         const res = await prisma.post.create({
@@ -64,10 +62,11 @@ export async function createPostHandler(postData, startingPrice, userID) {
         if (postData.packages.length === 3) {
             await createPostPackage(postData.packages[2], res.postID, postData.packages[2].type);
         }
-        
+
+        const {_count, ...filtered} = seller;
         return {
             postID: res.postID,
-            seller: seller
+            seller: filtered
         };
     }
     catch (err) {
@@ -138,7 +137,7 @@ export async function createPostPackage(packageData, postID, type) {
                 features: packageData.features,
                 amount: packageData.amount,
                 type: type,
-                packageTitle: packageData.packageTitle,
+                title: packageData.title,
             }
         });
     }
@@ -177,8 +176,13 @@ export async function getPostHandler(postID) {
                         rating: true,
                         description: true,
                         summary: true,
-                        numReviews: true,
+                        _count: {
+                            select: { 
+                                reviews: true
+                            }
+                        },
                         languages: true,
+                        skills: true,
                         sellerLevel: {
                             select: {
                                 name: true,
@@ -195,7 +199,7 @@ export async function getPostHandler(postID) {
                         type: true,
                         features: true,
                         numOrders: true,
-                        packageTitle: true
+                        title: true
                     }
                 },
                 images: {
@@ -207,7 +211,6 @@ export async function getPostHandler(postID) {
                         isThumbnail: 'desc'
                     }
                 },
-                startingPrice: true,
                 title: true,
                 createdAt: true,
                 about: true,
@@ -320,7 +323,11 @@ async function queryPosts(req) {
                 }
             },
             createdAt: true,
-            numReviews: true,
+            _count: {
+                select: { 
+                    reviews: true
+                }
+            },
             startingPrice: true,
             title: true,
             postID: true,

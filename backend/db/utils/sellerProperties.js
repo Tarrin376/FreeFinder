@@ -4,6 +4,7 @@ export const sellerProperties = {
         rating: true,
         sellerID: true,
         languages: true,
+        skills: true,
         sellerXP: true,
         summary: true,
         sellerLevel: {

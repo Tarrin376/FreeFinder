@@ -6,7 +6,7 @@ import { IUserContext, UserContext } from '../providers/UserContext';
 import { Outlet } from 'react-router-dom';
 import ProfileMenu from '../components/ProfileMenu';
 import AccountSettings from '../views/AccountSettings/AccountSettings';
-import SellerDetails from '../components/SellerDetails';
+import ChangeSellerDetails from '../components/ChangeSellerDetails';
 import { useNavigate } from 'react-router-dom';
 import SearchSellers from '../components/SearchSellers';
 import { useOnlineStatus } from '../hooks/useOnlineStatus';
@@ -43,7 +43,7 @@ function Navbar() {
             {signUp && <SignUp setSignUp={setSignUp} setLogIn={setLogIn} setAccountCreated={setAccountCreated} />}
             {logIn && <LogIn setLogIn={setLogIn} setSignUp={setSignUp} />}
             {accountCreated && <AccountCreated setAccountCreated={setAccountCreated} />}
-            {sellerProfilePopUp && <SellerDetails setSellerProfilePopUp={setSellerProfilePopUp} />}
+            {sellerProfilePopUp && <ChangeSellerDetails setSellerProfilePopUp={setSellerProfilePopUp} />}
             <nav className="flex gap-8 items-center px-7 h-[90px] border-b border-b-very-light-gray bg-main-white">
                 <ul className="flex items-center gap-14 list-none">
                     <li className="text-main-blue text-[23px] cursor-pointer mr-8 font-normal" onClick={(e) => goToPage(e, `/`)}>FreeFinder</li>

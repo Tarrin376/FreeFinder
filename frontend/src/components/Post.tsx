@@ -131,7 +131,7 @@ function Post({ postInfo, username, canRemove, styles }: PostProps) {
                             </div>
                         </div>
                         <p className="text-side-text-gray text-[15px]">
-                            ({postInfo.numReviews} reviews)
+                            ({postInfo._count.reviews} reviews)
                         </p>
                     </div>
                 </div>

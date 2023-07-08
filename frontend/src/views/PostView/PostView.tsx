@@ -51,10 +51,9 @@ function PostView() {
 
     return (
         <div className="overflow-y-scroll h-[calc(100vh-90px)]">
-            <PageWrapper>
+            <PageWrapper styles="p-[38px] pt-[58px]" locationStack={["Posts", "Website design", postData.title]}>
                 <div className="flex gap-20">
                     <div className="flex-grow">
-                        <p className="text-main-blue mb-2 mt-12">Website design</p>
                         <h1 className="text-3xl mb-4">{postData.title}</h1>
                         <div className="flex gap-3 items-center mb-6">
                             <div className="relative">
@@ -76,7 +75,7 @@ function PostView() {
                                         {postData.postedBy.rating}
                                     </p>
                                     <p className="text-[15px] text-side-text-gray">
-                                        ({postData.postedBy.numReviews} reviews)
+                                        ({postData.postedBy._count.reviews} reviews)
                                     </p>
                                 </div>
                                 <p className="text-side-text-gray text-[15px]">
@@ -112,12 +111,24 @@ function PostView() {
                             <h2 className="text-2xl mb-3">About this service</h2>
                             {parse(postData.about)}
                         </section>
-                        <AboutSeller postData={postData} />
+                        <AboutSeller 
+                            description={postData.postedBy.description}
+                            profilePicURL={postData.postedBy.user.profilePicURL}
+                            status={postData.postedBy.user.status}
+                            username={postData.postedBy.user.username}
+                            sellerLevel={postData.postedBy.sellerLevel.name}
+                            summary={postData.postedBy.summary}
+                            country={postData.postedBy.user.country}
+                            memberDate={postData.postedBy.user.memberDate}
+                            rating={postData.postedBy.rating}
+                            languages={postData.postedBy.languages}
+                            skills={postData.postedBy.skills}
+                        />
                     </div>
                     <div>
                         <Packages packages={postData.packages} />
                         <button className="main-btn mt-[26px] shadow-pop-up">
-                            {`See Seller Reviews (${postData.postedBy.numReviews})`}
+                            {`See Seller Reviews (${postData.postedBy._count.reviews})`}
                         </button>
                     </div>
                 </div>

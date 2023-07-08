@@ -8,13 +8,17 @@ export type SellerProfile = {
     posts: IPost[],
     description: string,
     summary: string,
-    numReviews: number,
+    _count: {
+        reviews: number
+    },
     languages: string[],
+    skills: string[],
     sellerLevel: ISellerLevel,
     user: {
         profilePicURL: string,
         status: string,
         username: string,
-        country: string
+        country: string,
+        memberDate: Date
     }
 }

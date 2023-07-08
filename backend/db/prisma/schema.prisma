@@ -35,8 +35,8 @@ model Seller {
     posts         Post[]
     description   String
     summary       String
-    numReviews    Int         @default(0)
     languages     String[]    @default(["english"])
+    skills        String[]    @default([])
     sellerLevel   SellerLevel @relation(fields: [sellerLevelID], references: [id])
     sellerLevelID String
     sellerXP      Int         @default(0)
@@ -72,7 +72,6 @@ model Post {
     createdAt     DateTime    @default(now())
     title         String
     startingPrice Decimal     @db.Money
-    numReviews    Int         @default(0)
     reviews       Review[]
     packages      Package[]
     images        PostImage[] @relation("Images")
@@ -97,7 +96,7 @@ model Package {
     features     String[]
     amount       Decimal     @db.Money
     numOrders    Int         @default(0)
-    packageTitle String
+    title        String
 
     @@id([postID, type])
 }

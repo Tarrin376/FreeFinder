@@ -7,13 +7,15 @@ export type PostPage = {
     about: string,
     createdAt: Date,
     title: string,
-    startingPrice: string,
     postedBy: {
         rating: number,
         description: string,
         summary: string,
-        numReviews: number,
+        _count: {
+            reviews: number
+        },
         languages: string[],
+        skills: string[],
         user: {
             username: string,
             country: string,

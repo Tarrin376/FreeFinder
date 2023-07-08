@@ -1,4 +1,4 @@
-import { useState, useRef, useContext } from 'react';
+import { useState, useRef, useContext, useReducer } from 'react';
 import UploadPostFiles from "./UploadPostFiles";
 import PostDetails from "./PostDetails";
 import ChooseThumbnail from './ChooseThumbnail';
@@ -10,6 +10,8 @@ import { FailedUpload } from '../../types/FailedUploaded';
 import { ImageData } from '../../types/ImageData';
 import { ISeller } from '../../models/ISeller';
 import { UserContext } from '../../providers/UserContext';
+import { PackageTypes } from '../../enums/PackageTypes';
+import { Sections } from '../../enums/Sections';
 
 interface CreatePostProps {
     setPostService: React.Dispatch<React.SetStateAction<boolean>>,
@@ -23,13 +25,65 @@ export type PostData = {
     thumbnail: unknown
 }
 
-export enum Sections {
-    PostDetails,
-    UploadFiles,
-    ChooseThumbnail,
-    BasicPackage,
-    StandardPackage,
-    SuperiorPackage
+export type InitialState = {
+    basic: InitialPackageState,
+    standard: InitialPackageState,
+    superior: InitialPackageState
+}
+
+export type InitialPackageState = {
+    revisions: string,
+    features: string[],
+    deliveryTime: number,
+    amount: number,
+    description: string,
+    title: string
+}
+
+export type ReducerAction = { 
+    type: PackageTypes.BASIC | PackageTypes.STANDARD | PackageTypes.SUPERIOR,
+    payload: { 
+        revisions?: string,
+        features?: string[],
+        deliveryTime?: number,
+        amount?: number,
+        description?: string,
+        title?: string
+    }
+};
+
+const initialPkgState: InitialPackageState = {
+    revisions: "1",
+    features: [],
+    deliveryTime: 0,
+    amount: 0,
+    description: "",
+    title: "",
+}
+
+const initialState: InitialState = {
+    basic: {
+        ...initialPkgState
+    },
+    standard: {
+        ...initialPkgState
+    },
+    superior: {
+        ...initialPkgState
+    }
+}
+
+function reducer(state: InitialState, action: ReducerAction): InitialState {
+    switch (action.type) {
+        case PackageTypes.BASIC:
+            return { ...state, basic: { ...state.basic, ...action.payload } };
+        case PackageTypes.STANDARD:
+            return { ...state, standard: { ...state.standard, ...action.payload } };
+        case PackageTypes.SUPERIOR:
+            return { ...state, superior: { ...state.superior, ...action.payload } };
+        default:
+            throw new Error("Invalid action type given.");
+    }
 }
 
 function CreatePost({ setPostService, resetState }: CreatePostProps) {
@@ -41,80 +95,33 @@ function CreatePost({ setPostService, resetState }: CreatePostProps) {
     const [createdPost, setCreatedPost] = useState<boolean>(false);
     const postID = useRef<string>("");
     const userContext = useContext(UserContext);
-
-    // PostDetails states
     const [title, setTitle] = useState<string>("");
     const [about, setAbout] = useState<string>("");
+    
+    const [state, dispatch] = useReducer(reducer, initialState);
 
-    // BasicPackage states
-    const [basicRevisions, setBasicRevisions] = useState<string>("1");
-    const [basicFeatures, setBasicFeatures] = useState<string[]>([]);
-    const [basicDeliveryTime, setBasicDeliveryTime] = useState<number>(0);
-    const [basicAmount, setBasicAmount] = useState<number>(0);
-    const [basicDescription, setBasicDescription] = useState<string>("");
-    const [basicPackageTitle, setBasicPackageTitle] = useState<string>("");
-
-    // StandardPackage states
-    const [standardRevisions, setStandardRevisions] = useState<string>("1");
-    const [standardFeatures, setStandardFeatures] = useState<string[]>([]);
-    const [standardDeliveryTime, setStandardDeliveryTime] = useState<number>(0);
-    const [standardAmount, setStandardAmount] = useState<number>(0);
-    const [standardDescription, setStandardDescription] = useState<string>("");
-    const [standardPackageTitle, setStandardPackageTitle] = useState<string>("");
-
-    // SuperiorPackage states
-    const [superiorRevisions, setSuperiorRevisions] = useState<string>("1");
-    const [superiorFeatures, setSuperiorFeatures] = useState<string[]>([]);
-    const [superiorDeliveryTime, setSuperiorDeliveryTime] = useState<number>(0);
-    const [superiorAmount, setSuperiorAmount] = useState<number>(0);
-    const [superiorDescription, setSuperiorDescription] = useState<string>("");
-    const [superiorPackageTitle, setSuperiorPackageTitle] = useState<string>("");
+    function constructPackage(pkg: InitialPackageState, type: ReducerAction["type"]): IPackage {
+        return {
+            ...pkg,
+            numOrders: 0,
+            type: type,
+            features: pkg.features.filter((x) => x.trim() !== "").map((x) => x.trim()),
+        }
+    }
 
     function constructPost(): PostData {
         const post: PostData = { 
             about: about.trim(), 
             title: title.trim(),
             thumbnail: thumbnail?.image,
-            packages: [
-                {
-                    revisions: basicRevisions,
-                    features: basicFeatures.filter((x) => x.trim() !== "").map((x) => x.trim()),
-                    deliveryTime: basicDeliveryTime,
-                    description: basicDescription,
-                    amount: basicAmount,
-                    numOrders: 0,
-                    type: "BASIC",
-                    packageTitle: basicPackageTitle
-                }
-            ]
+            packages: [constructPackage(state.basic, PackageTypes.BASIC)]
         };
 
-        if (standardDeliveryTime > 0) {
-            post.packages.push({
-                revisions: standardRevisions,
-                features: standardFeatures.filter((x) => x.trim() !== "").map((x) => x.trim()),
-                deliveryTime: standardDeliveryTime,
-                description: standardDescription,
-                amount: standardAmount,
-                numOrders: 0,
-                type: "STANDARD",
-                packageTitle: standardPackageTitle
-            });
-        } else {
-            return post;
-        }
-
-        if (superiorDeliveryTime > 0) {
-            post.packages.push({
-                revisions: superiorRevisions,
-                features: superiorFeatures.filter((x) => x.trim() !== "").map((x) => x.trim()),
-                deliveryTime: superiorDeliveryTime,
-                description: superiorDescription,
-                amount: superiorAmount,
-                numOrders: 0,
-                type: "SUPERIOR",
-                packageTitle: superiorPackageTitle
-            });
+        if (state.standard.deliveryTime > 0) {
+            post.packages.push(constructPackage(state.standard, PackageTypes.STANDARD));
+            if (state.superior.deliveryTime > 0) {
+                post.packages.push(constructPackage(state.superior, PackageTypes.SUPERIOR));
+            }
         }
 
         return post;
@@ -207,68 +214,44 @@ function CreatePost({ setPostService, resetState }: CreatePostProps) {
             return (
                 <Package 
                     setSection={setSection} 
-                    setRevisions={setBasicRevisions} 
-                    setFeatures={setBasicFeatures}
-                    setDeliveryTime={setBasicDeliveryTime} 
-                    setDescription={setBasicDescription} 
                     setPostService={setPostService} 
-                    setAmount={setBasicAmount} 
-                    setPackageTitle={setBasicPackageTitle}
-                    features={basicFeatures} 
                     back={Sections.ChooseThumbnail} 
                     next={Sections.StandardPackage} 
-                    deliveryTime={basicDeliveryTime} 
                     title="Basic package"
-                    revisions={basicRevisions} 
-                    description={basicDescription}
-                    amount={basicAmount}
-                    packageTitle={basicPackageTitle}
+                    pkgState={state.basic}
+                    state={state}
+                    dispatch={dispatch}
+                    packageType={PackageTypes.BASIC}
                 />
             );
         case Sections.StandardPackage:
             return (
                 <Package 
                     setSection={setSection} 
-                    setRevisions={setStandardRevisions} 
-                    setFeatures={setStandardFeatures}
-                    setDeliveryTime={setStandardDeliveryTime} 
-                    setDescription={setStandardDescription} 
                     setPostService={setPostService} 
-                    setAmount={setStandardAmount} 
-                    setPackageTitle={setStandardPackageTitle}
-                    features={standardFeatures} 
                     back={Sections.BasicPackage} 
                     skip={Sections.PostDetails} 
                     next={Sections.SuperiorPackage} 
-                    deliveryTime={standardDeliveryTime} 
-                    revisions={standardRevisions} 
-                    description={standardDescription} 
                     title="Standard package"
-                    amount={standardAmount}
-                    packageTitle={standardPackageTitle}
+                    pkgState={state.standard}
+                    state={state}
+                    dispatch={dispatch}
+                    packageType={PackageTypes.STANDARD}
                 />
             );
         case Sections.SuperiorPackage:
             return (
                 <Package 
                     setSection={setSection} 
-                    setRevisions={setSuperiorRevisions} 
-                    setFeatures={setSuperiorFeatures}
-                    setDeliveryTime={setSuperiorDeliveryTime} 
-                    setDescription={setSuperiorDescription} 
                     setPostService={setPostService}
-                    setAmount={setSuperiorAmount} 
-                    setPackageTitle={setSuperiorPackageTitle}
-                    features={superiorFeatures} 
                     back={Sections.StandardPackage} 
                     skip={Sections.PostDetails} 
                     next={Sections.PostDetails} 
-                    deliveryTime={superiorDeliveryTime} 
-                    revisions={superiorRevisions} 
-                    description={superiorDescription} 
                     title="Superior package"
-                    amount={superiorAmount}
-                    packageTitle={superiorPackageTitle}
+                    pkgState={state.superior}
+                    state={state}
+                    dispatch={dispatch}
+                    packageType={PackageTypes.SUPERIOR}
                 />
             );
         default:

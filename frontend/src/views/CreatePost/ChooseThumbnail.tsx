@@ -1,5 +1,5 @@
 import PopUpWrapper from "../../wrappers/PopUpWrapper";
-import { Sections } from "./CreatePost";
+import { Sections } from "../../enums/Sections";
 import { ImageData } from "../../types/ImageData";
 
 interface ChooseThumbnailProps {

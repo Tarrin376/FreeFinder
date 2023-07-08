@@ -2,7 +2,7 @@ import PopUpWrapper from "../../wrappers/PopUpWrapper";
 import { useRef } from 'react';
 import DragAndDrop from "../../components/DragAndDrop";
 import Storage from '../../assets/storage.png';
-import { Sections } from "./CreatePost";
+import { Sections } from "../../enums/Sections";
 import ErrorMessage from "../../components/ErrorMessage";
 import { useState } from "react";
 import File from "../../components/File";

@@ -93,7 +93,11 @@ export async function querySavedPosts(req) {
                         }
                     },
                     createdAt: true,
-                    numReviews: true,
+                    _count: {
+                        select: { 
+                            reviews: true
+                        }
+                    },
                     startingPrice: true,
                     title: true,
                     postID: true,

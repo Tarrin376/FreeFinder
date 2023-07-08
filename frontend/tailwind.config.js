@@ -25,7 +25,9 @@ module.exports = {
             'light-green': '#36BF54',
             'light-border-gray': '#e2e2e2',
             'disabled-gray': '#E0E0E0',
-            'highlight': '#dcf8dc'
+            'highlight': '#dcf8dc',
+            'very-light-purple': '#e6ebff',
+            'purple': '#4E73F8'
         },
         dropShadow: {
             'search-bar': '0px 0px 1px #DDDDDD',

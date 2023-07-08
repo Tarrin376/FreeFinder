@@ -1,7 +1,7 @@
 import PopUpWrapper from "../../wrappers/PopUpWrapper";
 import ErrorMessage from "../../components/ErrorMessage";
 import { categories } from "../../utils/jobCategories";
-import { Sections } from "./CreatePost";
+import { Sections } from "../../enums/Sections";
 import { FailedUpload } from "../../types/FailedUploaded";
 import { useState } from "react";
 import File from "../../components/File";
