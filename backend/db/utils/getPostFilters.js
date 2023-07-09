@@ -15,11 +15,11 @@ export function getPostFilters(req) {
             user: {
                 country: req.body.location
             },
-            languages: req.body.languages.length > 0 ? {
+            languages: req.body.languages && req.body.languages.length > 0 ? {
                 hasSome: req.body.languages
             } : undefined,
             sellerLevel: {
-                name: req.body.sellerLevels.length > 0 ? {
+                name: req.body.sellerLevels && req.body.sellerLevels.length > 0 ? {
                     in: req.body.sellerLevels
                 } : undefined
             }

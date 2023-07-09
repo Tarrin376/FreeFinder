@@ -22,8 +22,8 @@ export async function getSellerDetails(req, res) {
 
 export async function getSellers(req, res) {
     try {
-        const sellers = await getSellersHandler(req.query.search, req.query.limit);
-        res.json({ sellers, message: "success" });
+        const result = await getSellersHandler(req.query.search, parseInt(req.body.limit), req.body.cursor);
+        res.json({ ...result, message: "success" });
     }
     catch (err) {
         res.status(err.code).json({ message: err.message });

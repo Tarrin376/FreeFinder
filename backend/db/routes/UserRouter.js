@@ -1,5 +1,6 @@
 import { Router } from 'express';
 import savedPostRouter from './SavedPostRouter.js';
+import savedSellerRouter from './SavedSellerRouter.js';
 import { cookieJwtAuth } from '../middleware/cookieJwtAuth.js';
 import 
 { 
@@ -17,7 +18,8 @@ import
 
 const userRouter = Router();
 
-userRouter.use('/:username/saved', savedPostRouter);
+userRouter.use('/:username/saved/posts', savedPostRouter);
+userRouter.use('/:username/saved/sellers', savedSellerRouter);
 userRouter.post('/:username/posts', cookieJwtAuth, getUserPosts);
 
 userRouter.param('username', (req, _, next, value) => {

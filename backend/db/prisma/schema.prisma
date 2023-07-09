@@ -11,35 +11,46 @@ datasource db {
 }
 
 model User {
-    userID        String      @id @default(uuid())
-    username      String      @unique
+    userID        String        @id @default(uuid())
+    username      String        @unique
     hash          String
     country       String
-    memberDate    DateTime    @default(now())
+    memberDate    DateTime      @default(now())
     status        UserStatus
-    profilePicURL String      @default("")
-    email         String      @unique
+    profilePicURL String        @default("")
+    email         String        @unique
     seller        Seller?
     savedPosts    SavedPost[]
+    savedSellers  SavedSeller[]
     reviews       Review[]
     orders        Order[]
 }
 
+model SavedSeller {
+    seller   Seller @relation(fields: [sellerID], references: [sellerID], onDelete: Cascade)
+    sellerID String
+    user     User   @relation(fields: [userID], references: [userID], onDelete: Cascade)
+    userID   String
+
+    @@id([userID, sellerID])
+}
+
 model Seller {
-    sellerID      String      @id @default(uuid())
-    user          User        @relation(fields: [userID], references: [userID], onDelete: Cascade)
-    userID        String      @unique
+    sellerID      String        @id @default(uuid())
+    user          User          @relation(fields: [userID], references: [userID], onDelete: Cascade)
+    userID        String        @unique
     rating        Float
     reviews       Review[]
     orders        Order[]
     posts         Post[]
     description   String
     summary       String
-    languages     String[]    @default(["english"])
-    skills        String[]    @default([])
-    sellerLevel   SellerLevel @relation(fields: [sellerLevelID], references: [id])
+    languages     String[]      @default(["english"])
+    skills        String[]      @default([])
+    sellerLevel   SellerLevel   @relation(fields: [sellerLevelID], references: [id])
     sellerLevelID String
-    sellerXP      Int         @default(0)
+    sellerXP      Int           @default(0)
+    savedSellers  SavedSeller[]
 }
 
 model SellerLevel {

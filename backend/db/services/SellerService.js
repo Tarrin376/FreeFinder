@@ -223,41 +223,9 @@ export async function getSellerDetailsHandler(username) {
     }
 }
 
-export async function getSellersHandler(search, limit) {
+export async function getSellersHandler(search, limit, cursor) {
     try {
-        const sellers = await prisma.seller.findMany({
-            take: limit ? parseInt(limit) : undefined,
-            where: {
-                user: {
-                    username: search ? {
-                        contains: search,
-                        mode: 'insensitive'
-                    } : undefined
-                }
-            },
-            select: {
-                user: {
-                    select: {
-                        username: true,
-                        profilePicURL: true,
-                        country: true,
-                        status: true,
-                    }
-                },
-                sellerLevel: {
-                    select: {
-                        name: true
-                    }
-                },
-                summary: true,
-            },
-            orderBy: {
-                reviews: {
-                    _count: 'desc'
-                }
-            }
-        });
-        
+        const sellers = await querySellers(search, limit, cursor);
         return sellers;
     }
     catch (err) {
@@ -267,4 +235,71 @@ export async function getSellersHandler(search, limit) {
             throw new DBError("Something went wrong when trying find sellers. Please try again.", 500);
         }
     }
+}
+
+async function querySellers(search, limit, cursor) {
+    const query = {
+        take: limit ? limit : undefined,
+        skip: cursor ? 1 : undefined,
+        cursor: cursor ? { sellerID: cursor } : undefined,
+        where: {
+            user: {
+                username: search ? {
+                    contains: search,
+                    mode: 'insensitive'
+                } : undefined
+            }
+        },
+        select: {
+            user: {
+                select: {
+                    username: true,
+                    profilePicURL: true,
+                    country: true,
+                    status: true,
+                }
+            },
+            sellerLevel: {
+                select: {
+                    name: true
+                }
+            },
+            summary: true,
+            sellerID: true
+        },
+        orderBy: {
+            sellerID: 'asc'
+        }
+    };
+
+    const [sellers, count] = await prisma.$transaction([
+        prisma.seller.findMany(query),
+        prisma.seller.count({
+            where: {
+                user: {
+                    username: search ? {
+                        contains: search,
+                        mode: 'insensitive'
+                    } : undefined
+                }
+            }
+        })
+    ]);
+
+    if (sellers.length === 0) {
+        return { 
+            next: [],
+            cursor: undefined, 
+            last: true,
+            count: count
+        };
+    }
+    
+    const minNum = Math.min(isNaN(limit) ? sellers.length - 1 : limit - 1, sellers.length - 1);
+    return {
+        next: sellers, 
+        cursor: sellers[minNum].sellerID, 
+        last: isNaN(limit) || minNum < limit - 1,
+        count: count
+    };
 }

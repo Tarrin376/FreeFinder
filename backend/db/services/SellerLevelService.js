@@ -17,7 +17,7 @@ export async function getSellerLevelsHandler() {
         return sellerLevels;
     }
     catch (err) {
-        throw new DBError("Something went wrong when trying retrieve all of the seller levels. Please try again.", 500);
+        throw new DBError("Something went wrong when trying retrieve the seller levels. Please try again.", 500);
     }
     finally {
         await prisma.$disconnect();
@@ -72,11 +72,7 @@ export async function updateSellerLevelHandler(req) {
 
 export async function deleteSellerLevelHandler(req) {
     try {
-        await prisma.sellerLevel.delete({
-            where: {
-                id: req.params.id
-            }
-        });
+        await prisma.sellerLevel.delete({ where: { id: req.params.id } });
     }
     catch (err) {
         throw new DBError("Something went wrong when trying to delete this seller level. Please try again.", 500);

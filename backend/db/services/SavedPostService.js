@@ -1,10 +1,8 @@
 import { prisma } from '../index.js';
 import { Prisma } from '@prisma/client';
-import { paginationLimit } from "../index.js";
 import { sortPosts } from '../utils/sortPosts.js';
 import { DBError } from "../customErrors/DBError.js";
 import { checkUser } from "../utils/checkUser.js";
-import { getPostsCount } from '../utils/getPostsCount.js';
 import { getPostFilters } from '../utils/getPostFilters.js';
 
 export async function savePostHandler(postID, userID, username) {
@@ -18,9 +16,7 @@ export async function savePostHandler(postID, userID, username) {
         });
     }
     catch (err) {
-        if (err instanceof DBError) {
-            throw err;
-        } else if (err instanceof Prisma.PrismaClientValidationError) {
+        if (err instanceof Prisma.PrismaClientValidationError) {
             throw new DBError("Missing required fields or fields provided are invalid.", 400);
         } else if (err instanceof Prisma.PrismaClientKnownRequestError && err.code === 'P2002') {
             throw new DBError("Post already saved.", 409);
@@ -39,9 +35,7 @@ export async function getSavedPostsHandler(req) {
         return await querySavedPosts(req);
     }
     catch (err) {
-        if (err instanceof DBError) {
-            throw err;
-        } else if (err instanceof Prisma.PrismaClientValidationError) {
+        if (err instanceof Prisma.PrismaClientValidationError) {
             throw new DBError("Missing required fields or fields provided are invalid.", 400);
         } else {
             throw new DBError("Something went wrong when trying to get your saved posts. Please try again.", 500);
@@ -52,9 +46,12 @@ export async function getSavedPostsHandler(req) {
     }
 }
 
-export async function querySavedPosts(req) {
+async function querySavedPosts(req) {
     const postFilters = getPostFilters(req);
-    const saved = await prisma.savedPost.findMany({
+    const limit = parseInt(req.body.limit);
+
+    const query = {
+        take: limit ? limit : undefined,
         skip: req.body.cursor ? 1 : undefined,
         cursor: req.body.cursor ? { 
             userID_postID: {
@@ -62,7 +59,6 @@ export async function querySavedPosts(req) {
                 postID: req.body.cursor
             }
         } : undefined,
-        take: paginationLimit,
         where: {
             userID: req.userData.userID,
             post: {
@@ -113,33 +109,36 @@ export async function querySavedPosts(req) {
                 }
             }
         }
-    });
+    };
 
-    const count = req.body.cursor ? 0 : await prisma.savedPost.count({
-        where: {
-            userID: req.userData.userID,
-            post: {
-                ...postFilters
+    const [saved, count] = await prisma.$transaction([
+        prisma.savedPost.findMany(query),
+        prisma.savedPost.count({
+            where: {
+                userID: req.userData.userID,
+                post: {
+                    ...postFilters
+                }
             }
-        }
-    });
+        })
+    ]);
 
     if (saved.length === 0) {
         return { 
-            posts: [], 
+            next: [], 
             cursor: undefined, 
             last: true,
             count: count
         };
     }
 
-    const minNum = Math.min(paginationLimit - 1, saved.length - 1);
+    const minNum = Math.min(isNaN(limit) ? saved.length - 1 : limit - 1, saved.length - 1);
     const posts = saved.map((cur) => cur.post);
 
     return { 
-        posts: posts, 
+        next: posts, 
         cursor: saved[minNum].post.postID,
-        last: minNum < paginationLimit - 1,
+        last: isNaN(limit) || minNum < limit - 1,
         count: count
     };
 }
@@ -157,9 +156,7 @@ export async function deleteSavedPostHandler(postID, userID, username) {
         });
     }
     catch (err) {
-        if (err instanceof DBError) {
-            throw err;
-        } else if (err instanceof Prisma.PrismaClientValidationError) {
+        if (err instanceof Prisma.PrismaClientValidationError) {
             throw new DBError("Missing required fields or fields provided are invalid.", 400);
         } else if (err instanceof Prisma.PrismaClientKnownRequestError && err.code === "P2025") {
             throw new DBError("Post not found.", 404);

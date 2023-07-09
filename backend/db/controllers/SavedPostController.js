@@ -1,19 +1,19 @@
 import { savePostHandler, getSavedPostsHandler, deleteSavedPostHandler } from "../services/SavedPostService.js";
 
-export async function savePost(req, res) {
+export async function getSavedPosts(req, res) {
     try {
-        await savePostHandler(req.params.postID, req.userData.userID, req.username);
-        res.status(201).json({ message: "success" });
+        const savedPosts = await getSavedPostsHandler(req);
+        res.json({ ...savedPosts, message: "success" });
     }
     catch (err) {
         res.status(err.code).json({ message: err.message });
     }
 }
 
-export async function getSavedPosts(req, res) {
+export async function savePost(req, res) {
     try {
-        const saved = await getSavedPostsHandler(req);
-        res.json({ ...saved, message: "success" });
+        await savePostHandler(req.params.postID, req.userData.userID, req.username);
+        res.status(201).json({ message: "success" });
     }
     catch (err) {
         res.status(err.code).json({ message: err.message });

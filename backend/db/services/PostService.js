@@ -5,9 +5,7 @@ import { deleteCloudinaryResource } from '../utils/deleteCloudinaryResource.js';
 import { cloudinary } from '../index.js';
 import { prisma } from '../index.js';
 import { v4 as uuidv4 } from 'uuid';
-import { paginationLimit } from '../index.js';
 import { sortPosts } from '../utils/sortPosts.js';
-import { getPostsCount } from '../utils/getPostsCount.js';
 import { getPostFilters } from '../utils/getPostFilters.js';
 
 async function uploadImage(postID, image, url, isThumbnail) {
@@ -37,7 +35,7 @@ export async function createPostHandler(postData, startingPrice, userID) {
     try {
         const seller = await findSeller(userID);
         if (seller._count.posts === seller.sellerLevel.postLimit) {
-            throw new DBError(`You have ${seller._count.posts} posts listed on your account which is the maximum amount for your current experience level.`, 403);
+            throw new DBError(`You have reached the maximum limit of ${seller._count.posts} posts due to your experience level.`, 403);
         }
 
         const res = await prisma.post.create({
@@ -52,9 +50,7 @@ export async function createPostHandler(postData, startingPrice, userID) {
             }
         });
 
-        await uploadImage(res.postID, postData.thumbnail, `FreeFinder/PostImages/${userID}/${res.postID}/${uuidv4()}`, true);
         await createPostPackage(postData.packages[0], res.postID, postData.packages[0].type);
-
         if (postData.packages.length >= 2) {
             await createPostPackage(postData.packages[1], res.postID, postData.packages[1].type);
         }
@@ -63,7 +59,9 @@ export async function createPostHandler(postData, startingPrice, userID) {
             await createPostPackage(postData.packages[2], res.postID, postData.packages[2].type);
         }
 
+        await uploadImage(res.postID, postData.thumbnail, `FreeFinder/PostImages/${userID}/${res.postID}/${uuidv4()}`, true);
         const {_count, ...filtered} = seller;
+        
         return {
             postID: res.postID,
             seller: filtered
@@ -142,9 +140,7 @@ export async function createPostPackage(packageData, postID, type) {
         });
     }
     catch (err) {
-        if (err instanceof DBError) {
-            throw err;
-        }  else if (err instanceof Prisma.PrismaClientValidationError) {
+        if (err instanceof Prisma.PrismaClientValidationError) {
             throw new DBError("Missing required fields or fields provided are invalid.", 400);
         } else {
             throw new DBError("Something went wrong when trying to create this package. Please try again.", 500);
@@ -222,9 +218,7 @@ export async function getPostHandler(postID) {
         return postData;
     }
     catch (err) {
-        if (err instanceof DBError) {
-            throw err;
-        } else if (err instanceof Prisma.PrismaClientValidationError) {
+        if (err instanceof Prisma.PrismaClientValidationError) {
             throw new DBError("Missing required fields or fields provided are invalid.", 400);
         } else {
             throw new DBError("Something went wrong when trying to get this post. Please try again.", 500);
@@ -259,8 +253,8 @@ export async function deletePostHandler(postID, userID) {
             throw new DBError("You do not have authorization to delete this post.", 403);
         } 
         
-        await deleteCloudinaryResource(`FreeFinder/PostImages/${userID}/${postID}`, "folder");
         await prisma.post.delete({ where: { postID: postID } });
+        await deleteCloudinaryResource(`FreeFinder/PostImages/${userID}/${postID}`, "folder");
     }
     catch (err) {
         if (err instanceof DBError) {
@@ -283,9 +277,7 @@ export async function getPostsHandler(req) {
         return await queryPosts(req);
     }
     catch (err) {
-        if (err instanceof DBError) {
-            throw err;
-        } else if (err instanceof Prisma.PrismaClientValidationError) {
+        if (err instanceof Prisma.PrismaClientValidationError) {
             throw new DBError("Missing required fields or fields provided are invalid.", 400);
         } else {
             throw new DBError("Something went wrong when trying to get more posts. Please try again.", 500);
@@ -298,10 +290,12 @@ export async function getPostsHandler(req) {
 
 async function queryPosts(req) {
     const postFilters = getPostFilters(req);
-    const posts = await prisma.post.findMany({
+    const limit = parseInt(req.body.limit);
+
+    const query = {
+        take: limit ? limit : undefined,
         skip: req.body.cursor ? 1 : undefined,
         cursor: req.body.cursor ? { postID: req.body.cursor } : undefined,
-        take: paginationLimit,
         where: postFilters,
         orderBy: sortPosts[req.body.sort],
         select: {
@@ -341,23 +335,27 @@ async function queryPosts(req) {
                 }
             }
         }
-    });
+    };
 
-    const count = req.body.cursor ? 0 : await getPostsCount(postFilters);
+    const [posts, count] = await prisma.$transaction([
+        prisma.post.findMany(query),
+        prisma.post.count({ where: { ...postFilters } })
+    ]);
+
     if (posts.length === 0) {
         return { 
-            posts: posts, 
+            next: posts, 
             cursor: undefined, 
             last: true,
             count: count
         };
     }
 
-    const minNum = Math.min(paginationLimit - 1, posts.length - 1);
+    const minNum = Math.min(isNaN(limit) ? posts.length - 1 : limit - 1, posts.length - 1);
     return { 
-        posts: posts, 
+        next: posts, 
         cursor: posts[minNum].postID,
-        last: minNum < paginationLimit - 1,
+        last: isNaN(limit) || minNum < limit - 1,
         count: count
     };
 }

@@ -2,33 +2,16 @@ import { Prisma } from '@prisma/client';
 import bcrypt from 'bcrypt';
 import { DBError } from '../customErrors/DBError.js';
 import { checkUser } from '../utils/checkUser.js';
-import { paginationLimit } from "../index.js";
 import { sortPosts } from '../utils/sortPosts.js';
 import { deleteCloudinaryResource } from '../utils/deleteCloudinaryResource.js';
 import { cloudinary } from '../index.js';
 import { prisma } from '../index.js';
 import { getPostFilters } from '../utils/getPostFilters.js';
-import { getPostsCount } from '../utils/getPostsCount.js';
 import { sellerProperties } from '../utils/sellerProperties.js';
 
 export async function updateProfilePictureHandler(req) {
     try {
         await checkUser(req.userData.userID, req.username);
-
-        const result = await new Promise(async (resolve, reject) => {
-            const upload = cloudinary.uploader.upload(req.body.profilePic, { 
-                public_id: `FreeFinder/ProfilePictures/${req.userData.userID}` 
-            }, (err, result) => {
-                if (err) {
-                    reject(new DBError(err.message, err.http_code));
-                } else {
-                    resolve(result);
-                }
-            });
-
-            const success = await upload.then((data) => data);
-            return success;
-        });
         
         const updated = await prisma.user.update({
             where: { userID: req.userData.userID },
@@ -45,6 +28,21 @@ export async function updateProfilePictureHandler(req) {
                 userID: true,
                 memberDate: true
             }
+        });
+
+        const result = await new Promise(async (resolve, reject) => {
+            const upload = cloudinary.uploader.upload(req.body.profilePic, { 
+                public_id: `FreeFinder/ProfilePictures/${req.userData.userID}` 
+            }, (err, result) => {
+                if (err) {
+                    reject(new DBError(err.message, err.http_code));
+                } else {
+                    resolve(result);
+                }
+            });
+
+            const success = await upload.then((data) => data);
+            return success;
         });
 
         return updated;
@@ -104,9 +102,7 @@ export async function registerUserHandler(userData) {
         });
     }
     catch (err) {
-        if (err instanceof DBError) {
-            throw err;
-        } else if (err instanceof Prisma.PrismaClientValidationError) {
+        if (err instanceof Prisma.PrismaClientValidationError) {
             throw new DBError("Missing required fields or fields provided are invalid.", 400);
         } else if (err instanceof Prisma.PrismaClientKnownRequestError && err.code === 'P2002') {
             throw new DBError("This username or email address is already taken.", 409)
@@ -186,7 +182,6 @@ export async function updateUserHandler(req) {
         return updated;
     }
     catch (err) {
-        print(err);
         if (err instanceof DBError) {
             throw err;
         } else if (err instanceof Prisma.PrismaClientValidationError) {
@@ -205,9 +200,9 @@ export async function updateUserHandler(req) {
 export async function deleteUserHandler(req) {
     try {
         await checkUser(req.userData.userID, req.username);
+        await prisma.user.delete({ where: { userID: req.userData.userID } });
         await deleteCloudinaryResource(`FreeFinder/ProfilePictures/${req.userData.userID}`, "file");
         await deleteCloudinaryResource(`FreeFinder/PostImages/${req.userData.userID}`, "folder");
-        await prisma.user.delete({ where: { userID: req.userData.userID } });
     }
     catch (err) {
         if (err instanceof DBError) {
@@ -244,12 +239,14 @@ export async function getUserPostsHandler(req) {
     }
 }
 
-export async function queryUserPosts(req) {
+async function queryUserPosts(req) {
     const postFilters = getPostFilters(req);
-    const posts = await prisma.post.findMany({
+    const limit = parseInt(req.body.limit);
+
+    const query = {
         skip: req.body.cursor ? 1 : undefined,
+        take: limit ? limit : undefined,
         cursor: req.body.cursor ? { postID: req.body.cursor } : undefined,
-        take: paginationLimit,
         orderBy: sortPosts[req.body.sort],
         where: {
             ...postFilters,
@@ -295,30 +292,35 @@ export async function queryUserPosts(req) {
                 }
             }
         }
-    });
+    };
 
-    const count = req.body.cursor ? 0 : await getPostsCount({
-        ...postFilters,
-        postedBy: {
-            ...postFilters.postedBy,
-            userID: req.userData.userID
-        },
-    });
+    const [posts, count] = await prisma.$transaction([
+        prisma.post.findMany(query),
+        prisma.post.count({ 
+            where: { 
+                ...postFilters,
+                postedBy: {
+                    ...postFilters.postedBy,
+                    userID: req.userData.userID
+                }
+            }
+        })
+    ]);
 
     if (posts.length === 0) {
         return { 
-            posts: [],
+            next: [],
             cursor: undefined, 
             last: true,
             count: count
         };
     }
     
-    const minNum = Math.min(paginationLimit - 1, posts.length - 1);
+    const minNum = Math.min(isNaN(limit) ? posts.length - 1 : limit - 1, posts.length - 1);
     return { 
-        posts: posts, 
+        next: posts, 
         cursor: posts[minNum].postID, 
-        last: minNum < paginationLimit - 1,
+        last: isNaN(limit) || minNum < limit - 1,
         count: count 
     };
 }
