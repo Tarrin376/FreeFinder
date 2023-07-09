@@ -1,9 +1,9 @@
-import { PaginatePosts } from "./PaginatePosts";
+import { PaginateData } from "./PaginateData";
 import { IPost } from "../models/IPost";
 
 export type FilterPosts = {
     cursor: React.MutableRefObject<string | undefined>,
-    posts: PaginatePosts<IPost> | undefined,
+    posts: PaginateData<IPost> | undefined,
     endpoint: string,
     page: { value: number },
     search: string | undefined,

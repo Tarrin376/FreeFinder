@@ -87,23 +87,22 @@ function ProfilePicAndStatus(props: ProfilePicAndStatusProps) {
     }
 
     return (
-        <div className={props.loading || props.showEdit ? '' : 
-        `${props.profileStatus === UserStatus.ONLINE ? 'before:bg-green-500' : props.profileStatus === 'AWAY' ? 'before:bg-orange-400' :
-        'before:bg-side-text-gray'} before:w-[18px] before:h-[18px] before:absolute before:top-[33px] before:left-[0px] 
-        before:border-[3px] before:border-main-white before:content[''] before:rounded-full ${props.statusStyles}`}
+        <div className={props.loading || props.showEdit ? '' : `${props.profileStatus === UserStatus.ONLINE ? 'before:bg-green-500' : 
+        props.profileStatus === 'AWAY' ? 'before:bg-orange-400' : 'before:bg-side-text-gray'} 
+        before:w-[18px] before:h-[18px] before:absolute before:top-[33px] before:left-[0px] 
+        before:border-[3px] before:border-main-white before:content[''] 
+        before:rounded-full ${props.statusStyles}`}
         onClick={handleAction}>
-            {props.loading ? 
-            <div className={`w-12 h-12 rounded-full loading ${props.imgStyles}`}>
-            </div> : 
+            {props.loading ? <div className={`w-12 h-12 rounded-full loading ${props.imgStyles}`}></div> : 
             <img 
                 src={props.profilePicURL === "" ? BlankProfile : props.profilePicURL} alt="" 
                 className={`w-12 h-12 rounded-full object-cover ${props.imgStyles} border border-b-nav-search-gray`} 
             />}
             {props.showEdit && !props.loading &&
                 <>
-                    <button className="flex gap-1 items-center absolute top-[62px] right-0 bg-main-white hover:bg-main-white-hover border
-                     border-light-gray btn-primary p-[4px] px-2 h-fit cursor-pointer rounded-[6px]"
-                    onClick={() => setProfileDropdown(true)}>
+                    <button className="flex gap-1 items-center absolute top-[62px] right-0 bg-main-white 
+                    hover:bg-main-white-hover borderborder-light-gray btn-primary p-[4px] px-2 h-fit 
+                    cursor-pointer rounded-[6px]" onClick={() => setProfileDropdown(true)}>
                         <img src={EditIcon} alt="edit" className="w-4 h-4" />
                         <p className="text-main-black text-xs">Edit</p>
                     </button>
@@ -119,7 +118,12 @@ function ProfilePicAndStatus(props: ProfilePicAndStatusProps) {
                             profile-menu-element pt-[6px] pb-[6px] border-t border-t-light-gray" onClick={removePhoto}>
                                 Remove
                             </p>
-                            <input type='file' ref={inputFileRef} className="hidden" onChange={uploadPhoto} />
+                            <input 
+                                type='file' 
+                                ref={inputFileRef} 
+                                className="hidden"
+                                onChange={uploadPhoto} 
+                            />
                         </div>
                     </OutsideClickHandler>}
                 </>}

@@ -7,10 +7,9 @@ import NoResultsFound from './NoResultsFound';
 import { useNavigateErrorPage } from '../hooks/useNavigateErrorPage';
 import { FilterPostsContext } from '../providers/FilterPostsProvider';
 import PageWrapper from '../wrappers/PageWrapper';
-import PostsScrollInfo from './PostsScrollInfo';
+import PaginationScrollInfo from './PaginationScrollInfo';
 import { UserContext } from '../providers/UserContext';
-
-const paginationLimit = 20;
+import { limit } from '../hooks/usePaginateData';
 
 interface PostsProps {
     canRemove?: {
@@ -38,16 +37,12 @@ function Posts({ canRemove, noResultsFoundTitle }: PostsProps) {
                 Finding services...
             </h1> :
             <h1 className="text-[20px] mb-6">
-                {`${filterContext.posts.count} ${filterContext.posts.count === 1 ? "service" : "services"} found`}
-                {filterContext.search && 
-                <span className="text-[20px]">
-                    {` for `}
-                    <span className="font-bold text-[20px]">{filterContext.search}</span>
-                </span>}
+                {`${filterContext.posts.loading ? "Loading results for" : `${filterContext.posts.count}
+                ${filterContext.posts.count === 1 ? " result" : " results"} found`}${filterContext.search ? ` for '${filterContext.search}'` : ""}`}
             </h1>}
-            {(filterContext.posts.loading || filterContext.posts.allPosts.length > 0) && 
+            {(filterContext.posts.loading || filterContext.posts.data.length > 0) && 
             <PostsWrapper>
-                {filterContext.posts.allPosts.map((post: IPost) => {
+                {filterContext.posts.data.map((post: IPost) => {
                     return (
                         <Post 
                             postInfo={post} 
@@ -57,10 +52,14 @@ function Posts({ canRemove, noResultsFoundTitle }: PostsProps) {
                         />
                     );
                 })}
-                {filterContext.posts.loading && new Array(paginationLimit).fill(true).map((_, index) => <PostSkeleton key={index} />)}
-                <PostsScrollInfo posts={filterContext.posts} page={filterContext.page.value} />
+                {filterContext.posts.loading && new Array(limit).fill(true).map((_, index) => <PostSkeleton key={index} />)}
+                <PaginationScrollInfo 
+                    data={filterContext.posts} 
+                    page={filterContext.page.value}
+                    styles="mt-7 mb-7"
+                />
             </PostsWrapper>}
-            {!filterContext.posts.loading && filterContext.posts.allPosts.length === 0 &&
+            {!filterContext.posts.loading && filterContext.posts.data.length === 0 &&
             <NoResultsFound 
                 title={noResultsFoundTitle}
                 message="If you are searching for a post, please check your filters and try again."

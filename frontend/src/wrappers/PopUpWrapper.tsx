@@ -4,7 +4,7 @@ interface PopUpWrapperProps {
     setIsOpen: React.Dispatch<React.SetStateAction<boolean>>,
     title: string,
     children?: React.ReactNode,
-    styles?: string
+    styles?: string,
 }
 
 function PopUpWrapper({ children, setIsOpen, title, styles } : PopUpWrapperProps) {

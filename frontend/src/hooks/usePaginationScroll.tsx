@@ -2,14 +2,19 @@ import { useEffect } from "react";
 
 export const MOD = 5;
 
-export function useScrollEvent(pageRef: React.RefObject<HTMLDivElement>, loading: boolean, reachedBottom: boolean, 
-    goToNextPage: () => void, page: number) {
+export function usePaginationScroll(pageRef: React.RefObject<HTMLDivElement>, loading: boolean, 
+    reachedBottom: boolean, goToNextPage: () => void, page: number) {
 
     function loadMoreContent(): void {
-        let documentHeight = document.body.scrollHeight;
-        let currentScroll = window.scrollY + window.innerHeight;
+        if (!pageRef.current) {
+            return;
+        }
 
-        if (currentScroll + 200 >= documentHeight && !reachedBottom && !loading && page % MOD !== 0) {
+        let scrollTop = pageRef.current.scrollTop;
+        let scrollHeight = pageRef.current.scrollHeight;
+        let offsetHeight = pageRef.current.offsetHeight;
+
+        if (scrollHeight - offsetHeight <= scrollTop && !reachedBottom && !loading && page % MOD !== 0) {
             goToNextPage();
         }
     }

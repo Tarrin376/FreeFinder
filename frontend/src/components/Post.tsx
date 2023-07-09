@@ -40,7 +40,7 @@ function Post({ postInfo, username, canRemove, styles }: PostProps) {
             }
             
             setSaved(true);
-            await axios.post<{ message: string }>(`/api/users/${username}/saved/${postInfo.postID}`);
+            await axios.post<{ message: string }>(`/api/users/${username}/saved/posts/${postInfo.postID}`);
             actionSuccessful(setSuccessMessage, "Saved post", "");
         }
         catch (err: any) {
@@ -56,7 +56,7 @@ function Post({ postInfo, username, canRemove, styles }: PostProps) {
         if (!canRemove || canRemove.deletingPost) {
             return;
         }
-
+        
         try {
             canRemove.setDeletingPost(true);
             await axios.delete<{ message: string }>(`${canRemove.removeURL}/${postInfo.postID}`);

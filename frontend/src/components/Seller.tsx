@@ -11,7 +11,9 @@ interface SellerProps {
     searchQuery: string,
     sellerLevel: string,
     summary: string,
-    country: string
+    country: string,
+    imgStyles?: string,
+    statusStyles?: string
 }
 
 function Seller(props: SellerProps) {
@@ -22,11 +24,11 @@ function Seller(props: SellerProps) {
                 <ProfilePicAndStatus
                     profilePicURL={props.profilePicURL}
                     profileStatus={props.status}
-                    statusStyles="before:left-[35px] before:top-[37px]"
-                    imgStyles="w-[53px] h-[53px]"
+                    statusStyles={props.statusStyles}
+                    imgStyles={props.imgStyles}
                 />
             </div>
-            <div>
+            <div className="flex-grow overflow-hidden">
                 <div className="flex items-center gap-2">
                     <HighlightedSubstring
                         word={props.username}
@@ -40,7 +42,7 @@ function Seller(props: SellerProps) {
                     </p>
                 </div>
                 <p className="text-[14px] text-side-text-gray 
-                whitespace-nowrap text-ellipsis overflow-hidden w-[300px] mt-[2px]">
+                whitespace-nowrap text-ellipsis overflow-hidden mt-[2px]">
                     {props.summary}
                 </p>
                 <p className="text-[14px] text-side-text-gray">

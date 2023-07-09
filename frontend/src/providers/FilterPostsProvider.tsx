@@ -2,7 +2,7 @@ import SearchIcon from '../assets/search.png';
 import Price from '../components/Price';
 import { useRef, createContext, useState, useContext } from 'react';
 import { MAX_PRICE, MAX_DELIVERY_DAYS } from '../views/CreatePost/Package';
-import { usePaginatePosts } from '../hooks/usePaginatePosts';
+import { usePaginateData } from '../hooks/usePaginateData';
 import { IPost } from '../models/IPost';
 import { sortPosts } from '../utils/sortPosts';
 import { useLocation } from 'react-router-dom';
@@ -26,6 +26,7 @@ interface FilterPostsContextProps {
 
 interface SellerLevelsProps {
     setAllSellerLevels: React.Dispatch<React.SetStateAction<string[]>>,
+    allSellerLevels: string[],
     disabled: boolean,
     searchHandler: () => void
 }
@@ -46,27 +47,40 @@ interface MainFiltersBarProps {
     searchHandler: () => void
 }
 
+type PostArgs = {
+    search: string | undefined,
+    sort: string,
+    min: number,
+    max: number,
+    location: string | undefined,
+    languages: string[],
+    deliveryTime: number,
+    sellerLevels: string[],
+}
+
 export const FilterPostsContext = createContext<FilterPosts | undefined>(undefined);
 
 function FilterPostsProvider({ children, urlPrefix }: FilterPostsContextProps) {
-    const cursor = useRef<string>("");
-    const min = useRef<number>(0);
-    const max = useRef<number>(MAX_PRICE);
-    const sort = useRef<string>("most recent");
-    const deliveryTime = useRef<number>(MAX_DELIVERY_DAYS);
+    const postFilters = JSON.parse(sessionStorage.getItem("post_filters") ?? "{}");
+
+    const cursor = useRef<string>();
+    const min = useRef<number>(postFilters.min ?? 0);
+    const max = useRef<number>(postFilters.max ?? MAX_PRICE);
+    const sort = useRef<string>(postFilters.sort ?? "most recent");
+    const deliveryTime = useRef<number>(postFilters.deliveryTime ?? MAX_DELIVERY_DAYS);
     const searchRef = useRef<HTMLInputElement>(null);
     const countryRef = useRef<HTMLSelectElement>(null);
     const pageRef = useRef<HTMLDivElement>(null);
 
     const [page, setPage] = useState<{ value: number }>({ value: 1 });
     const [postService, setPostService] = useState<boolean>(false);
-    const [selectedLanguages, setSelectedLanguages] = useState<string[]>([]);
-    const [allSellerLevels, setAllSellerLevels] = useState<string[]>([]);
+    const [selectedLanguages, setSelectedLanguages] = useState<string[]>(postFilters.languages ?? []);
+    const [allSellerLevels, setAllSellerLevels] = useState<string[]>(postFilters.sellerLevels ?? []);
     const userContext = useContext(UserContext);
 
     const location = useLocation();
 
-    const posts = usePaginatePosts<IPost>(
+    const posts = usePaginateData<PostArgs, IPost>(
         pageRef, 
         cursor,
         `/api${urlPrefix}${location.pathname}`,
@@ -80,21 +94,29 @@ function FilterPostsProvider({ children, urlPrefix }: FilterPostsContextProps) {
             location: countryRef.current?.value === "Any country" ? undefined : countryRef.current?.value,
             languages: selectedLanguages,
             deliveryTime: deliveryTime.current,
-            sellerLevels: allSellerLevels
+            sellerLevels: allSellerLevels,
         }
     );
-
-    const nextLevelXP = userContext.userData.seller ? userContext.userData.seller.sellerLevel.nextLevel ? 
-    userContext.userData.seller.sellerLevel.nextLevel.xpRequired : userContext.userData.seller.sellerXP : 0;
-
-    const nextLevel = userContext.userData.seller ? userContext.userData.seller.sellerLevel.nextLevel ? 
-    userContext.userData.seller.sellerLevel.nextLevel.name : userContext.userData.seller.sellerLevel.name : "";
+    
+    const nextLevelXP = userContext.userData.seller?.sellerLevel.nextLevel?.xpRequired ?? userContext.userData.seller?.sellerXP ?? 0;
+    const nextLevel = userContext.userData.seller?.sellerLevel.nextLevel?.name ?? "";
 
     function openPostService(): void {
         setPostService(true);
     }
 
     function searchHandler(): void {
+        sessionStorage.setItem("post_filters", JSON.stringify({
+            search: searchRef.current?.value,
+            sort: sortPosts[sort.current],
+            min: min.current,
+            max: max.current,
+            location: countryRef.current?.value === "Any country" ? undefined : countryRef.current?.value,
+            languages: selectedLanguages,
+            deliveryTime: deliveryTime.current,
+            sellerLevels: allSellerLevels,
+        }));
+
         posts.resetState();
     }
 
@@ -163,6 +185,7 @@ function FilterPostsProvider({ children, urlPrefix }: FilterPostsContextProps) {
                         />
                         <SellerLevels 
                             setAllSellerLevels={setAllSellerLevels} 
+                            allSellerLevels={allSellerLevels}
                             disabled={posts.loading} 
                             searchHandler={searchHandler}
                         />
@@ -198,7 +221,7 @@ function FilterPostsProvider({ children, urlPrefix }: FilterPostsContextProps) {
     )
 }
 
-function SellerLevels({ setAllSellerLevels, disabled, searchHandler }: SellerLevelsProps) {
+function SellerLevels({ setAllSellerLevels, allSellerLevels, disabled, searchHandler }: SellerLevelsProps) {
     const [applyChangesBtn, setApplyChangesBtn] = useState<boolean>(false);
 
     function updateSellerLevels(sellerLevel: string): void {
@@ -226,6 +249,7 @@ function SellerLevels({ setAllSellerLevels, disabled, searchHandler }: SellerLev
                                 name="seller-level" 
                                 className="w-[15px] h-[15px] mt-[1px]" 
                                 id={sellerLevel}
+                                defaultChecked={allSellerLevels.includes(sellerLevel)}
                                 onClick={() => updateSellerLevels(sellerLevel)}
                             />
                             <label htmlFor={sellerLevel} className="text-[15px] seller-level" style={sellerLevelTextStyles[sellerLevel]}>

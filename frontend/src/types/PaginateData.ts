@@ -1,5 +1,5 @@
-export type PaginatePosts<T> = {
-    allPosts: T[],
+export type PaginateData<T> = {
+    data: T[],
     errorMessage: string,
     loading: boolean,
     reachedBottom: boolean,

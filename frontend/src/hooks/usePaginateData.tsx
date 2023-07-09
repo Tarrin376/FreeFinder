@@ -1,36 +1,28 @@
 import { useEffect, useState, useRef } from 'react';
-import { useScrollEvent } from './useScrollEvent';
+import { usePaginationScroll } from './usePaginationScroll';
 import axios, { AxiosError } from "axios";
 import { getAPIErrorMessage } from '../utils/getAPIErrorMessage';
-import { PaginatePosts } from '../types/PaginatePosts';
+import { PaginateData } from '../types/PaginateData';
+import { PaginationResponse } from '../types/PaginateResponse';
 
-export function usePaginatePosts<T>(
-    pageRef: React.RefObject<HTMLDivElement>, 
-    cursor: React.MutableRefObject<string | undefined>,
-    url: string,
-    page: { value: number },
-    setPage: React.Dispatch<React.SetStateAction<{ value: number }>>,
-    data: {
-        search: string | undefined,
-        sort: string,
-        min: number,
-        max: number,
-        location: string | undefined,
-        languages: string[],
-        deliveryTime: number,
-        sellerLevels: string[]
-    })
-: PaginatePosts<T> {
+export const limit = 20;
+
+export function usePaginateData<T1, T2>(pageRef: React.RefObject<HTMLDivElement>, 
+    cursor: React.MutableRefObject<string | undefined>, url: string, 
+    page: { value: number }, setPage: React.Dispatch<React.SetStateAction<{ value: number }>>,
+    args: T1)
+: PaginateData<T2> {
+
     const reachedBottom = useRef<boolean>(false);
     const count = useRef<number>(0);
     const [loading, setLoading] = useState<boolean>(false);
     const [errorMessage, setErrorMessage] = useState<string>("");
-    const [allPosts, setAllPosts] = useState<T[]>([]);
+    const [data, setData] = useState<T2[]>([]);
 
     function resetState(): void {
         cursor.current = undefined;
         reachedBottom.current = false;
-        setAllPosts([]);
+        setData([]);
         setPage({ value: 1 });
     }
 
@@ -40,7 +32,7 @@ export function usePaginatePosts<T>(
         });
     }
 
-    useScrollEvent(pageRef, loading, reachedBottom.current, goToNextPage, page.value);
+    usePaginationScroll(pageRef, loading, reachedBottom.current, goToNextPage, page.value);
 
     useEffect(() => {
         if (loading) {
@@ -50,19 +42,20 @@ export function usePaginatePosts<T>(
         setLoading(true);
         (async (): Promise<void> => {
             try {
-                const resp = await axios.post<{ posts: T[], cursor: string, last: boolean, count: number }>(url, {
-                    ...data,
-                    cursor: cursor.current
+                const resp = await axios.post<PaginationResponse<T2>>(url, {
+                    ...args,
+                    cursor: cursor.current,
+                    limit: limit
                 });
 
-                setAllPosts((state) => [...state, ...resp.data.posts]);
+                setData((state) => [...state, ...resp.data.next]);
                 cursor.current = resp.data.cursor;
 
                 if (resp.data.last) {
                     reachedBottom.current = true;
                 }
 
-                if (resp.data.count !== 0) {
+                if (data.length === 0) {
                     count.current = resp.data.count;
                 }
 
@@ -79,7 +72,7 @@ export function usePaginatePosts<T>(
     }, [page, url, cursor]);
 
     return { 
-        allPosts, 
+        data, 
         errorMessage, 
         loading,
         reachedBottom: reachedBottom.current,

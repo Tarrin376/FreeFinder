@@ -2,47 +2,45 @@ import SearchIcon from "../assets/search.png";
 import { useState, useRef } from "react";
 import axios, { AxiosError } from "axios";
 import { getAPIErrorMessage } from "../utils/getAPIErrorMessage";
-import { sellerLevelTextStyles } from "../utils/sellerLevelTextStyles";
 import OutsideClickHandler from "react-outside-click-handler";
-import ProfilePicAndStatus from "./ProfilePicAndStatus";
-import HighlightedSubstring from "./HighlightedSubstring";
 import { useNavigate } from "react-router-dom";
 import AllSellers from "./AllSellers";
 import Seller from "./Seller";
+import { SellerData } from "../types/SellerData";
+import { PaginationResponse } from "../types/PaginateResponse";
+import SellerSkeleton from "../skeletons/SellerSkeleton";
 
 const queryLimit = 6;
 
-type SellerData = {
-    user: {
-        username: string,
-        profilePicURL: string,
-        country: string,
-        status: string,
-    },
-    sellerLevel: {
-        name: string
-    },
-    summary: string
-}
-
 function SearchSellers() {
     const [sellers, setSellers] = useState<SellerData[]>([]);
+    const [count, setCount] = useState<number>(0);
     const [errorMessage, setErrorMessage] = useState<string>("");
     const [allSellersPopUp, setAllSellersPopUp] = useState<boolean>(false);
-    const searchRef = useRef<HTMLInputElement>(null);
     const [hide, setHide] = useState<boolean>(true);
+    const [loading, setLoading] = useState<boolean>(false);
+
+    const searchRef = useRef<HTMLInputElement>(null);
     const searchQuery = searchRef.current?.value ?? "";
     const navigate = useNavigate();
 
     async function getMatchedSellers(query: string): Promise<SellerData[] | undefined> {
         try {
-            const response = await axios.get<{ sellers: SellerData[], message: string }>(`/api/sellers?search=${query}&limit=${queryLimit}`);
+            setLoading(true);
+            const response = await axios.post<PaginationResponse<SellerData>>(`/api/sellers?search=${query}`, { 
+                limit: queryLimit 
+            });
+ 
             setErrorMessage("");
-            return response.data.sellers;
+            setCount(response.data.count);
+            return response.data.next;
         }
         catch (err) {
             const errorMessage = getAPIErrorMessage(err as AxiosError<{ message: string }>);
             setErrorMessage(errorMessage);
+        }
+        finally {
+            setLoading(false);
         }
     }
 
@@ -72,7 +70,7 @@ function SearchSellers() {
                 <div className="relative">
                     <div className={`flex items-center border border-light-gray 
                     rounded-[8px] ${searchQuery && !hide ? "rounded-b-none" : ""} px-3 h-10 bg-transparent w-[400px]`}>
-                        <img src={SearchIcon} alt="" className="w-5 h-5 cursor-pointer"/>
+                        <img src={SearchIcon} alt="" className="w-5 h-5"/>
                         <input 
                             type="text" 
                             placeholder="Search for sellers" 
@@ -86,17 +84,17 @@ function SearchSellers() {
                     <div className="border-b border-x border-light-gray rounded-b-[8px] p-2 bg-main-white absolute w-full z-20">
                         {errorMessage ? 
                         <p className="text-center text-side-text-gray">{errorMessage}</p> :
-                        sellers.length === 0 && 
+                        sellers.length === 0 && !loading &&
                         <p className="text-center text-side-text-gray">
                             No results found
                         </p>}
-                        {!errorMessage && sellers.length > 0 &&
+                        {!errorMessage &&
                         <div className="flex flex-col">
+                            {(loading || sellers.length > 0) &&
                             <p className="ml-2 mt-2 mb-1 text-side-text-gray">
-                                Search results for
-                                <span>{` ${searchQuery}`}</span>
-                            </p>
-                            {sellers.map((seller: SellerData) => {
+                                {`${loading ? "Loading results for" : `${count} ${count === 1 ? "result" : "results"} found for`} '${searchQuery}'`}
+                            </p>}
+                            {!loading ? sellers.map((seller: SellerData, index: number) => {
                                 return (
                                     <Seller
                                         navigateToProfile={() => navigateToProfile(seller.user.username)}
@@ -107,9 +105,12 @@ function SearchSellers() {
                                         sellerLevel={seller.sellerLevel.name}
                                         summary={seller.summary}
                                         country={seller.user.country}
+                                        statusStyles="before:left-[39px] before:top-[41px]"
+                                        imgStyles="min-w-[57px] min-h-[57px]"
+                                        key={index}
                                     />
                                 )
-                            })}
+                            }) : new Array(queryLimit).fill(0).map((_, index: number) => <SellerSkeleton key={index} />)}
                         </div>}
                         {sellers.length === queryLimit &&
                         <button className="m-auto block side-btn h-[35px] mt-[10px] mb-[10px]" 

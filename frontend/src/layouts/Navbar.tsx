@@ -12,6 +12,8 @@ import SearchSellers from '../components/SearchSellers';
 import { useOnlineStatus } from '../hooks/useOnlineStatus';
 import CloseSmallIcon from "../assets/close-small.png";
 import { useToggleAwayStatus } from '../hooks/useToggleAwayStatus';
+import DropdownIcon from "../assets/dropdown.png";
+import OutsideClickHandler from 'react-outside-click-handler';
 
 function Navbar() {
     const [signUp, setSignUp] = useState<boolean>(false);
@@ -20,11 +22,21 @@ function Navbar() {
     const userContext = useContext<IUserContext>(UserContext);
     const [settingsPopUp, setSettingsPopUp] = useState<boolean>(false);
     const [sellerProfilePopUp, setSellerProfilePopUp] = useState<boolean>(false);
+    const [savedDropdown, setSavedDropdown] = useState<boolean>(false);
 
     const navigate = useNavigate();
-    const selected = useRef<HTMLLIElement>();
+    const selected = useRef<HTMLLIElement | HTMLDivElement | HTMLParagraphElement>();
 
-    const goToPage = (e: React.MouseEvent<HTMLLIElement>, url: string) => {
+    const resetSelectedElement = (url: string) => {
+        if (selected.current) {
+            selected.current.classList.remove('selected-nav-element');
+        }
+
+        selected.current = undefined;
+        navigate(url);
+    }
+
+    const goToPage = (e: React.MouseEvent<HTMLLIElement | HTMLDivElement | HTMLParagraphElement>, url: string) => {
         const target = e.currentTarget;
         if (selected.current) {
             selected.current.classList.remove('selected-nav-element');
@@ -33,6 +45,10 @@ function Navbar() {
         target.classList.add('selected-nav-element');
         selected.current = target;
         navigate(url);
+    }
+
+    function toggleSavedDropdown() {
+        setSavedDropdown((cur) => !cur);
     }
     
     useToggleAwayStatus();
@@ -46,7 +62,10 @@ function Navbar() {
             {sellerProfilePopUp && <ChangeSellerDetails setSellerProfilePopUp={setSellerProfilePopUp} />}
             <nav className="flex gap-8 items-center px-7 h-[90px] border-b border-b-very-light-gray bg-main-white">
                 <ul className="flex items-center gap-14 list-none">
-                    <li className="text-main-blue text-[23px] cursor-pointer mr-8 font-normal" onClick={(e) => goToPage(e, `/`)}>FreeFinder</li>
+                    <li className="text-main-blue text-[23px] cursor-pointer mr-8 font-normal" 
+                    onClick={() => resetSelectedElement(`/`)}>
+                        FreeFinder
+                    </li>
                     <li className="nav-item" onClick={(e) => goToPage(e, 'posts/all')}>Browse all</li>
                     {userContext.userData.seller &&
                     <>
@@ -55,8 +74,30 @@ function Navbar() {
                     {userContext.userData.userID !== "" &&
                     <>
                         <li className="nav-item">My orders</li>
-                        <li className="nav-item" onClick={(e) => goToPage(e, `${userContext.userData.username}/saved`)}>Saved posts</li>
-                        <li className="nav-item" onClick={(e) => goToPage(e, `${userContext.userData.username}/posts`)}>My posts</li>
+                        <li className="cursor-pointer relative" onClick={toggleSavedDropdown}>
+                            <div className="flex items-center gap-1 ">
+                                <span>Saved</span>
+                                <img src={DropdownIcon} className="w-[16px] h-[16px]" alt="" />
+                            </div>
+                            {savedDropdown &&
+                            <OutsideClickHandler onOutsideClick={toggleSavedDropdown}>
+                                <div className="absolute bg-main-white top-[30px] left-0 flex flex-col rounded-[6px] 
+                                border border-light-gray shadow-profile-page-container overflow-hidden w-[120px]">
+                                    <p className="cursor-pointer hover:bg-main-white-hover 
+                                    profile-menu-element pt-[6px] pb-[6px]" 
+                                    onClick={(e) => goToPage(e, `/${userContext.userData.username}/saved/posts`)}>
+                                        posts
+                                    </p>
+                                    <p className="cursor-pointer hover:bg-main-white-hover 
+                                    profile-menu-element pt-[6px] pb-[6px]">
+                                        sellers
+                                    </p>
+                                </div>
+                            </OutsideClickHandler>}
+                        </li>
+                        <li className="nav-item" onClick={(e) => goToPage(e, `${userContext.userData.username}/posts`)}>
+                            My posts
+                        </li>
                     </>}
                     <SearchSellers />
                 </ul>

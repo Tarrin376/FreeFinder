@@ -19,7 +19,7 @@ function App() {
                         <Route path="/" element={<Navbar />}>
                             <Route index element={<HomeView />} />
                             <Route path="sellers/:username" element={<SellerProfileView />} />
-                            <Route path=":username?/saved" element={
+                            <Route path=":username?/saved/posts" element={
                                 <FilterPostsProvider key={`saved`} urlPrefix="/users">
                                     <SavedServicesView />
                                 </FilterPostsProvider>} 

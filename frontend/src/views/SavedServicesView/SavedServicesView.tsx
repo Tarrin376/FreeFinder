@@ -11,7 +11,7 @@ function SavedServicesView() {
             canRemove={{
                 deletingPost: deletingPost,
                 setDeletingPost: setDeletingPost,
-                removeURL: filterContext?.endpoint ? filterContext.endpoint : "",
+                removeURL: filterContext?.endpoint ?? "",
                 unsave: true
             }}
             noResultsFoundTitle="Sorry, we could not find any of your saved posts."
