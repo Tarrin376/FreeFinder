@@ -91,6 +91,7 @@ function MyDetails() {
                     styles={(!validFirst || !validSecond || firstEmail !== secondEmail) ? "invalid-button mt-3 main-btn" : "main-btn mt-3"}
                     textStyles="text-main-white"
                     setErrorMessage={setErrorMessage}
+                    keepErrorMessage={true}
                 />
             </div>
         </>

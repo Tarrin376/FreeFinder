@@ -8,5 +8,6 @@ export type SellerData = {
     sellerLevel: {
         name: string
     },
-    summary: string
+    summary: string,
+    sellerID: string
 }

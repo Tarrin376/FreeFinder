@@ -16,7 +16,7 @@ function Price({ value, title }: PriceProps) {
     }
 
     return (
-        <div className="border border-light-border-gray rounded-[8px] w-[150px] px-3 py-2">
+        <div className="border border-light-border-gray rounded-[8px] w-[170px] px-3 py-2">
             <p className="text-[13px] text-side-text-gray">{title}</p>
             <div className="flex items-center">
                 <p>£</p>

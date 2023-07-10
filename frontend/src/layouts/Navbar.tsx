@@ -16,6 +16,7 @@ import DropdownIcon from "../assets/dropdown.png";
 import OutsideClickHandler from 'react-outside-click-handler';
 import Sellers from '../components/Sellers';
 import { AnimatePresence } from "framer-motion";
+import { SellerOptions } from '../enums/SellerOptions';
 
 function Navbar() {
     const [signUp, setSignUp] = useState<boolean>(false);
@@ -70,6 +71,7 @@ function Navbar() {
                     url={`/api/users/${userContext.userData.username}/saved/sellers`}
                     setSellersPopUp={setSavedSellersPopUp}
                     savedSellers={true}
+                    option={SellerOptions.REMOVE}
                 />}
             </AnimatePresence>
             <nav className="flex gap-8 items-center px-7 h-[90px] border-b border-b-very-light-gray bg-main-white">
@@ -135,11 +137,11 @@ function AccountOptions({ setLogIn, setSignUp }: {
     setSignUp: React.Dispatch<React.SetStateAction<boolean>>}) {
     return (
         <>
-            <button className="btn-primary bg-very-light-gray hover:bg-very-light-gray-hover" 
+            <button className="btn-primary bg-very-light-gray hover:bg-very-light-gray-hover w-[110px]" 
             onClick={() => setLogIn(true)}>
                 Log In
             </button>
-            <button className="btn-primary bg-main-black text-main-white hover:bg-main-black-hover" 
+            <button className="btn-primary bg-main-black text-main-white hover:bg-main-black-hover w-[110px]" 
             onClick={() => setSignUp(true)}>
                 Sign Up
             </button>

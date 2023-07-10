@@ -29,7 +29,7 @@ function Posts({ canRemove, noResultsFoundTitle }: PostsProps) {
     }
 
     return (
-        <PageWrapper styles="min-h-[calc(100vh-180px)] xxl:max-w-[1494px] xl:max-w-[1202px] lg:max-w-[910px] md:max-w-[618px]">
+        <PageWrapper styles="!min-h-[calc(100vh-180px)] xxl:max-w-[1430px] xl:max-w-[1202px] lg:max-w-[910px] md:max-w-[618px]">
             {filterContext.posts.loading ? 
             <h1 className="text-[20px] mb-6">
                 Finding services...
@@ -49,7 +49,7 @@ function Posts({ canRemove, noResultsFoundTitle }: PostsProps) {
                         />
                     );
                 })}
-                {filterContext.posts.loading && new Array(limit).fill(true).map((_, index) => <PostSkeleton key={index} />)}
+                {filterContext.posts.loading && new Array(limit).fill(true).map((_, i) => <PostSkeleton key={i} />)}
                 <PaginationScrollInfo 
                     data={filterContext.posts} 
                     page={filterContext.page.value}

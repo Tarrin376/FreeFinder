@@ -66,7 +66,7 @@ function PostView() {
                             </div>
                             <div>
                                 <div className="flex items-center gap-[7px]">
-                                    <p className="nav-item hover:font-normal !p-0" onClick={navigateToProfile}>
+                                    <p className="link hover:font-normal !p-0" onClick={navigateToProfile}>
                                         {postData.postedBy.user.username}
                                     </p>
                                     <img src={StarIcon} className="w-[18px] h-[18px]" alt="star" />
@@ -86,7 +86,7 @@ function PostView() {
                             images={postData.images}
                             btnSize={50}
                             wrapperStyles="bg-very-light-gray rounded-[12px] border 
-                            border-very-light-gray shadow-info-component h-[550px]"
+                            border-very-light-gray shadow-info-component h-[584px]"
                             imageStyles="object-contain object-center"
                         />
                         <div className="mt-5 w-full whitespace-nowrap overflow-x-scroll pb-5">

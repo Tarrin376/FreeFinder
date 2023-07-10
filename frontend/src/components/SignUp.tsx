@@ -142,9 +142,10 @@ function SignUp({ setLogIn, setSignUp, setAccountCreated }: SignUpProps) {
                 completedText="Account created"
                 defaultText="Create account"
                 loadingText="Checking details"
-                styles={!isValidForm() ? "invalid-button main-btn" : "main-btn"}
+                styles={`main-btn ${!isValidForm() ? "invalid-button" : ""}`}
                 textStyles="text-main-white"
                 setErrorMessage={setErrorMessage}
+                keepErrorMessage={true}
             />
             <p className="mt-6 text-side-text-gray text-[15px]">Already have an account? 
                 <span className="text-main-blue ml-2 cursor-pointer hover:text-main-black" onClick={openLogIn}>

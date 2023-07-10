@@ -3,7 +3,7 @@ import { useState, useContext } from 'react';
 import { IPost } from '../models/IPost';
 import ProfilePicAndStatus from './ProfilePicAndStatus';
 import { getTimePosted, getSeconds } from '../utils/getTimePosted';
-import { actionSuccessful } from '../utils/actionSuccessful';
+import { actionFinished } from '../utils/actionFinished';
 import axios, { AxiosError } from "axios";
 import { getAPIErrorMessage } from '../utils/getAPIErrorMessage';
 import Button from './Button';
@@ -41,11 +41,11 @@ function Post({ postInfo, canRemove, styles }: PostProps) {
             
             setSaved(true);
             await axios.post<{ message: string }>(`/api/users/${userContext.userData.username}/saved/posts/${postInfo.postID}`);
-            actionSuccessful(setSuccessMessage, "Saved post", "");
+            actionFinished(setSuccessMessage, "Saved post", "");
         }
         catch (err: any) {
             const errorMessage = getAPIErrorMessage(err as AxiosError<{ message: string }>);
-            actionSuccessful(setErrorMessage, errorMessage, "");
+            actionFinished(setErrorMessage, errorMessage, "");
         }
         finally {
             setSaved(false);
@@ -61,7 +61,6 @@ function Post({ postInfo, canRemove, styles }: PostProps) {
             canRemove.setDeletingPost(true);
             await axios.delete<{ message: string }>(`${canRemove.removeURL}/${postInfo.postID}`);
             canRemove.setDeletingPost(false);
-            setHide(true);
         }
         catch (err: any) {
             const errorMessage = getAPIErrorMessage(err as AxiosError<{ message: string }>);
@@ -83,7 +82,7 @@ function Post({ postInfo, canRemove, styles }: PostProps) {
     }
 
     return (
-        <div className={`bg-transparent w-[270px] relative ${styles}`}>
+        <div className={`bg-transparent w-[320px] relative ${styles}`}>
             <p className={`absolute rounded-t-[12px] z-20 px-7 py-[11px] w-[100%] 
             transition-all whitespace-normal ease-out duration-100 text-center 
             ${errorMessage !== "" ? 'bg-error-text text-main-white' 
@@ -107,7 +106,7 @@ function Post({ postInfo, canRemove, styles }: PostProps) {
             <Carousel
                 images={postInfo.images}
                 btnSize={35}
-                wrapperStyles="bg-very-light-gray rounded-[12px] border border-very-light-gray h-[255px]"
+                wrapperStyles="bg-very-light-gray rounded-[12px] border border-very-light-gray h-[235px]"
                 imageStyles="object-cover w-full"
             />
             <div className="mt-3">
@@ -145,27 +144,30 @@ function Post({ postInfo, canRemove, styles }: PostProps) {
                     </p>}
                 </div>
                 <div className="pb-2 border-b border-b-very-light-gray h-[60px]">
-                    <p className="text-[16px] nav-item leading-6 overflow-hidden text-ellipsis line-clamp-2 !p-0" onClick={openPostView}>
+                    <p className="text-[16px] link leading-6 overflow-hidden text-ellipsis line-clamp-2 !p-0" onClick={openPostView}>
                         {postInfo.title}
                     </p>
                 </div>
-                <p className="mt-3">
-                    Starting at:
-                    <span className="text-main-blue">
-                        {` £${postInfo.startingPrice}`}
-                    </span>
-                </p>
-                {canRemove &&
-                <Button
-                    action={removePost}
-                    completedText={canRemove.unsave ? "Unsaved" : "Removed"}
-                    defaultText={canRemove.unsave ? "Unsave" : "Remove"}
-                    loadingText={canRemove.unsave ? "Unsaving" : "Removing"}
-                    styles="red-btn mt-3 h-[33px] w-full rounded-[6px] px-4"
-                    textStyles="text-error-text text-[15px]"
-                    setErrorMessage={setErrorMessage}
-                    redLoadingIcon={true}
-                />}
+                <div className="mt-3 flex items-center justify-between">
+                    <p>
+                        Starting at:
+                        <span className="text-main-blue">
+                            {` £${postInfo.startingPrice}`}
+                        </span>
+                    </p>
+                    {canRemove &&
+                    <Button
+                        action={removePost}
+                        completedText={canRemove.unsave ? "Unsaved" : "Removed"}
+                        defaultText={canRemove.unsave ? "Unsave" : "Remove"}
+                        loadingText={canRemove.unsave ? "Unsaving" : "Removing"}
+                        styles="red-btn h-[33px] w-fit rounded-[6px]"
+                        textStyles="text-error-text text-[15px]"
+                        setErrorMessage={setErrorMessage}
+                        redLoadingIcon={true}
+                        whenComplete={() => setHide(true)}
+                    />}
+                </div>
             </div>
         </div>
     );

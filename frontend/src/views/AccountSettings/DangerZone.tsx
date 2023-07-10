@@ -46,6 +46,7 @@ function DangerZone({ setSettingsPopUp }: { setSettingsPopUp: React.Dispatch<Rea
                 setErrorMessage={setErrorMessage}
                 whenComplete={resetUserState}
                 redLoadingIcon={true}
+                keepErrorMessage={true}
             />
         </>
     );

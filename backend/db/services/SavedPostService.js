@@ -104,10 +104,9 @@ async function querySavedPosts(req) {
                     images: {
                         select: {
                             url: true,
-                            isThumbnail: true
                         },
                         orderBy: {
-                            isThumbnail: 'desc'
+                            createdAt: 'asc'
                         }
                     }
                 }

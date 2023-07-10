@@ -285,10 +285,9 @@ async function queryUserPosts(req) {
             images: {
                 select: {
                     url: true,
-                    isThumbnail: true
                 },
                 orderBy: {
-                    isThumbnail: 'desc'
+                    createdAt: 'asc'
                 }
             }
         }

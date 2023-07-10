@@ -3,6 +3,7 @@ import Options from "../../components/Options";
 import { sellerLevelTextStyles } from "../../utils/sellerLevelTextStyles";
 import ProfileSummary from "../../components/ProfileSummary";
 import SaveSeller from "../../components/SaveSeller";
+import { useNavigate } from "react-router-dom";
 
 interface AboutSellerProps {
     description: string,
@@ -20,6 +21,12 @@ interface AboutSellerProps {
 }
 
 function AboutSeller(props: AboutSellerProps) {
+    const navigate = useNavigate();
+
+    function navigateToProfile() {
+        navigate(`/sellers/${props.username}`);
+    }
+
     return (
         <section className="bg-main-white border border-light-border-gray shadow-info-component rounded-[12px] p-6 w-full">
             <div className="flex justify-between mb-4">
@@ -28,11 +35,12 @@ function AboutSeller(props: AboutSellerProps) {
                         profilePicURL={props.profilePicURL} 
                         profileStatus={props.status}
                         statusStyles='before:hidden'
-                        imgStyles="w-[75px] h-[75px]"
+                        imgStyles="w-[75px] h-[75px] cursor-pointer"
+                        action={navigateToProfile}
                     />
                     <div>
                         <div className="flex items-center gap-2">
-                            <p>{props.username}</p>
+                            <p className="link" onClick={navigateToProfile}>{props.username}</p>
                             <p className="text-[14px] seller-level" 
                             style={sellerLevelTextStyles[props.sellerLevel]}>
                                 {props.sellerLevel}

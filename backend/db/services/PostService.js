@@ -8,7 +8,7 @@ import { v4 as uuidv4 } from 'uuid';
 import { sortPosts } from '../utils/sortPosts.js';
 import { getPostFilters } from '../utils/getPostFilters.js';
 
-async function uploadImage(postID, image, url, isThumbnail) {
+async function uploadImage(postID, image, url) {
     const result = await new Promise(async (resolve, reject) => {
         const upload = cloudinary.uploader.upload(image, { public_id: url }, (err, result) => {
             if (err) {
@@ -26,7 +26,6 @@ async function uploadImage(postID, image, url, isThumbnail) {
         data: {
             postID: postID,
             url: result.secure_url,
-            isThumbnail: isThumbnail
         }
     });
 }
@@ -44,7 +43,7 @@ export async function createPostHandler(postData, startingPrice, userID) {
                 about: postData.about,
                 title: postData.title,
                 startingPrice: startingPrice,
-                sellerID: seller.sellerID
+                sellerID: seller.sellerID,
             },
             select: {
                 postID: true
@@ -60,7 +59,7 @@ export async function createPostHandler(postData, startingPrice, userID) {
             await createPostPackage(postData.packages[2], res.postID, postData.packages[2].type);
         }
 
-        await uploadImage(res.postID, postData.thumbnail, `FreeFinder/PostImages/${userID}/${res.postID}/${uuidv4()}`, true);
+        await uploadImage(res.postID, postData.thumbnail, `FreeFinder/PostImages/${userID}/${res.postID}/${uuidv4()}`);
         const {_count, ...filtered} = seller;
         
         return {
@@ -108,8 +107,8 @@ export async function addImageHandler(req) {
         await uploadImage(
             req.params.id,
             req.body.image, 
-            `FreeFinder/PostImages/${req.userData.userID}/${req.params.id}/${uuidv4()}`, 
-            false);
+            `FreeFinder/PostImages/${req.userData.userID}/${req.params.id}/${uuidv4()}`
+        );
     }
     catch (err) {
         if (err instanceof DBError) {
@@ -202,10 +201,9 @@ export async function getPostHandler(postID) {
                 images: {
                     select: {
                         url: true,
-                        isThumbnail: true
                     },
                     orderBy: {
-                        isThumbnail: 'desc'
+                        createdAt: 'asc'
                     }
                 },
                 title: true,
@@ -329,10 +327,9 @@ async function queryPosts(req) {
             images: {
                 select: {
                     url: true,
-                    isThumbnail: true
                 },
                 orderBy: {
-                    isThumbnail: 'desc'
+                    createdAt: 'asc'
                 }
             }
         }

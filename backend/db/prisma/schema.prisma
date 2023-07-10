@@ -89,10 +89,10 @@ model Post {
 }
 
 model PostImage {
-    post        Post    @relation("Images", fields: [postID], references: [postID], onDelete: Cascade)
-    postID      String
-    url         String
-    isThumbnail Boolean @default(false)
+    post      Post     @relation("Images", fields: [postID], references: [postID], onDelete: Cascade)
+    postID    String
+    url       String
+    createdAt DateTime @default(now())
 
     @@id([postID, url])
 }

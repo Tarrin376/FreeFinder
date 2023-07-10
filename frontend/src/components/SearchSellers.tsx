@@ -10,6 +10,7 @@ import { SellerData } from "../types/SellerData";
 import { PaginationResponse } from "../types/PaginateResponse";
 import SellerSkeleton from "../skeletons/SellerSkeleton";
 import { AnimatePresence } from "framer-motion";
+import { SellerOptions } from "../enums/SellerOptions";
 
 const queryLimit = 6;
 
@@ -67,7 +68,8 @@ function SearchSellers() {
                 <Sellers 
                     search={searchQuery}
                     url={`/api/sellers?search=${searchQuery}`}
-                    setSellersPopUp={setAllSellersPopUp} 
+                    setSellersPopUp={setAllSellersPopUp}
+                    option={SellerOptions.SAVE}
                 />}
             </AnimatePresence>
             <OutsideClickHandler onOutsideClick={() => setHide(true)}>
@@ -109,6 +111,7 @@ function SearchSellers() {
                                         sellerLevel={seller.sellerLevel.name}
                                         summary={seller.summary}
                                         country={seller.user.country}
+                                        sellerID={seller.sellerID}
                                         statusStyles="before:left-[39px] before:top-[41px]"
                                         imgStyles="min-w-[57px] min-h-[57px]"
                                         key={index}

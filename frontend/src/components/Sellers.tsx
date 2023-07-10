@@ -7,15 +7,17 @@ import { useNavigate } from "react-router-dom";
 import SellerSkeleton from "../skeletons/SellerSkeleton";
 import { limit } from "../hooks/usePaginateData";
 import PaginationScrollInfo from "./PaginationScrollInfo";
+import { SellerOptions } from "../enums/SellerOptions";
 
 interface SellersProps {
     search: string,
     url: string,
     setSellersPopUp: React.Dispatch<React.SetStateAction<boolean>>,
-    savedSellers?: boolean
+    savedSellers?: boolean,
+    option?: SellerOptions
 }
 
-function Sellers({ search, url, setSellersPopUp, savedSellers }: SellersProps) {
+function Sellers({ search, url, setSellersPopUp, savedSellers, option }: SellersProps) {
     const pageRef = useRef<HTMLDivElement>(null);
     const [page, setPage] = useState<{ value: number }>({ value: 1 });
     const cursor = useRef<string>();
@@ -35,8 +37,7 @@ function Sellers({ search, url, setSellersPopUp, savedSellers }: SellersProps) {
     }
 
     return (
-        <PopUpWrapper title={getTitle()}
-        setIsOpen={setSellersPopUp}>
+        <PopUpWrapper title={getTitle()} setIsOpen={setSellersPopUp} width={600}>
             <div ref={pageRef} className="w-full overflow-y-scroll pr-[5px] max-h-[500px]">
                 {sellers.data.map((seller: SellerData, index: number) => {
                     return (
@@ -49,9 +50,11 @@ function Sellers({ search, url, setSellersPopUp, savedSellers }: SellersProps) {
                             sellerLevel={seller.sellerLevel.name}
                             summary={seller.summary}
                             country={seller.user.country}
+                            sellerID={seller.sellerID}
                             statusStyles="before:left-[42px] before:top-[45px]"
                             imgStyles="min-w-[62px] min-h-[62px]"
                             key={index}
+                            option={option}
                         />
                     )
                 })}

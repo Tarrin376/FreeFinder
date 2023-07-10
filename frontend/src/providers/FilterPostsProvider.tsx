@@ -224,6 +224,52 @@ function FilterPostsProvider({ children, urlPrefix }: FilterPostsContextProps) {
     )
 }
 
+function MainFiltersBar({ searchRef, min, max, countryRef, sort, loading, searchHandler }: MainFiltersBarProps) {
+    return (
+        <div className="h-[90px] max-w-[1430px] m-auto flex items-center px-[22.5px]">
+            <div className="flex flex-grow items-center border-r border-light-gray h-full pr-6">
+                <img src={SearchIcon} alt="" className="w-[17px] h-[17px] cursor-pointer"/>
+                <input 
+                    type="text" 
+                    placeholder="Search for post" 
+                    className="flex-grow focus:outline-none placeholder-side-text-gray ml-3" 
+                    ref={searchRef}
+                />
+            </div>
+            <div className="h-full border-r border-very-light-gray px-[12.75px] flex items-center gap-3 max-[1682px]:hidden">
+                <Price 
+                    value={min} 
+                    title="min price" 
+                />
+                <div>-</div>
+                <Price 
+                    value={max} 
+                    title="max price" 
+                />
+            </div>
+            <div className="h-full border-r border-very-light-gray px-[12.75px] flex items-center max-[1308px]:hidden">
+                <CountriesDropdown 
+                    countryRef={countryRef} 
+                    selected="Any country"
+                    styles="w-[240px]"
+                    title="Seller lives in"
+                    anyLocation={true}
+                />
+            </div>
+            <div className="h-full border-r border-very-light-gray px-[12.75px] flex items-center">
+                <SortBy sortBy={sort} />
+            </div>
+            <div className="pl-[22.5px]">
+                <button className={`btn-primary text-main-white bg-main-blue w-[160px] h-[45px] hover:bg-main-blue-hover
+                ${loading ? "invalid-button" : ""}`}
+                onClick={searchHandler}>
+                    Search
+                </button>
+            </div>
+        </div>
+    )
+}
+
 function SellerLevels({ setAllSellerLevels, allSellerLevels, disabled, searchHandler }: SellerLevelsProps) {
     const [applyChangesBtn, setApplyChangesBtn] = useState<boolean>(false);
 
@@ -325,52 +371,6 @@ function ExtraFilters() {
                 })}
             </div>
         </>
-    )
-}
-
-function MainFiltersBar({ searchRef, min, max, countryRef, sort, loading, searchHandler }: MainFiltersBarProps) {
-    return (
-        <div className="h-[90px] max-w-[1494px] m-auto flex items-center px-[22.5px]">
-            <div className="flex flex-grow items-center border-r border-light-gray h-full pr-6">
-                <img src={SearchIcon} alt="" className="w-[17px] h-[17px] cursor-pointer"/>
-                <input 
-                    type="text" 
-                    placeholder="Search for post" 
-                    className="flex-grow focus:outline-none placeholder-side-text-gray ml-3" 
-                    ref={searchRef}
-                />
-            </div>
-            <div className="h-full border-r border-very-light-gray px-6 flex items-center gap-3 max-[1682px]:hidden">
-                <Price 
-                    value={min} 
-                    title="min price" 
-                />
-                <div>-</div>
-                <Price 
-                    value={max} 
-                    title="max price" 
-                />
-            </div>
-            <div className="h-full border-r border-very-light-gray px-6 flex items-center max-[1308px]:hidden">
-                <CountriesDropdown 
-                    countryRef={countryRef} 
-                    selected="Any country"
-                    styles="w-[240px]"
-                    title="Seller lives in"
-                    anyLocation={true}
-                />
-            </div>
-            <div className="h-full border-r border-very-light-gray px-6 flex items-center">
-                <SortBy sortBy={sort} />
-            </div>
-            <div className="pl-[22.5px]">
-                <button className={`btn-primary text-main-white bg-main-blue w-[160px] h-[45px] hover:bg-main-blue-hover
-                ${loading ? "invalid-button" : ""}`}
-                onClick={searchHandler}>
-                    Search
-                </button>
-            </div>
-        </div>
     )
 }
 

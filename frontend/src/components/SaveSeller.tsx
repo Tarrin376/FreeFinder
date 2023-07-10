@@ -2,7 +2,7 @@ import { useContext, useState } from "react";
 import { UserContext } from "../providers/UserContext";
 import axios, { AxiosError } from "axios";
 import { getAPIErrorMessage } from "../utils/getAPIErrorMessage";
-import { actionSuccessful } from "../utils/actionSuccessful";
+import { actionFinished } from "../utils/actionFinished";
 
 interface SaveSellerProps {
     svgSize: number,
@@ -19,11 +19,11 @@ function SaveSeller({ svgSize, sellerID }: SaveSellerProps) {
         try {
             setSaved(true);
             const resp = await axios.post<{ message: string }>(`/api/users/${userContext.userData.username}/saved/sellers/${sellerID}`);
-            actionSuccessful(setSuccessMessage, resp.data.message, "");
+            actionFinished(setSuccessMessage, resp.data.message, "");
         }
         catch (err: any) {
             const errorMessage = getAPIErrorMessage(err as AxiosError<{ message: string }>);
-            setErrorMessage(errorMessage);
+            actionFinished(setErrorMessage, errorMessage, "");
         }
         finally {
             setSaved(false);

@@ -108,6 +108,7 @@ function ChangePassword() {
                     styles={!checkInputs() ? "invalid-button mt-3 main-btn" : "mt-3 main-btn"}
                     textStyles="text-main-white"
                     setErrorMessage={setErrorMessage}
+                    keepErrorMessage={true}
                 />
             </div>
         </>

@@ -11,6 +11,7 @@ interface ButtonProps {
     children?: React.ReactNode,
     textStyles: string,
     setErrorMessage: React.Dispatch<React.SetStateAction<string>>,
+    keepErrorMessage?: boolean,
     whenComplete?: () => void,
     redLoadingIcon?: boolean
 }
@@ -29,15 +30,20 @@ function Button(props: ButtonProps) {
         const error = await props.action();
 
         if (!error) {
+            props.setErrorMessage("");
             setBtnText(props.completedText);
         } else {
             props.setErrorMessage(error);
             setDisabled(true);
-    
-            setTimeout(() => {
-                props.setErrorMessage("");
+            
+            if (!props.keepErrorMessage) {
+                setTimeout(() => {
+                    props.setErrorMessage("");
+                    setDisabled(false);
+                }, 7000);
+            } else {
                 setDisabled(false);
-            }, 10000);
+            }
 
             setBtnText(props.defaultText);
         }
