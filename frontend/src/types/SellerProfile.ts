@@ -4,6 +4,7 @@ import { ISellerLevel } from "../models/ISellerLevel";
 
 export type SellerProfile = {
     rating: number,
+    sellerID: string,
     reviews: IReview[],
     posts: IPost[],
     description: string,

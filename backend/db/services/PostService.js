@@ -35,7 +35,8 @@ export async function createPostHandler(postData, startingPrice, userID) {
     try {
         const seller = await findSeller(userID);
         if (seller._count.posts === seller.sellerLevel.postLimit) {
-            throw new DBError(`You have reached the maximum limit of ${seller._count.posts} posts due to your experience level.`, 403);
+            throw new DBError(`'${seller.sellerLevel.name}' sellers cannot have more than ${seller._count.posts} available 
+            ${seller._count.posts === 1 ? " service" : " services"} at the same time.`, 403);
         }
 
         const res = await prisma.post.create({

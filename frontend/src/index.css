@@ -50,7 +50,7 @@
     }
     .carousel-btn {
         @apply btn-primary !p-0 bg-main-white rounded-full shadow-profile-page-container border border-light-border-gray 
-        flex items-center justify-center opacity-90 hover:scale-110 hover:opacity-100;
+        flex items-center justify-center opacity-90 hover:scale-105 hover:opacity-100;
     }
     .success-btn {
         @apply hover:!bg-light-green !bg-light-green;

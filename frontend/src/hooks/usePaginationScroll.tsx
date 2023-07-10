@@ -14,7 +14,7 @@ export function usePaginationScroll(pageRef: React.RefObject<HTMLDivElement>, lo
         let scrollHeight = pageRef.current.scrollHeight;
         let offsetHeight = pageRef.current.offsetHeight;
 
-        if (scrollHeight - offsetHeight <= scrollTop && !reachedBottom && !loading && page % MOD !== 0) {
+        if (scrollHeight - offsetHeight - 200 <= scrollTop && !reachedBottom && !loading && page % MOD !== 0) {
             goToNextPage();
         }
     }

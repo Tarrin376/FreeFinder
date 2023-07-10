@@ -2,14 +2,14 @@ import LocationIcon from "../assets/location.png";
 import UserIcon from "../assets/user.png";
 import StarGrayIcon from "../assets/star-gray.png";
 
-interface SellerSummaryInfoProps {
+interface ProfileSummaryProps {
     styles?: string,
     country: string,
     memberDate: Date,
     rating: number
 }
 
-function SellerSummaryInfo({ styles, country, memberDate, rating }: SellerSummaryInfoProps) {
+function ProfileSummary({ styles, country, memberDate, rating }: ProfileSummaryProps) {
     return (
         <div className={styles}>
             <div className="flex gap-2 items-center">
@@ -31,4 +31,4 @@ function SellerSummaryInfo({ styles, country, memberDate, rating }: SellerSummar
     )
 }
 
-export default SellerSummaryInfo;
+export default ProfileSummary;

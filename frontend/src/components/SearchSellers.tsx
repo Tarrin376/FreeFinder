@@ -4,11 +4,12 @@ import axios, { AxiosError } from "axios";
 import { getAPIErrorMessage } from "../utils/getAPIErrorMessage";
 import OutsideClickHandler from "react-outside-click-handler";
 import { useNavigate } from "react-router-dom";
-import AllSellers from "./AllSellers";
+import Sellers from "./Sellers";
 import Seller from "./Seller";
 import { SellerData } from "../types/SellerData";
 import { PaginationResponse } from "../types/PaginateResponse";
 import SellerSkeleton from "../skeletons/SellerSkeleton";
+import { AnimatePresence } from "framer-motion";
 
 const queryLimit = 6;
 
@@ -61,11 +62,14 @@ function SearchSellers() {
 
     return (
         <>
-            {allSellersPopUp && 
-                <AllSellers 
-                search={searchQuery} 
-                setAllSellersPopUp={setAllSellersPopUp} 
-            />}
+            <AnimatePresence>
+                {allSellersPopUp &&
+                <Sellers 
+                    search={searchQuery}
+                    url={`/api/sellers?search=${searchQuery}`}
+                    setSellersPopUp={setAllSellersPopUp} 
+                />}
+            </AnimatePresence>
             <OutsideClickHandler onOutsideClick={() => setHide(true)}>
                 <div className="relative">
                     <div className={`flex items-center border border-light-gray 

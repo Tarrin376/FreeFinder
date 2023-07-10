@@ -8,7 +8,6 @@ import { useNavigateErrorPage } from '../hooks/useNavigateErrorPage';
 import { FilterPostsContext } from '../providers/FilterPostsProvider';
 import PageWrapper from '../wrappers/PageWrapper';
 import PaginationScrollInfo from './PaginationScrollInfo';
-import { UserContext } from '../providers/UserContext';
 import { limit } from '../hooks/usePaginateData';
 
 interface PostsProps {
@@ -23,7 +22,6 @@ interface PostsProps {
 
 function Posts({ canRemove, noResultsFoundTitle }: PostsProps) {
     const filterContext = useContext(FilterPostsContext);
-    const userContext = useContext(UserContext);
     useNavigateErrorPage("Something isn't quite right...", filterContext?.posts?.errorMessage || "");
 
     if (!filterContext || !filterContext.posts) {
@@ -46,7 +44,6 @@ function Posts({ canRemove, noResultsFoundTitle }: PostsProps) {
                     return (
                         <Post 
                             postInfo={post} 
-                            username={userContext.userData.username} 
                             canRemove={canRemove}
                             key={post.postID}
                         />

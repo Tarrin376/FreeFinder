@@ -17,7 +17,6 @@ import { useNavigate } from "react-router-dom";
 
 function PostView() {
     const [postData, setPostData] = useState<PostPage>();
-    const [selectedImage, setSelectedImage] = useState<number>(0);
     const [errorMessage, setErrorMessage] = useState<string>("");
     const location = useLocation();
     const navigate = useNavigate();
@@ -67,7 +66,7 @@ function PostView() {
                             </div>
                             <div>
                                 <div className="flex items-center gap-[7px]">
-                                    <p className="nav-item hover:font-normal" onClick={navigateToProfile}>
+                                    <p className="nav-item hover:font-normal !p-0" onClick={navigateToProfile}>
                                         {postData.postedBy.user.username}
                                     </p>
                                     <img src={StarIcon} className="w-[18px] h-[18px]" alt="star" />
@@ -78,19 +77,17 @@ function PostView() {
                                         ({postData.postedBy._count.reviews} reviews)
                                     </p>
                                 </div>
-                                <p className="text-side-text-gray text-[15px]">
+                                <p className="text-side-text-gray text-[15px] mt-[1px]">
                                     {getTimePosted(postData.createdAt)}
                                 </p>
                             </div>
                         </div>
                         <Carousel
-                            selectedImage={selectedImage}
-                            setSelectedImage={setSelectedImage}
                             images={postData.images}
                             btnSize={50}
-                            wrapperStyles="bg-very-light-gray w-full rounded-[12px] border border-very-light-gray 
-                            shadow-info-component flex items-center justify-between p-4"
-                            imageStyles="object-contain object-center h-[550px] w-full"
+                            wrapperStyles="bg-very-light-gray rounded-[12px] border 
+                            border-very-light-gray shadow-info-component h-[550px]"
+                            imageStyles="object-contain object-center"
                         />
                         <div className="mt-5 w-full whitespace-nowrap overflow-x-scroll pb-5">
                             {postData.images.map((image: IPostImage, index: number) => {
@@ -99,10 +96,8 @@ function PostView() {
                                         src={image.url} 
                                         alt="" 
                                         className={`w-[112px] h-[80px] inline-block rounded-[8px] object-contain cursor-pointer
-                                        bg-[#f5f6f8] border border-very-light-gray ${index > 0 ? "ml-3" : ""}
-                                        ${selectedImage === index ? "border-light-border-gray" : ""}`}
+                                        bg-[#f5f6f8] border border-very-light-gray ${index > 0 ? "ml-3" : ""}`}
                                         key={index}
-                                        onClick={() => setSelectedImage(index)}
                                     />
                                 )
                             })}
@@ -123,6 +118,7 @@ function PostView() {
                             rating={postData.postedBy.rating}
                             languages={postData.postedBy.languages}
                             skills={postData.postedBy.skills}
+                            sellerID={postData.sellerID}
                         />
                     </div>
                     <div>

@@ -8,27 +8,35 @@ import SellerSkeleton from "../skeletons/SellerSkeleton";
 import { limit } from "../hooks/usePaginateData";
 import PaginationScrollInfo from "./PaginationScrollInfo";
 
-interface AllSellersProps {
+interface SellersProps {
     search: string,
-    setAllSellersPopUp: React.Dispatch<React.SetStateAction<boolean>>,
+    url: string,
+    setSellersPopUp: React.Dispatch<React.SetStateAction<boolean>>,
+    savedSellers?: boolean
 }
 
-function AllSellers({ search, setAllSellersPopUp }: AllSellersProps) {
+function Sellers({ search, url, setSellersPopUp, savedSellers }: SellersProps) {
     const pageRef = useRef<HTMLDivElement>(null);
     const [page, setPage] = useState<{ value: number }>({ value: 1 });
     const cursor = useRef<string>();
     const navigate = useNavigate();
 
-    const sellers = usePaginateData<{}, SellerData>(pageRef, cursor, `/api/sellers?search=${search}`, page, setPage, {});
+    const sellers = usePaginateData<{}, SellerData>(pageRef, cursor, url, page, setPage, {});
 
     function navigateToProfile(username: string) {
-        setAllSellersPopUp(false);
+        setSellersPopUp(false);
         navigate(`/sellers/${username}`);
     }
 
+    function getTitle() {
+        if (savedSellers) return `Your saved sellers (${sellers.count})`;
+        else return `${sellers.loading ? "Loading results" : `${sellers.count}
+        ${sellers.count === 1 ? " result" : " results"}`} found for '${search}'`
+    }
+
     return (
-        <PopUpWrapper title={`${sellers.loading ? "Loading results for" : `${sellers.count} ${sellers.count === 1 ? "result" : "results"} found for`} '${search}'`}
-        setIsOpen={setAllSellersPopUp}>
+        <PopUpWrapper title={getTitle()}
+        setIsOpen={setSellersPopUp}>
             <div ref={pageRef} className="w-full overflow-y-scroll pr-[5px] max-h-[500px]">
                 {sellers.data.map((seller: SellerData, index: number) => {
                     return (
@@ -66,4 +74,4 @@ function AllSellers({ search, setAllSellersPopUp }: AllSellersProps) {
     )
 }
 
-export default AllSellers;
+export default Sellers;

@@ -1,5 +1,5 @@
 import StarIcon from '../assets/star.png';
-import { useState } from 'react';
+import { useState, useContext } from 'react';
 import { IPost } from '../models/IPost';
 import ProfilePicAndStatus from './ProfilePicAndStatus';
 import { getTimePosted, getSeconds } from '../utils/getTimePosted';
@@ -10,10 +10,10 @@ import Button from './Button';
 import { useNavigate } from 'react-router-dom';
 import { sellerLevelTextStyles } from '../utils/sellerLevelTextStyles';
 import Carousel from './Carousel';
+import { UserContext } from '../providers/UserContext';
 
 interface PostProps {
     postInfo: IPost,
-    username: string,
     canRemove?: {
         deletingPost: boolean,
         setDeletingPost: React.Dispatch<React.SetStateAction<boolean>>,
@@ -23,13 +23,13 @@ interface PostProps {
     styles?: string
 }
 
-function Post({ postInfo, username, canRemove, styles }: PostProps) {
+function Post({ postInfo, canRemove, styles }: PostProps) {
     const [errorMessage, setErrorMessage] = useState<string>("");
     const [successMessage, setSuccessMessage] = useState<string>("");
     const seconds = getSeconds(postInfo.createdAt);
     const [hide, setHide] = useState<boolean>(false);
     const [saved, setSaved] = useState<boolean>(false);
-    const [selectedImage, setSelectedImage] = useState<number>(0);
+    const userContext = useContext(UserContext);
 
     const navigate = useNavigate();
 
@@ -40,7 +40,7 @@ function Post({ postInfo, username, canRemove, styles }: PostProps) {
             }
             
             setSaved(true);
-            await axios.post<{ message: string }>(`/api/users/${username}/saved/posts/${postInfo.postID}`);
+            await axios.post<{ message: string }>(`/api/users/${userContext.userData.username}/saved/posts/${postInfo.postID}`);
             actionSuccessful(setSuccessMessage, "Saved post", "");
         }
         catch (err: any) {
@@ -84,7 +84,8 @@ function Post({ postInfo, username, canRemove, styles }: PostProps) {
 
     return (
         <div className={`bg-transparent w-[270px] relative ${styles}`}>
-            <p className={`absolute rounded-t-[12px] z-20 px-7 py-[11px] w-[100%] transition-all ease-out duration-100 text-center 
+            <p className={`absolute rounded-t-[12px] z-20 px-7 py-[11px] w-[100%] 
+            transition-all whitespace-normal ease-out duration-100 text-center 
             ${errorMessage !== "" ? 'bg-error-text text-main-white' 
             : successMessage ? 'action-btn hover:!bg-[#36BF54]' : '!py-[0px]'}`}>
                 {errorMessage !== "" ? errorMessage : successMessage !== "" ? successMessage : ""}
@@ -104,12 +105,10 @@ function Post({ postInfo, username, canRemove, styles }: PostProps) {
                 </path>
             </svg>}
             <Carousel
-                selectedImage={selectedImage}
-                setSelectedImage={setSelectedImage}
                 images={postInfo.images}
                 btnSize={35}
-                wrapperStyles="bg-very-light-gray rounded-[12px] overflow-hidden border border-very-light-gray"
-                imageStyles="w-full h-[255px] object-cover z-0"
+                wrapperStyles="bg-very-light-gray rounded-[12px] border border-very-light-gray h-[255px]"
+                imageStyles="object-cover w-full"
             />
             <div className="mt-3">
                 <div className="flex items-center mb-2 gap-3 relative">
@@ -146,7 +145,7 @@ function Post({ postInfo, username, canRemove, styles }: PostProps) {
                     </p>}
                 </div>
                 <div className="pb-2 border-b border-b-very-light-gray h-[60px]">
-                    <p className="text-[16px] nav-item leading-6 overflow-hidden text-ellipsis line-clamp-2" onClick={openPostView}>
+                    <p className="text-[16px] nav-item leading-6 overflow-hidden text-ellipsis line-clamp-2 !p-0" onClick={openPostView}>
                         {postInfo.title}
                     </p>
                 </div>

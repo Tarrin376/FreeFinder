@@ -101,7 +101,7 @@ function ProfilePicAndStatus(props: ProfilePicAndStatusProps) {
             {props.showEdit && !props.loading &&
                 <>
                     <button className="flex gap-1 items-center absolute top-[62px] right-0 bg-main-white 
-                    hover:bg-main-white-hover borderborder-light-gray btn-primary p-[4px] px-2 h-fit 
+                    hover:bg-main-white-hover border border-light-gray btn-primary p-[4px] px-2 h-fit 
                     cursor-pointer rounded-[6px]" onClick={() => setProfileDropdown(true)}>
                         <img src={EditIcon} alt="edit" className="w-4 h-4" />
                         <p className="text-main-black text-xs">Edit</p>

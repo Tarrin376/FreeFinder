@@ -128,6 +128,7 @@ export async function getSellerDetailsHandler(username) {
             },
             select: {
                 rating: true,
+                sellerID: true,
                 reviews: {
                     select: {
                         reviewer: {

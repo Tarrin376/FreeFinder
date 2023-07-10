@@ -14,6 +14,8 @@ import CloseSmallIcon from "../assets/close-small.png";
 import { useToggleAwayStatus } from '../hooks/useToggleAwayStatus';
 import DropdownIcon from "../assets/dropdown.png";
 import OutsideClickHandler from 'react-outside-click-handler';
+import Sellers from '../components/Sellers';
+import { AnimatePresence } from "framer-motion";
 
 function Navbar() {
     const [signUp, setSignUp] = useState<boolean>(false);
@@ -22,6 +24,7 @@ function Navbar() {
     const userContext = useContext<IUserContext>(UserContext);
     const [settingsPopUp, setSettingsPopUp] = useState<boolean>(false);
     const [sellerProfilePopUp, setSellerProfilePopUp] = useState<boolean>(false);
+    const [savedSellersPopUp, setSavedSellersPopUp] = useState<boolean>(false);
     const [savedDropdown, setSavedDropdown] = useState<boolean>(false);
 
     const navigate = useNavigate();
@@ -55,11 +58,20 @@ function Navbar() {
     
     return (
         <>
-            {settingsPopUp && <AccountSettings setSettingsPopUp={setSettingsPopUp} />}
-            {signUp && <SignUp setSignUp={setSignUp} setLogIn={setLogIn} setAccountCreated={setAccountCreated} />}
-            {logIn && <LogIn setLogIn={setLogIn} setSignUp={setSignUp} />}
-            {accountCreated && <AccountCreated setAccountCreated={setAccountCreated} />}
-            {sellerProfilePopUp && <ChangeSellerDetails setSellerProfilePopUp={setSellerProfilePopUp} />}
+            <AnimatePresence>
+                {settingsPopUp && <AccountSettings setSettingsPopUp={setSettingsPopUp} />}
+                {signUp && <SignUp setSignUp={setSignUp} setLogIn={setLogIn} setAccountCreated={setAccountCreated} />}
+                {logIn && <LogIn setLogIn={setLogIn} setSignUp={setSignUp} />}
+                {accountCreated && <AccountCreated setAccountCreated={setAccountCreated} />}
+                {sellerProfilePopUp && <ChangeSellerDetails setSellerProfilePopUp={setSellerProfilePopUp} />}
+                {savedSellersPopUp &&
+                <Sellers
+                    search=""
+                    url={`/api/users/${userContext.userData.username}/saved/sellers`}
+                    setSellersPopUp={setSavedSellersPopUp}
+                    savedSellers={true}
+                />}
+            </AnimatePresence>
             <nav className="flex gap-8 items-center px-7 h-[90px] border-b border-b-very-light-gray bg-main-white">
                 <ul className="flex items-center gap-14 list-none">
                     <li className="text-main-blue text-[23px] cursor-pointer mr-8 font-normal" 
@@ -89,7 +101,7 @@ function Navbar() {
                                         posts
                                     </p>
                                     <p className="cursor-pointer hover:bg-main-white-hover 
-                                    profile-menu-element pt-[6px] pb-[6px]">
+                                    profile-menu-element pt-[6px] pb-[6px]" onClick={() => setSavedSellersPopUp(true)}>
                                         sellers
                                     </p>
                                 </div>

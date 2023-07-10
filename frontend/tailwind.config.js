@@ -17,7 +17,7 @@ module.exports = {
             'main-black': '#292929',
             'side-text-gray': '#9c9c9c',
             'main-black-hover': '#323232',
-            'pop-up-bg': 'rgba(0, 0, 0, 0.16)',
+            'pop-up-bg': 'rgba(0, 0, 0, 0.09)',
             'main-white-hover': '#f9f9f9',
             'error-red': 'rgba(255, 0, 0, 0.08)',
             'error-red-hover': 'rgba(255, 0, 0, 0.10)',

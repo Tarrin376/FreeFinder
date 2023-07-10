@@ -14,7 +14,9 @@ export async function saveSellerHandler(sellerID, userID, username) {
         });
     }
     catch (err) {
-        if (err instanceof Prisma.PrismaClientValidationError) {
+        if (err instanceof DBError) {
+            throw err;
+        } else if (err instanceof Prisma.PrismaClientValidationError) {
             throw new DBError("Missing required fields or fields provided are invalid.", 400);
         } else if (err instanceof Prisma.PrismaClientKnownRequestError && err.code === 'P2002') {
             throw new DBError("Seller already saved.", 409);
@@ -40,7 +42,9 @@ export async function deleteSavedSellerHandler(sellerID, userID, username) {
         });
     }
     catch (err) {
-        if (err instanceof Prisma.PrismaClientValidationError) {
+        if (err instanceof DBError) {
+            throw err;
+        } else if (err instanceof Prisma.PrismaClientValidationError) {
             throw new DBError("Missing required fields or fields provided are invalid.", 400);
         } else if (err instanceof Prisma.PrismaClientKnownRequestError && err.code === "P2025") {
             throw new DBError("Seller not found.", 404);
@@ -59,8 +63,9 @@ export async function getSavedSellersHandler(req) {
         return await querySavedSellers(req);
     }
     catch (err) {
-        console.log(err);
-        if (err instanceof Prisma.PrismaClientValidationError) {
+        if (err instanceof DBError) {
+            throw err;
+        } else if (err instanceof Prisma.PrismaClientValidationError) {
             throw new DBError("Missing required fields or fields provided are invalid.", 400);
         } else {
             throw new DBError("Something went wrong when trying to get your saved sellers. Please try again.", 500);
@@ -86,16 +91,16 @@ async function querySavedSellers(req) {
             userID: req.userData.userID
         },
         select: {
-            user: {
-                select: {
-                    username: true,
-                    profilePicURL: true,
-                    country: true,
-                    status: true,
-                }
-            },
             seller: {
                 select: {
+                    user: {
+                        select: {
+                            username: true,
+                            profilePicURL: true,
+                            country: true,
+                            status: true,
+                        }
+                    },
                     sellerLevel: {
                         select: {
                             name: true
@@ -128,14 +133,7 @@ async function querySavedSellers(req) {
     }
 
     const minNum = Math.min(isNaN(limit) ? saved.length - 1 : limit - 1, saved.length - 1);
-    const savedSellers = saved.map((savedSeller) => {
-        const { seller, ...res } = { 
-            ...savedSeller, 
-            ...savedSeller.seller 
-        };
-
-        return res;
-    });
+    const savedSellers = saved.map((savedSeller) => savedSeller.seller);
 
     return { 
         next: savedSellers, 

@@ -18,6 +18,7 @@ import { UserContext } from './UserContext';
 import { sellerLevelTextStyles } from '../utils/sellerLevelTextStyles';
 import SellerExperience from '../components/SellerExperience';
 import { FilterPosts } from '../types/FilterPosts';
+import { AnimatePresence } from "framer-motion";
 
 interface FilterPostsContextProps {
     children?: React.ReactNode,
@@ -122,11 +123,13 @@ function FilterPostsProvider({ children, urlPrefix }: FilterPostsContextProps) {
 
     return (
         <>
-            {postService && 
-                <CreatePost 
-                setPostService={setPostService} 
-                resetState={posts.resetState} 
-            />}
+            <AnimatePresence>
+                {postService && 
+                    <CreatePost 
+                    setPostService={setPostService} 
+                    resetState={posts.resetState} 
+                />}
+            </AnimatePresence>
             <div className="flex">
                 <div className="h-[calc(100vh-90px)] w-[360px] bg-main-white border-r border-light-border-gray p-[22.5px]">
                     <button onClick={openPostService} className="btn-primary text-main-white bg-main-blue w-full px-5 h-[45px] 

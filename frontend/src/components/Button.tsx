@@ -37,7 +37,7 @@ function Button(props: ButtonProps) {
             setTimeout(() => {
                 props.setErrorMessage("");
                 setDisabled(false);
-            }, 5000);
+            }, 10000);
 
             setBtnText(props.defaultText);
         }
