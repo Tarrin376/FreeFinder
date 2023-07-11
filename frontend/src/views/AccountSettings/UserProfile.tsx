@@ -44,7 +44,8 @@ function UserProfile() {
                     {errorMessage !== "" && 
                     <ErrorMessage 
                         message={errorMessage} 
-                        title="Failed to update username" 
+                        title="Failed to update username"
+                        setErrorMessage={setErrorMessage}
                     />}
                     <p className="mb-2">Username</p>
                     <input 

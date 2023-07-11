@@ -48,6 +48,7 @@ function AccountSettings({ setSettingsPopUp }: SettingsProps) {
             <ErrorMessage 
                 message={errorMessage} 
                 title="Unable to upload image"
+                setErrorMessage={setErrorMessage}
             />}
             <div className="flex gap-5">
                 <div className="relative">

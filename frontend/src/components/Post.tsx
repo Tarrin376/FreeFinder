@@ -11,24 +11,30 @@ import { useNavigate } from 'react-router-dom';
 import { sellerLevelTextStyles } from '../utils/sellerLevelTextStyles';
 import Carousel from './Carousel';
 import { UserContext } from '../providers/UserContext';
+import { motion } from 'framer-motion';
+import { limit } from '../hooks/usePaginateData';
+import Save from './Save';
+
+type CanRemovePost = {
+    deletingPost: boolean,
+    setDeletingPost: React.Dispatch<React.SetStateAction<boolean>>,
+    removeURL: string,
+    unsave?: boolean
+}
 
 interface PostProps {
     postInfo: IPost,
-    canRemove?: {
-        deletingPost: boolean,
-        setDeletingPost: React.Dispatch<React.SetStateAction<boolean>>,
-        removeURL: string,
-        unsave?: boolean
-    },
+    index: number,
+    canRemove?: CanRemovePost
+    count?: React.MutableRefObject<number>,
     styles?: string
 }
 
-function Post({ postInfo, canRemove, styles }: PostProps) {
+function Post({ postInfo, index, canRemove, count, styles }: PostProps) {
+    const [hide, setHide] = useState<boolean>(false);
     const [errorMessage, setErrorMessage] = useState<string>("");
     const [successMessage, setSuccessMessage] = useState<string>("");
     const seconds = getSeconds(postInfo.createdAt);
-    const [hide, setHide] = useState<boolean>(false);
-    const [saved, setSaved] = useState<boolean>(false);
     const userContext = useContext(UserContext);
 
     const navigate = useNavigate();
@@ -39,7 +45,6 @@ function Post({ postInfo, canRemove, styles }: PostProps) {
                 return;
             }
             
-            setSaved(true);
             await axios.post<{ message: string }>(`/api/users/${userContext.userData.username}/saved/posts/${postInfo.postID}`);
             actionFinished(setSuccessMessage, "Saved post", "");
         }
@@ -47,19 +52,17 @@ function Post({ postInfo, canRemove, styles }: PostProps) {
             const errorMessage = getAPIErrorMessage(err as AxiosError<{ message: string }>);
             actionFinished(setErrorMessage, errorMessage, "");
         }
-        finally {
-            setSaved(false);
-        }
     }
 
     async function removePost(): Promise<string | undefined> {
-        if (!canRemove || canRemove.deletingPost) {
+        if (!canRemove || canRemove.deletingPost || !count) {
             return;
         }
         
         try {
             canRemove.setDeletingPost(true);
             await axios.delete<{ message: string }>(`${canRemove.removeURL}/${postInfo.postID}`);
+            count.current -= 1;
             canRemove.setDeletingPost(false);
         }
         catch (err: any) {
@@ -82,7 +85,9 @@ function Post({ postInfo, canRemove, styles }: PostProps) {
     }
 
     return (
-        <div className={`bg-transparent w-[320px] relative ${styles}`}>
+        <motion.div className={`bg-transparent w-[320px] relative ${styles}`} 
+        initial={{ opacity: 0 }} animate={{ opacity: 1 }} exit={{ opacity: 0 }} 
+        transition={{ delay: 0.05 * (index % limit), duration: 0.2 }}>
             <p className={`absolute rounded-t-[12px] z-20 px-7 py-[11px] w-[100%] 
             transition-all whitespace-normal ease-out duration-100 text-center 
             ${errorMessage !== "" ? 'bg-error-text text-main-white' 
@@ -90,19 +95,12 @@ function Post({ postInfo, canRemove, styles }: PostProps) {
                 {errorMessage !== "" ? errorMessage : successMessage !== "" ? successMessage : ""}
             </p>
             {(!canRemove || !canRemove.unsave) && 
-            <svg 
-                viewBox="0 0 32 32" 
-                xmlns="http://www.w3.org/2000/svg" 
-                onClick={savePost}
-                className="block fill-[#00000086] w-[24px] h-[24px] stroke-white stroke-2 overflow-visible right-3 top-3 
-                absolute cursor-pointer transition-all linear duration-100 z-10"
-                style={saved ? { scale: '0.90' } : {}}
-                aria-hidden="true" 
-                role="presentation" 
-                focusable="false">
-                <path d="m16 28c7-4.733 14-10 14-17 0-1.792-.683-3.583-2.05-4.95-1.367-1.366-3.158-2.05-4.95-2.05-1.791 0-3.583.684-4.949 2.05l-2.051 2.051-2.05-2.051c-1.367-1.366-3.158-2.05-4.95-2.05-1.791 0-3.583.684-4.949 2.05-1.367 1.367-2.051 3.158-2.051 4.95 0 7 7 12.267 14 17z">
-                </path>
-            </svg>}
+            <Save
+                action={savePost}
+                svgSize={24}
+                hoverText="Save post"
+                styles="right-3 top-3 absolute z-10"
+            />}
             <Carousel
                 images={postInfo.images}
                 btnSize={35}
@@ -169,8 +167,8 @@ function Post({ postInfo, canRemove, styles }: PostProps) {
                     />}
                 </div>
             </div>
-        </div>
-    );
+        </motion.div>
+    )
 }
 
 export default Post;

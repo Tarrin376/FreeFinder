@@ -3,7 +3,8 @@ import {
     getPostHandler, 
     deletePostHandler,
     addImageHandler, 
-    getPostsHandler 
+    getPostsHandler,
+    updatePostHandler
 } from "../services/PostService.js";
 
 export async function createPost(req, res) {
@@ -20,6 +21,16 @@ export async function getPost(req, res) {
     try {
         const post = await getPostHandler(req.params.id);
         res.json({ post, message: "success" });
+    }
+    catch (err) {
+        res.status(err.code).json({ message: err.message });
+    }
+}
+
+export async function updatePost(req, res) {
+    try {
+        const updatedPost = await updatePostHandler(req);
+        res.json({ post: updatedPost, message: "success" });
     }
     catch (err) {
         res.status(err.code).json({ message: err.message });

@@ -96,7 +96,7 @@ function Navbar() {
                             {savedDropdown &&
                             <OutsideClickHandler onOutsideClick={toggleSavedDropdown}>
                                 <div className="absolute bg-main-white top-[30px] left-0 flex flex-col rounded-[6px] 
-                                border border-light-gray shadow-profile-page-container overflow-hidden w-[120px]">
+                                border border-light-gray shadow-profile-page-container overflow-hidden w-[120px] z-20">
                                     <p className="cursor-pointer hover:bg-main-white-hover 
                                     profile-menu-element pt-[6px] pb-[6px]" 
                                     onClick={(e) => goToPage(e, `/${userContext.userData.username}/saved/posts`)}>

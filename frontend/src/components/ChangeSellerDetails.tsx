@@ -71,6 +71,7 @@ function ChangeSellerDetails({ setSellerProfilePopUp }: ChangeSellerDetailsProps
             <ErrorMessage 
                 message={errorMessage} 
                 title="Unable to update seller profile"
+                setErrorMessage={setErrorMessage}
             />}
             <p className="mb-2">
                 Seller summary 
@@ -119,8 +120,8 @@ function ChangeSellerDetails({ setSellerProfilePopUp }: ChangeSellerDetailsProps
             <Options
                 options={skills}
                 removeOption={removeSkill}
-                bgColour="bg-[#e6ebff]"
-                textColour="text-[#4E73F8]"
+                bgColour="bg-very-light-pink"
+                textColour="text-pink"
                 styles="mt-4"
             />
             <Button

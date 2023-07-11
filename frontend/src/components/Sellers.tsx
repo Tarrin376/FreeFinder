@@ -19,9 +19,11 @@ interface SellersProps {
 
 function Sellers({ search, url, setSellersPopUp, savedSellers, option }: SellersProps) {
     const pageRef = useRef<HTMLDivElement>(null);
-    const [page, setPage] = useState<{ value: number }>({ value: 1 });
     const cursor = useRef<string>();
     const navigate = useNavigate();
+
+    const [page, setPage] = useState<{ value: number }>({ value: 1 });
+    const [deletingSeller, setDeletingSeller] = useState<boolean>(false);
 
     const sellers = usePaginateData<{}, SellerData>(pageRef, cursor, url, page, setPage, {});
 
@@ -31,14 +33,14 @@ function Sellers({ search, url, setSellersPopUp, savedSellers, option }: Sellers
     }
 
     function getTitle() {
-        if (savedSellers) return `Your saved sellers (${sellers.count})`;
-        else return `${sellers.loading ? "Loading results" : `${sellers.count}
-        ${sellers.count === 1 ? " result" : " results"}`} found for '${search}'`
+        if (savedSellers) return `Your saved sellers (${sellers.count.current})`;
+        else return `${sellers.loading ? "Loading results" : `${sellers.count.current}
+        ${sellers.count.current === 1 ? " result" : " results"}`} found for '${search}'`;
     }
 
     return (
-        <PopUpWrapper title={getTitle()} setIsOpen={setSellersPopUp} width={600}>
-            <div ref={pageRef} className="w-full overflow-y-scroll pr-[5px] max-h-[500px]">
+        <PopUpWrapper title={getTitle()} setIsOpen={setSellersPopUp}>
+            <div ref={pageRef} className="overflow-y-scroll pr-[5px] max-h-[500px]">
                 {sellers.data.map((seller: SellerData, index: number) => {
                     return (
                         <Seller
@@ -51,6 +53,11 @@ function Sellers({ search, url, setSellersPopUp, savedSellers, option }: Sellers
                             summary={seller.summary}
                             country={seller.user.country}
                             sellerID={seller.sellerID}
+                            canRemove={option === SellerOptions.REMOVE ? {
+                                count: sellers.count,
+                                deletingSeller: deletingSeller,
+                                setDeletingSeller: setDeletingSeller
+                            } : undefined}
                             statusStyles="before:left-[42px] before:top-[45px]"
                             imgStyles="min-w-[62px] min-h-[62px]"
                             key={index}

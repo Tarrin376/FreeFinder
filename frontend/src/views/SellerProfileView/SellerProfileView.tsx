@@ -93,6 +93,7 @@ function SellerProfileView() {
                             options={sellerDetails.languages} 
                             styles="mt-2"
                             bgColour="bg-highlight"
+                            textColour="text-main-blue"
                         />
                         {sellerDetails.skills.length > 0 &&
                         <>
@@ -103,8 +104,8 @@ function SellerProfileView() {
                             <Options
                                 options={sellerDetails.skills} 
                                 styles="mt-2"
-                                bgColour="bg-very-light-purple"
-                                textColour="text-purple"
+                                bgColour="bg-very-light-pink"
+                                textColour="text-pink"
                             />
                         </>}
                     </div>
@@ -120,6 +121,7 @@ function SellerProfileView() {
                             return (
                                 <Post
                                     postInfo={post}
+                                    index={index}
                                     styles={`inline-block ${index > 0 ? "ml-5" : ""}`}
                                     key={index}
                                 />

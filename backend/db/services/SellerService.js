@@ -43,7 +43,7 @@ export async function findSeller(userID) {
 
 async function createSeller(id) {
     try {
-        const newSeller = await prisma.sellerLevel.findFirst({ where: { xpRequired: 0 } });
+        const newSeller = await prisma.sellerLevel.findFirst({ where: { xpRequired: 5000 } });
         if (!newSeller) {
             throw new DBError("Newbie seller level does not exist.", 400);
         }

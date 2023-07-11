@@ -12,6 +12,7 @@ function MyPostsView() {
                 removeURL: `/api/posts`
             }}
             noResultsFoundTitle="Sorry, we could not find any of your posts."
+            title="Your posts"
         />
     )
 }

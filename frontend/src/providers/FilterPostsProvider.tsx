@@ -109,7 +109,7 @@ function FilterPostsProvider({ children, urlPrefix }: FilterPostsContextProps) {
     function searchHandler(): void {
         sessionStorage.setItem("post_filters", JSON.stringify({
             search: searchRef.current?.value,
-            sort: sortPosts[sort.current],
+            sort: sort.current,
             min: min.current,
             max: max.current,
             location: countryRef.current?.value === "Any country" ? undefined : countryRef.current?.value,

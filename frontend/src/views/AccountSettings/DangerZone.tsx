@@ -30,7 +30,8 @@ function DangerZone({ setSettingsPopUp }: { setSettingsPopUp: React.Dispatch<Rea
             {errorMessage !== "" && 
             <ErrorMessage 
                 message={errorMessage} 
-                title="Failed to delete account" 
+                title="Failed to delete account"
+                setErrorMessage={setErrorMessage}
             />}
             <h1 className="text-[20px] text-error-text">Delete account</h1>
             <p className="text-side-text-gray mt-1 pb-4">

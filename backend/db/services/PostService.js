@@ -7,12 +7,13 @@ import { prisma } from '../index.js';
 import { v4 as uuidv4 } from 'uuid';
 import { sortPosts } from '../utils/sortPosts.js';
 import { getPostFilters } from '../utils/getPostFilters.js';
+import { postProperties } from '../utils/postProperties.js';
 
-async function uploadImage(postID, image, url) {
+async function uploadImage(postID, image, url, uuid, addImage) {
     const result = await new Promise(async (resolve, reject) => {
-        const upload = cloudinary.uploader.upload(image, { public_id: url }, (err, result) => {
+        const upload = cloudinary.uploader.upload(image, { public_id: `${url}/${uuid}` }, (err, result) => {
             if (err) {
-                reject(new DBError(err.message, err.http_code));
+                reject(new DBError(err.message, err.http_code || 500));
             } else {
                 resolve(result);
             }
@@ -22,12 +23,17 @@ async function uploadImage(postID, image, url) {
         return success;
     });
 
-    await prisma.postImage.create({
-        data: {
-            postID: postID,
-            url: result.secure_url,
-        }
-    });
+    if (addImage) {
+        await prisma.postImage.create({
+            data: {
+                postID: postID,
+                url: result.secure_url,
+                cloudinaryID: uuid
+            }
+        });
+    }
+
+    return result.secure_url;
 }
 
 export async function createPostHandler(postData, startingPrice, userID) {
@@ -59,9 +65,15 @@ export async function createPostHandler(postData, startingPrice, userID) {
             await createPostPackage(postData.packages[2], res.postID, postData.packages[2].type);
         }
 
-        await uploadImage(res.postID, postData.thumbnail, `FreeFinder/PostImages/${userID}/${res.postID}/${uuidv4()}`);
-        const {_count, ...filtered} = seller;
+        await uploadImage(
+            res.postID, 
+            postData.thumbnail, 
+            `FreeFinder/PostImages/${userID}/${res.postID}`, 
+            uuidv4(), 
+            true
+        );
         
+        const {_count, ...filtered} = seller;
         return {
             postID: res.postID,
             seller: filtered
@@ -107,7 +119,9 @@ export async function addImageHandler(req) {
         await uploadImage(
             req.params.id,
             req.body.image, 
-            `FreeFinder/PostImages/${req.userData.userID}/${req.params.id}/${uuidv4()}`
+            `FreeFinder/PostImages/${req.userData.userID}/${req.params.id}`,
+            uuidv4(),
+            true
         );
     }
     catch (err) {
@@ -157,61 +171,7 @@ export async function getPostHandler(postID) {
             where: {
                 postID: postID
             },
-            select: {
-                postedBy: {
-                    select: {
-                        user: {
-                            select: {
-                                username: true,
-                                country: true,
-                                memberDate: true,
-                                status: true,
-                                profilePicURL: true,
-                            }
-                        },
-                        rating: true,
-                        description: true,
-                        summary: true,
-                        _count: {
-                            select: { 
-                                reviews: true
-                            }
-                        },
-                        languages: true,
-                        skills: true,
-                        sellerLevel: {
-                            select: {
-                                name: true,
-                            }
-                        }
-                    },
-                },
-                packages: {
-                    select: {
-                        deliveryTime: true,
-                        revisions: true,
-                        description: true,
-                        amount: true,
-                        type: true,
-                        features: true,
-                        numOrders: true,
-                        title: true
-                    }
-                },
-                images: {
-                    select: {
-                        url: true,
-                    },
-                    orderBy: {
-                        createdAt: 'asc'
-                    }
-                },
-                title: true,
-                createdAt: true,
-                about: true,
-                sellerID: true,
-                postID: true
-            }
+            ...postProperties
         });
         
         return postData;
@@ -225,6 +185,81 @@ export async function getPostHandler(postID) {
     }
     finally {
         prisma.$disconnect();
+    }
+}
+
+async function updateImage(req) {
+    const image = await prisma.postImage.findUnique({ 
+        where: {
+            postID_url: {
+                postID: req.params.id,
+                url: req.body.imageURL
+            }
+        },
+        select: {
+            cloudinaryID: true
+        }
+    });
+
+    if (!image) {
+        throw new DBError("Image not found.", 404);
+    }
+
+    const newImageUUID = uuidv4();
+    const secure_url = await uploadImage(
+        req.params.id, 
+        req.body.newImage, 
+        `FreeFinder/PostImages/${req.userData.userID}/${req.params.id}`, 
+        newImageUUID,
+        false
+    );
+
+    await prisma.postImage.update({ 
+        where: {
+            postID_url: {
+                postID: req.params.id,
+                url: req.body.imageURL
+            }
+        },
+        data: {
+            cloudinaryID: newImageUUID,
+            url: secure_url
+        }
+    });
+
+    await deleteCloudinaryResource(
+        `FreeFinder/PostImages/${req.userData.userID}/${req.params.id}/${image.cloudinaryID}`, 
+        "file"
+    );
+}
+
+export async function updatePostHandler(req) {
+    try {
+        if (req.body.newImage && req.body.imageURL) {
+            await updateImage(req);
+        }
+
+        const updatedPost = await prisma.post.update({ 
+            where: {
+                postID: req.params.id
+            },
+            data: {
+                about: req.body.about,
+                title: req.body.title,
+            },
+            ...postProperties
+        });
+
+        return updatedPost;
+    }
+    catch (err) {
+        if (err instanceof DBError) {
+            throw err;
+        } else if (err instanceof Prisma.PrismaClientValidationError) {
+            throw new DBError("Missing required fields or fields provided are invalid.", 400);
+        } else {
+            throw new DBError("Something went wrong when trying to update this post. Please try again.", 500);
+        }
     }
 }
 

@@ -19,6 +19,11 @@ interface SellerProps {
     summary: string,
     country: string,
     sellerID: string,
+    canRemove?: {
+        count: React.MutableRefObject<number>,
+        deletingSeller: boolean,
+        setDeletingSeller: React.Dispatch<React.SetStateAction<boolean>>
+    }
     imgStyles?: string,
     statusStyles?: string,
     option?: SellerOptions
@@ -30,11 +35,19 @@ function Seller(props: SellerProps) {
     const [hide, setHide] = useState<boolean>(false);
 
     async function removeSavedSeller(): Promise<string | undefined> {
+        if (!props.canRemove || props.canRemove.deletingSeller) {
+            return;
+        }
+
         try {
+            props.canRemove.setDeletingSeller(true);
             await axios.delete<{ message: string }>(`/api/users/${userContext.userData.username}/saved/sellers/${props.sellerID}`);
+            props.canRemove.count.current -= 1;
+            props.canRemove.setDeletingSeller(false);
         }
         catch (err: any) {
             const errorMessage = getAPIErrorMessage(err as AxiosError<{ message: string }>);
+            props.canRemove.setDeletingSeller(false);
             return errorMessage;
         }
     }
@@ -45,8 +58,8 @@ function Seller(props: SellerProps) {
 
     return (
         <div className="flex items-center justify-between gap-[5px]">
-            <div className="flex flex-grow items-center gap-3 cursor-pointer hover:bg-[#f7f7f7] rounded-[6px]
-            transition-all ease-out duration-100 p-2" onClick={props.navigateToProfile}>
+            <div className="flex items-center gap-3 cursor-pointer hover:bg-[#f7f7f7] rounded-[6px]
+            transition-all ease-out duration-100 p-2 flex-grow overflow-hidden" onClick={props.navigateToProfile}>
                 <div className="relative">
                     <ProfilePicAndStatus
                         profilePicURL={props.profilePicURL}

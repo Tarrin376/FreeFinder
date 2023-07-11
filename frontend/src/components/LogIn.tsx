@@ -54,6 +54,7 @@ function LogIn({ setLogIn, setSignUp }: LogInProps) {
             <ErrorMessage 
                 message={errorMessage} 
                 title="There was a problem signing in."
+                setErrorMessage={setErrorMessage}
             />}
             <div className="flex gap-3 flex-col mb-8">
                 <input type="text" placeholder="Your email or username" className="search-bar" onChange={(e) => setUsernameOrEmail(e.target.value)} />

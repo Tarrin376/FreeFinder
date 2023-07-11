@@ -27,6 +27,9 @@ interface PostDetailsProps {
     createdPost: boolean
 }
 
+export const aboutLimit = 1500;
+export const titleLimit = 100;
+
 function PostDetails(props: PostDetailsProps) {
     const [showFailedUploads, setShowFailedUploads] = useState<boolean>(false);
 
@@ -70,6 +73,7 @@ function PostDetails(props: PostDetailsProps) {
                 message={props.errorMessage} 
                 title="Failed to complete action."
                 styles="!mb-6"
+                setErrorMessage={props.setErrorMessage}
             />}
             {props.failedUploads.length > 0 && 
             <p className="text-main-blue mb-6 underline cursor-pointer" onClick={toggleFailedUploads}>
@@ -114,7 +118,7 @@ function PostDetails(props: PostDetailsProps) {
                 type="text" 
                 className="search-bar mb-4" 
                 value={props.title} 
-                maxLength={100} 
+                maxLength={titleLimit} 
                 placeholder="Enter title" 
                 onChange={(e) => props.setTitle(e.target.value)} 
             />
@@ -122,7 +126,7 @@ function PostDetails(props: PostDetailsProps) {
             <TextEditor
                 value={props.about}
                 setValue={props.setAbout}
-                limit={1500}
+                limit={aboutLimit}
             />
             <div className="flex justify-end gap-3 mt-8">
                 <button className="side-btn w-[110px]" onClick={() => props.setSection(Sections.BasicPackage)}>

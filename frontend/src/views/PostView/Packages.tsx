@@ -4,6 +4,7 @@ import DeliveryTimeIcon from '../../assets/delivery-time.png';
 import RevisionsIcon from '../../assets/revisions.png';
 import FeatureIcon from '../../assets/feature.png';
 import { PackageTypes } from "../../enums/PackageTypes";
+import { capitalizeWord } from "../../utils/capitalizeWord";
 
 function Packages({ packages }: { packages: IPackage[] }) {
     const [curPkg, setCurPkg] = useState<IPackage>();
@@ -15,12 +16,8 @@ function Packages({ packages }: { packages: IPackage[] }) {
         }
     }, [packages]);
 
-    function selectPackage(nextPackage: IPackage) {
+    function selectPackage(nextPackage: IPackage): void {
         setCurPkg(nextPackage);
-    }
-
-    function capitalizePkgType(pkgType: string) {
-        return `${pkgType[0]}${pkgType.substring(1).toLowerCase()}`;
     }
 
     function isMostPopular(pkgType: string): boolean {
@@ -36,17 +33,17 @@ function Packages({ packages }: { packages: IPackage[] }) {
 
     return (
         <div className="bg-main-white relative rounded-[12px] border border-light-border-gray 
-        shadow-info-component min-w-[390px] h-[635px]">
+        shadow-info-component min-w-[390px] h-[635px] overflow-hidden">
             {curPkg &&
             <>
-                <div className="flex justify-evenly overflow-hidden">
+                <div className="flex justify-evenly">
                     {packages.sort((a, b) => a.type.localeCompare(b.type)).map((cur, index) => {
                         return (
                             <button className={`h-[50px] border-b-2 ${cur.type === curPkg.type ? 
-                            "border-main-blue bg-[#e0f9e03a]" : "border-light-gray"} flex-grow basis-0`} 
+                            "border-main-blue bg-[#f4f6ff]" : "border-light-gray"} flex-grow basis-0`} 
                             onClick={() => selectPackage(cur)} 
                             key={index}>
-                                {capitalizePkgType(cur.type)}
+                                {capitalizeWord(cur.type)}
                             </button>
                         );
                     })}
@@ -55,7 +52,7 @@ function Packages({ packages }: { packages: IPackage[] }) {
                     <div className="flex-grow overflow-y-scroll pr-[5px]">
                         <div className="flex justify-between items-center mt-[-6px]">
                             <h3 className="text-[23px]">
-                                {`${capitalizePkgType(curPkg.type)} package`}
+                                {`${capitalizeWord(curPkg.type)} package`}
                             </h3>
                             {isMostPopular(curPkg.type) && 
                             <p className="bg-light-green w-fit text-[15px] px-3 py-[1px] rounded-[5px]">

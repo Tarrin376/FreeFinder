@@ -1,7 +1,7 @@
 import { IPostImage } from "../models/IPostImage";
 import BackIcon from "../assets/back.png";
 import NextIcon from "../assets/next.png";
-import { useRef, useState } from "react";
+import { useRef, useState, useEffect } from "react";
 import React from "react";
 
 interface CarouselProps {
@@ -9,9 +9,10 @@ interface CarouselProps {
     btnSize: number,
     wrapperStyles: string,
     imageStyles?: string,
+    startIndex?: number
 }
 
-function Carousel({ images, btnSize, wrapperStyles, imageStyles }: CarouselProps) {
+function Carousel({ images, btnSize, wrapperStyles, imageStyles, startIndex }: CarouselProps) {
     const clickedBtn = useRef<boolean>(false);
     const [index, setIndex] = useState<number>(0);
     const imageRefs = useRef<React.RefObject<HTMLDivElement>[]>(new Array(images.length).fill(0).map(_ => React.createRef()));
@@ -19,33 +20,28 @@ function Carousel({ images, btnSize, wrapperStyles, imageStyles }: CarouselProps
 
     function nextSlide(){
         clickedBtn.current = true;
-        const currentSlide = imageRefs.current[index];
-        const nextSlide = imageRefs.current[index + 1];
-
-        currentSlide!.current!.classList.remove("translate-x-0");
-        currentSlide!.current!.classList.add("-translate-x-full");
         imageClasses.current[index] = "-translate-x-full";
-
-        nextSlide!.current!.classList.remove("translate-x-full");
-        nextSlide!.current!.classList.add("translate-x-0");
         imageClasses.current[index + 1] = "translate-x-0";
         setIndex(index + 1);
     }
     
     function previousSlide(){
         clickedBtn.current = true;
-        const currentSlide = imageRefs.current[index];
-        const previousSlide = imageRefs.current[index - 1];
-
-        currentSlide!.current!.classList.remove("translate-x-0");
-        currentSlide!.current!.classList.add("translate-x-full");
         imageClasses.current[index] = "translate-x-full";
-
-        previousSlide!.current!.classList.remove("-translate-x-full");
-        previousSlide!.current!.classList.add("translate-x-0");
-        imageClasses.current[index - 1] = "-translate-x-0";
+        imageClasses.current[index - 1] = "translate-x-0";
         setIndex(index - 1);
     }
+
+    useEffect(() => {
+        if (startIndex !== undefined) {
+            imageClasses.current = new Array(images.length).fill(0).map((_, i) => {
+                return i === startIndex ? "translate-x-0" : 
+                i < startIndex ? "-translate-x-full" : "translate-x-full"
+            });
+
+            setIndex(startIndex);
+        }
+    }, [startIndex, images.length])
 
     return (
         <div className={`${wrapperStyles} overflow-hidden relative`}>

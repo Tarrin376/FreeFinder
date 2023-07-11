@@ -9,9 +9,10 @@ import File from "../../components/File";
 import { getUniqueArray } from "../../utils/getUniqueArray";
 import { ImageData } from "../../types/ImageData";
 import { parseImage } from "../../utils/parseImage";
+import { checkFile } from "../../utils/checkFile";
 
 const MAX_FILE_UPLOADS: number = 20;
-const MAX_FILE_BYTES = 2000000;
+export const MAX_FILE_BYTES = 2000000;
 
 interface UploadPostFilesProps {
     setPostService: React.Dispatch<React.SetStateAction<boolean>>,
@@ -26,10 +27,6 @@ function UploadPostFiles({ setPostService, setSection, uploadedImages, setUpload
     const inputFileRef = useRef<HTMLInputElement>(null);
     const [errorMessage, setErrorMessage] = useState<string>("");
 
-    function checkFile(file: File): boolean {
-        return (file.type === "image/jpeg" || file.type === "image/png") && file.size <= MAX_FILE_BYTES;
-    }
-
     async function handleDrop(files: FileList): Promise<void> {
         let filesToAdd: number = Math.min(MAX_FILE_UPLOADS - uploadedImages.length, files.length);
         const uploaded: ImageData[] = [];
@@ -37,7 +34,7 @@ function UploadPostFiles({ setPostService, setSection, uploadedImages, setUpload
         let failed = 0;
 
         while (index < files.length && filesToAdd > 0) {
-            const validFile: boolean = checkFile(files[index]);
+            const validFile: boolean = checkFile(files[index], MAX_FILE_BYTES);
             if (validFile) {
                 const parsedImage = await parseImage(files[index]);
                 uploaded.push({
@@ -101,7 +98,8 @@ function UploadPostFiles({ setPostService, setSection, uploadedImages, setUpload
             {errorMessage !== "" && 
             <ErrorMessage 
                 message={errorMessage} 
-                title="There was a problem uploading some of your files." 
+                title="There was a problem uploading some of your files."
+                setErrorMessage={setErrorMessage}
             />}
             <div className="max-h-[250px] items-center overflow-y-scroll mt-6 pr-[5px] flex flex-col gap-[15px]">
                 {uploadedImages.map((image: ImageData, index: number) => {

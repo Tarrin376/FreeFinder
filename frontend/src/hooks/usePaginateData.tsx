@@ -76,7 +76,7 @@ export function usePaginateData<T1, T2>(pageRef: React.RefObject<HTMLDivElement>
         errorMessage, 
         loading,
         reachedBottom: reachedBottom.current,
-        count: count.current,
+        count: count,
         resetState,
         goToNextPage,
     };

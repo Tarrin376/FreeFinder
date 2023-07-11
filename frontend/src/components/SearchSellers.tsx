@@ -73,9 +73,9 @@ function SearchSellers() {
                 />}
             </AnimatePresence>
             <OutsideClickHandler onOutsideClick={() => setHide(true)}>
-                <div className="relative">
+                <div className="relative w-[360px]">
                     <div className={`flex items-center border border-light-gray 
-                    rounded-[8px] ${searchQuery && !hide ? "rounded-b-none" : ""} px-3 h-10 bg-transparent w-[400px]`}>
+                    rounded-[8px] ${searchQuery && !hide ? "rounded-b-none" : ""} px-3 h-10 bg-transparent w-full`}>
                         <img src={SearchIcon} alt="" className="w-5 h-5"/>
                         <input 
                             type="text" 
@@ -87,7 +87,7 @@ function SearchSellers() {
                         />
                     </div>
                     {searchQuery && !hide &&
-                    <div className="border-b border-x border-light-gray rounded-b-[8px] p-2 bg-main-white absolute w-full z-20">
+                    <div className="border-b border-x border-light-gray rounded-b-[8px] bg-main-white absolute w-full z-20 p-2">
                         {errorMessage ? 
                         <p className="text-center text-side-text-gray">{errorMessage}</p> :
                         sellers.length === 0 && !loading &&

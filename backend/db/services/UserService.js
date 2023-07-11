@@ -12,7 +12,24 @@ import { sellerProperties } from '../utils/sellerProperties.js';
 export async function updateProfilePictureHandler(req) {
     try {
         await checkUser(req.userData.userID, req.username);
-        
+
+        const result = await new Promise(async (resolve, reject) => {
+            const upload = cloudinary.uploader.upload(req.body.profilePic, { 
+                public_id: `FreeFinder/ProfilePictures/${req.userData.userID}` 
+            }, (err, result) => {
+                if (err) {
+                    reject(new DBError(err.message, err.http_code || 500));
+                } else {
+                    resolve(result);
+                }
+            });
+
+            const success = await upload
+            .then(data => data)
+            .catch(err => reject(new DBError(err.message, err.http_code || 500)));
+            return success;
+        });
+
         const updated = await prisma.user.update({
             where: { userID: req.userData.userID },
             data: { profilePicURL: result.secure_url },
@@ -28,21 +45,6 @@ export async function updateProfilePictureHandler(req) {
                 userID: true,
                 memberDate: true
             }
-        });
-
-        const result = await new Promise(async (resolve, reject) => {
-            const upload = cloudinary.uploader.upload(req.body.profilePic, { 
-                public_id: `FreeFinder/ProfilePictures/${req.userData.userID}` 
-            }, (err, result) => {
-                if (err) {
-                    reject(new DBError(err.message, err.http_code));
-                } else {
-                    resolve(result);
-                }
-            });
-
-            const success = await upload.then((data) => data);
-            return success;
         });
 
         return updated;

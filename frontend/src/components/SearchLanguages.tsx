@@ -94,6 +94,7 @@ function SearchLanguages({ setSelectedLanguages, selectedLanguages, searchBarSty
                 removeOption={removeLanguage}
                 styles="mt-4"
                 bgColour="bg-highlight"
+                textColour="text-main-blue"
             />}
             {applyChanges && applyChangesBtn &&
             <button className={`main-btn w-fit px-3 !h-9 !text-[14px] mt-4 ${applyChanges.disabled ? "invalid-button" : ""}`} 

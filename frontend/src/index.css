@@ -70,6 +70,15 @@
     .link {
         @apply hover:text-main-blue cursor-pointer transition-all ease-out duration-200;
     }
+    .option {
+        @apply rounded-full py-1 px-3 flex items-center gap-2;
+    }
+    .cancel-change {
+        @apply red-btn option !h-fit text-[14px] cursor-pointer w-fit;
+    }
+    .change {
+        @apply option bg-highlight text-main-blue text-[14px] cursor-pointer w-fit;
+    }
 }
 
 @layer base {

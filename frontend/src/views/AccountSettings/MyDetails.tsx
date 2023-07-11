@@ -55,6 +55,7 @@ function MyDetails() {
                     <ErrorMessage 
                         message={errorMessage} 
                         title="Failed to update email address" 
+                        setErrorMessage={setErrorMessage}
                     />}
                     <p className="mb-2">Email address</p>
                     <input 

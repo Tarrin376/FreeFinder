@@ -3,7 +3,7 @@ export type PaginateData<T> = {
     errorMessage: string,
     loading: boolean,
     reachedBottom: boolean,
-    count: number,
+    count: React.MutableRefObject<number>,
     resetState: () => void,
     goToNextPage: () => void
 }

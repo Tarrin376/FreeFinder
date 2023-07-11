@@ -41,7 +41,7 @@ export type InitialPackageState = {
 }
 
 export type ReducerAction = { 
-    type: PackageTypes.BASIC | PackageTypes.STANDARD | PackageTypes.SUPERIOR,
+    type: PackageTypes,
     payload: { 
         revisions?: string,
         features?: string[],

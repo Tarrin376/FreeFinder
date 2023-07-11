@@ -15,6 +15,7 @@ function SavedServicesView() {
                 unsave: true
             }}
             noResultsFoundTitle="Sorry, we could not find any of your saved posts."
+            title="Your saved posts"
         />
     )
 }

@@ -103,7 +103,7 @@ async function querySavedPosts(req) {
                     postID: true,
                     images: {
                         select: {
-                            url: true,
+                            url: true
                         },
                         orderBy: {
                             createdAt: 'asc'

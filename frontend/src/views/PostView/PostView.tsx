@@ -1,5 +1,5 @@
 import { useLocation } from "react-router-dom";
-import { useEffect, useState } from 'react';
+import { useEffect, useState, useContext, useReducer, useRef } from 'react';
 import { PostPage } from "../../types/PostPage";
 import ProfilePicAndStatus from "../../components/ProfilePicAndStatus";
 import StarIcon from '../../assets/star.png';
@@ -14,17 +14,98 @@ import PageWrapper from "../../wrappers/PageWrapper";
 import Carousel from "../../components/Carousel";
 import parse from "html-react-parser";
 import { useNavigate } from "react-router-dom";
+import { UserContext } from "../../providers/UserContext";
+import TextEditor from "../../components/TextEditor";
+import { aboutLimit, titleLimit } from "../CreatePost/PostDetails";
+import PostImage from "./PostImage";
+
+type UpdatePostToggles = "aboutToggle" | "titleToggle";
+
+type UpdatePostArgs = {
+    data: {
+        about?: string,
+        title?: string,
+    }
+    toggles: {
+        aboutToggle?: boolean,
+        titleToggle?: boolean,
+    }
+}
+
+enum Actions {
+    TOGGLE,
+    UPDATE
+}
+
+type ReducerAction = {
+    type: Actions,
+    payload: UpdatePostArgs["data"] | UpdatePostArgs["toggles"]
+}
+
+const initialState = {
+    data: {
+        about: "",
+        title: "",
+    },
+    toggles: {
+        aboutToggle: false,
+        titleToggle: false,
+    }
+}
+
+function reducer(state: UpdatePostArgs, action: ReducerAction): UpdatePostArgs {
+    switch (action.type) {
+        case Actions.TOGGLE:
+            return { ...state, toggles: { ...state.toggles, ...action.payload } };
+        case Actions.UPDATE:
+            return { ...state, data: { ...state.data, ...action.payload } };
+        default:
+            throw new Error("Invalid action type or payload given.");
+    }
+}
 
 function PostView() {
-    const [postData, setPostData] = useState<PostPage>();
-    const [errorMessage, setErrorMessage] = useState<string>("");
     const location = useLocation();
     const navigate = useNavigate();
+    const userContext = useContext(UserContext);
+
+    const [postData, setPostData] = useState<PostPage>();
+    const [errorMessage, setErrorMessage] = useState<string>("");
+    const [index, setIndex] = useState<number>(0);
+
+    const [state, dispatch] = useReducer(reducer, initialState);
+    const isOwner = postData?.postedBy.user.username === userContext.userData.username;
 
     function navigateToProfile() {
         if (postData) {
             navigate(`/sellers/${postData.postedBy.user.username}`);
         }
+    }
+
+    async function updatePost(data: UpdatePostArgs["data"]) {
+        try {
+            const resp = await axios.put<{ post: PostPage, message: string }>(`/api${location.pathname}`, data);
+            setPostData(resp.data.post);
+            setErrorMessage(errorMessage);
+        }
+        catch (err: any) {
+            const errorMessage = getAPIErrorMessage(err as AxiosError<{ message: string }>);
+            setErrorMessage(errorMessage);
+        }
+    }
+
+    function toggle(change: UpdatePostToggles) {
+        const cpy = {...state.toggles};
+        cpy[change] = !cpy[change];
+        dispatch({ type: Actions.TOGGLE, payload: cpy });
+    }
+
+    function confirmChanges(data: UpdatePostArgs["data"], change: UpdatePostToggles) {
+        if (state.toggles[change]) {
+            updatePost(data);
+        }
+
+        toggle(change);
     }
     
     useNavigateErrorPage("Something isn't quite right...", errorMessage);
@@ -34,6 +115,10 @@ function PostView() {
             try {
                 const resp = await axios.get<{ post: PostPage, message: string }>(`/api${location.pathname}`);
                 setPostData(resp.data.post);
+                dispatch({ type: Actions.UPDATE, payload: { 
+                    about: resp.data.post.about, 
+                    title: resp.data.post.title 
+                }});
             }
             catch (err: any) {
                 const errorMessage = getAPIErrorMessage(err as AxiosError<{ message: string }>);
@@ -50,10 +135,30 @@ function PostView() {
 
     return (
         <div className="overflow-y-scroll h-[calc(100vh-90px)]">
-            <PageWrapper styles="p-[38px] pt-[58px]" locationStack={["Posts", "Website design", postData.title]}>
+            <PageWrapper styles="p-[38px] pt-[58px]" locationStack={["Browse all", postData.postedBy.user.username, postData.title]}>
                 <div className="flex gap-20">
                     <div className="flex-grow">
-                        <h1 className="text-3xl mb-4">{postData.title}</h1>
+                        <div className="flex gap-3 items-center">
+                            {isOwner &&
+                            <p className="change mb-2" onClick={() => confirmChanges({ title: state.data.title }, "titleToggle")}>
+                                {state.toggles.titleToggle ? "Confirm changes" : "Change"}
+                            </p>}
+                            {isOwner && state.toggles.titleToggle &&
+                            <p className="cancel-change mb-2" onClick={() => toggle("titleToggle")}>
+                                Cancel changes
+                            </p>}
+                        </div>
+                        {state.toggles.titleToggle ? 
+                        <input
+                            type="text" 
+                            className="w-full text-2xl search-bar mt-2 mb-6"
+                            value={state.data.title}
+                            maxLength={titleLimit}
+                            onChange={(e) => dispatch({ type: Actions.UPDATE, payload: { title: e.target.value } })}
+                        /> :
+                        <h1 className="text-3xl mb-4">
+                            {postData.title}
+                        </h1>}
                         <div className="flex gap-3 items-center mb-6">
                             <div className="relative">
                                 <ProfilePicAndStatus 
@@ -88,23 +193,43 @@ function PostView() {
                             wrapperStyles="bg-very-light-gray rounded-[12px] border 
                             border-very-light-gray shadow-info-component h-[584px]"
                             imageStyles="object-contain object-center"
+                            startIndex={index}
                         />
                         <div className="mt-5 w-full whitespace-nowrap overflow-x-scroll pb-5">
                             {postData.images.map((image: IPostImage, index: number) => {
                                 return (
-                                    <img 
-                                        src={image.url} 
-                                        alt="" 
-                                        className={`w-[112px] h-[80px] inline-block rounded-[8px] object-contain cursor-pointer
-                                        bg-[#f5f6f8] border border-very-light-gray ${index > 0 ? "ml-3" : ""}`}
+                                    <PostImage
+                                        image={image}
+                                        index={index}
+                                        isOwner={isOwner}
+                                        setPostData={setPostData}
                                         key={index}
+                                        action={() => setIndex(index)}
                                     />
                                 )
                             })}
                         </div>
                         <section className="mt-8 mb-10 w-full">
-                            <h2 className="text-2xl mb-3">About this service</h2>
-                            {parse(postData.about)}
+                            <div className="mb-3 flex items-center gap-3">
+                                <h2 className="text-2xl">About this service</h2>
+                                {isOwner &&
+                                <p className="change" onClick={() => confirmChanges({ about: state.data.about }, "aboutToggle")}>
+                                    {state.toggles.aboutToggle ? "Confirm changes" : "Change"}
+                                </p>}
+                                {isOwner && state.toggles.aboutToggle &&
+                                <p className="cancel-change" onClick={() => toggle("aboutToggle")}>
+                                    Cancel changes
+                                </p>}
+                            </div>
+                            {state.toggles.aboutToggle ? 
+                            <TextEditor
+                                value={state.data.about}
+                                setValue={(value: string) => dispatch({ type: Actions.UPDATE, payload: { about: value } })}
+                                limit={aboutLimit}
+                            /> : 
+                            <>
+                                {parse(postData.about)}
+                            </>}
                         </section>
                         <AboutSeller 
                             description={postData.postedBy.description}

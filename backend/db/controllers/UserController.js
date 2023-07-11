@@ -80,7 +80,7 @@ export async function registerUser(req, res) {
 
 export async function findUser(req, res) {
     try {
-        await findUserHandler(req.params.usernameOrEmail, req.body.password);
+        await authenticateUserHandler(req.params.usernameOrEmail, req.body.password);
         res.json({ message: "success" });
     }
     catch (err) {

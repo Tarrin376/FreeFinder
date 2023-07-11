@@ -71,6 +71,7 @@ function AboutSeller(props: AboutSellerProps) {
                 options={props.languages} 
                 styles="mt-2"
                 bgColour="bg-highlight"
+                textColour="text-main-blue"
             />
             {props.skills.length > 0 &&
             <>
@@ -78,8 +79,8 @@ function AboutSeller(props: AboutSellerProps) {
                 <Options 
                     options={props.skills} 
                     styles="mt-2"
-                    bgColour="bg-very-light-purple"
-                    textColour="text-purple"
+                    bgColour="bg-very-light-pink"
+                    textColour="text-pink"
                 />
             </>}
             <button className="red-btn mt-6">

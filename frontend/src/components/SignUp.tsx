@@ -93,6 +93,7 @@ function SignUp({ setLogIn, setSignUp, setAccountCreated }: SignUpProps) {
             <ErrorMessage 
                 message={errorMessage} 
                 title="Account creation failed."
+                setErrorMessage={setErrorMessage}
             />}
             <div className="flex flex-col mb-8">
                 <input 

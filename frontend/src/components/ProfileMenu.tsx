@@ -86,7 +86,7 @@ function ProfileMenu({ setSettingsPopUp, setSellerProfilePopUp }: ProfileMenuPro
                 <OutsideClickHandler onOutsideClick={() => setNavProfileDropdown(false)}>
                     {navProfileDropdown && 
                     <ul className="absolute bg-main-white shadow-profile-page-container 
-                    mt-2 border-light-gray border-2 rounded-[11px] right-0 z-10 overflow-hidden">
+                    mt-2 border-light-gray border-2 rounded-[11px] right-0 z-20 overflow-hidden">
                         <div className="border-b border-light-gray">
                             <p className="whitespace-nowrap p-3 pt-1 pb-1 cursor-default profile-menu-element hover:!bg-main-white">
                                 Signed in as: <span className="text-main-blue text-[15px]">{userContext.userData.username}</span>

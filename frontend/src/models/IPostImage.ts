@@ -1,3 +1,3 @@
 export interface IPostImage {
-    url: string,
+    url: string
 }

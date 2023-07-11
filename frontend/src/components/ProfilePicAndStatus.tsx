@@ -8,6 +8,7 @@ import { parseImage } from '../utils/parseImage';
 import { getAPIErrorMessage } from '../utils/getAPIErrorMessage';
 import { AxiosError } from "axios";
 import { UserStatus } from '../enums/UserStatus';
+import { checkFile } from '../utils/checkFile';
 
 interface ProfilePicAndStatusProps {
     profilePicURL: string, 
@@ -54,10 +55,11 @@ function ProfilePicAndStatus(props: ProfilePicAndStatusProps) {
     }
 
     function removePhoto(): void {
-        if (props.setLoading) {
-            props.setLoading(true);
+        if (!props.setLoading || userContext.userData.profilePicURL === "") {
+            return;
         }
-        
+
+        props.setLoading(true);
         updatePhoto("");
     }
 
@@ -69,9 +71,10 @@ function ProfilePicAndStatus(props: ProfilePicAndStatusProps) {
 
         props.setLoading(true);
         const profilePic = files[0];
+        const valid = checkFile(profilePic, MAX_PROFILE_PIC_BYTES);
 
-        if ((profilePic.type === "image/jpeg" || profilePic.type === "image/png") && profilePic.size <= MAX_PROFILE_PIC_BYTES) {
-            const base64Str = await parseImage(files[0]);
+        if (valid) {
+            const base64Str = await parseImage(profilePic);
             updatePhoto(base64Str);
         } else {
             props.setErrorMessage(`Failed to upload profile picture. Please check that the file format is

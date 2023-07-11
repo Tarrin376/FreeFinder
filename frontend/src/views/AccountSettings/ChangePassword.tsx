@@ -71,7 +71,8 @@ function ChangePassword() {
                     {errorMessage !== "" && 
                     <ErrorMessage 
                         message={errorMessage} 
-                        title="Failed to update password" 
+                        title="Failed to update password"
+                        setErrorMessage={setErrorMessage}
                     />}
                     <p className="mb-2">Current password</p>
                     <input type="password" className={`search-bar ${validCurrentPass || currentPass === "" ? '' : 'invalid-input'}`}

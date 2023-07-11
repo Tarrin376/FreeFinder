@@ -3,8 +3,8 @@ import 'react-quill/dist/quill.snow.css';
 import { useRef } from "react";
 
 interface TextEditorProps {
-    value: string,
-    setValue: React.Dispatch<React.SetStateAction<string>>,
+    value: string | undefined,
+    setValue: (value: string) => void,
     limit: number
 }
 
