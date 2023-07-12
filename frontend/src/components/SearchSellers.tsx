@@ -94,7 +94,7 @@ function SearchSellers({ styles, toggleSidebar }: SearchSellersProps) {
                     </div>
                     {searchQuery && !hide &&
                     <div className="border-b border-x border-light-border-gray rounded-b-[8px] 
-                    bg-main-white absolute w-full z-20 p-2 overflow-hidden transition-all duration-200 ease-linear">
+                    bg-main-white absolute w-full z-30 p-2 overflow-hidden transition-all duration-200 ease-linear">
                         {errorMessage ? 
                         <p className="text-center text-error-text">{errorMessage}</p> :
                         sellers.length === 0 && !loading &&

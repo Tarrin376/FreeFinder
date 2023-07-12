@@ -9,8 +9,6 @@ import AccountSettings from '../views/AccountSettings/AccountSettings';
 import ChangeSellerDetails from '../components/ChangeSellerDetails';
 import { useNavigate } from 'react-router-dom';
 import SearchSellers from '../components/SearchSellers';
-import { useOnlineStatus } from '../hooks/useOnlineStatus';
-import CloseSmallIcon from "../assets/close-small.png";
 import { useToggleAwayStatus } from '../hooks/useToggleAwayStatus';
 import DropdownIcon from "../assets/dropdown.png";
 import OutsideClickHandler from 'react-outside-click-handler';
@@ -23,6 +21,7 @@ import Sidebar from './Sidebar';
 import AccountOptions from '../components/AccountOptions';
 import { initialState } from '../providers/UserContext';
 import axios from "axios";
+import OnlineStatus from '../components/OnlineStatus';
 
 function Navbar() {
     const [signUp, setSignUp] = useState<boolean>(false);
@@ -143,7 +142,7 @@ function Navbar() {
                             {savedDropdown &&
                             <OutsideClickHandler onOutsideClick={toggleSavedDropdown}>
                                 <div className="absolute bg-main-white top-[30px] left-0 flex flex-col rounded-[6px] 
-                                border border-light-border-gray shadow-profile-page-container overflow-hidden w-[120px] z-20">
+                                border border-light-border-gray shadow-profile-page-container overflow-hidden w-[120px] z-30">
                                     <p className="cursor-pointer hover:bg-main-white-hover 
                                     profile-menu-element pt-[6px] pb-[6px]" 
                                     onClick={(e) => goToPage(e, `/${userContext.userData.username}/saved/posts`)}>
@@ -181,28 +180,6 @@ function Navbar() {
             </div>
         </>
     );
-}
-
-function OnlineStatus() {
-    const { onlineMessage, offlineMessage, closePopUp } = useOnlineStatus();
-
-    if (!onlineMessage && !offlineMessage) {
-        return <></>
-    }
-
-    return (
-        <div className={`w-[100vw] px-7 relative ${onlineMessage ? "bg-light-green " : "bg-error-text"} text-center p-2 z-20`}>
-            <p className="text-main-white">
-                {onlineMessage ? onlineMessage : offlineMessage}
-            </p>
-            <img 
-                src={CloseSmallIcon} 
-                className="text-main-white w-[20px] h-[20px] absolute top-1/2 translate-y-[-50%] right-7 cursor-pointer" 
-                alt="close"
-                onClick={closePopUp}
-            />
-        </div>
-    )
 }
 
 export default Navbar;

@@ -13,27 +13,32 @@ import { userProperties } from '../utils/userProperties.js';
 export async function updateProfilePictureHandler(req) {
     try {
         await checkUser(req.userData.userID, req.username);
+        let result = "";
 
-        const result = await new Promise(async (resolve, reject) => {
-            const upload = cloudinary.uploader.upload(req.body.profilePic, { 
-                public_id: `FreeFinder/ProfilePictures/${req.userData.userID}` 
-            }, (err, result) => {
-                if (err) {
-                    reject(new DBError(err.message, err.http_code || 500));
-                } else {
-                    resolve(result);
-                }
+        if (req.body.profilePic === "") {
+            await deleteCloudinaryResource(`FreeFinder/ProfilePictures/${req.userData.userID}`, "file");
+        } else {
+            result = await new Promise(async (resolve, reject) => {
+                const upload = cloudinary.uploader.upload(req.body.profilePic, { 
+                    public_id: `FreeFinder/ProfilePictures/${req.userData.userID}` 
+                }, (err, result) => {
+                    if (err) {
+                        reject(new DBError(err.message, err.http_code || 500));
+                    } else {
+                        resolve(result);
+                    }
+                });
+    
+                const success = await upload
+                .then(data => data)
+                .catch(err => reject(new DBError(err.message, err.http_code || 500)));
+                return success;
             });
-
-            const success = await upload
-            .then(data => data)
-            .catch(err => reject(new DBError(err.message, err.http_code || 500)));
-            return success;
-        });
+        }
 
         const updated = await prisma.user.update({
             where: { userID: req.userData.userID },
-            data: { profilePicURL: result.secure_url },
+            data: { profilePicURL: result.secure_url || "" },
             select: {
                 seller: {
                     ...sellerProperties,
@@ -51,6 +56,7 @@ export async function updateProfilePictureHandler(req) {
         return updated;
     }
     catch (err) {
+        console.log(err);
         if (err instanceof DBError) {
             throw err;
         } else if (err instanceof Prisma.PrismaClientValidationError) {

@@ -1,7 +1,4 @@
 import { IPostImage } from "../../models/IPostImage";
-import { checkFile } from "../../utils/checkFile";
-import { MAX_FILE_BYTES } from "../CreatePost/UploadPostFiles";
-import { parseImage } from "../../utils/parseImage";
 import { useRef, useState } from "react";
 import axios, { AxiosError } from "axios";
 import { PostPage } from "../../types/PostPage";
@@ -11,56 +8,25 @@ import WhiteLoadingIcon from '../../assets/loading-white.svg';
 import { AnimatePresence } from "framer-motion";
 import { motion } from "framer-motion";
 import ErrorPopUp from "../../components/ErrorPopUp";
-import { MAX_FILE_UPLOADS } from "../CreatePost/UploadPostFiles";
 
 interface PostImageProps {
     images: IPostImage[],
     index: number,
     isOwner: boolean,
     setPostData: React.Dispatch<React.SetStateAction<PostPage | undefined>>,
-    setIndex: React.Dispatch<React.SetStateAction<number>>,
-    action: () => void
+    action: () => void,
+    getImage: (ref: React.RefObject<HTMLInputElement>) => Promise<unknown | undefined>
 }
 
-enum Actions {
-    UPDATE,
-    ADD
-}
-
-function PostImage({ images, index, isOwner, setPostData, setIndex, action }: PostImageProps) {
+function PostImage({ images, index, isOwner, setPostData, action, getImage }: PostImageProps) {
     const changeImageFileRef = useRef<HTMLInputElement>(null);
-    const addImageFileRef = useRef<HTMLInputElement>(null);
     const [errorMessage, setErrorMessage] = useState<string>("");
     const [updatingImage, setUpdatingImage] = useState<boolean>(false);
     const location = useLocation();
 
-    function triggerFileUpload(action: Actions): void {
-        if (changeImageFileRef.current && action === Actions.UPDATE) {
+    function triggerFileUpload(): void {
+        if (changeImageFileRef.current) {
             changeImageFileRef.current.click();
-        } else if (addImageFileRef.current && action === Actions.ADD) {
-            addImageFileRef.current.click();
-        }
-    }
-
-    async function getImage(ref: React.RefObject<HTMLInputElement>): Promise<unknown | undefined> {
-        try {
-            if (!ref.current || !ref.current.files) {
-                return;
-            }
-
-            const newImage = ref.current.files[0];
-            const valid = checkFile(newImage, MAX_FILE_BYTES);
-
-            if (valid) {
-                const base64Str = await parseImage(newImage);
-                return base64Str;
-            } else {
-                setErrorMessage(`Image format is unsupported or image size is over ${MAX_FILE_BYTES / 1000000}MB.`);
-            }
-        }
-        catch (err: any) {
-            const errorMessage = getAPIErrorMessage(err as AxiosError<{ message: string }>);
-            setErrorMessage(errorMessage);
         }
     }
 
@@ -85,34 +51,6 @@ function PostImage({ images, index, isOwner, setPostData, setIndex, action }: Po
         }
         finally {
             setUpdatingImage(false);
-        }
-    }
-
-    async function addImage(): Promise<void> {
-        try {
-            const image = await getImage(addImageFileRef);
-            if (image === undefined) {
-                return;
-            }
-
-            const resp = await axios.post<{ secure_url: string, message: string }>(`/api${location.pathname}`, {
-                image: image,
-            });
-
-            const updated = [...images, { url: resp.data.secure_url }];
-            setPostData((cur: PostPage | undefined) => {
-                if (!cur) return cur;
-                return {
-                    ...cur,
-                    images: updated
-                }
-            });
-
-            setIndex(updated.length - 1);
-        }
-        catch (err: any) {
-            const errorMessage = getAPIErrorMessage(err as AxiosError<{ message: string }>);
-            setErrorMessage(errorMessage);
         }
     }
 
@@ -147,21 +85,11 @@ function PostImage({ images, index, isOwner, setPostData, setIndex, action }: Po
                 {isOwner &&
                 <>
                     <input type='file' ref={changeImageFileRef} className="hidden" onChange={changeImage} />
-                    <p className="change m-auto mt-3" onClick={() => triggerFileUpload(Actions.UPDATE)}>
+                    <p className="change m-auto mt-3" onClick={triggerFileUpload}>
                         Change
                     </p>
                 </>}
             </div>
-            {isOwner && images.length < MAX_FILE_UPLOADS &&
-            <>
-                <input type='file' ref={addImageFileRef} className="hidden" onChange={addImage} />
-                <div className={`inline-block absolute w-[140px] ${images.length > 0 ? "ml-3" : ""}`}
-                onClick={() => triggerFileUpload(Actions.ADD)}>
-                    <button className="change relative w-full h-[85px] flex items-center justify-center rounded-[8px] text-[16px]">
-                        + Add image
-                    </button>
-                </div>
-            </>}
         </>
     )
 }

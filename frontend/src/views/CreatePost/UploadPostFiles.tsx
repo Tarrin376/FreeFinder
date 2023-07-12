@@ -98,7 +98,7 @@ function UploadPostFiles({ setPostService, setSection, uploadedImages, setUpload
             {errorMessage !== "" && 
             <ErrorMessage 
                 message={errorMessage} 
-                title="There was a problem uploading some of your files."
+                title="Unable to upload some of your files."
                 setErrorMessage={setErrorMessage}
             />}
             <div className="max-h-[250px] items-center overflow-y-scroll mt-6 pr-[8px] flex flex-col gap-[15px]">
