@@ -165,7 +165,7 @@ function CreatePost({ setPostService, resetState }: CreatePostProps) {
         for (let i = 0; i < uploadedImages.length; i++) {
             try {
                 if (uploadedImages[i] !== thumbnail) {
-                    await axios.post(`/api/posts/${postID}`, {
+                    await axios.post<{ secure_url: string, message: string }>(`/api/posts/${postID}`, {
                         image: uploadedImages[i].image,
                     });
                 }

@@ -4,6 +4,8 @@ import axios, { AxiosError } from "axios";
 import { getAPIErrorMessage } from "../utils/getAPIErrorMessage";
 import { actionFinished } from "../utils/actionFinished";
 import Save from "./Save";
+import ErrorPopUp from "./ErrorPopUp";
+import { AnimatePresence } from "framer-motion";
 
 interface SaveSellerProps {
     svgSize: number,
@@ -37,12 +39,21 @@ function SaveSeller({ svgSize, sellerID }: SaveSellerProps) {
     }
     
     return (
-        <Save
-            action={saveSeller}
-            svgSize={svgSize}
-            checked={userContext.userData.savedSellers.has(sellerID)}
-            hoverText={userContext.userData.savedSellers.has(sellerID) ? "Unsave seller" : "Save seller"}
-        />
+        <>
+            <AnimatePresence>
+                {errorMessage !== "" &&
+                <ErrorPopUp
+                    errorMessage={errorMessage}
+                    setErrorMessage={setErrorMessage}
+                />}
+            </AnimatePresence>
+            <Save
+                action={saveSeller}
+                svgSize={svgSize}
+                checked={userContext.userData.savedSellers.has(sellerID)}
+                hoverText={userContext.userData.savedSellers.has(sellerID) ? "Unsave seller" : "Save seller"}
+            />
+        </>
     )
 }
 

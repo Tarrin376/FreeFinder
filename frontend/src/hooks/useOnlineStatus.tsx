@@ -1,10 +1,14 @@
 import { useEffect, useCallback, useState } from "react";
 
-export function useOnlineStatus() {
+export function useOnlineStatus(): {
+    onlineMessage: string,
+    offlineMessage: string,
+    closePopUp: () => void
+} {
     const [onlineMessage, setOnlineMessage] = useState<string>("");
     const [offlineMessage, setOfflineMessage] = useState<string>("");
 
-    function closePopUp() {
+    function closePopUp(): void {
         setOnlineMessage("");
         setOfflineMessage("");
     }

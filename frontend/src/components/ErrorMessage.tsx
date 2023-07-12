@@ -9,7 +9,7 @@ interface ErrorMessageProps {
 }
 
 function ErrorMessage({ message, title, styles, setErrorMessage }: ErrorMessageProps) {
-    function closeErrorMessage() {
+    function closeErrorMessage(): void {
         setErrorMessage("");
     }
 

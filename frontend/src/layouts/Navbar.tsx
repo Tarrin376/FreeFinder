@@ -69,11 +69,11 @@ function Navbar() {
         }
     }
 
-    function toggleSavedDropdown() {
+    function toggleSavedDropdown(): void {
         setSavedDropdown((cur) => !cur);
     }
 
-    function toggleSidebar() {
+    function toggleSidebar(): void {
         setSidebar((cur) => !cur);
     }
     

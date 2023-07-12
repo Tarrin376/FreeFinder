@@ -116,13 +116,15 @@ export async function addImageHandler(req) {
             throw new DBError("You are not authorized to add an image to this post.", 403);
         }
 
-        await uploadImage(
+        const secure_url = await uploadImage(
             req.params.id,
             req.body.image, 
             `FreeFinder/PostImages/${req.userData.userID}/${req.params.id}`,
             uuidv4(),
             true
         );
+
+        return secure_url;
     }
     catch (err) {
         if (err instanceof DBError) {

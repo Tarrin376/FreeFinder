@@ -19,13 +19,8 @@ interface ButtonProps {
 function Button(props: ButtonProps) {
     const btnRef = useRef<HTMLButtonElement>(null);
     const [btnText, setBtnText] = useState(props.defaultText);
-    const [disabled, setDisabled] = useState<boolean>(false);
   
     const handleAction = async () => {
-        if (disabled) {
-            return;
-        }
-        
         setBtnText(props.loadingText);
         const error = await props.action();
 
@@ -34,16 +29,11 @@ function Button(props: ButtonProps) {
             setBtnText(props.completedText);
         } else {
             props.setErrorMessage(error);
-            setDisabled(true);
-            
             if (!props.keepErrorMessage) {
                 setTimeout(() => {
                     props.setErrorMessage("");
-                    setDisabled(false);
                 }, 7000);
-            } else {
-                setDisabled(false);
-            }
+            } 
 
             setBtnText(props.defaultText);
         }
@@ -71,14 +61,13 @@ function Button(props: ButtonProps) {
     }, [props.defaultText])
   
     return (
-        <button className={`${props.styles} ${btnText !== props.defaultText ? "pointer-events-none" : ""} 
-        ${disabled ? "pointer-events-none invalid-button" : ""}`} 
+        <button className={`${props.styles} ${btnText !== props.defaultText ? "pointer-events-none" : ""}`} 
         ref={btnRef} onClick={handleAction} type="submit">
             <div className="flex items-center justify-center gap-[10px]">
                 {btnText === props.loadingText ? 
                 <img src={props.redLoadingIcon ? RedLoadingIcon : WhiteLoadingIcon} className="w-8 mt-[1px]" alt="" /> :
                 props.children && btnText === props.defaultText && props.children}
-                <p className={disabled ? "text-disabled-gray" : props.textStyles}>
+                <p className={props.textStyles}>
                     {btnText}
                 </p>
             </div>

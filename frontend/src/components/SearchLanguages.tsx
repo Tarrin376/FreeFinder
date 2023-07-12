@@ -54,7 +54,7 @@ function SearchLanguages({ setSelectedLanguages, selectedLanguages, searchBarSty
         setSelectedLanguages((selected: string[]) => selected.filter((curLang: string) => curLang !== language));
     }
 
-    function applyAll() {
+    function applyAll(): void {
         if (!applyChanges) {
             return;
         }

@@ -38,7 +38,7 @@ export function usePaginateData<T1, T2>(pageRef: React.RefObject<HTMLDivElement>
         if (loading) {
             return;
         }
-        
+
         setLoading(true);
         (async (): Promise<void> => {
             try {
@@ -78,6 +78,7 @@ export function usePaginateData<T1, T2>(pageRef: React.RefObject<HTMLDivElement>
         reachedBottom: reachedBottom.current,
         count: count,
         resetState,
-        goToNextPage,
+        setErrorMessage,
+        goToNextPage
     };
 }

@@ -8,6 +8,8 @@ import SellerSkeleton from "../skeletons/SellerSkeleton";
 import { limit } from "../hooks/usePaginateData";
 import PaginationScrollInfo from "./PaginationScrollInfo";
 import { SellerOptions } from "../enums/SellerOptions";
+import { AnimatePresence } from "framer-motion";
+import ErrorPopUp from "./ErrorPopUp";
 
 interface SellersProps {
     search: string,
@@ -32,7 +34,7 @@ function Sellers({ search, url, setSellersPopUp, savedSellers, option }: Sellers
         navigate(`/sellers/${username}`);
     }
 
-    function getTitle() {
+    function getTitle(): string {
         if (savedSellers) return `Your saved sellers (${sellers.count.current})`;
         else return `${sellers.loading ? "Loading results" : `${sellers.count.current}
         ${sellers.count.current === 1 ? " result" : " results"}`} found for '${search}'`;
@@ -40,6 +42,13 @@ function Sellers({ search, url, setSellersPopUp, savedSellers, option }: Sellers
 
     return (
         <PopUpWrapper title={getTitle()} setIsOpen={setSellersPopUp}>
+            <AnimatePresence>
+                {sellers.errorMessage !== "" &&
+                <ErrorPopUp
+                    errorMessage={sellers.errorMessage}
+                    setErrorMessage={sellers.setErrorMessage}
+                />}
+            </AnimatePresence>
             <div ref={pageRef} className="overflow-y-scroll pr-[8px] max-h-[500px]">
                 {sellers.data.map((seller: SellerData, index: number) => {
                     return (

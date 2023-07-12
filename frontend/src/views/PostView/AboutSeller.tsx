@@ -23,7 +23,7 @@ interface AboutSellerProps {
 function AboutSeller(props: AboutSellerProps) {
     const navigate = useNavigate();
 
-    function navigateToProfile() {
+    function navigateToProfile(): void {
         navigate(`/sellers/${props.username}`);
     }
 

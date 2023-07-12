@@ -1,5 +1,5 @@
 import { useLocation } from "react-router-dom";
-import { useEffect, useState, useContext, useReducer, useRef } from 'react';
+import { useEffect, useState, useContext, useReducer } from 'react';
 import { PostPage } from "../../types/PostPage";
 import ProfilePicAndStatus from "../../components/ProfilePicAndStatus";
 import StarIcon from '../../assets/star.png';
@@ -8,8 +8,6 @@ import AboutSeller from "./AboutSeller";
 import Packages from "./Packages";
 import axios, { AxiosError } from "axios";
 import { getAPIErrorMessage } from "../../utils/getAPIErrorMessage";
-import { IPostImage } from "../../models/IPostImage";
-import { useNavigateErrorPage } from "../../hooks/useNavigateErrorPage";
 import PageWrapper from "../../wrappers/PageWrapper";
 import Carousel from "../../components/Carousel";
 import parse from "html-react-parser";
@@ -18,6 +16,8 @@ import { UserContext } from "../../providers/UserContext";
 import TextEditor from "../../components/TextEditor";
 import { aboutLimit, titleLimit } from "../CreatePost/PostDetails";
 import PostImage from "./PostImage";
+import ErrorPopUp from "../../components/ErrorPopUp";
+import { AnimatePresence } from "framer-motion";
 
 type UpdatePostToggles = "aboutToggle" | "titleToggle";
 
@@ -76,7 +76,7 @@ function PostView() {
     const [state, dispatch] = useReducer(reducer, initialState);
     const isOwner = postData?.postedBy.user.username === userContext.userData.username;
 
-    function navigateToProfile() {
+    function navigateToProfile(): void {
         if (postData) {
             navigate(`/sellers/${postData.postedBy.user.username}`);
         }
@@ -86,7 +86,7 @@ function PostView() {
         try {
             const resp = await axios.put<{ post: PostPage, message: string }>(`/api${location.pathname}`, data);
             setPostData(resp.data.post);
-            setErrorMessage(errorMessage);
+            setErrorMessage("");
         }
         catch (err: any) {
             const errorMessage = getAPIErrorMessage(err as AxiosError<{ message: string }>);
@@ -107,8 +107,6 @@ function PostView() {
 
         toggle(change);
     }
-    
-    useNavigateErrorPage("Something isn't quite right...", errorMessage);
     
     useEffect(() => {
         (async (): Promise<void> => {
@@ -135,9 +133,20 @@ function PostView() {
 
     return (
         <div className="overflow-y-scroll h-[calc(100vh-90px)]">
-            <PageWrapper styles="p-[38px] pt-[58px]" locationStack={["Browse all", postData.postedBy.user.username, postData.title]}>
+            <PageWrapper styles="p-[38px] pt-[58px]" locationStack={[
+                "Browse all", 
+                postData.postedBy.user.username, 
+                postData.title
+            ]}>
+                <AnimatePresence>
+                    {errorMessage !== "" && 
+                    <ErrorPopUp 
+                        errorMessage={errorMessage} 
+                        setErrorMessage={setErrorMessage} 
+                    />}
+                </AnimatePresence>
                 <div className="flex gap-20">
-                    <div className="flex-grow">
+                    <div className="flex-grow overflow-hidden">
                         <div className="flex gap-3 items-center">
                             {isOwner &&
                             <p className="change mb-2" onClick={() => confirmChanges({ title: state.data.title }, "titleToggle")}>
@@ -195,16 +204,17 @@ function PostView() {
                             imageStyles="object-contain object-center"
                             startIndex={index}
                         />
-                        <div className="mt-5 w-full whitespace-nowrap overflow-x-scroll pb-5">
-                            {postData.images.map((image: IPostImage, index: number) => {
+                        <div className="mt-5 whitespace-nowrap overflow-x-scroll relative pb-5">
+                            {postData.images.map((_, index: number) => {
                                 return (
                                     <PostImage
-                                        image={image}
+                                        images={postData.images}
                                         index={index}
                                         isOwner={isOwner}
                                         setPostData={setPostData}
-                                        key={index}
+                                        setIndex={setIndex}
                                         action={() => setIndex(index)}
+                                        key={index}
                                     />
                                 )
                             })}

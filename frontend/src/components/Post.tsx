@@ -71,9 +71,15 @@ function Post({ postInfo, index, canRemove, count, styles }: PostProps) {
         
         try {
             canRemove.setDeletingPost(true);
-            await axios.delete<{ message: string }>(`${canRemove.removeURL}/${postInfo.postID}`);
+            if (!canRemove.unsave) {
+                await axios.delete<{ message: string }>(`${canRemove.removeURL}/${postInfo.postID}`);
+            } else {
+                await savePost(true);
+            }
+            
             count.current -= 1;
             canRemove.setDeletingPost(false);
+            setHide(true);
         }
         catch (err: any) {
             const errorMessage = getAPIErrorMessage(err as AxiosError<{ message: string }>);
@@ -82,11 +88,11 @@ function Post({ postInfo, index, canRemove, count, styles }: PostProps) {
         }
     }
 
-    function openPostView() {
+    function openPostView(): void {
         navigate(`/posts/${postInfo.postID}`);
     }
 
-    function navigateToProfile() {
+    function navigateToProfile(): void {
         navigate(`/sellers/${postInfo.postedBy.user.username}`);
     }
 
@@ -103,14 +109,13 @@ function Post({ postInfo, index, canRemove, count, styles }: PostProps) {
             ${errorMessage !== "" ? 'bg-error-text text-main-white' : '!py-[0px]'}`}>
                 {errorMessage !== "" ? errorMessage : ""}
             </p>
-            {(!canRemove || !canRemove.unsave) && 
             <Save
-                action={savePost}
+                action={canRemove?.unsave ? removePost : savePost}
                 svgSize={24}
                 checked={userContext.userData.savedPosts.has(postInfo.postID)}
                 hoverText={userContext.userData.savedPosts.has(postInfo.postID) ? "Unsave post" : "Save post"}
                 styles="right-3 top-3 absolute z-10"
-            />}
+            />
             <Carousel
                 images={postInfo.images}
                 btnSize={35}
@@ -163,12 +168,12 @@ function Post({ postInfo, index, canRemove, count, styles }: PostProps) {
                             {` £${postInfo.startingPrice}`}
                         </span>
                     </p>
-                    {canRemove &&
+                    {canRemove && !canRemove.unsave &&
                     <Button
                         action={removePost}
-                        completedText={canRemove.unsave ? "Unsaved" : "Removed"}
-                        defaultText={canRemove.unsave ? "Unsave" : "Remove"}
-                        loadingText={canRemove.unsave ? "Unsaving" : "Removing"}
+                        completedText="Removed"
+                        defaultText="Remove"
+                        loadingText="Removing"
                         styles="red-btn h-[33px] w-fit rounded-[6px]"
                         textStyles="text-error-text text-[15px]"
                         setErrorMessage={setErrorMessage}

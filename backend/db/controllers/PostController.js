@@ -49,8 +49,8 @@ export async function deletePost(req, res) {
 
 export async function addImage(req, res) {
     try {
-        await addImageHandler(req);
-        res.status(201).json({ message: "success" });
+        const secure_url = await addImageHandler(req);
+        res.status(201).json({ secure_url: secure_url, message: "success" });
     }
     catch (err) {
         res.status(err.code).json({ message: err.message });

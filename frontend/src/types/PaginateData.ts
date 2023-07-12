@@ -5,5 +5,6 @@ export type PaginateData<T> = {
     reachedBottom: boolean,
     count: React.MutableRefObject<number>,
     resetState: () => void,
+    setErrorMessage: React.Dispatch<React.SetStateAction<string>>,
     goToNextPage: () => void
 }

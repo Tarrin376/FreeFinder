@@ -9,6 +9,8 @@ import { useContext, useState } from "react";
 import { getAPIErrorMessage } from "../utils/getAPIErrorMessage";
 import Button from "./Button";
 import { useWindowSize } from "../hooks/useWindowSize";
+import ErrorPopUp from "./ErrorPopUp";
+import { AnimatePresence } from "framer-motion";
 
 interface SellerProps {
     navigateToProfile: () => void,
@@ -46,6 +48,7 @@ function Seller(props: SellerProps) {
             await axios.delete<{ message: string }>(`/api/users/${userContext.userData.username}/saved/sellers/${props.sellerID}`);
             props.canRemove.count.current -= 1;
             props.canRemove.setDeletingSeller(false);
+            setHide(true);
         }
         catch (err: any) {
             const errorMessage = getAPIErrorMessage(err as AxiosError<{ message: string }>);
@@ -98,6 +101,13 @@ function Seller(props: SellerProps) {
                 svgSize={24}
                 sellerID={props.sellerID}
             />}
+            <AnimatePresence>
+                {errorMessage !== "" &&
+                <ErrorPopUp
+                    errorMessage={errorMessage}
+                    setErrorMessage={setErrorMessage}
+                />}
+            </AnimatePresence>
             {props.option === SellerOptions.REMOVE && 
             <Button
                 action={removeSavedSeller}
@@ -108,7 +118,6 @@ function Seller(props: SellerProps) {
                 textStyles="text-error-text"
                 setErrorMessage={setErrorMessage}
                 redLoadingIcon={true}
-                whenComplete={() => setHide(true)}
             />}
         </div>
     )

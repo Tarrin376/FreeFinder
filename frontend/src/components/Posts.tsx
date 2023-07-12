@@ -4,7 +4,6 @@ import Post from './Post';
 import PostSkeleton from '../skeletons/PostSkeleton';
 import PostsWrapper from '../wrappers/PostsWrapper';
 import NoResultsFound from './NoResultsFound';
-import { useNavigateErrorPage } from '../hooks/useNavigateErrorPage';
 import { FilterPostsContext } from '../providers/FilterPostsProvider';
 import PageWrapper from '../wrappers/PageWrapper';
 import PaginationScrollInfo from './PaginationScrollInfo';
@@ -23,7 +22,6 @@ interface PostsProps {
 
 function Posts({ canRemove, noResultsFoundTitle, title }: PostsProps) {
     const filterContext = useContext(FilterPostsContext);
-    useNavigateErrorPage("Something isn't quite right...", filterContext?.posts?.errorMessage || "");
 
     if (!filterContext || !filterContext.posts) {
         return <></>

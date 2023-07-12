@@ -19,6 +19,7 @@ import { sellerLevelTextStyles } from '../utils/sellerLevelTextStyles';
 import SellerExperience from '../components/SellerExperience';
 import { FilterPosts } from '../types/FilterPosts';
 import { AnimatePresence } from "framer-motion";
+import ErrorPopUp from '../components/ErrorPopUp';
 
 interface FilterPostsContextProps {
     children?: React.ReactNode,
@@ -128,6 +129,11 @@ function FilterPostsProvider({ children, urlPrefix }: FilterPostsContextProps) {
                     <CreatePost 
                     setPostService={setPostService} 
                     resetState={posts.resetState} 
+                />}
+                {posts.errorMessage !== "" &&
+                <ErrorPopUp
+                    errorMessage={posts.errorMessage}
+                    setErrorMessage={posts.setErrorMessage}
                 />}
             </AnimatePresence>
             <div className="flex">
@@ -281,7 +287,7 @@ function SellerLevels({ setAllSellerLevels, allSellerLevels, disabled, searchHan
         });
     }
 
-    function applyChanges() {
+    function applyChanges(): void {
         searchHandler();
         setApplyChangesBtn(false);
     }

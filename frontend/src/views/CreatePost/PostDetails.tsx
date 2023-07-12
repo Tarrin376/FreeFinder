@@ -43,7 +43,9 @@ function PostDetails(props: PostDetailsProps) {
 
     async function retryFileUpload(upload: FailedUpload): Promise<string | undefined> {
         try {
-            await axios.post(`/api/posts/${props.postID}`, { image: upload.imageData.image });
+            await axios.post<{ secure_url: string, message: string }>(`/api/posts/${props.postID}`, { 
+                image: upload.imageData.image 
+            });
         }
         catch (err: any) {
             const errorMessage = getAPIErrorMessage(err as AxiosError<{ message: string }>);
@@ -51,7 +53,7 @@ function PostDetails(props: PostDetailsProps) {
         }
     }
 
-    function ignoreUpload(upload: FailedUpload) {
+    function ignoreUpload(upload: FailedUpload): void {
         if (props.failedUploads.length === 1) props.setErrorMessage("");
         props.setFailedUploads((cur) => cur.filter((x: FailedUpload) => x.imageData.image !== upload.imageData.image));
     }

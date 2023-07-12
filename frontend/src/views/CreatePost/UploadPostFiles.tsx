@@ -11,7 +11,7 @@ import { ImageData } from "../../types/ImageData";
 import { parseImage } from "../../utils/parseImage";
 import { checkFile } from "../../utils/checkFile";
 
-const MAX_FILE_UPLOADS: number = 20;
+export const MAX_FILE_UPLOADS: number = 20;
 export const MAX_FILE_BYTES = 2000000;
 
 interface UploadPostFilesProps {

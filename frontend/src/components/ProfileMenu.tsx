@@ -55,7 +55,7 @@ function ProfileMenu({ setSettingsPopUp, setSellerProfilePopUp, logout }: Profil
     }
 
     return (
-        <div className="flex gap-7 items-center">
+        <div className="flex gap-7 items-center z-30">
             <div className="flex gap-3 items-center cursor-pointer">
                 <div className="relative">
                     <img src={NotificationIcon} className="w-[30px] h-[30px]" alt="notifications" />

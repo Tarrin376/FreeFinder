@@ -1,7 +1,7 @@
 import { useState } from "react";
 
 interface SaveProps {
-    action: (checked: boolean) => Promise<void>,
+    action: (checked: boolean) => Promise<string | undefined | void>,
     svgSize: number,
     checked: boolean,
     hoverText: string,
@@ -12,7 +12,7 @@ function Save({ action, svgSize, checked, styles, hoverText }: SaveProps) {
     const [loading, setLoading] = useState<boolean>(false);
     const [isChecked, setIsChecked] = useState<boolean>(checked);
 
-    async function handleClick() {
+    async function handleClick(): Promise<void> {
         if (!loading) {
             setLoading(true);
             await action(isChecked);

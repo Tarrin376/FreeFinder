@@ -34,6 +34,7 @@ function Carousel({ images, btnSize, wrapperStyles, imageStyles, startIndex }: C
 
     useEffect(() => {
         if (startIndex !== undefined) {
+            console.log("sdf", startIndex, images.length);
             imageClasses.current = new Array(images.length).fill(0).map((_, i) => {
                 return i === startIndex ? "translate-x-0" : 
                 i < startIndex ? "-translate-x-full" : "translate-x-full"
