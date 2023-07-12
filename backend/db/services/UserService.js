@@ -8,6 +8,7 @@ import { cloudinary } from '../index.js';
 import { prisma } from '../index.js';
 import { getPostFilters } from '../utils/getPostFilters.js';
 import { sellerProperties } from '../utils/sellerProperties.js';
+import { userProperties } from '../utils/userProperties.js';
 
 export async function updateProfilePictureHandler(req) {
     try {
@@ -126,13 +127,12 @@ export async function authenticateUserHandler(usernameOrEmail, password) {
                     { username: usernameOrEmail }
                 ],
             },
-            include: {
-                seller: {
-                    ...sellerProperties,
-                },
+            select: {
+                ...userProperties,
+                hash: true
             }
         });
-        
+
         if (!res) {
             throw new DBError("Email or username provided doesn't have any account linked to it.", 404);
         }
@@ -142,8 +142,10 @@ export async function authenticateUserHandler(usernameOrEmail, password) {
             throw new DBError("The password you entered is incorrect. Check that you entered it correctly.", 403)
         }
 
-        const {hash, ...filtered} = res;
-        return filtered;
+        const {savedPosts, savedSellers, hash, ...filtered} = res;
+        const savedPostIDs = savedPosts.map((post) => post.postID);
+        const savedSellerIDs = savedSellers.map((seller) => seller.sellerID);
+        return { ...filtered, savedPosts: savedPostIDs, savedSellers: savedSellerIDs };
     }
     catch (err) {
         if (err instanceof DBError) {
@@ -162,26 +164,20 @@ export async function authenticateUserHandler(usernameOrEmail, password) {
 export async function updateUserHandler(req) {
     try {
         await checkUser(req.userData.userID, req.username);
-        const {seller, ...res} = req.body;
+        const { seller, ...res } = req.body;
 
         const updated = await prisma.user.update({
             where: { userID: req.userData.userID },
             data: { ...res },
             select: {
-                seller: {
-                    ...sellerProperties,
-                },
-                username: true,
-                country: true,
-                profilePicURL: true,
-                email: true,
-                status: true,
-                userID: true,
-                memberDate: true
+                ...userProperties
             }
         });
-
-        return updated;
+        
+        const { savedPosts, savedSellers, ...filtered } = updated;
+        const savedPostIDs = savedPosts.map((post) => post.postID);
+        const savedSellerIDs = savedSellers.map((seller) => seller.sellerID);
+        return { ...filtered, savedPosts: savedPostIDs, savedSellers: savedSellerIDs };
     }
     catch (err) {
         if (err instanceof DBError) {

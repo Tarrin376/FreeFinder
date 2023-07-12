@@ -13,12 +13,22 @@ interface SaveSellerProps {
 function SaveSeller({ svgSize, sellerID }: SaveSellerProps) {
     const userContext = useContext(UserContext);
     const [errorMessage, setErrorMessage] = useState<string>("");
-    const [successMessage, setSuccessMessage] = useState<string>("");
 
-    async function saveSeller(): Promise<void> {
+    async function saveSeller(checked: boolean): Promise<void> {
+        let response = null;
         try {
-            const resp = await axios.post<{ message: string }>(`/api/users/${userContext.userData.username}/saved/sellers/${sellerID}`);
-            actionFinished(setSuccessMessage, resp.data.message, "");
+            if (checked) {
+                response = await axios.delete<{ savedSellers: string[], message: string }>
+                (`/api/users/${userContext.userData.username}/saved/sellers/${sellerID}`);
+            } else {
+                response = await axios.post<{ savedSellers: string[], message: string }>
+                (`/api/users/${userContext.userData.username}/saved/sellers/${sellerID}`);
+            }
+
+            userContext.setUserData({
+                ...userContext.userData,
+                savedSellers: new Set(response.data.savedSellers)
+            });
         }
         catch (err: any) {
             const errorMessage = getAPIErrorMessage(err as AxiosError<{ message: string }>);
@@ -30,7 +40,8 @@ function SaveSeller({ svgSize, sellerID }: SaveSellerProps) {
         <Save
             action={saveSeller}
             svgSize={svgSize}
-            hoverText="Save seller"
+            checked={userContext.userData.savedSellers.has(sellerID)}
+            hoverText={userContext.userData.savedSellers.has(sellerID) ? "Unsave seller" : "Save seller"}
         />
     )
 }

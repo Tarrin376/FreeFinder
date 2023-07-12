@@ -9,6 +9,8 @@ export function useWindowSize(): number {
 
     useEffect(() => {
         window.addEventListener('resize', updateWindowSize);
+        updateWindowSize();
+
         return () => {
             window.removeEventListener('resize', updateWindowSize);
         }

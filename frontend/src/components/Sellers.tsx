@@ -40,7 +40,7 @@ function Sellers({ search, url, setSellersPopUp, savedSellers, option }: Sellers
 
     return (
         <PopUpWrapper title={getTitle()} setIsOpen={setSellersPopUp}>
-            <div ref={pageRef} className="overflow-y-scroll pr-[5px] max-h-[500px]">
+            <div ref={pageRef} className="overflow-y-scroll pr-[8px] max-h-[500px]">
                 {sellers.data.map((seller: SellerData, index: number) => {
                     return (
                         <Seller

@@ -73,7 +73,7 @@ function SearchLanguages({ setSelectedLanguages, selectedLanguages, searchBarSty
                 onChange={searchHandler}
             />
             {matchedLanguages.length > 0 &&
-            <div className="border-b border-x border-light-gray rounded-b-[8px] max-h-[300px] overflow-y-scroll p-4 bg-main-white">
+            <div className="border-b border-x border-light-border-gray rounded-b-[8px] max-h-[300px] overflow-y-scroll p-4 bg-main-white">
                 <div className="flex flex-col gap-1">
                     {matchedLanguages.map((cur: string[], index: number) => {
                         return (

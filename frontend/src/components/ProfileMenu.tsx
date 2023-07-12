@@ -1,9 +1,7 @@
 import ProfilePicAndStatus from "./ProfilePicAndStatus";
-import { initialState } from "../providers/UserContext";
 import { useState, useContext } from 'react';
 import { fetchUpdatedUser } from "../utils/fetchUpdatedUser";
 import OutsideClickHandler from "react-outside-click-handler";
-import axios from "axios";
 import NotificationIcon from "../assets/notification.png";
 import { UserContext } from "../providers/UserContext";
 import { UserStatus } from "../enums/UserStatus";
@@ -11,10 +9,11 @@ import { useNavigate } from "react-router-dom";
 
 interface ProfileMenuProps {
     setSettingsPopUp: React.Dispatch<React.SetStateAction<boolean>>,
-    setSellerProfilePopUp: React.Dispatch<React.SetStateAction<boolean>>
+    setSellerProfilePopUp: React.Dispatch<React.SetStateAction<boolean>>,
+    logout: () => Promise<void>
 }
 
-function ProfileMenu({ setSettingsPopUp, setSellerProfilePopUp }: ProfileMenuProps) {
+function ProfileMenu({ setSettingsPopUp, setSellerProfilePopUp, logout }: ProfileMenuProps) {
     const [disabled, setDisabled] = useState<boolean>(false);
     const [navProfileDropdown, setNavProfileDropdown] = useState<boolean>(false);
     const userContext = useContext(UserContext);
@@ -37,16 +36,6 @@ function ProfileMenu({ setSettingsPopUp, setSellerProfilePopUp }: ProfileMenuPro
         } 
         finally {
             setDisabled(false);
-        }
-    }
-
-    async function logout(): Promise<void> {
-        try {
-            await axios.delete<{ message: string }>(`/api/users/session`);
-            userContext.setUserData(initialState.userData);
-        }
-        catch (err: any) {
-            // Ignore error message and do nothing if session is invalid or expired.
         }
     }
 
@@ -86,13 +75,13 @@ function ProfileMenu({ setSettingsPopUp, setSellerProfilePopUp }: ProfileMenuPro
                 <OutsideClickHandler onOutsideClick={() => setNavProfileDropdown(false)}>
                     {navProfileDropdown && 
                     <ul className="absolute bg-main-white shadow-profile-page-container 
-                    mt-2 border-light-gray border-2 rounded-[11px] right-0 z-20 overflow-hidden">
-                        <div className="border-b border-light-gray">
+                    mt-2 border-light-border-gray border-2 rounded-[11px] right-0 z-20 overflow-hidden">
+                        <div className="border-b border-light-border-gray">
                             <p className="whitespace-nowrap p-3 pt-1 pb-1 cursor-default profile-menu-element hover:!bg-main-white">
                                 Signed in as: <span className="text-main-blue text-[15px]">{userContext.userData.username}</span>
                             </p>
                         </div>
-                        <div className="border-b border-light-gray flex flex-col">
+                        <div className="border-b border-light-border-gray flex flex-col">
                             {userContext.userData.seller &&
                             <p className="profile-menu-element" onClick={viewProfile}>
                                 View profile

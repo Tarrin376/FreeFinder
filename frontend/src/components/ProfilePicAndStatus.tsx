@@ -104,7 +104,7 @@ function ProfilePicAndStatus(props: ProfilePicAndStatusProps) {
             {props.showEdit && !props.loading &&
                 <>
                     <button className="flex gap-1 items-center absolute top-[62px] right-0 bg-main-white 
-                    hover:bg-main-white-hover border border-light-gray btn-primary p-[4px] px-2 h-fit 
+                    hover:bg-main-white-hover border border-light-border-gray btn-primary p-[4px] px-2 h-fit 
                     cursor-pointer rounded-[6px]" onClick={() => setProfileDropdown(true)}>
                         <img src={EditIcon} alt="edit" className="w-4 h-4" />
                         <p className="text-main-black text-xs">Edit</p>
@@ -112,13 +112,14 @@ function ProfilePicAndStatus(props: ProfilePicAndStatusProps) {
                     {profileDropdown && 
                     <OutsideClickHandler onOutsideClick={() => setProfileDropdown(false)}>
                         <div className="absolute bg-main-white left-[20px] mt-3 flex flex-col rounded-[6px] 
-                        border border-light-gray shadow-profile-page-container overflow-hidden">
+                        border border-light-border-gray shadow-profile-page-container overflow-hidden">
                             <p className="text-xs cursor-pointer hover:bg-main-white-hover 
                             profile-menu-element pt-[6px] pb-[6px]" onClick={triggerUpload}>
                                 {`Upload (max ${MAX_PROFILE_PIC_BYTES / 1000000}MB)`}
                             </p>
                             <p className="text-xs cursor-pointer hover:bg-main-white-hover 
-                            profile-menu-element pt-[6px] pb-[6px] border-t border-t-light-gray" onClick={removePhoto}>
+                            profile-menu-element pt-[6px] pb-[6px] border-t border-t-light-border-gray"
+                            onClick={removePhoto}>
                                 Remove
                             </p>
                             <input 

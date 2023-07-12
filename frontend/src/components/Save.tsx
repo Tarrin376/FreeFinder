@@ -1,19 +1,24 @@
 import { useState } from "react";
 
 interface SaveProps {
-    action: () => Promise<void>,
+    action: (checked: boolean) => Promise<void>,
     svgSize: number,
+    checked: boolean,
     hoverText: string,
     styles?: string,
 }
 
-function Save({ action, svgSize, styles, hoverText }: SaveProps) {
-    const [saved, setSaved] = useState<boolean>(false);
+function Save({ action, svgSize, checked, styles, hoverText }: SaveProps) {
+    const [loading, setLoading] = useState<boolean>(false);
+    const [isChecked, setIsChecked] = useState<boolean>(checked);
 
     async function handleClick() {
-        setSaved(true);
-        await action();
-        setSaved(false);
+        if (!loading) {
+            setLoading(true);
+            await action(isChecked);
+            setLoading(false);
+            setIsChecked((cur) => !cur);
+        }
     }
 
     return (
@@ -27,8 +32,8 @@ function Save({ action, svgSize, styles, hoverText }: SaveProps) {
                     onClick={handleClick}
                     viewBox="0 0 32 32" 
                     xmlns="http://www.w3.org/2000/svg"
-                    className="block fill-[#00000086] stroke-white stroke-2 cursor-pointer"
-                    style={{ width: svgSize, height: svgSize, scale: saved ? '0.90' : '1' }}
+                    className={`block ${isChecked ? "fill-[#00ac0086]" : "fill-[#00000086]"} stroke-white stroke-2 cursor-pointer`}
+                    style={{ width: svgSize, height: svgSize, scale: loading ? '0.90' : '1' }}
                     aria-hidden="true" 
                     role="presentation" 
                     focusable="false">

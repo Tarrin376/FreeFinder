@@ -7,6 +7,7 @@ export interface IUser {
     email: string,
     status: string,
     userID: string,
-    memberDate: Date,
-    seller: ISeller | null
+    seller: ISeller | null,
+    savedPosts: Set<string>,
+    savedSellers: Set<string>
 }

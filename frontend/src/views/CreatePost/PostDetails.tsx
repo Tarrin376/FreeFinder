@@ -80,11 +80,11 @@ function PostDetails(props: PostDetailsProps) {
                 {showFailedUploads ? "Hide all failed images" : "View all failed images"}
             </p>}
             {showFailedUploads && props.failedUploads.length > 0 && 
-            <div className="max-h-[250px] items-center overflow-y-scroll mt-6 pr-[5px] flex flex-col gap-[15px]">
+            <div className="max-h-[250px] items-center overflow-y-scroll mt-6 pr-[8px] flex flex-col gap-[15px]">
                 {props.failedUploads.map((upload: FailedUpload, index: number) => {
                     return (
                         <File file={upload.imageData.file} key={index} description={upload.errorMessage} error={true}>
-                            <button className="bg-main-white border-2 border-light-gray btn-primary min-w-[120px] px-3
+                            <button className="bg-main-white border-2 border-light-border-gray btn-primary min-w-[120px] px-3
                             hover:bg-main-white-hover" onClick={() => ignoreUpload(upload)}>
                                 Ignore
                             </button>

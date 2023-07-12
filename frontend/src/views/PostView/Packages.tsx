@@ -40,7 +40,7 @@ function Packages({ packages }: { packages: IPackage[] }) {
                     {packages.sort((a, b) => a.type.localeCompare(b.type)).map((cur, index) => {
                         return (
                             <button className={`h-[50px] border-b-2 ${cur.type === curPkg.type ? 
-                            "border-main-blue bg-[#f4f6ff]" : "border-light-gray"} flex-grow basis-0`} 
+                            "border-main-blue bg-[#f4f6ff]" : "border-light-border-gray"} flex-grow basis-0`} 
                             onClick={() => selectPackage(cur)} 
                             key={index}>
                                 {capitalizeWord(cur.type)}
@@ -49,7 +49,7 @@ function Packages({ packages }: { packages: IPackage[] }) {
                     })}
                 </div>
                 <div className="p-6 h-[calc(100%-50px)] flex flex-col justify-between">
-                    <div className="flex-grow overflow-y-scroll pr-[5px]">
+                    <div className="flex-grow overflow-y-scroll pr-[8px]">
                         <div className="flex justify-between items-center mt-[-6px]">
                             <h3 className="text-[23px]">
                                 {`${capitalizeWord(curPkg.type)} package`}
@@ -62,10 +62,10 @@ function Packages({ packages }: { packages: IPackage[] }) {
                         <p className="text-[35px]">
                             £{curPkg.amount}
                         </p>
-                        <p className="text-side-text-gray mb-4 pb-4 border-b border-b-light-gray font-bold">
+                        <p className="text-side-text-gray mb-4 pb-4 border-b border-light-border-gray font-bold">
                             {curPkg.title}
                         </p>
-                        <p className="mt-1 mb-4 pb-4 border-b border-b-light-gray">
+                        <p className="mt-1 mb-4 pb-4 border-b border-light-border-gray">
                             {curPkg.description}
                         </p>
                         <div className="flex items-center gap-2 mb-2">
@@ -74,7 +74,7 @@ function Packages({ packages }: { packages: IPackage[] }) {
                                 {`${curPkg.deliveryTime} ${curPkg.deliveryTime === 1 ? "day" : "days"} delivery`}
                             </p>
                         </div>
-                        <div className="flex items-center gap-2 pb-4 mb-4 border-b border-b-light-gray">
+                        <div className="flex items-center gap-2 pb-4 mb-4 border-b border-light-border-gray">
                             <img src={RevisionsIcon} alt="" width="20px" height="20px" />
                             <p className="text-side-text-gray">
                                 {`${curPkg.revisions} ${curPkg.revisions === "1" ? "revision" : "revisions"}`}

@@ -33,20 +33,30 @@ interface PostProps {
 function Post({ postInfo, index, canRemove, count, styles }: PostProps) {
     const [hide, setHide] = useState<boolean>(false);
     const [errorMessage, setErrorMessage] = useState<string>("");
-    const [successMessage, setSuccessMessage] = useState<string>("");
     const seconds = getSeconds(postInfo.createdAt);
     const userContext = useContext(UserContext);
 
     const navigate = useNavigate();
 
-    async function savePost(): Promise<void> {
+    async function savePost(checked: boolean): Promise<void> {
         try {
-            if (errorMessage !== "" || successMessage !== "") {
+            let response = null;
+            if (errorMessage !== "") {
                 return;
             }
-            
-            await axios.post<{ message: string }>(`/api/users/${userContext.userData.username}/saved/posts/${postInfo.postID}`);
-            actionFinished(setSuccessMessage, "Saved post", "");
+
+            if (checked) {
+                response = await axios.delete<{ savedPosts: string[], message: string }>
+                (`/api/users/${userContext.userData.username}/saved/posts/${postInfo.postID}`);
+            } else {
+                response = await axios.post<{ savedPosts: string[], message: string }>
+                (`/api/users/${userContext.userData.username}/saved/posts/${postInfo.postID}`);
+            }
+
+            userContext.setUserData({
+                ...userContext.userData,
+                savedPosts: new Set(response.data.savedPosts)
+            });
         }
         catch (err: any) {
             const errorMessage = getAPIErrorMessage(err as AxiosError<{ message: string }>);
@@ -90,15 +100,15 @@ function Post({ postInfo, index, canRemove, count, styles }: PostProps) {
         transition={{ delay: 0.05 * (index % limit), duration: 0.2 }}>
             <p className={`absolute rounded-t-[12px] z-20 px-7 py-[11px] w-[100%] 
             transition-all whitespace-normal ease-out duration-100 text-center 
-            ${errorMessage !== "" ? 'bg-error-text text-main-white' 
-            : successMessage ? 'action-btn hover:!bg-[#36BF54]' : '!py-[0px]'}`}>
-                {errorMessage !== "" ? errorMessage : successMessage !== "" ? successMessage : ""}
+            ${errorMessage !== "" ? 'bg-error-text text-main-white' : '!py-[0px]'}`}>
+                {errorMessage !== "" ? errorMessage : ""}
             </p>
             {(!canRemove || !canRemove.unsave) && 
             <Save
                 action={savePost}
                 svgSize={24}
-                hoverText="Save post"
+                checked={userContext.userData.savedPosts.has(postInfo.postID)}
+                hoverText={userContext.userData.savedPosts.has(postInfo.postID) ? "Unsave post" : "Save post"}
                 styles="right-3 top-3 absolute z-10"
             />}
             <Carousel
@@ -141,7 +151,7 @@ function Post({ postInfo, index, canRemove, count, styles }: PostProps) {
                         New
                     </p>}
                 </div>
-                <div className="pb-2 border-b border-b-very-light-gray h-[60px]">
+                <div className="pb-2 border-b border-b-light-border-gray h-[60px]">
                     <p className="text-[16px] link leading-6 overflow-hidden text-ellipsis line-clamp-2 !p-0" onClick={openPostView}>
                         {postInfo.title}
                     </p>

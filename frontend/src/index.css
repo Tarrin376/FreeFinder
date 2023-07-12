@@ -4,7 +4,7 @@
 
 @layer components {
     .btn-primary {
-        @apply transition-all ease-in-out duration-200 rounded-[8px] px-4 h-[42px];
+        @apply transition-all ease-in-out duration-200 rounded-[8px] px-4 h-[42px] cursor-pointer;
     }
     .nav-item {
         @apply hover:selected-nav-element cursor-pointer p-2 py-1 transition-all ease-out duration-200 rounded-[6px];
@@ -42,7 +42,7 @@
         @apply btn-primary flex items-center justify-center gap-2;
     }
     .side-btn {
-        @apply bg-main-white border-2 border-light-gray btn-primary w-fit px-4
+        @apply bg-main-white border-2 border-light-border-gray btn-primary w-fit px-4
         hover:bg-main-white-hover h-[42px];
     }
     .text-box-error-message {
@@ -78,6 +78,12 @@
     }
     .change {
         @apply option bg-highlight text-main-blue text-[14px] cursor-pointer w-fit;
+    }
+    .hamburger-menu-item {
+        @apply w-full h-1/3 bg-main-black rounded-[6px];
+    }
+    .sidebar-item {
+        @apply pt-9 link;
     }
 }
 

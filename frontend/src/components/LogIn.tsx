@@ -38,8 +38,11 @@ function LogIn({ setLogIn, setSignUp }: LogInProps) {
                 password,
             });
 
-            resp.data.userData.memberDate = new Date(resp.data.userData.memberDate);
-            userContext.setUserData(resp.data.userData);
+            userContext.setUserData({
+                ...resp.data.userData, 
+                savedPosts: new Set(resp.data.userData.savedPosts),
+                savedSellers: new Set(resp.data.userData.savedSellers)
+            });
         }
         catch (err: any) {
             const errorMessage = getAPIErrorMessage(err as AxiosError<{ message: string }>);

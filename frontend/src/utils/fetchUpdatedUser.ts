@@ -13,7 +13,15 @@ export async function fetchUpdatedUser(data: IUser, username: string, profilePic
             profilePicURL: profilePic === "" ? profilePic : data.profilePicURL
         });
 
-        return resp.data;
+
+        return {
+            message: resp.data.message,
+            userData: {
+                ...resp.data.userData, 
+                savedPosts: new Set(resp.data.userData.savedPosts),
+                savedSellers: new Set(resp.data.userData.savedSellers)
+            }
+        }
     }
     catch (err: any) {
         throw err;
@@ -23,7 +31,14 @@ export async function fetchUpdatedUser(data: IUser, username: string, profilePic
 async function updateProfilePic(profilePic: string | unknown, username: string) : Promise<{ message: string, userData: IUser }> {
     try {
         const resp = await axios.put<{ userData: IUser, message: string }>(`/api/users/${username}/profile-picture`, { profilePic });
-        return resp.data;
+        return {
+            message: resp.data.message,
+            userData: {
+                ...resp.data.userData, 
+                savedPosts: new Set(resp.data.userData.savedPosts),
+                savedSellers: new Set(resp.data.userData.savedSellers)
+            }
+        }
     }
     catch (err: any) {
         throw err;

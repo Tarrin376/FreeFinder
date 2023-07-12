@@ -18,12 +18,12 @@ function CountriesDropdown({ countryRef, selected, styles, title, anyLocation }:
             <select className={`w-full cursor-pointer mt-1 rounded-[8px] focus:outline-none 
             ${allCountries.countries.length > 0 ? 'bg-main-white' : 'loading'}`} ref={countryRef}>
                 {anyLocation && allCountries.countries.length > 0 && 
-                <option selected={true}>
+                <option>
                     Any country
                 </option>}
                 {allCountries.countries.map((country: Country) => {
                     return (
-                        <option key={country.name.common} selected={selected === `${country.flag} ${country.name.common}` && !anyLocation}>
+                        <option key={country.name.common} selected={selected === `${country.flag} ${country.name.common}`}>
                             {country.flag} {country.name.common}
                         </option>
                     );

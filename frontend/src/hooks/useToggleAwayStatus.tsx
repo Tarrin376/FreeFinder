@@ -17,7 +17,11 @@ export function useToggleAwayStatus() {
                         status: UserStatus.ONLINE 
                     });
                     
-                    userContext.setUserData(setToOnline.data.userData);
+                    userContext.setUserData({
+                        ...setToOnline.data.userData, 
+                        savedPosts: new Set(setToOnline.data.userData.savedPosts),
+                        savedSellers: new Set(setToOnline.data.userData.savedSellers)
+                    });
                 }
             }
             catch (err: any) {
@@ -40,7 +44,11 @@ export function useToggleAwayStatus() {
                             status: UserStatus.AWAY 
                         });
 
-                        userContext.setUserData(setToAway.data.userData);
+                        userContext.setUserData({
+                            ...setToAway.data.userData, 
+                            savedPosts: new Set(setToAway.data.userData.savedPosts),
+                            savedSellers: new Set(setToAway.data.userData.savedSellers)
+                        });
                     }
                 }
                 catch (err: any) {

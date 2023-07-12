@@ -8,6 +8,7 @@ import { UserContext } from "../providers/UserContext";
 import { useContext, useState } from "react";
 import { getAPIErrorMessage } from "../utils/getAPIErrorMessage";
 import Button from "./Button";
+import { useWindowSize } from "../hooks/useWindowSize";
 
 interface SellerProps {
     navigateToProfile: () => void,
@@ -33,6 +34,7 @@ function Seller(props: SellerProps) {
     const userContext = useContext(UserContext);
     const [errorMessage, setErrorMessage] = useState<string>("");
     const [hide, setHide] = useState<boolean>(false);
+    const windowSize = useWindowSize();
 
     async function removeSavedSeller(): Promise<string | undefined> {
         if (!props.canRemove || props.canRemove.deletingSeller) {
@@ -60,6 +62,7 @@ function Seller(props: SellerProps) {
         <div className="flex items-center justify-between gap-[5px]">
             <div className="flex items-center gap-3 cursor-pointer hover:bg-[#f7f7f7] rounded-[6px]
             transition-all ease-out duration-100 p-2 flex-grow overflow-hidden" onClick={props.navigateToProfile}>
+                {windowSize > 400 &&
                 <div className="relative">
                     <ProfilePicAndStatus
                         profilePicURL={props.profilePicURL}
@@ -67,7 +70,7 @@ function Seller(props: SellerProps) {
                         statusStyles={props.statusStyles}
                         imgStyles={props.imgStyles}
                     />
-                </div>
+                </div>}
                 <div className="flex-grow overflow-hidden">
                     <div className="flex items-center gap-2">
                         <HighlightedSubstring

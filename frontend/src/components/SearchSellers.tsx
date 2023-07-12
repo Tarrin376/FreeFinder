@@ -14,7 +14,12 @@ import { SellerOptions } from "../enums/SellerOptions";
 
 const queryLimit = 6;
 
-function SearchSellers() {
+interface SearchSellersProps {
+    styles?: string,
+    toggleSidebar?: () => void
+}
+
+function SearchSellers({ styles, toggleSidebar }: SearchSellersProps) {
     const [sellers, setSellers] = useState<SellerData[]>([]);
     const [count, setCount] = useState<number>(0);
     const [errorMessage, setErrorMessage] = useState<string>("");
@@ -57,6 +62,7 @@ function SearchSellers() {
     }
 
     function navigateToProfile(username: string) {
+        if (toggleSidebar) toggleSidebar();
         setHide(true);
         navigate(`/sellers/${username}`);
     }
@@ -73,8 +79,8 @@ function SearchSellers() {
                 />}
             </AnimatePresence>
             <OutsideClickHandler onOutsideClick={() => setHide(true)}>
-                <div className="relative w-[360px]">
-                    <div className={`flex items-center border border-light-gray 
+                <div className={`relative w-[360px] ${styles}`}>
+                    <div className={`flex items-center border border-light-border-gray 
                     rounded-[8px] ${searchQuery && !hide ? "rounded-b-none" : ""} px-3 h-10 bg-transparent w-full`}>
                         <img src={SearchIcon} alt="" className="w-5 h-5"/>
                         <input 
@@ -87,7 +93,8 @@ function SearchSellers() {
                         />
                     </div>
                     {searchQuery && !hide &&
-                    <div className="border-b border-x border-light-gray rounded-b-[8px] bg-main-white absolute w-full z-20 p-2">
+                    <div className="border-b border-x border-light-border-gray rounded-b-[8px] 
+                    bg-main-white absolute w-full z-20 p-2 overflow-hidden transition-all duration-200 ease-linear">
                         {errorMessage ? 
                         <p className="text-center text-side-text-gray">{errorMessage}</p> :
                         sellers.length === 0 && !loading &&

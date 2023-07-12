@@ -30,7 +30,7 @@ function Posts({ canRemove, noResultsFoundTitle, title }: PostsProps) {
     }
 
     return (
-        <PageWrapper styles="!min-h-[calc(100vh-180px)] xxl:max-w-[1430px] xl:max-w-[1202px] lg:max-w-[910px] md:max-w-[618px]">
+        <PageWrapper styles="!min-h-[calc(100vh-180px)] xxl:max-w-[1430px] xl:max-w-[1075px] lg:max-w-[720px] md:max-w-[358px]">
             {title && <h1 className="text-[20px] mb-6">{title}</h1>}
             {filterContext.posts.loading ? 
             <h1 className="text-side-text-gray text-[17px] mb-5">

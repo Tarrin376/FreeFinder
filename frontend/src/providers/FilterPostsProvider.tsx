@@ -148,7 +148,7 @@ function FilterPostsProvider({ children, urlPrefix }: FilterPostsContextProps) {
                         />
                     </>}
                     <h2 className="text-[20px] mb-[22px]">Filters</h2>
-                    <div className="overflow-y-scroll pr-[5px]" style={{ maxHeight: userContext.userData.seller ? 
+                    <div className="overflow-y-scroll pr-[8px]" style={{ maxHeight: userContext.userData.seller ? 
                     "calc(100vh - 456px)" : "calc(100% - 148px)" }}>
                         <div className="flex items-center gap-3 pb-5 mb-5 min-[1683px]:hidden border-b border-light-border-gray">
                             <Price
@@ -161,7 +161,7 @@ function FilterPostsProvider({ children, urlPrefix }: FilterPostsContextProps) {
                                 title="max price" 
                             />
                         </div>
-                        <div className="border-b border-very-light-gray pb-5 mb-5 min-[1309px]:hidden">
+                        <div className="border-b border-light-border-gray pb-5 mb-5 min-[1309px]:hidden">
                             <CountriesDropdown 
                                 countryRef={countryRef} 
                                 selected="Any country"
@@ -180,7 +180,7 @@ function FilterPostsProvider({ children, urlPrefix }: FilterPostsContextProps) {
                             setSelectedLanguages={setSelectedLanguages} 
                             selectedLanguages={selectedLanguages}
                             searchBarStyles="h-10"
-                            styles="border-b border-light-gray pb-6"
+                            styles="border-b border-light-border-gray pb-6"
                             applyChanges={{
                                 callback: searchHandler,
                                 disabled: posts.loading
@@ -196,7 +196,7 @@ function FilterPostsProvider({ children, urlPrefix }: FilterPostsContextProps) {
                     </div>
                 </div>
                 <div className="flex-grow">
-                    <div className="border-b border-b-very-light-gray bg-white">
+                    <div className="border-b border-b-light-border-gray bg-white pr-[14px]">
                         <MainFiltersBar
                             searchRef={searchRef}
                             min={min}
@@ -227,7 +227,7 @@ function FilterPostsProvider({ children, urlPrefix }: FilterPostsContextProps) {
 function MainFiltersBar({ searchRef, min, max, countryRef, sort, loading, searchHandler }: MainFiltersBarProps) {
     return (
         <div className="h-[90px] max-w-[1430px] m-auto flex items-center px-[22.5px]">
-            <div className="flex flex-grow items-center border-r border-light-gray h-full pr-6">
+            <div className="flex flex-grow items-center border-r border-light-border-gray h-full pr-6">
                 <img src={SearchIcon} alt="" className="w-[17px] h-[17px] cursor-pointer"/>
                 <input 
                     type="text" 
@@ -236,7 +236,7 @@ function MainFiltersBar({ searchRef, min, max, countryRef, sort, loading, search
                     ref={searchRef}
                 />
             </div>
-            <div className="h-full border-r border-very-light-gray px-[12.75px] flex items-center gap-3 max-[1682px]:hidden">
+            <div className="h-full border-r border-light-border-gray px-[12.75px] flex items-center gap-3 max-[1682px]:hidden">
                 <Price 
                     value={min} 
                     title="min price" 
@@ -247,7 +247,7 @@ function MainFiltersBar({ searchRef, min, max, countryRef, sort, loading, search
                     title="max price" 
                 />
             </div>
-            <div className="h-full border-r border-very-light-gray px-[12.75px] flex items-center max-[1308px]:hidden">
+            <div className="h-full border-r border-light-border-gray px-[12.75px] flex items-center max-[1308px]:hidden">
                 <CountriesDropdown 
                     countryRef={countryRef} 
                     selected="Any country"
@@ -256,7 +256,7 @@ function MainFiltersBar({ searchRef, min, max, countryRef, sort, loading, search
                     anyLocation={true}
                 />
             </div>
-            <div className="h-full border-r border-very-light-gray px-[12.75px] flex items-center">
+            <div className="h-full border-r border-light-border-gray pl-[12.75px] pr-[10px] flex items-center">
                 <SortBy sortBy={sort} />
             </div>
             <div className="pl-[22.5px]">
@@ -289,7 +289,7 @@ function SellerLevels({ setAllSellerLevels, allSellerLevels, disabled, searchHan
     return (
         <>
             <h3 className="text-side-text-gray mt-5 mb-3 text-[16px]">Seller level</h3>
-            <div className="flex flex-col gap-3 border-b border-light-gray pb-6">
+            <div className="flex flex-col gap-3 border-b border-light-border-gray pb-6">
                 {sellerLevels.map((sellerLevel: string, index: number) => {
                     return (
                         <div className="flex items-center gap-3" key={index}>
@@ -326,7 +326,7 @@ function DeliveryTimes({ loading, searchHandler, deliveryTime }: DeliveryTimesPr
     return (
         <>
             <h3 className="text-side-text-gray mb-3 text-[16px]">Delivery time</h3>
-            <div className="flex flex-col gap-2 border-b border-light-gray pb-5">
+            <div className="flex flex-col gap-2 border-b border-light-border-gray pb-5">
                 {Object.keys(deliveryTimes).map((cur: string, index: number) => {
                     return (
                         <div className="flex items-center gap-3" key={index}>
@@ -353,7 +353,7 @@ function ExtraFilters() {
     return (
         <>
             <h3 className="text-side-text-gray mt-5 mb-3 text-[16px]">Extra</h3>
-            <div className="flex flex-col gap-2 border-b border-light-gray pb-5">
+            <div className="flex flex-col gap-2 border-b border-light-border-gray pb-5">
                 {extraFilters.map((filter: string, index: number) => {
                     return (
                         <div className="flex items-center gap-3" key={index}>

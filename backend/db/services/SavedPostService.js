@@ -5,6 +5,25 @@ import { DBError } from "../customErrors/DBError.js";
 import { checkUser } from "../utils/checkUser.js";
 import { getPostFilters } from '../utils/getPostFilters.js';
 
+async function getSavedPostIDs(userID) {
+    try {
+        const savedPosts = await prisma.savedPost.findMany({
+            where: {
+                userID: userID
+            },
+            select: {
+                postID: true
+            }
+        });
+    
+        const savedPostIDs = savedPosts.map((post) => post.postID);
+        return savedPostIDs;
+    }
+    catch (err) {
+        throw new DBError("Something went wrong when trying to perform this action. Please try again.", 500);
+    }
+}
+
 export async function savePostHandler(postID, userID, username) {
     try {
         await checkUser(userID, username);
@@ -14,6 +33,9 @@ export async function savePostHandler(postID, userID, username) {
                 postID: postID
             }
         });
+
+        const savedPostIDs = await getSavedPostIDs(userID);
+        return savedPostIDs;
     }
     catch (err) {
         if (err instanceof DBError) {
@@ -157,6 +179,9 @@ export async function deleteSavedPostHandler(postID, userID, username) {
                 }
             }
         });
+
+        const savedPostIDs = await getSavedPostIDs(userID);
+        return savedPostIDs;
     }
     catch (err) {
         if (err instanceof DBError) {

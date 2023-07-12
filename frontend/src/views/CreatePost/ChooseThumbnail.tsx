@@ -18,11 +18,11 @@ function ChooseThumbnail({ setSection, setPostService, uploadedImages, thumbnail
     return (
         <PopUpWrapper setIsOpen={setPostService} title="Choose thumbnail" styles="flex flex-col">
             {uploadedImages.length > 0 &&
-            <div className={`flex flex-col gap-9 flex-grow overflow-y-scroll pr-[5px] max-h-[570px] ${!thumbnail ? "mb-9" : ""}`}>
+            <div className={`flex flex-col gap-9 flex-grow overflow-y-scroll pr-[8px] max-h-[570px] ${!thumbnail ? "mb-9" : ""}`}>
                 {uploadedImages.map((imageData: ImageData, index: number) => {
                     return (
                         <div className={`w-full min-h-[300px] h-[300px] bg-center bg-cover rounded-[8px] relative cursor-pointer 
-                        border-2 border-light-gray hover:border-side-text-gray transition ease-out duration-200 
+                        border-2 border-light-border-gray hover:border-side-text-gray transition ease-out duration-200 
                         ${imageData === thumbnail ? "border-side-text-gray" : ""}`} 
                         style={{ backgroundImage: `url(${imageData.image})` }} key={index} onClick={() => changeThumbnail(imageData)}>
                             {imageData === thumbnail &&

@@ -42,8 +42,8 @@ function SellerProfileView() {
             <PageWrapper styles="p-[38px] pt-[58px]" locationStack={["Sellers", sellerDetails.user.username]}>
                 <div className="mb-5 border-b border-b-light-border-gray pb-7">
                     <div className="bg-main-white border border-light-border-gray shadow-info-component rounded-[12px] p-6">
-                        <div className="flex justify-between mb-5">
-                            <div className="flex items-center gap-5">
+                        <div className="flex justify-between gap-5 mb-5">
+                            <div className="flex items-center flex-grow gap-5 overflow-hidden">
                                 <div className="relative">
                                     <ProfilePicAndStatus
                                         profilePicURL={sellerDetails.user.profilePicURL}
@@ -52,7 +52,7 @@ function SellerProfileView() {
                                         imgStyles="w-[75px] h-[75px]"
                                     />
                                 </div>
-                                <div>
+                                <div className="overflow-hidden flex-grow">
                                     <div className="flex items-center gap-2">
                                         <p>{sellerDetails.user.username}</p>
                                         <p className="text-[14px] seller-level"
@@ -60,7 +60,8 @@ function SellerProfileView() {
                                             {sellerDetails.sellerLevel.name}
                                         </p>
                                     </div>
-                                    <p className="text-[15px] text-side-text-gray mt-[2px]">
+                                    <p className="text-[15px] text-side-text-gray mt-[2px] 
+                                    whitespace-nowrap text-ellipsis overflow-hidden">
                                         {sellerDetails.summary}
                                     </p>
                                     <p className="text-[15px] text-side-text-gray">

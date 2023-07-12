@@ -29,16 +29,16 @@ function AboutSeller(props: AboutSellerProps) {
 
     return (
         <section className="bg-main-white border border-light-border-gray shadow-info-component rounded-[12px] p-6 w-full">
-            <div className="flex justify-between mb-4">
-                <div className="flex items-center gap-5">
+            <div className="flex justify-between mb-4 gap-5">
+                <div className="flex items-center gap-5 overflow-hidden">
                     <ProfilePicAndStatus 
                         profilePicURL={props.profilePicURL} 
                         profileStatus={props.status}
-                        statusStyles='before:hidden'
+                        statusStyles="before:hidden"
                         imgStyles="w-[75px] h-[75px] cursor-pointer"
                         action={navigateToProfile}
                     />
-                    <div>
+                    <div className="overflow-hidden">
                         <div className="flex items-center gap-2">
                             <p className="link" onClick={navigateToProfile}>{props.username}</p>
                             <p className="text-[14px] seller-level" 
@@ -46,7 +46,8 @@ function AboutSeller(props: AboutSellerProps) {
                                 {props.sellerLevel}
                             </p>
                         </div>
-                        <p className="text-side-text-gray text-[15px] mt-[2px]">
+                        <p className="text-side-text-gray text-[15px] whitespace-nowrap text-ellipsis 
+                        overflow-hidden mt-[2px]">
                             {props.summary}
                         </p>
                         <p className="text-side-text-gray text-[15px]">

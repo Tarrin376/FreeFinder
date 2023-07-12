@@ -10,8 +10,9 @@ export const initialState: IUserContext = {
         email: "",
         status: "",
         userID: "",
-        memberDate: new Date(),
-        seller: null
+        seller: null,
+        savedPosts: new Set(),
+        savedSellers: new Set()
     },
     setUserData: (_: IUser) => {}
 }
@@ -30,7 +31,11 @@ function UserProvider({ children }: { children?: React.ReactNode }) {
         (async (): Promise<void> => {
             try {
                 const resp = await axios.get<{ userData: IUser, message: string }>(`/api/users/jwt-auth`);
-                setUserData(resp.data.userData);
+                setUserData({
+                    ...resp.data.userData, 
+                    savedPosts: new Set(resp.data.userData.savedPosts),
+                    savedSellers: new Set(resp.data.userData.savedSellers)
+                });
             }
             catch (err: any) {
                 // Do nothing if the user's session has expired or is invalid.
