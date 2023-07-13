@@ -4,10 +4,10 @@ import axios, { AxiosError } from "axios";
 import { PostPage } from "../../types/PostPage";
 import { useLocation } from "react-router-dom";
 import { getAPIErrorMessage } from "../../utils/getAPIErrorMessage";
-import WhiteLoadingIcon from '../../assets/loading-white.svg';
 import { AnimatePresence } from "framer-motion";
 import { motion } from "framer-motion";
 import ErrorPopUp from "../../components/ErrorPopUp";
+import LoadingSvg from "../../components/LoadingSvg";
 
 interface PostImageProps {
     images: IPostImage[],
@@ -77,7 +77,7 @@ function PostImage({ images, index, isOwner, setPostData, action, getImage }: Po
                         <motion.div className="w-full h-full rounded-[8px] flex items-center gap-2
                         justify-center bg-[#1d1d1db7] absolute top-0 left-0" initial={{ opacity: 0 }}
                         animate={{ opacity: 1 }} exit={{ opacity: 0 }} transition={{ duration: 0.2 }}>
-                            <img src={WhiteLoadingIcon} className="w-[26px] h-[26px]" alt="" />
+                            <LoadingSvg size="24px" />
                             <p className="text-main-white text-[15px]">Updating</p>
                         </motion.div>}
                     </AnimatePresence>

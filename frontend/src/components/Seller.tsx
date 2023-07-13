@@ -117,7 +117,8 @@ function Seller(props: SellerProps) {
                 styles="red-btn h-[33px] w-fit rounded-[6px]"
                 textStyles="text-error-text"
                 setErrorMessage={setErrorMessage}
-                redLoadingIcon={true}
+                loadingSvgSize="24px"
+                loadingSvgColour="#F43C3C"
             />}
         </div>
     )

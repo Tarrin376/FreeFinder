@@ -1,11 +1,11 @@
 import { motion } from "framer-motion";
-import CloseIcon from '../assets/close.png';
 import { useContext } from "react";
 import { UserContext } from "../providers/UserContext";
 import AccountOptions from "../components/AccountOptions";
 import SearchSellers from "../components/SearchSellers";
 import { useNavigate } from "react-router-dom";
 import DropdownIcon from "../assets/dropdown.png";
+import CloseSvg from "../components/CloseSvg";
 
 interface SidebarProps {
     setLogIn: React.Dispatch<React.SetStateAction<boolean>>,
@@ -33,11 +33,10 @@ function Sidebar(props: SidebarProps) {
             <div className="w-full h-full relative p-4">
                 <div className="flex-grow">
                     <div className="flex items-center gap-3 mb-4">
-                        <img 
-                            src={CloseIcon} 
-                            className="w-6 h-6 cursor-pointer" 
-                            onClick={props.toggleSidebar}
-                            alt="close" 
+                        <CloseSvg
+                            size="27px"
+                            colour="#9c9c9c"
+                            action={props.toggleSidebar}
                         />
                         <h1 className="text-main-blue text-[23px]">
                             FreeFinder

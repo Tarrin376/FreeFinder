@@ -147,6 +147,7 @@ function SignUp({ setLogIn, setSignUp, setAccountCreated }: SignUpProps) {
                 textStyles="text-main-white"
                 setErrorMessage={setErrorMessage}
                 keepErrorMessage={true}
+                loadingSvgSize="28px"
             />
             <p className="mt-6 text-side-text-gray text-[15px]">Already have an account? 
                 <span className="text-main-blue ml-2 cursor-pointer hover:text-main-black" onClick={openLogIn}>

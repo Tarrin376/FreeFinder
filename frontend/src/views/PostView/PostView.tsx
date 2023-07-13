@@ -22,6 +22,7 @@ import { checkFile } from "../../utils/checkFile";
 import { MAX_FILE_BYTES } from "../CreatePost/UploadPostFiles";
 import { parseImage } from "../../utils/parseImage";
 import { MAX_FILE_UPLOADS } from "../CreatePost/UploadPostFiles";
+import LoadingSvg from "../../components/LoadingSvg";
 
 type UpdatePostToggles = "aboutToggle" | "titleToggle";
 
@@ -77,6 +78,7 @@ function PostView() {
     const [postData, setPostData] = useState<PostPage>();
     const [errorMessage, setErrorMessage] = useState<string>("");
     const [index, setIndex] = useState<number>(0);
+    const [addingImage, setAddingImage] = useState<boolean>(false);
 
     const [state, dispatch] = useReducer(reducer, initialState);
     const isOwner = postData?.postedBy.user.username === userContext.userData.username;
@@ -123,6 +125,7 @@ function PostView() {
 
     async function addImage(): Promise<void> {
         try {
+            setAddingImage(true);
             const image = await getImage(addImageFileRef);
             if (image === undefined || !postData) {
                 return;
@@ -146,6 +149,9 @@ function PostView() {
         catch (err: any) {
             const errorMessage = getAPIErrorMessage(err as AxiosError<{ message: string }>);
             setErrorMessage(errorMessage);
+        }
+        finally {
+            setAddingImage(false);
         }
     }
 
@@ -282,11 +288,13 @@ function PostView() {
                             {isOwner && postData.images.length < MAX_FILE_UPLOADS &&
                             <>
                                 <input type='file' ref={addImageFileRef} className="hidden" onChange={addImage} />
-                                <div className={`inline-block absolute w-[140px] ${postData.images.length > 0 ? "ml-3" : ""}`}
+                                <div className={`inline-block absolute w-[140px] ${postData.images.length > 0 ? "ml-3" : ""}
+                                ${addingImage ? "pointer-events-none" : ""}`}
                                 onClick={triggerFileUpload}>
                                     <button className="change relative w-full h-[85px] flex items-center 
                                     justify-center rounded-[8px] text-[16px]">
-                                        + Add image
+                                        {addingImage && <LoadingSvg size="24px" colour="#4E73F8" />}
+                                        <span className="text-main-blue">{addingImage ? "Uploading" : "+ Add image"}</span>
                                     </button>
                                 </div>
                             </>}

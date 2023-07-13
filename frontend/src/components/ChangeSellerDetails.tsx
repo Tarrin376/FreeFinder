@@ -121,7 +121,7 @@ function ChangeSellerDetails({ setSellerProfilePopUp }: ChangeSellerDetailsProps
                 options={skills}
                 removeOption={removeSkill}
                 bgColour="bg-very-light-pink"
-                textColour="text-pink"
+                textColour="#bf01ff"
                 styles="mt-4"
             />
             <Button
@@ -133,6 +133,7 @@ function ChangeSellerDetails({ setSellerProfilePopUp }: ChangeSellerDetailsProps
                 textStyles="text-main-white"
                 setErrorMessage={setErrorMessage}
                 whenComplete={closeSellerProfilePopUp}
+                loadingSvgSize="28px"
                 keepErrorMessage={true}
             />
         </PopUpWrapper>

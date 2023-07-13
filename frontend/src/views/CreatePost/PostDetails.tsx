@@ -99,7 +99,8 @@ function PostDetails(props: PostDetailsProps) {
                                 textStyles="text-error-text"
                                 setErrorMessage={props.setErrorMessage}
                                 whenComplete={() => ignoreUpload(upload)}
-                                redLoadingIcon={true}
+                                loadingSvgSize="24px"
+                                loadingSvgColour="#F43C3C"
                             />
                         </File>
                     )
@@ -144,7 +145,8 @@ function PostDetails(props: PostDetailsProps) {
                     textStyles="text-error-text"
                     setErrorMessage={props.setErrorMessage}
                     whenComplete={() => props.setPostService(false)}
-                    redLoadingIcon={true}
+                    loadingSvgSize="24px"
+                    loadingSvgColour="#F43C3C"
                 /> :
                 <Button
                     action={props.createPost}
@@ -154,6 +156,7 @@ function PostDetails(props: PostDetailsProps) {
                     styles={`min-w-[185px] w-fit ${!validInputs() ? "invalid-button" : "main-btn !h-[42px]"}`}
                     textStyles="text-main-white"
                     setErrorMessage={props.setErrorMessage}
+                    loadingSvgSize="28px"
                     whenComplete={() => props.setCreatedPost(true)}
                 />}
             </div>

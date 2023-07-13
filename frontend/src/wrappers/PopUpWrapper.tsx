@@ -1,4 +1,4 @@
-import CloseIcon from '../assets/close.png';
+import CloseSvg from '../components/CloseSvg';
 import { motion } from 'framer-motion';
 
 interface PopUpWrapperProps {
@@ -21,7 +21,11 @@ function PopUpWrapper({ children, setIsOpen, title, styles } : PopUpWrapperProps
             exit={{ opacity: 0, y: 200 }} transition={{ type: "spring", duration: 0.2 }}>
                 <div className="flex items-center w-full justify-between mb-7">
                     <h1 className="text-[23px]">{title}</h1>
-                    <img src={CloseIcon} className="w-6 h-6 cursor-pointer" onClick={closePopUp} alt="close" />
+                    <CloseSvg
+                        size="27px"
+                        colour="#9c9c9c"
+                        action={closePopUp}
+                    />
                 </div>
                 {children}
             </motion.div>

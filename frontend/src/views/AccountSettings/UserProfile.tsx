@@ -76,6 +76,7 @@ function UserProfile() {
                     textStyles="text-main-white"
                     setErrorMessage={setErrorMessage}
                     keepErrorMessage={true}
+                    loadingSvgSize="28px"
                 />
             </div>
         </>

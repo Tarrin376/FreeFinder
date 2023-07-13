@@ -1,6 +1,5 @@
 import { useRef, useState, useEffect } from "react";
-import WhiteLoadingIcon from '../assets/loading-white.svg';
-import RedLoadingIcon from '../assets/loading-red.svg';
+import LoadingSvg from "./LoadingSvg";
 
 interface ButtonProps {
     action: () => Promise<string | undefined>,
@@ -11,9 +10,10 @@ interface ButtonProps {
     children?: React.ReactNode,
     textStyles: string,
     setErrorMessage: React.Dispatch<React.SetStateAction<string>>,
+    loadingSvgSize: string,
     keepErrorMessage?: boolean,
     whenComplete?: () => void,
-    redLoadingIcon?: boolean
+    loadingSvgColour?: string,
 }
 
 function Button(props: ButtonProps) {
@@ -65,7 +65,10 @@ function Button(props: ButtonProps) {
         ref={btnRef} onClick={handleAction} type="submit">
             <div className="flex items-center justify-center gap-[10px]">
                 {btnText === props.loadingText ? 
-                <img src={props.redLoadingIcon ? RedLoadingIcon : WhiteLoadingIcon} className="w-8 mt-[1px]" alt="" /> :
+                <LoadingSvg
+                    size={props.loadingSvgSize}
+                    colour={props.loadingSvgColour}
+                /> :
                 props.children && btnText === props.defaultText && props.children}
                 <p className={props.textStyles}>
                     {btnText}

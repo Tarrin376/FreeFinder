@@ -1,5 +1,5 @@
 import { motion } from "framer-motion";
-import CloseSmallIcon from "../assets/close-small.png";
+import CloseSvg from "./CloseSvg";
 import { useEffect } from "react";
 
 interface InfoPopUpProps {
@@ -21,11 +21,10 @@ function InfoPopUp({ message, closePopUp, styles }: InfoPopUpProps) {
         initial={{ opacity: 0, y: 200, x: '-50%' }} animate={{ opacity: 1, y: 0,  x: '-50%' }} 
         exit={{ opacity: 0, y: 200,  x: '-50%' }} transition={{ duration: 0.2 }}>
             <p className="text-main-white flex-grow whitespace-normal">{message}</p>
-            <img 
-                src={CloseSmallIcon} 
-                className="text-main-white w-[20px] h-[20px] cursor-pointer" 
-                alt="close"
-                onClick={closePopUp}
+            <CloseSvg
+                size="20px"
+                colour="#fefefe"
+                action={closePopUp}
             />
         </motion.div>
     )

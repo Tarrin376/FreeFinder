@@ -1,4 +1,4 @@
-import CloseIcon from "../assets/close.png";
+import CloseSvg from "./CloseSvg";
 
 interface OptionsProps {
     options: string[],
@@ -21,12 +21,11 @@ function Options({ options, removeOption, styles, bgColour, textColour }: Option
                 return (
                     <div className={`option ${removeOption ? "cursor-pointer" : ""} ${bgColour}`} 
                     onClick={() => remove(cur)} key={index}>
-                        <p className={`text-[14px] ${textColour}`}>{cur}</p>
+                        <p className="text-[14px]" style={{ color: textColour }}>{cur}</p>
                         {removeOption && 
-                        <img 
-                            src={CloseIcon} 
-                            className="w-[13px] h-[13px]" 
-                            alt="" 
+                        <CloseSvg 
+                            size="15px"
+                            colour={textColour}
                         />}
                     </div>
                 )

@@ -56,7 +56,6 @@ export async function updateProfilePictureHandler(req) {
         return updated;
     }
     catch (err) {
-        console.log(err);
         if (err instanceof DBError) {
             throw err;
         } else if (err instanceof Prisma.PrismaClientValidationError) {

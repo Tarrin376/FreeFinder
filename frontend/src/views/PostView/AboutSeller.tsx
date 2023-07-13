@@ -72,7 +72,7 @@ function AboutSeller(props: AboutSellerProps) {
                 options={props.languages} 
                 styles="mt-2"
                 bgColour="bg-highlight"
-                textColour="text-main-blue"
+                textColour="#4E73F8"
             />
             {props.skills.length > 0 &&
             <>

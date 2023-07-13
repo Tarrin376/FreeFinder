@@ -1,5 +1,5 @@
 import ErrorIcon from '../assets/warning.png';
-import CloseIcon from "../assets/close.png";
+import CloseSvg from './CloseSvg';
 
 interface ErrorMessageProps {
     message: string,
@@ -20,11 +20,10 @@ function ErrorMessage({ message, title, styles, setErrorMessage }: ErrorMessageP
                 <p className="mb-[2px]">{title}</p>
                 <p className="text-side-text-gray leading-5 mb-[2px]">{message}</p>
             </div>
-            <img 
-                src={CloseIcon} 
-                className="w-[20px] h-[20px] cursor-pointer" 
-                alt="" 
-                onClick={closeErrorMessage} 
+            <CloseSvg
+                size="30px"
+                colour="#9c9c9c"
+                action={closeErrorMessage}
             />
         </div>
     );
