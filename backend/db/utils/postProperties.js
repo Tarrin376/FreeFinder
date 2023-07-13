@@ -43,6 +43,7 @@ export const postProperties = {
         images: {
             select: {
                 url: true,
+                cloudinaryID: true
             },
             orderBy: {
                 createdAt: 'asc'

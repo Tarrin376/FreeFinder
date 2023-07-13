@@ -79,6 +79,7 @@ function PostView() {
     const [errorMessage, setErrorMessage] = useState<string>("");
     const [index, setIndex] = useState<number>(0);
     const [addingImage, setAddingImage] = useState<boolean>(false);
+    const [removingImage, setRemovingImage] = useState<number>(-1);
 
     const [state, dispatch] = useReducer(reducer, initialState);
     const isOwner = postData?.postedBy.user.username === userContext.userData.username;
@@ -131,20 +132,12 @@ function PostView() {
                 return;
             }
 
-            const resp = await axios.post<{ secure_url: string, message: string }>(`/api${location.pathname}`, {
+            const resp = await axios.post<{ updatedPost: PostPage, message: string }>(`/api${location.pathname}`, {
                 image: image,
             });
 
-            const updated = [...postData.images, { url: resp.data.secure_url }];
-            setPostData((cur: PostPage | undefined) => {
-                if (!cur) return cur;
-                return {
-                    ...cur,
-                    images: updated
-                }
-            });
-
-            setIndex(updated.length - 1);
+            setPostData(resp.data.updatedPost);
+            setIndex(postData.images.length);
         }
         catch (err: any) {
             const errorMessage = getAPIErrorMessage(err as AxiosError<{ message: string }>);
@@ -278,7 +271,10 @@ function PostView() {
                                         images={postData.images}
                                         index={index}
                                         isOwner={isOwner}
+                                        removingImage={removingImage}
                                         setPostData={setPostData}
+                                        setIndex={setIndex}
+                                        setRemovingImage={setRemovingImage}
                                         action={() => setIndex(index)}
                                         getImage={getImage}
                                         key={index}
@@ -292,7 +288,7 @@ function PostView() {
                                 ${addingImage ? "pointer-events-none" : ""}`}
                                 onClick={triggerFileUpload}>
                                     <button className="change relative w-full h-[85px] flex items-center 
-                                    justify-center rounded-[8px] text-[16px]">
+                                    justify-center rounded-[8px] gap-2">
                                         {addingImage && <LoadingSvg size="24px" colour="#4E73F8" />}
                                         <span className="text-main-blue">{addingImage ? "Uploading" : "+ Add image"}</span>
                                     </button>

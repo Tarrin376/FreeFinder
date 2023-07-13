@@ -4,6 +4,8 @@ import { sellerLevelTextStyles } from "../../utils/sellerLevelTextStyles";
 import ProfileSummary from "../../components/ProfileSummary";
 import SaveSeller from "../../components/SaveSeller";
 import { useNavigate } from "react-router-dom";
+import { useContext } from "react";
+import { UserContext } from "../../providers/UserContext";
 
 interface AboutSellerProps {
     description: string,
@@ -22,6 +24,7 @@ interface AboutSellerProps {
 
 function AboutSeller(props: AboutSellerProps) {
     const navigate = useNavigate();
+    const userContext = useContext(UserContext);
 
     function navigateToProfile(): void {
         navigate(`/sellers/${props.username}`);
@@ -41,8 +44,7 @@ function AboutSeller(props: AboutSellerProps) {
                     <div className="overflow-hidden">
                         <div className="flex items-center gap-2">
                             <p className="link" onClick={navigateToProfile}>{props.username}</p>
-                            <p className="text-[14px] seller-level" 
-                            style={sellerLevelTextStyles[props.sellerLevel]}>
+                            <p className="text-[14px] seller-level" style={sellerLevelTextStyles[props.sellerLevel]}>
                                 {props.sellerLevel}
                             </p>
                         </div>
@@ -55,10 +57,11 @@ function AboutSeller(props: AboutSellerProps) {
                         </p>
                     </div>
                 </div>
+                {userContext.userData.username !== props.username &&
                 <SaveSeller 
                     svgSize={24}
                     sellerID={props.sellerID}
-                />
+                />}
             </div>
             {props.description !== "" && <p>{props.description}</p>}
             <ProfileSummary 
@@ -81,7 +84,7 @@ function AboutSeller(props: AboutSellerProps) {
                     options={props.skills} 
                     styles="mt-2"
                     bgColour="bg-very-light-pink"
-                    textColour="text-pink"
+                    textColour="#bf01ff"
                 />
             </>}
             <button className="red-btn mt-6">

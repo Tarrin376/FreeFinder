@@ -1,4 +1,4 @@
-import { useEffect, useState } from "react";
+import { useEffect, useState, useContext } from "react";
 import { SellerProfile } from "../../types/SellerProfile";
 import axios, { AxiosError } from "axios";
 import { useLocation } from "react-router-dom";
@@ -12,10 +12,12 @@ import { IPost } from "../../models/IPost";
 import ProfileSummary from "../../components/ProfileSummary";
 import Options from "../../components/Options";
 import SaveSeller from "../../components/SaveSeller";
+import { UserContext } from "../../providers/UserContext";
 
 function SellerProfileView() {
     const [sellerDetails, setSellerDetails] = useState<SellerProfile>();
     const [errorMessage, setErrorMessage] = useState<string>("");
+    const userContext = useContext(UserContext);
     const location = useLocation();
 
     useNavigateErrorPage("Uh oh! Failed to retrieve seller...", errorMessage);
@@ -69,10 +71,11 @@ function SellerProfileView() {
                                     </p>
                                 </div>
                             </div>
+                            {userContext.userData.username !== sellerDetails.user.username &&
                             <SaveSeller 
                                 svgSize={27}
                                 sellerID={sellerDetails.sellerID}
-                            />
+                            />}
                         </div>
                         <p className="text-side-text-gray">{sellerDetails.description}</p>
                         <div className="mt-5 flex items-center justify-between">
@@ -94,7 +97,7 @@ function SellerProfileView() {
                             options={sellerDetails.languages} 
                             styles="mt-2"
                             bgColour="bg-highlight"
-                            textColour="text-main-blue"
+                            textColour="#4E73F8"
                         />
                         {sellerDetails.skills.length > 0 &&
                         <>
@@ -106,7 +109,7 @@ function SellerProfileView() {
                                 options={sellerDetails.skills} 
                                 styles="mt-2"
                                 bgColour="bg-very-light-pink"
-                                textColour="text-pink"
+                                textColour="#bf01ff"
                             />
                         </>}
                     </div>
@@ -117,7 +120,7 @@ function SellerProfileView() {
                         {`${sellerDetails.user.username}${sellerDetails.user.username[sellerDetails.user.username.length - 1] === 's' ? 
                         "'" : "'s"} available services`}
                     </h2>
-                    <div className="overflow-x-scroll whitespace-nowrap pb-5">
+                    <div className="overflow-x-scroll whitespace-nowrap">
                         {sellerDetails.posts.map((post: IPost, index: number) => {
                             return (
                                 <Post

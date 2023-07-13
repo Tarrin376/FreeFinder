@@ -22,11 +22,11 @@ function ChooseThumbnail({ setSection, setPostService, uploadedImages, thumbnail
                 {uploadedImages.map((imageData: ImageData, index: number) => {
                     return (
                         <div className={`w-full min-h-[300px] h-[300px] bg-center bg-cover rounded-[8px] relative cursor-pointer 
-                        border-2 border-light-border-gray hover:border-side-text-gray transition ease-out duration-200 
-                        ${imageData === thumbnail ? "border-side-text-gray" : ""}`} 
+                        border-2 border-light-border-gray hover:border-main-blue transition ease-out duration-200 
+                        ${imageData === thumbnail ? "border-main-blue" : ""}`} 
                         style={{ backgroundImage: `url(${imageData.image})` }} key={index} onClick={() => changeThumbnail(imageData)}>
                             {imageData === thumbnail &&
-                            <p className="absolute top-5 right-5 bg-[#0f0f0fb4] text-main-white rounded-[5px] px-3 py-[1px]">
+                            <p className="absolute top-5 right-5 bg-[#0f0f0fb4] text-main-white seller-level">
                                 Use as thumbnail
                             </p>}
                         </div>

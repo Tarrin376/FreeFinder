@@ -109,13 +109,14 @@ function Post({ postInfo, index, canRemove, count, styles }: PostProps) {
             ${errorMessage !== "" ? 'bg-error-text text-main-white' : '!py-[0px]'}`}>
                 {errorMessage !== "" ? errorMessage : ""}
             </p>
+            {userContext.userData.username !== postInfo.postedBy.user.username &&
             <Save
                 action={canRemove?.unsave ? removePost : savePost}
                 svgSize={24}
                 checked={userContext.userData.savedPosts.has(postInfo.postID)}
                 hoverText={userContext.userData.savedPosts.has(postInfo.postID) ? "Unsave post" : "Save post"}
                 styles="right-3 top-3 absolute z-10"
-            />
+            />}
             <Carousel
                 images={postInfo.images}
                 btnSize={35}

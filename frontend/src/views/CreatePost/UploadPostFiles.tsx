@@ -106,11 +106,11 @@ function UploadPostFiles({ setPostService, setSection, uploadedImages, setUpload
                     return (
                         <File file={image.file} key={index} description="You can download this file to verify that it is the correct one.">
                             <a href={URL.createObjectURL(image.file)} download={image.file.name}>
-                                <button className="side-btn w-[140px]">
+                                <button className="side-btn w-[120px]">
                                     Download
                                 </button>
                             </a>
-                            <button className="bg-error-red text-error-text btn-primary w-[140px] px-3
+                            <button className="bg-error-red text-error-text btn-primary w-[120px] px-3
                             hover:bg-error-red-hover" onClick={() => deleteImage(image)}>
                                 Remove
                             </button>

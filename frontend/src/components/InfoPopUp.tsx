@@ -22,7 +22,7 @@ function InfoPopUp({ message, closePopUp, styles }: InfoPopUpProps) {
         exit={{ opacity: 0, y: 200,  x: '-50%' }} transition={{ duration: 0.2 }}>
             <p className="text-main-white flex-grow whitespace-normal">{message}</p>
             <CloseSvg
-                size="20px"
+                size="24px"
                 colour="#fefefe"
                 action={closePopUp}
             />

@@ -1,3 +1,4 @@
 export interface IPostImage {
-    url: string
+    url: string,
+    cloudinaryID: string
 }

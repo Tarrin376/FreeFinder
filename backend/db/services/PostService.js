@@ -33,7 +33,10 @@ async function uploadImage(postID, image, url, uuid, addImage) {
         });
     }
 
-    return result.secure_url;
+    return {
+        cloudinaryID: uuid,
+        url: result.secure_url
+    }
 }
 
 export async function createPostHandler(postData, startingPrice, userID) {
@@ -93,30 +96,73 @@ export async function createPostHandler(postData, startingPrice, userID) {
     }
 }
 
-export async function addImageHandler(req) {
-    try {
-        const post = await prisma.post.findUnique({ 
-            where: { 
-                postID: req.params.id 
-            },
-            select: {
-                postedBy: {
-                    select: {
-                        userID: true
-                    }
+async function getPostedBy(id) {
+    const post = await prisma.post.findUnique({ 
+        where: { 
+            postID: id
+        },
+        select: {
+            postedBy: {
+                select: {
+                    userID: true
                 }
             }
-        });
-        
-        if (!post) {
-            throw new DBError("Post not found.", 404);
         }
+    });
+    
+    if (!post) {
+        throw new DBError("Post not found.", 404);
+    }
 
-        if (req.userData.userID !== post.postedBy.userID) {
+    return post.postedBy.userID;
+}
+
+export async function deleteImageHandler(req) {
+    try {
+        const postedBy = await getPostedBy(req.params.id);
+        if (req.userData.userID !== postedBy) {
             throw new DBError("You are not authorized to add an image to this post.", 403);
         }
 
-        const secure_url = await uploadImage(
+        await prisma.postImage.delete({
+            where: {
+                cloudinaryID: req.params.cloudinaryID
+            }
+        });
+
+        await deleteCloudinaryResource(
+            `FreeFinder/PostImages/${req.userData.userID}/${req.params.id}/${req.params.cloudinaryID}`, 
+            "file"
+        );
+
+        const updatedPost = await prisma.post.findUnique({ 
+            where: {
+                postID: req.params.id
+            },
+            ...postProperties
+        });
+
+        return updatedPost;
+    }
+    catch (err) {
+        if (err instanceof DBError) {
+            throw err;
+        } else if (err instanceof Prisma.PrismaClientValidationError) {
+            throw new DBError("Missing required fields or fields provided are invalid.", 400);
+        } else {
+            throw new DBError("Something went wrong when trying to delete this image. Please try again.", 500);
+        }
+    }
+}
+
+export async function addImageHandler(req) {
+    try {
+        const postedBy = await getPostedBy(req.params.id);
+        if (req.userData.userID !== postedBy) {
+            throw new DBError("You are not authorized to add an image to this post.", 403);
+        }
+
+        await uploadImage(
             req.params.id,
             req.body.image, 
             `FreeFinder/PostImages/${req.userData.userID}/${req.params.id}`,
@@ -124,7 +170,14 @@ export async function addImageHandler(req) {
             true
         );
 
-        return secure_url;
+        const updatedPost = await prisma.post.findUnique({ 
+            where: {
+                postID: req.params.id
+            },
+            ...postProperties
+        });
+
+        return updatedPost;
     }
     catch (err) {
         if (err instanceof DBError) {
@@ -140,7 +193,7 @@ export async function addImageHandler(req) {
     }
 }
 
-export async function createPostPackage(packageData, postID, type) {
+async function createPostPackage(packageData, postID, type) {
     try {
         await prisma.package.create({
             data: {
@@ -191,48 +244,70 @@ export async function getPostHandler(postID) {
 }
 
 async function updateImage(req) {
-    const image = await prisma.postImage.findUnique({ 
-        where: {
-            postID_url: {
-                postID: req.params.id,
-                url: req.body.imageURL
+    try {
+        const image = await prisma.postImage.findUnique({ 
+            where: {
+                postID_url: {
+                    postID: req.params.id,
+                    url: req.body.imageURL
+                }
+            },
+            select: {
+                post: {
+                    select: {
+                        postedBy: {
+                            select: {
+                                userID: true
+                            }
+                        }
+                    }
+                },
+                cloudinaryID: true
             }
-        },
-        select: {
-            cloudinaryID: true
+        });
+    
+        if (!image) {
+            throw new DBError("Image not found.", 404);
         }
-    });
-
-    if (!image) {
-        throw new DBError("Image not found.", 404);
+    
+        if (req.userData.userID !== image.post.postedBy.userID) {
+            throw new DBError("You are not authorized to update this image.", 403);
+        }
+    
+        const newImageUUID = uuidv4();
+        const newImage = await uploadImage(
+            req.params.id, 
+            req.body.newImage, 
+            `FreeFinder/PostImages/${req.userData.userID}/${req.params.id}`, 
+            newImageUUID,
+            false
+        );
+    
+        await prisma.postImage.update({ 
+            where: {
+                postID_url: {
+                    postID: req.params.id,
+                    url: req.body.imageURL
+                }
+            },
+            data: {
+                cloudinaryID: newImageUUID,
+                url: newImage.url
+            }
+        });
+    
+        await deleteCloudinaryResource(
+            `FreeFinder/PostImages/${req.userData.userID}/${req.params.id}/${image.cloudinaryID}`, 
+            "file"
+        );
     }
-
-    const newImageUUID = uuidv4();
-    const secure_url = await uploadImage(
-        req.params.id, 
-        req.body.newImage, 
-        `FreeFinder/PostImages/${req.userData.userID}/${req.params.id}`, 
-        newImageUUID,
-        false
-    );
-
-    await prisma.postImage.update({ 
-        where: {
-            postID_url: {
-                postID: req.params.id,
-                url: req.body.imageURL
-            }
-        },
-        data: {
-            cloudinaryID: newImageUUID,
-            url: secure_url
+    catch (err) {
+        if (err instanceof DBError) {
+            throw err;
+        } else {
+            throw new DBError("Something went wrong when trying to update this post. Please try again.", 500);
         }
-    });
-
-    await deleteCloudinaryResource(
-        `FreeFinder/PostImages/${req.userData.userID}/${req.params.id}/${image.cloudinaryID}`, 
-        "file"
-    );
+    }
 }
 
 export async function updatePostHandler(req) {
@@ -364,6 +439,7 @@ async function queryPosts(req) {
             images: {
                 select: {
                     url: true,
+                    cloudinaryID: true
                 },
                 orderBy: {
                     createdAt: 'asc'

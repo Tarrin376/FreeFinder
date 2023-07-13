@@ -4,21 +4,17 @@ import Options from "./Options";
 import HighlightedSubstring from "./HighlightedSubstring";
 
 interface SearchLanguagesProps {
-    setSelectedLanguages: React.Dispatch<React.SetStateAction<string[]>>,
+    loading?: boolean,
     selectedLanguages: string[],
+    setSelectedLanguages: React.Dispatch<React.SetStateAction<string[]>>,
     searchBarStyles?: string,
     styles?: string,
-    applyChanges?: {
-        callback: () => void,
-        disabled: boolean
-    }
 }
 
-function SearchLanguages({ setSelectedLanguages, selectedLanguages, searchBarStyles, styles, applyChanges }: SearchLanguagesProps) {
+function SearchLanguages({ loading, selectedLanguages, setSelectedLanguages, searchBarStyles, styles }: SearchLanguagesProps) {
     const [language, setLanguage] = useState<string>("");
     const [matchedLanguages, setMatchedLanguages] = useState<string[][]>([]);
     const allLanguages = useFetchLanguages();
-    const [applyChangesBtn, setApplyChangesBtn] = useState<boolean>(false);
 
     function getMatchedLanguages(search: string): string[][] {
         if (search === "") {
@@ -42,25 +38,18 @@ function SearchLanguages({ setSelectedLanguages, selectedLanguages, searchBarSty
     }
 
     function addLanguage(language: string): void {
-        setApplyChangesBtn(true);
-        setSelectedLanguages((selected: string[]) => [
-            ...selected.filter((curLang: string) => curLang !== language), 
-            language
-        ]);
+        if (!loading) {
+            setSelectedLanguages((selected: string[]) => [
+                ...selected.filter((curLang: string) => curLang !== language), 
+                language
+            ]);
+        }
     }
 
     function removeLanguage(language: string): void {
-        setApplyChangesBtn(true);
-        setSelectedLanguages((selected: string[]) => selected.filter((curLang: string) => curLang !== language));
-    }
-
-    function applyAll(): void {
-        if (!applyChanges) {
-            return;
+        if (!loading) {
+            setSelectedLanguages((selected: string[]) => selected.filter((curLang: string) => curLang !== language));
         }
-
-        applyChanges.callback();
-        setApplyChangesBtn(false);
     }
 
     return (
@@ -71,6 +60,7 @@ function SearchLanguages({ setSelectedLanguages, selectedLanguages, searchBarSty
                 placeholder="Search for a language" 
                 value={language}
                 onChange={searchHandler}
+                disabled={loading}
             />
             {matchedLanguages.length > 0 &&
             <div className="border-b border-x border-light-border-gray rounded-b-[8px] max-h-[300px] overflow-y-scroll p-4 bg-main-white">
@@ -96,11 +86,6 @@ function SearchLanguages({ setSelectedLanguages, selectedLanguages, searchBarSty
                 bgColour="bg-highlight"
                 textColour="#4E73F8"
             />}
-            {applyChanges && applyChangesBtn &&
-            <button className={`main-btn w-fit px-3 !h-9 !text-[14px] mt-4 ${applyChanges.disabled ? "invalid-button" : ""}`} 
-            onClick={applyAll}>
-                Apply changes
-            </button>}
         </div>
     )
 }

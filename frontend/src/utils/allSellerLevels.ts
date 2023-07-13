@@ -1,4 +1,4 @@
-export const sellerLevels: string[] = [
+export const allSellerLevels: string[] = [
     "Newbie",
     "Amateur",
     "Highly Rated",

@@ -9,6 +9,7 @@ import Button from "../../components/Button";
 import axios, { AxiosError } from "axios";
 import { getAPIErrorMessage } from "../../utils/getAPIErrorMessage";
 import TextEditor from "../../components/TextEditor";
+import { PostPage } from "../../types/PostPage";
 
 interface PostDetailsProps {
     setPostService: React.Dispatch<React.SetStateAction<boolean>>,
@@ -43,7 +44,7 @@ function PostDetails(props: PostDetailsProps) {
 
     async function retryFileUpload(upload: FailedUpload): Promise<string | undefined> {
         try {
-            await axios.post<{ secure_url: string, message: string }>(`/api/posts/${props.postID}`, { 
+            await axios.post<{ updatedPost: PostPage, message: string }>(`/api/posts/${props.postID}`, { 
                 image: upload.imageData.image 
             });
         }

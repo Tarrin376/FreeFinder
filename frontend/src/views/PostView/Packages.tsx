@@ -40,7 +40,8 @@ function Packages({ packages }: { packages: IPackage[] }) {
                     {packages.sort((a, b) => a.type.localeCompare(b.type)).map((cur, index) => {
                         return (
                             <button className={`h-[50px] border-b-2 ${cur.type === curPkg.type ? 
-                            "border-main-blue bg-[#f4f6ff]" : "border-light-border-gray"} flex-grow basis-0`} 
+                            "border-main-blue bg-[#f4f6ff] font-bold" : "border-light-border-gray"} 
+                            text-main-blue flex-grow basis-0`} 
                             onClick={() => selectPackage(cur)} 
                             key={index}>
                                 {capitalizeWord(cur.type)}

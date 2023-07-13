@@ -1,6 +1,6 @@
 import SearchIcon from '../assets/search.png';
 import Price from '../components/Price';
-import { useRef, createContext, useState, useContext } from 'react';
+import { useRef, createContext, useState, useContext, useEffect, useCallback } from 'react';
 import { MAX_PRICE, MAX_DELIVERY_DAYS } from '../views/CreatePost/Package';
 import { usePaginateData } from '../hooks/usePaginateData';
 import { IPost } from '../models/IPost';
@@ -12,14 +12,14 @@ import CreatePost from '../views/CreatePost/CreatePost';
 import AddIcon from '../assets/add.png';
 import SearchLanguages from '../components/SearchLanguages';
 import { deliveryTimes } from '../utils/deliveryTimes';
-import { sellerLevels } from '../utils/sellerLevels';
-import { extraFilters } from '../utils/extraFilters';
+import { allSellerLevels } from '../utils/allSellerLevels';
 import { UserContext } from './UserContext';
 import { sellerLevelTextStyles } from '../utils/sellerLevelTextStyles';
 import SellerExperience from '../components/SellerExperience';
 import { FilterPosts } from '../types/FilterPosts';
 import { AnimatePresence } from "framer-motion";
 import ErrorPopUp from '../components/ErrorPopUp';
+import { allExtraFilters } from '../utils/allExtraFilters';
 
 interface FilterPostsContextProps {
     children?: React.ReactNode,
@@ -27,10 +27,9 @@ interface FilterPostsContextProps {
 }
 
 interface SellerLevelsProps {
-    setAllSellerLevels: React.Dispatch<React.SetStateAction<string[]>>,
-    allSellerLevels: string[],
-    disabled: boolean,
-    searchHandler: () => void
+    loading: boolean,
+    sellerLevels: string[],
+    setSellerLevels: React.Dispatch<React.SetStateAction<string[]>>
 }
 
 interface DeliveryTimesProps {
@@ -49,6 +48,12 @@ interface MainFiltersBarProps {
     searchHandler: () => void
 }
 
+interface ExtraFiltersProps {
+    loading: boolean,
+    extraFilters: string[],
+    setExtraFilters: React.Dispatch<React.SetStateAction<string[]>>
+}
+
 type PostArgs = {
     search: string | undefined,
     sort: string,
@@ -58,6 +63,7 @@ type PostArgs = {
     languages: string[],
     deliveryTime: number,
     sellerLevels: string[],
+    extraFilters: string[]
 }
 
 export const FilterPostsContext = createContext<FilterPosts | undefined>(undefined);
@@ -76,8 +82,10 @@ function FilterPostsProvider({ children, urlPrefix }: FilterPostsContextProps) {
 
     const [page, setPage] = useState<{ value: number }>({ value: 1 });
     const [postService, setPostService] = useState<boolean>(false);
+
     const [selectedLanguages, setSelectedLanguages] = useState<string[]>(postFilters.languages ?? []);
-    const [allSellerLevels, setAllSellerLevels] = useState<string[]>(postFilters.sellerLevels ?? []);
+    const [sellerLevels, setSellerLevels] = useState<string[]>(postFilters.sellerLevels ?? []);
+    const [extraFilters, setExtraFilters] = useState<string[]>(postFilters.extraFilters ?? []);
     const userContext = useContext(UserContext);
 
     const location = useLocation();
@@ -96,7 +104,8 @@ function FilterPostsProvider({ children, urlPrefix }: FilterPostsContextProps) {
             location: countryRef.current?.value === "Any country" ? undefined : countryRef.current?.value,
             languages: selectedLanguages,
             deliveryTime: deliveryTime.current,
-            sellerLevels: allSellerLevels,
+            sellerLevels: sellerLevels,
+            extraFilters: extraFilters
         }
     );
     
@@ -107,7 +116,7 @@ function FilterPostsProvider({ children, urlPrefix }: FilterPostsContextProps) {
         setPostService(true);
     }
 
-    function searchHandler(): void {
+    const searchHandler = useCallback((): void => {
         sessionStorage.setItem("post_filters", JSON.stringify({
             search: searchRef.current?.value,
             sort: sort.current,
@@ -116,11 +125,16 @@ function FilterPostsProvider({ children, urlPrefix }: FilterPostsContextProps) {
             location: countryRef.current?.value === "Any country" ? undefined : countryRef.current?.value,
             languages: selectedLanguages,
             deliveryTime: deliveryTime.current,
-            sellerLevels: allSellerLevels,
+            sellerLevels: sellerLevels,
+            extraFilters: extraFilters
         }));
 
         posts.resetState();
-    }
+    }, [selectedLanguages, sellerLevels, extraFilters]);
+
+    useEffect(() => {
+        searchHandler();
+    }, [selectedLanguages, sellerLevels, extraFilters, searchHandler])
 
     return (
         <>
@@ -183,22 +197,22 @@ function FilterPostsProvider({ children, urlPrefix }: FilterPostsContextProps) {
                         />
                         <h3 className="text-side-text-gray mt-5 mb-3 text-[16px]">Seller speaks</h3>
                         <SearchLanguages 
+                            loading={posts.loading}
                             setSelectedLanguages={setSelectedLanguages} 
                             selectedLanguages={selectedLanguages}
                             searchBarStyles="h-10"
                             styles="border-b border-light-border-gray pb-6"
-                            applyChanges={{
-                                callback: searchHandler,
-                                disabled: posts.loading
-                            }}
                         />
                         <SellerLevels 
-                            setAllSellerLevels={setAllSellerLevels} 
-                            allSellerLevels={allSellerLevels}
-                            disabled={posts.loading} 
-                            searchHandler={searchHandler}
+                            loading={posts.loading}
+                            sellerLevels={sellerLevels}
+                            setSellerLevels={setSellerLevels} 
                         />
-                        <ExtraFilters />
+                        <ExtraFilters 
+                            loading={posts.loading}
+                            extraFilters={extraFilters}
+                            setExtraFilters={setExtraFilters}
+                        />
                     </div>
                 </div>
                 <div className="flex-grow">
@@ -276,35 +290,27 @@ function MainFiltersBar({ searchRef, min, max, countryRef, sort, loading, search
     )
 }
 
-function SellerLevels({ setAllSellerLevels, allSellerLevels, disabled, searchHandler }: SellerLevelsProps) {
-    const [applyChangesBtn, setApplyChangesBtn] = useState<boolean>(false);
-
+function SellerLevels({ loading, setSellerLevels, sellerLevels }: SellerLevelsProps) {
     function updateSellerLevels(sellerLevel: string): void {
-        setApplyChangesBtn(true);
-        setAllSellerLevels((cur) => {
+        setSellerLevels((cur) => {
             if (cur.includes(sellerLevel)) return cur.filter((level: string) => level !== sellerLevel);
             else return [...cur, sellerLevel];
         });
-    }
-
-    function applyChanges(): void {
-        searchHandler();
-        setApplyChangesBtn(false);
     }
 
     return (
         <>
             <h3 className="text-side-text-gray mt-5 mb-3 text-[16px]">Seller level</h3>
             <div className="flex flex-col gap-3 border-b border-light-border-gray pb-6">
-                {sellerLevels.map((sellerLevel: string, index: number) => {
+                {allSellerLevels.map((sellerLevel: string, index: number) => {
                     return (
                         <div className="flex items-center gap-3" key={index}>
                             <input 
                                 type="checkbox" 
                                 name="seller-level" 
-                                className="w-[15px] h-[15px] mt-[1px]" 
+                                className={`w-[15px] h-[15px] mt-[1px] ${loading ? "invalid-button" : ""}`} 
                                 id={sellerLevel}
-                                defaultChecked={allSellerLevels.includes(sellerLevel)}
+                                defaultChecked={sellerLevels.includes(sellerLevel)}
                                 onClick={() => updateSellerLevels(sellerLevel)}
                             />
                             <label htmlFor={sellerLevel} className="text-[15px] seller-level" style={sellerLevelTextStyles[sellerLevel]}>
@@ -313,11 +319,6 @@ function SellerLevels({ setAllSellerLevels, allSellerLevels, disabled, searchHan
                         </div>
                     )
                 })}
-                {applyChangesBtn &&
-                <button className={`main-btn w-fit px-3 !h-9 !text-[14px] mt-2 ${disabled ? "invalid-button" : ""}`} 
-                onClick={applyChanges}>
-                    Apply changes
-                </button>}
             </div>
         </>
     )
@@ -355,19 +356,28 @@ function DeliveryTimes({ loading, searchHandler, deliveryTime }: DeliveryTimesPr
     )
 }
 
-function ExtraFilters() {
+function ExtraFilters({ loading, extraFilters, setExtraFilters }: ExtraFiltersProps) {
+    function toggleFilter(filter: string) {
+        setExtraFilters((cur: string[]) => {
+            if (cur.includes(filter)) return cur.filter((x) => x !== filter);
+            else return [...cur, filter];
+        });
+    }
+
     return (
         <>
             <h3 className="text-side-text-gray mt-5 mb-3 text-[16px]">Extra</h3>
-            <div className="flex flex-col gap-2 border-b border-light-border-gray pb-5">
-                {extraFilters.map((filter: string, index: number) => {
+            <div className="flex flex-col gap-2 pb-5">
+                {allExtraFilters.map((filter: string, index: number) => {
                     return (
                         <div className="flex items-center gap-3" key={index}>
                             <input 
                                 type="checkbox" 
                                 name="seller-level" 
-                                className="w-[15px] h-[15px] mt-[1px]" 
+                                className={`w-[15px] h-[15px] mt-[1px] ${loading ? "invalid-button" : ""}`}
                                 id={filter}
+                                onChange={() => toggleFilter(filter)}
+                                defaultChecked={extraFilters.includes(filter)}
                             />
                             <label htmlFor={filter} className="text-[15px]">
                                 {filter}

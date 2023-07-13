@@ -4,7 +4,8 @@ import {
     deletePostHandler,
     addImageHandler, 
     getPostsHandler,
-    updatePostHandler
+    updatePostHandler,
+    deleteImageHandler
 } from "../services/PostService.js";
 
 export async function createPost(req, res) {
@@ -47,10 +48,20 @@ export async function deletePost(req, res) {
     }
 }
 
+export async function deleteImage(req, res) {
+    try {
+        const updatedPost = await deleteImageHandler(req);
+        res.json({ updatedPost: updatedPost, message: "success" });
+    }
+    catch (err) {
+        res.status(err.code).json({ message: err.message });
+    }
+}
+
 export async function addImage(req, res) {
     try {
-        const secure_url = await addImageHandler(req);
-        res.status(201).json({ secure_url: secure_url, message: "success" });
+        const updatedPost = await addImageHandler(req);
+        res.status(201).json({ updatedPost: updatedPost, message: "success" });
     }
     catch (err) {
         res.status(err.code).json({ message: err.message });
