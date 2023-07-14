@@ -7,7 +7,7 @@ module.exports = {
     extend: {
         colors: {
             'main-blue': '#4E73F8',
-            'bg-light': '#fafafa',
+            'bg-light': '#fdfdfd',
             'main-blue-hover': '#5a7df8',
             'main-white': '#fefefe',
             'light-gray': '#e1e3e8',
@@ -27,7 +27,8 @@ module.exports = {
             'highlight': '#e6ebff',
             'highlight-hover': '#e1e7ff',
             'very-light-pink': '#f7dfff',
-            'pink': '#bf01ff'
+            'pink': '#bf01ff',
+            'hover-light-gray': '#f7f7f7'
         },
         dropShadow: {
             'search-bar': '0px 0px 1px #DDDDDD',

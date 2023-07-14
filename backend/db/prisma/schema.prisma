@@ -86,6 +86,22 @@ model Post {
     reviews       Review[]
     packages      Package[]
     images        PostImage[] @relation("Images")
+    workType      WorkType    @relation(fields: [workTypeID], references: [id], onDelete: Cascade)
+    workTypeID    String
+}
+
+model JobCategory {
+    id        String     @id @default(uuid())
+    name      String     @unique
+    workTypes WorkType[]
+}
+
+model WorkType {
+    id            String      @id @default(uuid())
+    name          String      @unique
+    jobCategory   JobCategory @relation(fields: [jobCategoryID], references: [id], onDelete: Cascade)
+    jobCategoryID String
+    posts         Post[]
 }
 
 model PostImage {

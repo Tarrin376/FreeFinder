@@ -1,7 +1,8 @@
 import { useState } from "react";
 import { useFetchLanguages } from "../hooks/useFetchLanguages";
 import Options from "./Options";
-import HighlightedSubstring from "./HighlightedSubstring";
+import { getMatchedResults } from "../utils/getMatchedResults";
+import MatchedResults from "./MatchedResults";
 
 interface SearchLanguagesProps {
     loading?: boolean,
@@ -16,23 +17,9 @@ function SearchLanguages({ loading, selectedLanguages, setSelectedLanguages, sea
     const [matchedLanguages, setMatchedLanguages] = useState<string[][]>([]);
     const allLanguages = useFetchLanguages();
 
-    function getMatchedLanguages(search: string): string[][] {
-        if (search === "") {
-            return [];
-        }
-
-        const res = allLanguages.languages.map((language: string) => {
-            const index = language.indexOf(search.toLowerCase());
-            if (index !== -1) return [language, index.toString()];
-            else return [];
-        });
-
-        return res.filter((cur: string[]) => cur.length > 0);
-    }
-
     function searchHandler(e: React.ChangeEvent<HTMLInputElement>): void {
         const search = e.target.value;
-        const matched = getMatchedLanguages(search);
+        const matched = getMatchedResults(allLanguages.languages, search);
         setMatchedLanguages(matched);
         setLanguage(search);
     }
@@ -63,21 +50,11 @@ function SearchLanguages({ loading, selectedLanguages, setSelectedLanguages, sea
                 disabled={loading}
             />
             {matchedLanguages.length > 0 &&
-            <div className="border-b border-x border-light-border-gray rounded-b-[8px] max-h-[300px] overflow-y-scroll p-4 bg-main-white">
-                <div className="flex flex-col gap-1">
-                    {matchedLanguages.map((cur: string[], index: number) => {
-                        return (
-                            <HighlightedSubstring
-                                action={addLanguage}
-                                word={cur[0]}
-                                substring={language}
-                                foundAt={parseInt(cur[1])}
-                                key={index}
-                            />
-                        )
-                    })}
-                </div>
-            </div>}
+            <MatchedResults
+                search={language}
+                matchedResults={matchedLanguages}
+                action={addLanguage}
+            />}
             {selectedLanguages.length > 0 &&
             <Options 
                 options={selectedLanguages} 

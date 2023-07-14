@@ -20,6 +20,11 @@ import { FilterPosts } from '../types/FilterPosts';
 import { AnimatePresence } from "framer-motion";
 import ErrorPopUp from '../components/ErrorPopUp';
 import { allExtraFilters } from '../utils/allExtraFilters';
+import { useFetchJobCategories } from '../hooks/useFetchJobCategories';
+import { getMatchedResults } from '../utils/getMatchedResults';
+import { IWorkType } from '../models/IWorkType';
+import MatchedResults from '../components/MatchedResults';
+import Options from '../components/Options';
 
 interface FilterPostsContextProps {
     children?: React.ReactNode,
@@ -54,6 +59,11 @@ interface ExtraFiltersProps {
     setExtraFilters: React.Dispatch<React.SetStateAction<string[]>>
 }
 
+interface TypeOfWorkProps {
+    selectedWork: string[],
+    setSelectedWork: React.Dispatch<React.SetStateAction<string[]>>
+}
+
 type PostArgs = {
     search: string | undefined,
     sort: string,
@@ -63,7 +73,8 @@ type PostArgs = {
     languages: string[],
     deliveryTime: number,
     sellerLevels: string[],
-    extraFilters: string[]
+    extraFilters: string[],
+    selectedWork: string[]
 }
 
 export const FilterPostsContext = createContext<FilterPosts | undefined>(undefined);
@@ -86,6 +97,7 @@ function FilterPostsProvider({ children, urlPrefix }: FilterPostsContextProps) {
     const [selectedLanguages, setSelectedLanguages] = useState<string[]>(postFilters.languages ?? []);
     const [sellerLevels, setSellerLevels] = useState<string[]>(postFilters.sellerLevels ?? []);
     const [extraFilters, setExtraFilters] = useState<string[]>(postFilters.extraFilters ?? []);
+    const [selectedWork, setSelectedWork] = useState<string[]>(postFilters.selectedWork ?? []);
     const userContext = useContext(UserContext);
 
     const location = useLocation();
@@ -105,7 +117,8 @@ function FilterPostsProvider({ children, urlPrefix }: FilterPostsContextProps) {
             languages: selectedLanguages,
             deliveryTime: deliveryTime.current,
             sellerLevels: sellerLevels,
-            extraFilters: extraFilters
+            extraFilters: extraFilters,
+            selectedWork: selectedWork
         }
     );
     
@@ -126,11 +139,12 @@ function FilterPostsProvider({ children, urlPrefix }: FilterPostsContextProps) {
             languages: selectedLanguages,
             deliveryTime: deliveryTime.current,
             sellerLevels: sellerLevels,
-            extraFilters: extraFilters
+            extraFilters: extraFilters,
+            selectedWork: selectedWork
         }));
-
+        
         posts.resetState();
-    }, [selectedLanguages, sellerLevels, extraFilters]);
+    }, [selectedLanguages, sellerLevels, extraFilters, selectedWork]);
 
     useEffect(() => {
         searchHandler();
@@ -152,8 +166,9 @@ function FilterPostsProvider({ children, urlPrefix }: FilterPostsContextProps) {
             </AnimatePresence>
             <div className="flex">
                 <div className="h-[calc(100vh-90px)] w-[360px] bg-main-white border-r border-light-border-gray p-[22.5px]">
-                    <button onClick={openPostService} className="btn-primary text-main-white bg-main-blue w-full px-5 h-[45px] 
-                    hover:bg-main-blue-hover flex items-center justify-center gap-2 mb-[50.5px]">
+                    <button onClick={openPostService} className={`btn-primary text-main-white bg-main-blue w-full px-5 h-[45px] 
+                    hover:bg-main-blue-hover flex items-center justify-center gap-2 mb-[50.5px] 
+                    ${userContext.userData.username === "" ? "invalid-button" : ""}`}>
                         <img src={AddIcon} alt="" className="w-[16px] h-[16px]" />
                         Create new post
                     </button>
@@ -195,7 +210,7 @@ function FilterPostsProvider({ children, urlPrefix }: FilterPostsContextProps) {
                             searchHandler={searchHandler} 
                             deliveryTime={deliveryTime} 
                         />
-                        <h3 className="text-side-text-gray mt-5 mb-3 text-[16px]">Seller speaks</h3>
+                        <h3 className="text-side-text-gray mt-4 mb-2 text-[16px]">Seller speaks</h3>
                         <SearchLanguages 
                             loading={posts.loading}
                             setSelectedLanguages={setSelectedLanguages} 
@@ -207,6 +222,10 @@ function FilterPostsProvider({ children, urlPrefix }: FilterPostsContextProps) {
                             loading={posts.loading}
                             sellerLevels={sellerLevels}
                             setSellerLevels={setSellerLevels} 
+                        />
+                        <TypeOfWork 
+                            selectedWork={selectedWork}
+                            setSelectedWork={setSelectedWork}
                         />
                         <ExtraFilters 
                             loading={posts.loading}
@@ -299,9 +318,9 @@ function SellerLevels({ loading, setSellerLevels, sellerLevels }: SellerLevelsPr
     }
 
     return (
-        <>
-            <h3 className="text-side-text-gray mt-5 mb-3 text-[16px]">Seller level</h3>
-            <div className="flex flex-col gap-3 border-b border-light-border-gray pb-6">
+        <div className="border-b border-light-border-gray pb-6 mt-4">
+            <h3 className="text-side-text-gray mb-2 text-[16px]">Seller level</h3>
+            <div className="flex flex-col gap-3">
                 {allSellerLevels.map((sellerLevel: string, index: number) => {
                     return (
                         <div className="flex items-center gap-3" key={index}>
@@ -320,7 +339,7 @@ function SellerLevels({ loading, setSellerLevels, sellerLevels }: SellerLevelsPr
                     )
                 })}
             </div>
-        </>
+        </div>
     )
 }
 
@@ -331,9 +350,9 @@ function DeliveryTimes({ loading, searchHandler, deliveryTime }: DeliveryTimesPr
     }
 
     return (
-        <>
-            <h3 className="text-side-text-gray mb-3 text-[16px]">Delivery time</h3>
-            <div className="flex flex-col gap-2 border-b border-light-border-gray pb-5">
+        <div className="border-b border-light-border-gray pb-5">
+            <h3 className="text-side-text-gray mb-2 text-[16px]">Delivery time</h3>
+            <div className="flex flex-col gap-2">
                 {Object.keys(deliveryTimes).map((cur: string, index: number) => {
                     return (
                         <div className="flex items-center gap-3" key={index}>
@@ -352,7 +371,66 @@ function DeliveryTimes({ loading, searchHandler, deliveryTime }: DeliveryTimesPr
                     )
                 })}
             </div>
-        </>
+        </div>
+    )
+}
+
+function TypeOfWork({ selectedWork, setSelectedWork }: TypeOfWorkProps) {
+    const jobCategories = useFetchJobCategories();
+    const [matchedWork, setMatchedWork] = useState<string[][]>([]);
+    const [searchQuery, setSearchQuery] = useState<string>("");
+
+    function searchHandler(value: string) {
+        const allWork = [];
+
+        for (let category of jobCategories.categories) {
+            const workTypes = category.workTypes.map((workType: IWorkType) => workType.name);
+            for (let workType of workTypes) {
+                allWork.push(workType);
+            }
+        }
+
+        const matched = getMatchedResults(allWork, value);
+        setMatchedWork(matched);
+        setSearchQuery(value);
+    }
+
+    function addWork(workType: string) {
+        setSelectedWork((selected: string[]) => [
+            ...selected.filter((cur: string) => cur !== workType), 
+            workType
+        ]);
+    }
+
+    function removeWork(workType: string) {
+        setSelectedWork((selected: string[]) => selected.filter((cur: string) => cur !== workType));
+    }
+
+    return (
+        <div className="border-b border-light-border-gray pb-6 mt-4">
+            <h3 className="mb-2 text-side-text-gray">Type of freelance work</h3>
+            <input 
+                type="text" 
+                className={`search-bar h-10 ${matchedWork.length > 0 ? "!rounded-b-none" : ""} focus:!outline-none`}
+                placeholder="Search for work"
+                onChange={(e) => searchHandler(e.target.value)}
+                value={searchQuery}
+            />
+            {matchedWork.length > 0 &&
+            <MatchedResults
+                search={searchQuery}
+                matchedResults={matchedWork}
+                action={addWork}
+            />}
+            {selectedWork.length > 0 &&
+            <Options 
+                options={selectedWork} 
+                removeOption={removeWork}
+                styles="mt-4"
+                bgColour="bg-very-light-pink"
+                textColour="#bf01ff"
+            />}
+        </div>
     )
 }
 
@@ -366,8 +444,8 @@ function ExtraFilters({ loading, extraFilters, setExtraFilters }: ExtraFiltersPr
 
     return (
         <>
-            <h3 className="text-side-text-gray mt-5 mb-3 text-[16px]">Extra</h3>
-            <div className="flex flex-col gap-2 pb-5">
+            <h3 className="text-side-text-gray mt-4 mb-2 text-[16px]">Extra</h3>
+            <div className="flex flex-col gap-2">
                 {allExtraFilters.map((filter: string, index: number) => {
                     return (
                         <div className="flex items-center gap-3" key={index}>

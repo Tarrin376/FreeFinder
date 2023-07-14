@@ -6,7 +6,11 @@ import FeatureIcon from '../../assets/feature.png';
 import { PackageTypes } from "../../enums/PackageTypes";
 import { capitalizeWord } from "../../utils/capitalizeWord";
 
-function Packages({ packages }: { packages: IPackage[] }) {
+interface PackagesProps {
+    packages: IPackage[],
+}
+
+function Packages({ packages }: PackagesProps) {
     const [curPkg, setCurPkg] = useState<IPackage>();
     
     useEffect(() => {
@@ -32,8 +36,8 @@ function Packages({ packages }: { packages: IPackage[] }) {
     }
 
     return (
-        <div className="bg-main-white relative rounded-[12px] border border-light-border-gray 
-        shadow-info-component min-w-[390px] h-[635px] overflow-hidden">
+        <div className="bg-main-white rounded-[12px] border border-light-border-gray 
+        shadow-info-component min-w-[390px] h-[605px] overflow-hidden">
             {curPkg &&
             <>
                 <div className="flex justify-evenly">
@@ -92,11 +96,9 @@ function Packages({ packages }: { packages: IPackage[] }) {
                             })}
                         </ul>
                     </div>
-                    <div className="mt-6">
-                        <button className="main-btn">
-                            Request An Order
-                        </button>
-                    </div>
+                    <button className="main-btn mt-6">
+                        Request An Order
+                    </button>
                 </div>
             </>}
         </div>

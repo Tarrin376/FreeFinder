@@ -1,5 +1,7 @@
 import { IPackage } from "../models/IPackage";
 import { IPostImage } from "../models/IPostImage";
+import { IReview } from "../models/IReview";
+import { UserSummary } from "./UserSummary";
 
 export type PostPage = {
     postID: string,
@@ -7,6 +9,12 @@ export type PostPage = {
     about: string,
     createdAt: Date,
     title: string,
+    workType: {
+        name: string,
+        jobCategory: {
+            name: string
+        }
+    },
     postedBy: {
         rating: number,
         description: string,
@@ -16,17 +24,12 @@ export type PostPage = {
         },
         languages: string[],
         skills: string[],
-        user: {
-            username: string,
-            country: string,
-            memberDate: Date,
-            status: string,
-            profilePicURL: string,
-        },
+        user: UserSummary,
         sellerLevel: {
             name: string
         }
     },
     packages: IPackage[],
-    images: IPostImage[]
+    images: IPostImage[],
+    reviews: IReview[]
 }

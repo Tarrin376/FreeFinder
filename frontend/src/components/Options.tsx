@@ -23,10 +23,12 @@ function Options({ options, removeOption, styles, bgColour, textColour }: Option
                     onClick={() => remove(cur)} key={index}>
                         <p className="text-[14px]" style={{ color: textColour }}>{cur}</p>
                         {removeOption && 
-                        <CloseSvg 
-                            size="15px"
-                            colour={textColour}
-                        />}
+                        <div className="min-w-[15px]">
+                            <CloseSvg 
+                                size="15px"
+                                colour={textColour}
+                            />
+                        </div>}
                     </div>
                 )
             })}

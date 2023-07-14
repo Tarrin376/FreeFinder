@@ -110,6 +110,7 @@ function Post({ postInfo, index, canRemove, count, styles }: PostProps) {
                 {errorMessage !== "" ? errorMessage : ""}
             </p>
             {userContext.userData.username !== postInfo.postedBy.user.username &&
+            userContext.userData.username !== "" &&
             <Save
                 action={canRemove?.unsave ? removePost : savePost}
                 svgSize={24}

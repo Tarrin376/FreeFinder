@@ -51,8 +51,17 @@ export async function createPostHandler(postData, startingPrice, userID) {
             data: {
                 about: postData.about,
                 title: postData.title,
+                postedBy: {
+                    connect: {
+                        sellerID: seller.sellerID
+                    }
+                },
+                workType: {
+                    connect: {
+                        name: postData.workType
+                    }
+                },
                 startingPrice: startingPrice,
-                sellerID: seller.sellerID,
             },
             select: {
                 postID: true
@@ -83,6 +92,7 @@ export async function createPostHandler(postData, startingPrice, userID) {
         };
     }
     catch (err) {
+        console.log(err);
         if (err instanceof DBError) {
             throw err;
         } else if (err instanceof Prisma.PrismaClientValidationError) {

@@ -53,6 +53,33 @@ export const postProperties = {
         createdAt: true,
         about: true,
         sellerID: true,
-        postID: true
+        postID: true,
+        workType: {
+            select: {
+                name: true,
+                jobCategory: {
+                    select: {
+                        name: true
+                    }
+                }
+            }
+        },
+        reviews: {
+            select: {
+                reviewID: true,
+                reviewer: {
+                    select: {
+                        username: true,
+                        country: true,
+                        memberDate: true,
+                        status: true,
+                        profilePicURL: true,
+                    }
+                },
+                reviewBody: true,
+                createdAt: true,
+                rating: true
+            }
+        }
     }
 };

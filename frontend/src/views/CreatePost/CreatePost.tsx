@@ -21,6 +21,7 @@ interface CreatePostProps {
 export type PostData = {
     about: string,
     title: string,
+    workType: string,
     packages: IPackage[],
     thumbnail: unknown
 }
@@ -95,8 +96,11 @@ function CreatePost({ setPostService, resetState }: CreatePostProps) {
     const [createdPost, setCreatedPost] = useState<boolean>(false);
     const postID = useRef<string>("");
     const userContext = useContext(UserContext);
+
     const [title, setTitle] = useState<string>("");
     const [about, setAbout] = useState<string>("");
+    const [jobCategory, setJobCategory] = useState<string>("");
+    const [typeOfWork, setTypeOfWork] = useState<string>("");
     
     const [state, dispatch] = useReducer(reducer, initialState);
 
@@ -113,6 +117,7 @@ function CreatePost({ setPostService, resetState }: CreatePostProps) {
         const post: PostData = { 
             about: about.trim(), 
             title: title.trim(),
+            workType: typeOfWork,
             thumbnail: thumbnail?.image,
             packages: [constructPackage(state.basic, PackageTypes.BASIC)]
         };
@@ -271,6 +276,10 @@ function CreatePost({ setPostService, resetState }: CreatePostProps) {
                     postID={postID.current}
                     createdPost={createdPost}
                     setCreatedPost={setCreatedPost}
+                    setJobCategory={setJobCategory}
+                    setTypeOfWork={setTypeOfWork}
+                    jobCategory={jobCategory}
+                    typeOfWork={typeOfWork}
                 />
             );
     }

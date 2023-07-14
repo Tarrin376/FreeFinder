@@ -23,6 +23,8 @@ import { MAX_FILE_BYTES } from "../CreatePost/UploadPostFiles";
 import { parseImage } from "../../utils/parseImage";
 import { MAX_FILE_UPLOADS } from "../CreatePost/UploadPostFiles";
 import LoadingSvg from "../../components/LoadingSvg";
+import { useScrollPosition } from "../../hooks/useScrollPosition";
+import Reviews from "../../components/Reviews";
 
 type UpdatePostToggles = "aboutToggle" | "titleToggle";
 
@@ -74,6 +76,8 @@ function PostView() {
     const navigate = useNavigate();
     const userContext = useContext(UserContext);
     const addImageFileRef = useRef<HTMLInputElement>(null);
+    const nodeRef = useRef<HTMLDivElement | null>(null);
+    const [nodeRefVisible, setNodeRefVisible] = useState<boolean>(false);
 
     const [postData, setPostData] = useState<PostPage>();
     const [errorMessage, setErrorMessage] = useState<string>("");
@@ -82,6 +86,7 @@ function PostView() {
     const [removingImage, setRemovingImage] = useState<number>(-1);
 
     const [state, dispatch] = useReducer(reducer, initialState);
+    const scrollPosition = useScrollPosition(nodeRef, nodeRefVisible);
     const isOwner = postData?.postedBy.user.username === userContext.userData.username;
 
     function navigateToProfile(): void {
@@ -185,6 +190,7 @@ function PostView() {
         })();
     }, [location.pathname]);
 
+
     if (!postData) {
         return (
             <p>loading</p>
@@ -192,10 +198,10 @@ function PostView() {
     }
 
     return (
-        <div className="overflow-y-scroll h-[calc(100vh-90px)]">
+        <div className="overflow-y-scroll h-[calc(100vh-90px)]" ref={x => { nodeRef.current = x; setNodeRefVisible(true); }}>
             <PageWrapper styles="p-[38px] pt-[58px]" locationStack={[
-                "Browse all", 
-                postData.postedBy.user.username, 
+                postData.workType.jobCategory.name,
+                postData.workType.name,
                 postData.title
             ]}>
                 <AnimatePresence>
@@ -209,7 +215,7 @@ function PostView() {
                     <div className="flex-grow overflow-hidden">
                         <div className="flex gap-3 items-center">
                             {isOwner &&
-                            <p className="change mb-2" onClick={() => confirmChanges({ title: state.data.title }, "titleToggle")}>
+                            <p className="change mb-3" onClick={() => confirmChanges({ title: state.data.title }, "titleToggle")}>
                                 {state.toggles.titleToggle ? "Confirm changes" : "Change"}
                             </p>}
                             {isOwner && state.toggles.titleToggle &&
@@ -220,12 +226,12 @@ function PostView() {
                         {state.toggles.titleToggle ? 
                         <input
                             type="text" 
-                            className="w-full text-2xl search-bar mt-2 mb-6"
+                            className="w-full text-[1.3rem] search-bar mt-2 mb-6 focus:outline-none"
                             value={state.data.title}
                             maxLength={titleLimit}
                             onChange={(e) => dispatch({ type: Actions.UPDATE, payload: { title: e.target.value } })}
                         /> :
-                        <h1 className="text-3xl mb-4">
+                        <h1 className="text-[1.7rem] mb-3">
                             {postData.title}
                         </h1>}
                         <div className="flex gap-3 items-center mb-6">
@@ -260,7 +266,7 @@ function PostView() {
                             images={postData.images}
                             btnSize={50}
                             wrapperStyles="bg-very-light-gray rounded-[12px] border 
-                            border-very-light-gray shadow-info-component h-[584px]"
+                            border-very-light-gray shadow-info-component h-[510px]"
                             imageStyles="object-contain object-center"
                             startIndex={index}
                         />
@@ -297,7 +303,7 @@ function PostView() {
                         </div>
                         <section className="mt-8 mb-10 w-full">
                             <div className="mb-3 flex items-center gap-3">
-                                <h2 className="text-2xl">About this service</h2>
+                                <h2 className="text-[1.3rem]">About this service</h2>
                                 {isOwner &&
                                 <p className="change" onClick={() => confirmChanges({ about: state.data.about }, "aboutToggle")}>
                                     {state.toggles.aboutToggle ? "Confirm changes" : "Change"}
@@ -331,12 +337,15 @@ function PostView() {
                             skills={postData.postedBy.skills}
                             sellerID={postData.sellerID}
                         />
+                        <Reviews reviews={postData.reviews} />
                     </div>
-                    <div>
-                        <Packages packages={postData.packages} />
-                        <button className="main-btn mt-[26px] shadow-pop-up">
-                            {`See Seller Reviews (${postData.postedBy._count.reviews})`}
-                        </button>
+                    <div className="relative min-w-[390px]">
+                        <div className="absolute" style={{ top: `${Math.max(0, scrollPosition.top - 58)}px` }}>
+                            <Packages packages={postData.packages} />
+                            <button className="main-btn mt-[26px] shadow-pop-up">
+                                {`See Seller Reviews (${postData.postedBy._count.reviews})`}
+                            </button>
+                        </div>
                     </div>
                 </div>
             </PageWrapper>

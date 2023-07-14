@@ -1,10 +1,9 @@
+import { UserSummary } from "../types/UserSummary"
+
 export interface IReview {
-    reviewer: {
-        username: string,
-        country: string
-    },
+    reviewer: UserSummary,
     reviewBody: string,
     createdAt: Date,
     rating: number,
-    postID: string
+    reviewID: string
 }

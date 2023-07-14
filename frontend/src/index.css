@@ -15,7 +15,7 @@
         focus:outline-light-gray;
     }
     .invalid-input {
-        @apply focus:outline-2 focus:!outline-error-text focus:border-transparent border-b border-error-text bg-[#FFF7F6]
+        @apply focus:outline-2 focus:!outline-error-text focus:border-transparent border-b border-error-text bg-hover-light-gray
     }
     .invalid-button {
         @apply btn-primary !bg-[#575757] hover:!bg-[#575757] pointer-events-none !text-disabled-gray opacity-50;

@@ -124,7 +124,7 @@ function Package(props: PackageProps) {
                 value={props.pkgState.deliveryTime > 0 ? props.pkgState.deliveryTime : ""} 
             />
             <h3 className="mb-2">Amount of revisions</h3>
-            <ul className="items-center w-fit text-sm flex bg-[#f7f7f7] rounded-[8px] px-2 mb-4">
+            <ul className="items-center w-fit text-sm flex bg-hover-light-gray rounded-[8px] px-2 mb-4">
                 {new Array(MAX_REVISIONS).fill(true).map((_, index) => {
                     return (
                         <RevisionListItem

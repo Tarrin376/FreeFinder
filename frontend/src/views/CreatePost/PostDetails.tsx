@@ -1,15 +1,21 @@
 import PopUpWrapper from "../../wrappers/PopUpWrapper";
 import ErrorMessage from "../../components/ErrorMessage";
-import { categories } from "../../utils/jobCategories";
 import { Sections } from "../../enums/Sections";
 import { FailedUpload } from "../../types/FailedUploaded";
-import { useState } from "react";
+import { useState, useEffect } from "react";
 import File from "../../components/File";
 import Button from "../../components/Button";
 import axios, { AxiosError } from "axios";
 import { getAPIErrorMessage } from "../../utils/getAPIErrorMessage";
 import TextEditor from "../../components/TextEditor";
 import { PostPage } from "../../types/PostPage";
+import MatchedResults from "../../components/MatchedResults";
+import OutsideClickHandler from "react-outside-click-handler";
+import { IJobCategory } from "../../models/IJobCategory";
+import { getMatchedResults } from "../../utils/getMatchedResults";
+import { IWorkType } from "../../models/IWorkType";
+import { useFetchJobCategories } from "../../hooks/useFetchJobCategories";
+import ErrorPopUp from "../../components/ErrorPopUp";
 
 interface PostDetailsProps {
     setPostService: React.Dispatch<React.SetStateAction<boolean>>,
@@ -20,26 +26,54 @@ interface PostDetailsProps {
     setErrorMessage: React.Dispatch<React.SetStateAction<string>>,
     setFailedUploads: React.Dispatch<React.SetStateAction<FailedUpload[]>>,
     setCreatedPost: React.Dispatch<React.SetStateAction<boolean>>,
+    setJobCategory: React.Dispatch<React.SetStateAction<string>>,
+    setTypeOfWork: React.Dispatch<React.SetStateAction<string>>,
     about: string,
     title: string,
     errorMessage: string,
     failedUploads: FailedUpload[],
     postID: string,
-    createdPost: boolean
+    createdPost: boolean,
+    jobCategory: string,
+    typeOfWork: string
 }
 
 export const aboutLimit = 1500;
 export const titleLimit = 100;
 
-function PostDetails(props: PostDetailsProps) {
+function PostDetails({ jobCategory, setJobCategory, setTypeOfWork, setErrorMessage, ...props }: PostDetailsProps) {
     const [showFailedUploads, setShowFailedUploads] = useState<boolean>(false);
+    const [matchedWork, setMatchedWork] = useState<string[][]>([]);
+    const [hideMatched, setHideMatched] = useState<boolean>(false);
+    const jobCategories = useFetchJobCategories();
 
     function validInputs(): boolean {
-        return props.title.trim().length > 0 && props.about.trim().length > 0;
+        const category = jobCategories.categories.find(x => x.name === jobCategory);
+        if (!category) {
+            return false;
+        }
+
+        return (
+            props.title.trim().length > 0 && 
+            props.about.trim().length > 0 && 
+            category.workTypes.find((x) => x.name === props.typeOfWork) !== undefined
+        );
     }
 
     function toggleFailedUploads(): void {
         setShowFailedUploads((cur) => !cur);
+    }
+
+    function searchHandler(search: string): void {
+        const category = jobCategories.categories.find(x => x.name === jobCategory);
+
+        if (!category) {
+            return;
+        }
+
+        const matched = getMatchedResults(category.workTypes.map((workType: IWorkType) => workType.name), search);
+        setMatchedWork(matched);
+        setTypeOfWork(search);
     }
 
     async function retryFileUpload(upload: FailedUpload): Promise<string | undefined> {
@@ -55,7 +89,7 @@ function PostDetails(props: PostDetailsProps) {
     }
 
     function ignoreUpload(upload: FailedUpload): void {
-        if (props.failedUploads.length === 1) props.setErrorMessage("");
+        if (props.failedUploads.length === 1) setErrorMessage("");
         props.setFailedUploads((cur) => cur.filter((x: FailedUpload) => x.imageData.image !== upload.imageData.image));
     }
 
@@ -69,6 +103,14 @@ function PostDetails(props: PostDetailsProps) {
         }
     }
 
+    useEffect(() => {
+        setTypeOfWork("");
+    }, [jobCategory, setTypeOfWork]);
+
+    useEffect(() => {
+        setJobCategory(jobCategories.categories.length === 0 ? "" : jobCategories.categories[0].name)
+    }, [jobCategories, setJobCategory])
+
     return (
         <PopUpWrapper setIsOpen={props.setPostService} title="Enter post details">
             {props.errorMessage !== "" && 
@@ -76,7 +118,12 @@ function PostDetails(props: PostDetailsProps) {
                 message={props.errorMessage} 
                 title="Failed to complete action."
                 styles="!mb-6"
-                setErrorMessage={props.setErrorMessage}
+                setErrorMessage={setErrorMessage}
+            />}
+            {jobCategories.errorMessage !== "" &&
+            <ErrorPopUp
+                errorMessage={jobCategories.errorMessage}
+                setErrorMessage={jobCategories.setErrorMessage}
             />}
             {props.failedUploads.length > 0 && 
             <p className="text-main-blue mb-6 underline cursor-pointer" onClick={toggleFailedUploads}>
@@ -98,7 +145,7 @@ function PostDetails(props: PostDetailsProps) {
                                 loadingText="Retrying"
                                 styles="red-btn w-[140px] px-3"
                                 textStyles="text-error-text"
-                                setErrorMessage={props.setErrorMessage}
+                                setErrorMessage={setErrorMessage}
                                 whenComplete={() => ignoreUpload(upload)}
                                 loadingSvgSize="24px"
                                 loadingSvgColour="#F43C3C"
@@ -108,16 +155,43 @@ function PostDetails(props: PostDetailsProps) {
                 })}
             </div>}
             <h3 className="mb-2 mt-6">What category does your service fall under?</h3>
-            <select className="search-bar cursor-pointer mb-4">
-                {Object.keys(categories).map((category, index) => {
-                    return (
-                        <option key={index}>
-                            {category}
-                        </option>
-                    )
-                })}
-            </select>
-            <h3 className="mb-2">Title</h3>
+            <div className="search-bar mb-4">
+                <select className={`w-full cursor-pointer rounded-[8px] focus:outline-none 
+                ${jobCategories.categories.length === 0 ? "loading" : ""}`} 
+                value={jobCategory} onChange={(e) => setJobCategory(e.target.value)}>
+                    {jobCategories.categories.map((category: IJobCategory, index: number) => {
+                        return (
+                            <option key={index} value={category.name}>
+                                {category.name}
+                            </option>
+                        )
+                    })}
+                </select>
+            </div>
+            <h3 className="mb-2">Your type of work</h3>
+            <OutsideClickHandler onOutsideClick={() => setHideMatched(true)}>
+                <>
+                    <input 
+                        type="text" 
+                        className={`search-bar ${matchedWork.length > 0 && !hideMatched ? "!rounded-b-none" : ""} focus:!outline-none`}
+                        placeholder="Search for your type of work" 
+                        value={props.typeOfWork}
+                        onChange={(e) => searchHandler(e.target.value)}
+                        onFocus={() => setHideMatched(false)}
+                    />
+                    {matchedWork.length > 0 && !hideMatched &&
+                    <MatchedResults 
+                        search={props.typeOfWork}
+                        matchedResults={matchedWork}
+                        action={(value: string) => {
+                            setTypeOfWork(value);
+                            setHideMatched(true);
+                            searchHandler(value);
+                        }}
+                    />}
+                </>
+            </OutsideClickHandler>
+            <h3 className="mb-2 mt-4">Title</h3>
             <input 
                 type="text" 
                 className="search-bar mb-4" 
@@ -144,7 +218,7 @@ function PostDetails(props: PostDetailsProps) {
                     loadingText="Deleting post"
                     styles="red-btn btn-primary"
                     textStyles="text-error-text"
-                    setErrorMessage={props.setErrorMessage}
+                    setErrorMessage={setErrorMessage}
                     whenComplete={() => props.setPostService(false)}
                     loadingSvgSize="24px"
                     loadingSvgColour="#F43C3C"
@@ -156,7 +230,7 @@ function PostDetails(props: PostDetailsProps) {
                     loadingText="Creating post"
                     styles={`min-w-[185px] w-fit ${!validInputs() ? "invalid-button" : "main-btn !h-[42px]"}`}
                     textStyles="text-main-white"
-                    setErrorMessage={props.setErrorMessage}
+                    setErrorMessage={setErrorMessage}
                     loadingSvgSize="28px"
                     whenComplete={() => props.setCreatedPost(true)}
                 />}

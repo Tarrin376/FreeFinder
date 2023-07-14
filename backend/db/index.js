@@ -3,6 +3,7 @@ import userRouter from './routes/UserRouter.js';
 import postRouter from './routes/PostRouter.js';
 import sellerRouter from './routes/SellerRouter.js';
 import sellerLevelRouter from './routes/SellerLevelRouter.js';
+import jobCategoryRouter from './routes/JobCategoryRouter.js';
 
 import { env } from 'process';
 import cookieParser from 'cookie-parser';
@@ -31,6 +32,7 @@ router.use('/users', userRouter);
 router.use('/posts', postRouter);
 router.use('/sellers', sellerRouter);
 router.use('/seller-levels', sellerLevelRouter);
+router.use('/job-categories', jobCategoryRouter);
 
 app.listen(PORT, () => {
     console.log(`Server is listening on port ${PORT}`);

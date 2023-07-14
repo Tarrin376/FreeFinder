@@ -31,5 +31,10 @@ export function getPostFilters(req) {
             contains: req.body.search,
             mode: 'insensitive'
         },
+        workType: {
+            name: req.body.selectedWork && req.body.selectedWork.length > 0 ? {
+                in: req.body.selectedWork
+            } : undefined
+        }
     }
 }
