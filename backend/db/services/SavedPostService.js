@@ -4,6 +4,7 @@ import { sortPosts } from '../utils/sortPosts.js';
 import { DBError } from "../customErrors/DBError.js";
 import { checkUser } from "../utils/checkUser.js";
 import { getPostFilters } from '../utils/getPostFilters.js';
+import { getPaginatedData } from '../utils/getPaginatedData.js';
 
 async function getSavedPostIDs(userID) {
     try {
@@ -73,99 +74,78 @@ export async function getSavedPostsHandler(req) {
 }
 
 async function querySavedPosts(req) {
-    const postFilters = getPostFilters(req);
-    const limit = parseInt(req.body.limit);
+    const where = {
+        post: { ...getPostFilters(req) }
+    };
 
-    const query = {
-        take: limit ? limit : undefined,
-        skip: req.body.cursor ? 1 : undefined,
-        cursor: req.body.cursor ? { 
-            userID_postID: {
-                userID: req.userData.userID,
-                postID: req.body.cursor
-            }
-        } : undefined,
-        where: {
-            userID: req.userData.userID,
-            post: {
-                ...postFilters
-            }
-        },
-        orderBy: {
-            post: sortPosts[req.body.sort]
-        },
-        select: {
-            post: {
-                select: {
-                    postedBy: {
-                        select: {
-                            user: {
-                                select: {
-                                    profilePicURL: true,
-                                    status: true,
-                                    username: true,
-                                }
-                            },
-                            rating: true,
-                            sellerLevel: {
-                                select: {
-                                    name: true
-                                }
+    const select = {
+        post: {
+            select: {
+                postedBy: {
+                    select: {
+                        user: {
+                            select: {
+                                profilePicURL: true,
+                                status: true,
+                                username: true,
+                            }
+                        },
+                        rating: true,
+                        sellerLevel: {
+                            select: {
+                                name: true
                             }
                         }
+                    }
+                },
+                createdAt: true,
+                _count: {
+                    select: { 
+                        reviews: true
+                    }
+                },
+                startingPrice: true,
+                title: true,
+                postID: true,
+                images: {
+                    select: {
+                        url: true
                     },
-                    createdAt: true,
-                    _count: {
-                        select: { 
-                            reviews: true
-                        }
-                    },
-                    startingPrice: true,
-                    title: true,
-                    postID: true,
-                    images: {
-                        select: {
-                            url: true
-                        },
-                        orderBy: {
-                            createdAt: 'asc'
-                        }
+                    orderBy: {
+                        createdAt: 'asc'
                     }
                 }
             }
         }
     };
 
-    const [saved, count] = await prisma.$transaction([
-        prisma.savedPost.findMany(query),
-        prisma.savedPost.count({
-            where: {
-                userID: req.userData.userID,
-                post: {
-                    ...postFilters
-                }
-            }
-        })
-    ]);
-
-    if (saved.length === 0) {
-        return { 
-            next: [], 
-            cursor: undefined, 
-            last: true,
-            count: count
-        };
-    }
-
-    const minNum = Math.min(isNaN(limit) ? saved.length - 1 : limit - 1, saved.length - 1);
-    const posts = saved.map((cur) => cur.post);
-
-    return { 
-        next: posts, 
-        cursor: saved[minNum].post.postID,
-        last: isNaN(limit) || minNum < limit - 1,
-        count: count
+    const options = {
+        orderBy: {
+            post: sortPosts[req.body.sort]
+        }
     };
+
+    const cursor = req.body.cursor ? { 
+        userID_postID: {
+            userID: req.userData.userID,
+            postID: req.body.cursor
+        }
+    } : {};
+
+    const result = await getPaginatedData(
+        where, 
+        select, 
+        "savedPost", 
+        req.body.limit, 
+        cursor, 
+        "userID_postID", 
+        options
+    );
+
+    return {
+        ...result,
+        next: result.next.map((x) => x.post)
+    }
 }
 
 export async function deleteSavedPostHandler(postID, userID, username) {

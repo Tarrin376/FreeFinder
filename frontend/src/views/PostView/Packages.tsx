@@ -37,14 +37,14 @@ function Packages({ packages }: PackagesProps) {
 
     return (
         <div className="bg-main-white rounded-[12px] border border-light-border-gray 
-        shadow-info-component min-w-[390px] h-[605px] overflow-hidden">
+        shadow-info-component w-full h-[605px] overflow-hidden">
             {curPkg &&
             <>
                 <div className="flex justify-evenly">
                     {packages.sort((a, b) => a.type.localeCompare(b.type)).map((cur, index) => {
                         return (
                             <button className={`h-[50px] border-b-2 ${cur.type === curPkg.type ? 
-                            "border-main-blue bg-[#f4f6ff] font-bold" : "border-light-border-gray"} 
+                            "border-main-blue" : "border-light-border-gray"} 
                             text-main-blue flex-grow basis-0`} 
                             onClick={() => selectPackage(cur)} 
                             key={index}>

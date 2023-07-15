@@ -6,7 +6,8 @@ import
     updateProfilePictureHandler, 
     deleteUserHandler,
     updatePasswordHandler,
-    getUserPostsHandler
+    getUserPostsHandler,
+    createReviewHandler
 } 
 from '../services/UserService.js';
 import { cookieJwtSign } from '../middleware/cookieJwtSign.js';
@@ -36,6 +37,16 @@ export async function jwtAuthenticateUser(req, res) {
 
         const setOnline = await updateUserHandler(req);
         return res.json({ userData: setOnline });
+    }
+    catch (err) {
+        res.status(err.code).json({ message: err.message });
+    }
+}
+
+export async function createReview(req, res) {
+    try {
+        const review = await createReviewHandler(req);
+        return res.json({ review: review, message: "success" });
     }
     catch (err) {
         res.status(err.code).json({ message: err.message });

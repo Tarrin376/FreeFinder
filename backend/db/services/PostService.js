@@ -8,6 +8,7 @@ import { v4 as uuidv4 } from 'uuid';
 import { sortPosts } from '../utils/sortPosts.js';
 import { getPostFilters } from '../utils/getPostFilters.js';
 import { postProperties } from '../utils/postProperties.js';
+import { getPaginatedData } from '../utils/getPaginatedData.js';
 
 async function uploadImage(postID, image, url, uuid, addImage) {
     const result = await new Promise(async (resolve, reject) => {
@@ -92,7 +93,6 @@ export async function createPostHandler(postData, startingPrice, userID) {
         };
     }
     catch (err) {
-        console.log(err);
         if (err instanceof DBError) {
             throw err;
         } else if (err instanceof Prisma.PrismaClientValidationError) {
@@ -320,6 +320,24 @@ async function updateImage(req) {
     }
 }
 
+async function getAvgRating(postID) {
+    try {
+        const avgRating = await prisma.review.aggregate({
+            _avg: {
+                rating: true
+            },
+            where: {
+                postID: postID
+            }
+        });
+
+        return avgRating;
+    }
+    catch (err) {
+        throw new DBError("Something went wrong when trying to get the average rating of this post. Please try again.", 500);
+    }
+}
+
 export async function updatePostHandler(req) {
     try {
         if (req.body.newImage && req.body.imageURL) {
@@ -336,7 +354,7 @@ export async function updatePostHandler(req) {
             },
             ...postProperties
         });
-
+        
         return updatedPost;
     }
     catch (err) {
@@ -410,73 +428,117 @@ export async function getPostsHandler(req) {
 }
 
 async function queryPosts(req) {
-    const postFilters = getPostFilters(req);
-    const limit = parseInt(req.body.limit);
-
-    const query = {
-        take: limit ? limit : undefined,
-        skip: req.body.cursor ? 1 : undefined,
-        cursor: req.body.cursor ? { postID: req.body.cursor } : undefined,
-        where: postFilters,
-        orderBy: sortPosts[req.body.sort],
-        select: {
-            postedBy: {
-                select: {
-                    user: {
-                        select: {
-                            profilePicURL: true,
-                            status: true,
-                            username: true,
-                        }
-                    },
-                    rating: true,
-                    sellerLevel: {
-                        select: {
-                            name: true
-                        }
+    const where = getPostFilters(req);
+    const select = {
+        postedBy: {
+            select: {
+                user: {
+                    select: {
+                        profilePicURL: true,
+                        status: true,
+                        username: true,
+                    }
+                },
+                rating: true,
+                sellerLevel: {
+                    select: {
+                        name: true
                     }
                 }
+            }
+        },
+        createdAt: true,
+        _count: {
+            select: { 
+                reviews: true
+            }
+        },
+        startingPrice: true,
+        title: true,
+        postID: true,
+        images: {
+            select: {
+                url: true,
+                cloudinaryID: true
             },
-            createdAt: true,
-            _count: {
-                select: { 
-                    reviews: true
-                }
-            },
-            startingPrice: true,
-            title: true,
-            postID: true,
-            images: {
-                select: {
-                    url: true,
-                    cloudinaryID: true
-                },
-                orderBy: {
-                    createdAt: 'asc'
-                }
+            orderBy: {
+                createdAt: 'asc'
             }
         }
     };
 
-    const [posts, count] = await prisma.$transaction([
-        prisma.post.findMany(query),
-        prisma.post.count({ where: { ...postFilters } })
-    ]);
+    const options = {
+        orderBy: sortPosts[req.body.sort],
+    };
 
-    if (posts.length === 0) {
-        return { 
-            next: posts, 
-            cursor: undefined, 
-            last: true,
-            count: count
-        };
+    const result = await getPaginatedData(
+        where,
+        select, 
+        "post", 
+        req.body.limit, 
+        { postID: req.body.cursor }, 
+        "postID", 
+        options
+    );
+    
+    return result;
+}
+
+async function countReviewRating(rating, postID) {
+    const count = await prisma.review.count({
+        where: {
+            postID: postID,
+            rating: {
+                gte: rating,
+                lt: rating + 1
+            }
+        }
+    });
+
+    return count;
+}
+
+export async function getPostReviewsHandler(req) {
+    const filters = {
+        postID: req.params.id
+    };
+
+    const select = {
+        reviewID: true,
+        reviewer: {
+            select: {
+                username: true,
+                country: true,
+                memberDate: true,
+                status: true,
+                profilePicURL: true,
+            }
+        },
+        reviewBody: true,
+        createdAt: true,
+        rating: true,
+    };
+
+    const result = await getPaginatedData(
+        filters, 
+        select, 
+        "review",
+        req.body.limit, 
+        { reviewID: req.body.cursor }, 
+        "reviewID"
+    );
+    
+    let avgRating = 0;
+    if (!req.body.cursor) {
+        avgRating = (await getAvgRating(req.params.id))._avg.rating;
     }
 
-    const minNum = Math.min(isNaN(limit) ? posts.length - 1 : limit - 1, posts.length - 1);
+    const promises = new Array(5).fill(0).map((_, index) => countReviewRating(index + 1, req.params.id).then((x) => x));
+    const stars = await Promise.all(promises).then((stars) => stars);
+
     return { 
-        next: posts, 
-        cursor: posts[minNum].postID,
-        last: isNaN(limit) || minNum < limit - 1,
-        count: count
-    };
+        ...result, 
+        avgRating: avgRating,
+        stars: stars
+    } 
 }

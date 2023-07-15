@@ -38,8 +38,10 @@ function AboutSeller(props: AboutSellerProps) {
                         profilePicURL={props.profilePicURL} 
                         profileStatus={props.status}
                         statusStyles="before:hidden"
-                        imgStyles="w-[75px] h-[75px] cursor-pointer"
+                        imgStyles="cursor-pointer"
+                        username={props.username}
                         action={navigateToProfile}
+                        size={75}
                     />
                     <div className="overflow-hidden">
                         <div className="flex items-center gap-2">

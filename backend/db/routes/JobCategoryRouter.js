@@ -1,6 +1,6 @@
 import { Router } from 'express';
-import { createJobCategory, getJobCategories } from '../controllers/jobCategoryController.js';
-import workTypeRouter from './workTypeRouter.js';
+import { createJobCategory, getJobCategories } from '../controllers/JobCategoryController.js';
+import workTypeRouter from './WorkTypeRouter.js';
 
 const jobCategoryRouter = Router();
 

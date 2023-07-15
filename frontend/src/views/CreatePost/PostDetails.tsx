@@ -38,7 +38,7 @@ interface PostDetailsProps {
     typeOfWork: string
 }
 
-export const aboutLimit = 1500;
+export const aboutLimit = 1150;
 export const titleLimit = 100;
 
 function PostDetails({ jobCategory, setJobCategory, setTypeOfWork, setErrorMessage, ...props }: PostDetailsProps) {
@@ -231,7 +231,7 @@ function PostDetails({ jobCategory, setJobCategory, setTypeOfWork, setErrorMessa
                     styles={`min-w-[185px] w-fit ${!validInputs() ? "invalid-button" : "main-btn !h-[42px]"}`}
                     textStyles="text-main-white"
                     setErrorMessage={setErrorMessage}
-                    loadingSvgSize="28px"
+                    loadingSvgSize="24px"
                     whenComplete={() => props.setCreatedPost(true)}
                 />}
             </div>

@@ -7,7 +7,7 @@ import { PaginationResponse } from '../types/PaginateResponse';
 
 export const limit = 20;
 
-export function usePaginateData<T1, T2>(pageRef: React.RefObject<HTMLDivElement>, 
+export function usePaginateData<T1, T2, T3 extends PaginationResponse<T2>>(pageRef: React.RefObject<HTMLDivElement>, 
     cursor: React.MutableRefObject<string | undefined>, url: string, 
     page: { value: number }, setPage: React.Dispatch<React.SetStateAction<{ value: number }>>,
     args: T1)
@@ -42,11 +42,13 @@ export function usePaginateData<T1, T2>(pageRef: React.RefObject<HTMLDivElement>
         setLoading(true);
         (async (): Promise<void> => {
             try {
-                const resp = await axios.post<PaginationResponse<T2>>(url, {
+                const resp = await axios.post<T3>(url, {
                     ...args,
                     cursor: cursor.current,
                     limit: limit
                 });
+
+                console.log(resp);
 
                 setData((state) => [...state, ...resp.data.next]);
                 cursor.current = resp.data.cursor;

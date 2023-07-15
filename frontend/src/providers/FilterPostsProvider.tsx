@@ -25,6 +25,7 @@ import { getMatchedResults } from '../utils/getMatchedResults';
 import { IWorkType } from '../models/IWorkType';
 import MatchedResults from '../components/MatchedResults';
 import Options from '../components/Options';
+import { PaginationResponse } from '../types/PaginateResponse';
 
 interface FilterPostsContextProps {
     children?: React.ReactNode,
@@ -102,7 +103,7 @@ function FilterPostsProvider({ children, urlPrefix }: FilterPostsContextProps) {
 
     const location = useLocation();
 
-    const posts = usePaginateData<PostArgs, IPost>(
+    const posts = usePaginateData<PostArgs, IPost, PaginationResponse<IPost>>(
         pageRef, 
         cursor,
         `/api${urlPrefix}${location.pathname}`,
@@ -166,7 +167,7 @@ function FilterPostsProvider({ children, urlPrefix }: FilterPostsContextProps) {
             </AnimatePresence>
             <div className="flex">
                 <div className="h-[calc(100vh-90px)] w-[360px] bg-main-white border-r border-light-border-gray p-[22.5px]">
-                    <button onClick={openPostService} className={`btn-primary text-main-white bg-main-blue w-full px-5 h-[45px] 
+                    <button onClick={openPostService} className={`btn-primary text-main-white bg-main-blue w-full px-5 h-[48px] 
                     hover:bg-main-blue-hover flex items-center justify-center gap-2 mb-[50.5px] 
                     ${userContext.userData.username === "" ? "invalid-button" : ""}`}>
                         <img src={AddIcon} alt="" className="w-[16px] h-[16px]" />
@@ -299,7 +300,7 @@ function MainFiltersBar({ searchRef, min, max, countryRef, sort, loading, search
                 <SortBy sortBy={sort} />
             </div>
             <div className="pl-[22.5px]">
-                <button className={`btn-primary text-main-white bg-main-blue w-[160px] h-[45px] hover:bg-main-blue-hover
+                <button className={`btn-primary text-main-white bg-main-blue w-[160px] h-[48px] hover:bg-main-blue-hover
                 ${loading ? "invalid-button" : ""}`}
                 onClick={searchHandler}>
                     Search

@@ -1,4 +1,3 @@
-import BlankProfile from '../assets/blank.jpg';
 import EditIcon from '../assets/edit.png';
 import { useRef, useContext, useState } from 'react';
 import { IUserContext, UserContext } from '../providers/UserContext';
@@ -9,17 +8,20 @@ import { getAPIErrorMessage } from '../utils/getAPIErrorMessage';
 import { AxiosError } from "axios";
 import { UserStatus } from '../enums/UserStatus';
 import { checkFile } from '../utils/checkFile';
+import { generateLetterAvatar } from '../utils/generateLetterAvatar';
 
 interface ProfilePicAndStatusProps {
     profilePicURL: string, 
     profileStatus: string,
+    size: number,
+    username: string,
     statusStyles?: string,
     imgStyles?: string,
     showEdit?: boolean,
     setErrorMessage?: React.Dispatch<React.SetStateAction<string>>,
     loading?: boolean,
     setLoading?: React.Dispatch<React.SetStateAction<boolean>>,
-    action?: () => void
+    action?: () => void,
 }
 
 const MAX_PROFILE_PIC_BYTES = 1000000;
@@ -96,10 +98,25 @@ function ProfilePicAndStatus(props: ProfilePicAndStatusProps) {
         before:border-[3px] before:border-main-white before:content[''] 
         before:rounded-full ${props.statusStyles}`}
         onClick={handleAction}>
-            {props.loading ? <div className={`w-12 h-12 rounded-full loading ${props.imgStyles}`}></div> : 
+            {props.loading ? 
+            <div className={`rounded-full loading ${props.imgStyles}`} 
+            style={{ width: `${props.size}px`, height: `${props.size}px` }}>
+            </div> : 
+            props.profilePicURL === "" ? 
+            <div className={`flex items-center justify-center rounded-full ${props.imgStyles}`} style={{ 
+                backgroundColor: generateLetterAvatar(props.username),
+                width: `${props.size}px`, 
+                height: `${props.size}px` 
+            }}>
+                <p className="text-main-white" style={{ fontSize: `${props.size * 0.50}px` }}>
+                    {props.username[0].toUpperCase()}
+                </p>
+            </div> :
             <img 
-                src={props.profilePicURL === "" ? BlankProfile : props.profilePicURL} alt="" 
-                className={`w-12 h-12 rounded-full object-cover ${props.imgStyles} border border-b-nav-search-gray`} 
+                src={props.profilePicURL} alt="" 
+                className={`rounded-full object-cover ${props.imgStyles} 
+                border border-b-nav-search-gray`}
+                style={{ width: `${props.size}px`, height: `${props.size}px` }}
             />}
             {props.showEdit && !props.loading &&
                 <>

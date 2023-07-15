@@ -10,6 +10,7 @@ import PaginationScrollInfo from "./PaginationScrollInfo";
 import { SellerOptions } from "../enums/SellerOptions";
 import { AnimatePresence } from "framer-motion";
 import ErrorPopUp from "./ErrorPopUp";
+import { PaginationResponse } from "../types/PaginateResponse";
 
 interface SellersProps {
     search: string,
@@ -27,7 +28,7 @@ function Sellers({ search, url, setSellersPopUp, savedSellers, option }: Sellers
     const [page, setPage] = useState<{ value: number }>({ value: 1 });
     const [deletingSeller, setDeletingSeller] = useState<boolean>(false);
 
-    const sellers = usePaginateData<{}, SellerData>(pageRef, cursor, url, page, setPage, {});
+    const sellers = usePaginateData<{}, SellerData, PaginationResponse<SellerData>>(pageRef, cursor, url, page, setPage, {});
 
     function navigateToProfile(username: string) {
         setSellersPopUp(false);
@@ -69,6 +70,7 @@ function Sellers({ search, url, setSellersPopUp, savedSellers, option }: Sellers
                             } : undefined}
                             statusStyles="before:left-[42px] before:top-[45px]"
                             imgStyles="min-w-[62px] min-h-[62px]"
+                            profilePicSize={62}
                             key={index}
                             option={option}
                         />

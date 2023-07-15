@@ -1,6 +1,7 @@
-export type PaginationResponse<T2> = { 
-    next: T2[], 
+export type PaginationResponse<T> = { 
+    next: T[], 
     cursor: string, 
     last: boolean, 
-    count: number 
+    count: number,
+    message: string
 }

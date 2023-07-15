@@ -55,12 +55,13 @@ function AccountSettings({ setSettingsPopUp }: SettingsProps) {
                     <ProfilePicAndStatus 
                         profilePicURL={userContext.userData.profilePicURL} 
                         profileStatus={userContext.userData.status} 
-                        statusStyles="before:left-[55px] before:top-[60px] before:w-5 before:h-5" 
-                        imgStyles="w-[80px] h-[80px]" 
-                        showEdit={true} 
+                        statusStyles="before:left-[55px] before:top-[60px] before:w-5 before:h-5"
+                        username={userContext.userData.username}
                         setErrorMessage={setErrorMessage} 
-                        loading={loading} 
                         setLoading={setLoading} 
+                        showEdit={true} 
+                        loading={loading} 
+                        size={80}
                     />
                 </div>
                 <div>

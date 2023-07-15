@@ -63,23 +63,6 @@ export const postProperties = {
                     }
                 }
             }
-        },
-        reviews: {
-            select: {
-                reviewID: true,
-                reviewer: {
-                    select: {
-                        username: true,
-                        country: true,
-                        memberDate: true,
-                        status: true,
-                        profilePicURL: true,
-                    }
-                },
-                reviewBody: true,
-                createdAt: true,
-                rating: true
-            }
         }
     }
 };

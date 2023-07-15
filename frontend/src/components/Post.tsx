@@ -121,7 +121,7 @@ function Post({ postInfo, index, canRemove, count, styles }: PostProps) {
             <Carousel
                 images={postInfo.images}
                 btnSize={35}
-                wrapperStyles="bg-very-light-gray rounded-[12px] border border-very-light-gray h-[235px]"
+                wrapperStyles="bg-very-light-gray rounded-[12px] h-[235px]"
                 imageStyles="object-cover w-full"
             />
             <div className="mt-3">
@@ -131,6 +131,8 @@ function Post({ postInfo, index, canRemove, count, styles }: PostProps) {
                         profileStatus={postInfo.postedBy.user.status}
                         statusStyles="before:left-[30px] cursor-pointer"
                         action={navigateToProfile}
+                        username={postInfo.postedBy.user.username}
+                        size={48}
                     />
                     <div className="flex-grow">
                         <div className="flex justify-between">

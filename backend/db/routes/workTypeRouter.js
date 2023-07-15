@@ -1,5 +1,5 @@
 import { Router } from 'express';
-import { createWorkTypes } from '../controllers/workTypeController.js';
+import { createWorkTypes } from '../controllers/WorkTypeController.js';
 
 const workTypeRouter = Router();
 

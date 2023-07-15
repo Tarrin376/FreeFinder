@@ -15,6 +15,7 @@ import { AnimatePresence } from "framer-motion";
 interface SellerProps {
     navigateToProfile: () => void,
     profilePicURL: string,
+    profilePicSize: number,
     status: string,
     username: string,
     searchQuery: string,
@@ -72,6 +73,8 @@ function Seller(props: SellerProps) {
                         profileStatus={props.status}
                         statusStyles={props.statusStyles}
                         imgStyles={props.imgStyles}
+                        size={props.profilePicSize}
+                        username={props.username}
                     />
                 </div>}
                 <div className="flex-grow overflow-hidden">

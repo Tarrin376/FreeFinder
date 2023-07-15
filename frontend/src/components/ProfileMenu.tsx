@@ -70,6 +70,8 @@ function ProfileMenu({ setSettingsPopUp, setSellerProfilePopUp, logout }: Profil
                     <ProfilePicAndStatus 
                         profilePicURL={userContext.userData.profilePicURL} 
                         profileStatus={userContext.userData.status} 
+                        username={userContext.userData.username}
+                        size={48}
                     />
                 </div>
                 <OutsideClickHandler onOutsideClick={() => setNavProfileDropdown(false)}>

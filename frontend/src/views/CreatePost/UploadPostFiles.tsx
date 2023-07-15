@@ -120,8 +120,7 @@ function UploadPostFiles({ setPostService, setSection, uploadedImages, setUpload
             </div>
             <div className="mt-[35px] flex gap-3 ml-auto w-fit">
                 <input type='file' ref={inputFileRef} className="hidden" onChange={uploadFile} />
-                <button className="bg-main-white border-2 border-light-border-gray btn-primary w-[110px] px-3
-                hover:bg-main-white-hover" onClick={() => setPostService(false)}>
+                <button className="side-btn w-[110px]" onClick={() => setPostService(false)}>
                     Cancel
                 </button>
                 <button className={`btn-primary bg-main-blue hover:bg-main-blue-hover text-main-white w-[110px] px-3 

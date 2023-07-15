@@ -25,6 +25,7 @@ import { MAX_FILE_UPLOADS } from "../CreatePost/UploadPostFiles";
 import LoadingSvg from "../../components/LoadingSvg";
 import { useScrollPosition } from "../../hooks/useScrollPosition";
 import Reviews from "../../components/Reviews";
+import CreateReview from "../../components/CreateReview";
 
 type UpdatePostToggles = "aboutToggle" | "titleToggle";
 
@@ -190,12 +191,13 @@ function PostView() {
         })();
     }, [location.pathname]);
 
-
     if (!postData) {
         return (
             <p>loading</p>
         );
     }
+
+    console.log(postData);
 
     return (
         <div className="overflow-y-scroll h-[calc(100vh-90px)]" ref={x => { nodeRef.current = x; setNodeRefVisible(true); }}>
@@ -211,11 +213,11 @@ function PostView() {
                         setErrorMessage={setErrorMessage} 
                     />}
                 </AnimatePresence>
-                <div className="flex gap-20">
+                <div className="flex gap-16">
                     <div className="flex-grow overflow-hidden">
                         <div className="flex gap-3 items-center">
                             {isOwner &&
-                            <p className="change mb-3" onClick={() => confirmChanges({ title: state.data.title }, "titleToggle")}>
+                            <p className="change mb-3" onClick={() => confirmChanges({ title: state.data.title?.trim() }, "titleToggle")}>
                                 {state.toggles.titleToggle ? "Confirm changes" : "Change"}
                             </p>}
                             {isOwner && state.toggles.titleToggle &&
@@ -240,8 +242,9 @@ function PostView() {
                                     profilePicURL={postData.postedBy.user.profilePicURL} 
                                     profileStatus={postData.postedBy.user.status}
                                     statusStyles="before:left-[33px] before:top-[34px] cursor-pointer"
-                                    imgStyles="w-[50px] h-[50px]"
                                     action={navigateToProfile}
+                                    username={postData.postedBy.user.username}
+                                    size={50}
                                 />
                             </div>
                             <div>
@@ -337,15 +340,14 @@ function PostView() {
                             skills={postData.postedBy.skills}
                             sellerID={postData.sellerID}
                         />
-                        <Reviews reviews={postData.reviews} />
+                        <Reviews url={`/api/posts/${postData.postID}/reviews`} />
                     </div>
                     <div className="relative min-w-[390px]">
-                        <div className="absolute" style={{ top: `${Math.max(0, scrollPosition.top - 58)}px` }}>
-                            <Packages packages={postData.packages} />
-                            <button className="main-btn mt-[26px] shadow-pop-up">
-                                {`See Seller Reviews (${postData.postedBy._count.reviews})`}
-                            </button>
-                        </div>
+                        <Packages packages={postData.packages} />
+                        <button className="side-btn w-full !h-[48px] mt-[26px] shadow-info-component">
+                            {`See Seller Reviews (${postData.postedBy._count.reviews})`}
+                        </button>
+                        <CreateReview />
                     </div>
                 </div>
             </PageWrapper>

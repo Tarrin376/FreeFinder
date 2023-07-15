@@ -1,6 +1,5 @@
 import { IPackage } from "../models/IPackage";
 import { IPostImage } from "../models/IPostImage";
-import { IReview } from "../models/IReview";
 import { UserSummary } from "./UserSummary";
 
 export type PostPage = {
@@ -31,5 +30,4 @@ export type PostPage = {
     },
     packages: IPackage[],
     images: IPostImage[],
-    reviews: IReview[]
 }

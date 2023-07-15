@@ -48,8 +48,8 @@ function SignUp({ setLogIn, setSignUp, setAccountCreated }: SignUpProps) {
             setSignUp(false);
             setErrorMessage("");
         }
-        catch (e: any) {
-            const errorMessage = getAPIErrorMessage(e as AxiosError<{ message: string }>);
+        catch (err: any) {
+            const errorMessage = getAPIErrorMessage(err as AxiosError<{ message: string }>);
             return errorMessage;
         }
     }

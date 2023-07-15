@@ -5,5 +5,5 @@ export interface IReview {
     reviewBody: string,
     createdAt: Date,
     rating: number,
-    reviewID: string
+    reviewID: string,
 }

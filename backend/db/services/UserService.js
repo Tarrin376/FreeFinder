@@ -9,6 +9,7 @@ import { prisma } from '../index.js';
 import { getPostFilters } from '../utils/getPostFilters.js';
 import { sellerProperties } from '../utils/sellerProperties.js';
 import { userProperties } from '../utils/userProperties.js';
+import { getPaginatedData } from '../utils/getPaginatedData.js';
 
 export async function updateProfilePictureHandler(req) {
     try {
@@ -244,85 +245,88 @@ export async function getUserPostsHandler(req) {
 
 async function queryUserPosts(req) {
     const postFilters = getPostFilters(req);
-    const limit = parseInt(req.body.limit);
-
-    const query = {
-        skip: req.body.cursor ? 1 : undefined,
-        take: limit ? limit : undefined,
-        cursor: req.body.cursor ? { postID: req.body.cursor } : undefined,
-        orderBy: sortPosts[req.body.sort],
-        where: {
-            ...postFilters,
-            postedBy: {
-                ...postFilters.postedBy,
-                userID: req.userData.userID
-            },
+    const where = {
+        ...postFilters,
+        postedBy: {
+            ...postFilters.postedBy,
+            userID: req.userData.userID
         },
-        select: { 
-            postedBy: {
-                select: {
-                    user: {
-                        select: {
-                            profilePicURL: true,
-                            status: true,
-                            username: true,
-                        }
-                    },
-                    rating: true,
-                    sellerLevel: {
-                        select: {
-                            name: true
-                        }
+    };
+
+    const select = { 
+        postedBy: {
+            select: {
+                user: {
+                    select: {
+                        profilePicURL: true,
+                        status: true,
+                        username: true,
                     }
                 },
-            },
-            createdAt: true,
-            _count: {
-                select: { 
-                    reviews: true
+                rating: true,
+                sellerLevel: {
+                    select: {
+                        name: true
+                    }
                 }
             },
-            startingPrice: true,
-            title: true,
-            postID: true,
-            images: {
-                select: {
-                    url: true,
-                },
-                orderBy: {
-                    createdAt: 'asc'
-                }
+        },
+        createdAt: true,
+        _count: {
+            select: { 
+                reviews: true
+            }
+        },
+        startingPrice: true,
+        title: true,
+        postID: true,
+        images: {
+            select: {
+                url: true,
+            },
+            orderBy: {
+                createdAt: 'asc'
             }
         }
     };
 
-    const [posts, count] = await prisma.$transaction([
-        prisma.post.findMany(query),
-        prisma.post.count({ 
-            where: { 
-                ...postFilters,
-                postedBy: {
-                    ...postFilters.postedBy,
-                    userID: req.userData.userID
-                }
-            }
-        })
-    ]);
-
-    if (posts.length === 0) {
-        return { 
-            next: [],
-            cursor: undefined, 
-            last: true,
-            count: count
-        };
+    const options = {
+        orderBy: sortPosts[req.body.sort],
     }
+
+    const result = await getPaginatedData(
+        where, 
+        select, 
+        "post", 
+        req.body.limit, 
+        { postID: req.body.cursor }, 
+        "postID", 
+        options
+    );
     
-    const minNum = Math.min(isNaN(limit) ? posts.length - 1 : limit - 1, posts.length - 1);
-    return { 
-        next: posts, 
-        cursor: posts[minNum].postID, 
-        last: isNaN(limit) || minNum < limit - 1,
-        count: count 
-    };
+    return result;
+}
+
+export async function createReviewHandler(req) {
+    try {
+        await checkUser(req.userData.userID, req.username);
+        const review = await prisma.review.create({
+            data: {
+                sellerID: req.body.sellerID,
+                reviewerID: req.userData.userID,
+                reviewBody: req.body.reviewBody,
+                rating: parseInt(req.body.rating),
+                postID: req.params.postID
+            }
+        });
+
+        return review;
+    }
+    catch (err) {
+        if (err instanceof Prisma.PrismaClientValidationError) {
+            throw new DBError("Missing required fields or fields provided are invalid.", 400);
+        } else {
+            throw new DBError("Something went wrong when trying to create this review. Please try again.", 500);
+        }
+    }
 }

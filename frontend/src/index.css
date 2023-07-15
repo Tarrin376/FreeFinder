@@ -36,13 +36,13 @@
         @apply animate-pulse bg-very-light-gray rounded-[8px];
     }
     .main-btn {
-        @apply bg-main-black text-main-white hover:bg-main-black-hover w-full !h-12 loading-btn;
+        @apply bg-main-blue text-main-white hover:bg-main-blue-hover w-full !h-12 loading-btn;
     }
     .loading-btn {
         @apply btn-primary flex items-center justify-center gap-2;
     }
     .side-btn {
-        @apply bg-main-white border-2 border-light-border-gray btn-primary w-fit px-4
+        @apply bg-main-white border text-main-blue border-light-border-gray btn-primary w-fit px-4
         hover:bg-main-white-hover h-[42px];
     }
     .text-box-error-message {

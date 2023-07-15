@@ -121,6 +121,7 @@ function SearchSellers({ styles, toggleSidebar }: SearchSellersProps) {
                                         sellerID={seller.sellerID}
                                         statusStyles="before:left-[39px] before:top-[41px]"
                                         imgStyles="min-w-[57px] min-h-[57px]"
+                                        profilePicSize={57}
                                         key={index}
                                     />
                                 )

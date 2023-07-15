@@ -1,4 +1,4 @@
-import { createJobCategoryHandler, getJobCategoriesHandler } from "../services/jobCategoryService.js";
+import { createJobCategoryHandler, getJobCategoriesHandler } from "../services/JobCategoryService.js";
 
 export async function createJobCategory(req, res) {
     try {
