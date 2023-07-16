@@ -1,11 +1,17 @@
 import PopUpWrapper from "../wrappers/PopUpWrapper";
-import { useState, useRef } from 'react';
+import { useState } from 'react';
 import ErrorMessage from "./ErrorMessage";
 import CountriesDropdown from "./CountriesDropdown";
 import { SignUpForm } from "../types/SignUpForm";
 import axios, { AxiosError } from "axios";
 import { getAPIErrorMessage } from "../utils/getAPIErrorMessage";
 import Button from "./Button";
+
+interface SignUpProps {
+    setLogIn: React.Dispatch<React.SetStateAction<boolean>>,
+    setSignUp: React.Dispatch<React.SetStateAction<boolean>>,
+    setAccountCreated: React.Dispatch<React.SetStateAction<boolean>>
+}
 
 export const emailPattern: RegExp = new RegExp("[a-z0-9]+@[a-zA-Z]+[.][a-z]+$");
 
@@ -20,28 +26,18 @@ const initialFormValues: SignUpForm = {
     validPassword: false
 }
 
-interface SignUpProps {
-    setLogIn: React.Dispatch<React.SetStateAction<boolean>>,
-    setSignUp: React.Dispatch<React.SetStateAction<boolean>>,
-    setAccountCreated: React.Dispatch<React.SetStateAction<boolean>>
-}
-
 function SignUp({ setLogIn, setSignUp, setAccountCreated }: SignUpProps) {
     const [form, setForm] = useState<SignUpForm>(initialFormValues);
     const [errorMessage, setErrorMessage] = useState<string>("");
-    const countryRef = useRef<HTMLSelectElement>(null);
+    const [country, setCountry] = useState<string>("🇬🇧 United Kingdom");
 
     async function createAccount(): Promise<string | undefined> {
-        if (!countryRef.current || !countryRef.current!.value) {
-            return;
-        }
-
         try {
             await axios.post<{ message: string }>(`/api/users`, {
                 email: form.emailFirst, 
                 username: form.username, 
                 password: form.password,
-                country: countryRef.current.value
+                country: country
             });
 
             setAccountCreated(true);
@@ -64,10 +60,27 @@ function SignUp({ setLogIn, setSignUp, setAccountCreated }: SignUpProps) {
         const validEmail: boolean = email.match(emailPattern) !== null;
 
         if (isFirst) {
-            if (validEmail) setForm({ ...form, validEmailFirst: validEmail, emailFirst: email, validEmailSecond: form.emailSecond === email });
-            else setForm({ ...form, validEmailFirst: validEmail, emailFirst: email });
+            if (validEmail) {
+                setForm({ 
+                    ...form, 
+                    validEmailFirst: validEmail, 
+                    emailFirst: email, 
+                    validEmailSecond: form.emailSecond === email 
+                });
+            }
+            else {
+                setForm({ 
+                    ...form, 
+                    validEmailFirst: validEmail, 
+                    emailFirst: email 
+                });
+            }
         } else {
-            setForm({ ...form, validEmailSecond: validEmail && email === form.emailFirst, emailSecond: email });
+            setForm({ 
+                ...form, 
+                validEmailSecond: validEmail && email === form.emailFirst, 
+                emailSecond: email
+            });
         }
     }
 
@@ -133,8 +146,8 @@ function SignUp({ setLogIn, setSignUp, setAccountCreated }: SignUpProps) {
                     onChange={(e) => checkPassword(e)} 
                 />
                 <CountriesDropdown 
-                    countryRef={countryRef} 
-                    selected="🇬🇧 United Kingdom"
+                    country={country}
+                    setCountry={setCountry}
                     title="Country"
                 />
             </div>

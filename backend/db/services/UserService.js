@@ -306,27 +306,3 @@ async function queryUserPosts(req) {
     
     return result;
 }
-
-export async function createReviewHandler(req) {
-    try {
-        await checkUser(req.userData.userID, req.username);
-        const review = await prisma.review.create({
-            data: {
-                sellerID: req.body.sellerID,
-                reviewerID: req.userData.userID,
-                reviewBody: req.body.reviewBody,
-                rating: parseInt(req.body.rating),
-                postID: req.params.postID
-            }
-        });
-
-        return review;
-    }
-    catch (err) {
-        if (err instanceof Prisma.PrismaClientValidationError) {
-            throw new DBError("Missing required fields or fields provided are invalid.", 400);
-        } else {
-            throw new DBError("Something went wrong when trying to create this review. Please try again.", 500);
-        }
-    }
-}

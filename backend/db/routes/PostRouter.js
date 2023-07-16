@@ -7,7 +7,6 @@ import {
     getPosts, 
     updatePost, 
     deleteImage,
-    getPostReviews,
 } from '../controllers/PostController.js';
 import { cookieJwtAuth } from '../middleware/cookieJwtAuth.js';
 
@@ -20,7 +19,6 @@ postRouter.get('/:id', getPost);
 postRouter.put('/:id', cookieJwtAuth, updatePost);
 postRouter.post('/:id', cookieJwtAuth, addImage);
 postRouter.delete('/:id', cookieJwtAuth, deletePost);
-postRouter.post('/:id/reviews', getPostReviews);
 
 postRouter.delete('/:id/:cloudinaryID', cookieJwtAuth, deleteImage);
 

@@ -1,17 +1,12 @@
-import { IReview } from "../models/IReview";
 import { IPost } from "../models/IPost";
 import { ISellerLevel } from "../models/ISellerLevel";
 
 export type SellerProfile = {
     rating: number,
     sellerID: string,
-    reviews: IReview[],
     posts: IPost[],
     description: string,
     summary: string,
-    _count: {
-        reviews: number
-    },
     languages: string[],
     skills: string[],
     sellerLevel: ISellerLevel,

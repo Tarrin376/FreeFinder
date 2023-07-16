@@ -16,7 +16,7 @@ function Review({ reviewInfo }: ReviewProps) {
                         profileStatus={reviewInfo.reviewer.status}
                         statusStyles="before:hidden"
                         username={reviewInfo.reviewer.username}
-                        size={48}
+                        size={41}
                     />
                     <p>{reviewInfo.reviewer.username}</p>
                 </div>

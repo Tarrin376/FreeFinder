@@ -48,8 +48,6 @@ export function usePaginateData<T1, T2, T3 extends PaginationResponse<T2>>(pageR
                     limit: limit
                 });
 
-                console.log(resp);
-
                 setData((state) => [...state, ...resp.data.next]);
                 cursor.current = resp.data.cursor;
 

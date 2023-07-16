@@ -13,8 +13,7 @@ import
     authenticateUser,
     jwtAuthenticateUser,
     deleteUserSession,
-    getUserPosts,
-    createReview
+    getUserPosts
 } from '../controllers/UserController.js';
 
 const userRouter = Router();
@@ -39,6 +38,5 @@ userRouter.put('/:username', cookieJwtAuth, updateUser);
 userRouter.delete('/:username', cookieJwtAuth, deleteUser);
 userRouter.put('/:username/profile-picture', cookieJwtAuth, updateProfilePicture);
 userRouter.put('/:username/password', cookieJwtAuth, updatePassword);
-userRouter.post('/:username/review/:postID', cookieJwtAuth, createReview);
 
 export default userRouter;

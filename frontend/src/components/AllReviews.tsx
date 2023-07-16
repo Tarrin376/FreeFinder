@@ -19,7 +19,7 @@ function AllReviews({ url, setAllReviewsPopUp }: AllReviewsProps) {
     console.log(reviews);
 
     return (
-        <PopUpWrapper setIsOpen={setAllReviewsPopUp} title={`Ratings and reviews (${reviews.count.current})`} styles="max-w-[720px]">
+        <PopUpWrapper setIsOpen={setAllReviewsPopUp} title={`Ratings and reviews (${reviews.count.current})`} styles="!max-w-[720px]">
             <div className="overflow-y-scroll pr-[8px] max-h-[720px] flex gap-7 flex-col" ref={pageRef}>
                 {reviews.data.map((review: IReview, index: number) => {
                     return (

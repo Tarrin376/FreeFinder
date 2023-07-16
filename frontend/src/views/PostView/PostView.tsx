@@ -23,7 +23,6 @@ import { MAX_FILE_BYTES } from "../CreatePost/UploadPostFiles";
 import { parseImage } from "../../utils/parseImage";
 import { MAX_FILE_UPLOADS } from "../CreatePost/UploadPostFiles";
 import LoadingSvg from "../../components/LoadingSvg";
-import { useScrollPosition } from "../../hooks/useScrollPosition";
 import Reviews from "../../components/Reviews";
 import CreateReview from "../../components/CreateReview";
 
@@ -77,8 +76,6 @@ function PostView() {
     const navigate = useNavigate();
     const userContext = useContext(UserContext);
     const addImageFileRef = useRef<HTMLInputElement>(null);
-    const nodeRef = useRef<HTMLDivElement | null>(null);
-    const [nodeRefVisible, setNodeRefVisible] = useState<boolean>(false);
 
     const [postData, setPostData] = useState<PostPage>();
     const [errorMessage, setErrorMessage] = useState<string>("");
@@ -87,7 +84,6 @@ function PostView() {
     const [removingImage, setRemovingImage] = useState<number>(-1);
 
     const [state, dispatch] = useReducer(reducer, initialState);
-    const scrollPosition = useScrollPosition(nodeRef, nodeRefVisible);
     const isOwner = postData?.postedBy.user.username === userContext.userData.username;
 
     function navigateToProfile(): void {
@@ -197,10 +193,8 @@ function PostView() {
         );
     }
 
-    console.log(postData);
-
     return (
-        <div className="overflow-y-scroll h-[calc(100vh-90px)]" ref={x => { nodeRef.current = x; setNodeRefVisible(true); }}>
+        <div className="overflow-y-scroll h-[calc(100vh-90px)]">
             <PageWrapper styles="p-[38px] pt-[58px]" locationStack={[
                 postData.workType.jobCategory.name,
                 postData.workType.name,
@@ -257,7 +251,7 @@ function PostView() {
                                         {postData.postedBy.rating}
                                     </p>
                                     <p className="text-[15px] text-side-text-gray">
-                                        ({postData.postedBy._count.reviews} reviews)
+                                        ({0} reviews)
                                     </p>
                                 </div>
                                 <p className="text-side-text-gray text-[15px] mt-[1px]">
@@ -340,14 +334,14 @@ function PostView() {
                             skills={postData.postedBy.skills}
                             sellerID={postData.sellerID}
                         />
-                        <Reviews url={`/api/posts/${postData.postID}/reviews`} />
+                        <Reviews url={`/api/reviews/${postData.postID}`} />
                     </div>
                     <div className="relative min-w-[390px]">
                         <Packages packages={postData.packages} />
                         <button className="side-btn w-full !h-[48px] mt-[26px] shadow-info-component">
-                            {`See Seller Reviews (${postData.postedBy._count.reviews})`}
+                            {`See Seller Reviews (${0})`}
                         </button>
-                        <CreateReview />
+                        <CreateReview postID={postData.postID} />
                     </div>
                 </div>
             </PageWrapper>

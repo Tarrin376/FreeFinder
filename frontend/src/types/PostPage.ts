@@ -18,9 +18,6 @@ export type PostPage = {
         rating: number,
         description: string,
         summary: string,
-        _count: {
-            reviews: number
-        },
         languages: string[],
         skills: string[],
         user: UserSummary,

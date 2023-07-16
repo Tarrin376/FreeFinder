@@ -29,11 +29,3 @@ export async function getSellers(req, res) {
         res.status(err.code).json({ message: err.message });
     }
 }
-
-export async function getSellerReviews(req, res) {
-
-}
-
-export async function createSellerReview(req, res) {
-
-}

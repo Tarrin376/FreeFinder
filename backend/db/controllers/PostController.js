@@ -6,7 +6,6 @@ import {
     getPostsHandler,
     updatePostHandler,
     deleteImageHandler,
-    getPostReviewsHandler,
 } from "../services/PostService.js";
 
 export async function createPost(req, res) {
@@ -73,16 +72,6 @@ export async function getPosts(req, res) {
     try {
         const posts = await getPostsHandler(req);
         res.json({ ...posts, message: "success" });
-    }
-    catch (err) {
-        res.status(err.code).json({ message: err.message });
-    }
-}
-
-export async function getPostReviews(req, res) {
-    try {
-        const reviews = await getPostReviewsHandler(req);
-        res.json({ ...reviews, message: "success" });
     }
     catch (err) {
         res.status(err.code).json({ message: err.message });

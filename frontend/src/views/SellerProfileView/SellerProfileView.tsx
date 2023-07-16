@@ -50,9 +50,9 @@ function SellerProfileView() {
                                     <ProfilePicAndStatus
                                         profilePicURL={sellerDetails.user.profilePicURL}
                                         profileStatus={sellerDetails.user.status}
-                                        statusStyles="before:left-[53px] before:top-[54px] before:w-[21px] before:h-[21px]"
+                                        statusStyles="before:left-[43px] before:top-[47px] before:w-[21px] before:h-[21px]"
                                         username={sellerDetails.user.username}
-                                        size={75}
+                                        size={65}
                                     />
                                 </div>
                                 <div className="overflow-hidden flex-grow">

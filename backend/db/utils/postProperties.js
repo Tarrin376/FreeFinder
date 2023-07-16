@@ -14,11 +14,6 @@ export const postProperties = {
                 rating: true,
                 description: true,
                 summary: true,
-                _count: {
-                    select: { 
-                        reviews: true
-                    }
-                },
                 languages: true,
                 skills: true,
                 sellerLevel: {

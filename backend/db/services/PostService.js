@@ -242,6 +242,7 @@ export async function getPostHandler(postID) {
         return postData;
     }
     catch (err) {
+        console.log(err);
         if (err instanceof Prisma.PrismaClientValidationError) {
             throw new DBError("Missing required fields or fields provided are invalid.", 400);
         } else {
@@ -317,24 +318,6 @@ async function updateImage(req) {
         } else {
             throw new DBError("Something went wrong when trying to update this post. Please try again.", 500);
         }
-    }
-}
-
-async function getAvgRating(postID) {
-    try {
-        const avgRating = await prisma.review.aggregate({
-            _avg: {
-                rating: true
-            },
-            where: {
-                postID: postID
-            }
-        });
-
-        return avgRating;
-    }
-    catch (err) {
-        throw new DBError("Something went wrong when trying to get the average rating of this post. Please try again.", 500);
     }
 }
 
@@ -416,6 +399,7 @@ export async function getPostsHandler(req) {
         return await queryPosts(req);
     }
     catch (err) {
+        console.log(err);
         if (err instanceof Prisma.PrismaClientValidationError) {
             throw new DBError("Missing required fields or fields provided are invalid.", 400);
         } else {
@@ -482,63 +466,4 @@ async function queryPosts(req) {
     );
     
     return result;
-}
-
-async function countReviewRating(rating, postID) {
-    const count = await prisma.review.count({
-        where: {
-            postID: postID,
-            rating: {
-                gte: rating,
-                lt: rating + 1
-            }
-        }
-    });
-
-    return count;
-}
-
-export async function getPostReviewsHandler(req) {
-    const filters = {
-        postID: req.params.id
-    };
-
-    const select = {
-        reviewID: true,
-        reviewer: {
-            select: {
-                username: true,
-                country: true,
-                memberDate: true,
-                status: true,
-                profilePicURL: true,
-            }
-        },
-        reviewBody: true,
-        createdAt: true,
-        rating: true,
-    };
-
-    const result = await getPaginatedData(
-        filters, 
-        select, 
-        "review",
-        req.body.limit, 
-        { reviewID: req.body.cursor }, 
-        "reviewID"
-    );
-    
-    let avgRating = 0;
-    if (!req.body.cursor) {
-        avgRating = (await getAvgRating(req.params.id))._avg.rating;
-    }
-
-    const promises = new Array(5).fill(0).map((_, index) => countReviewRating(index + 1, req.params.id).then((x) => x));
-    const stars = await Promise.all(promises).then((stars) => stars);
-
-    return { 
-        ...result, 
-        avgRating: avgRating,
-        stars: stars
-    } 
 }

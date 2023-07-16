@@ -8,9 +8,16 @@ import { IReview } from "../models/IReview";
 import AllReviews from "./AllReviews";
 import { AnimatePresence } from "framer-motion";
 import ErrorPopUp from "./ErrorPopUp";
+import StarSvg from "./StarSvg";
 
 interface ReviewsProps {
     url: string
+}
+
+interface RatingAverageProps {
+    title: string,
+    average: number,
+    styles?: string
 }
 
 const queryLimit = 3;
@@ -59,18 +66,19 @@ function Reviews({ url }: ReviewsProps) {
                 />}
             </AnimatePresence>
             <div className="flex items-center justify-between mb-3">
-                <div className="flex items-center gap-2">
-                    <h2 className="text-[1.3rem]">Ratings and reviews</h2>
-                    <div className="w-[52px] h-[52px] flex items-center justify-center 
+                <div className="flex items-center gap-2 h-[52px]">
+                    <h2 className="text-[1.3rem]">Ratings and reviews for this service</h2>
+                    {reviews.count > queryLimit &&
+                    <div className="w-[52px] h-full flex items-center justify-center 
                     hover:bg-hover-light-gray rounded-full cursor-pointer" onClick={() => setAllReviewsPopUp(true)}>
                         <img src={RightArrowIcon} alt="" className="w-[26px] h-[26px]" />
-                    </div>
+                    </div>}
                 </div>
-                <p className="text-[15px] text-side-text-gray">Ratings and reviews are verified</p>
+                <p className="text-[15px] text-side-text-gray">Not all reviews are verified</p>
             </div>
-            <div className="flex gap-7 items-center mb-12">
+            <div className="flex gap-7 items-center mb-6">
                 <div className="w-fit">
-                    <p className="text-[3.5rem] text-center">{reviews.avgRating.toFixed(1)}</p>
+                    <p className="text-[3.5rem] text-center">{reviews.averages.rating.toFixed(1)}</p>
                     <p className="text-side-text-gray text-sm text-center">{`${reviews.count} ${reviews.count === 1 ? "review" : "reviews"}`}</p>
                 </div>
                 <div className="flex-grow flex flex-col gap-[1px]">
@@ -88,6 +96,24 @@ function Reviews({ url }: ReviewsProps) {
                     })}
                 </div>
             </div>
+            <div className="mb-12">
+                <p className="mb-3">Rating breakdown</p>
+                <RatingAverage 
+                    title="Service as described" 
+                    average={reviews.averages.serviceAsDescribed}
+                    styles="mb-[2px] pb-[6px] border-b border-light-border-gray" 
+                />
+                <RatingAverage 
+                    title="Seller communication" 
+                    average={reviews.averages.sellerCommunication} 
+                    styles="py-[6px] mb-[2px] border-b border-light-border-gray"
+                />
+                <RatingAverage 
+                    title="Service delivery" 
+                    average={reviews.averages.serviceDelivery}
+                    styles="pt-[6px]"
+                />
+            </div>
             <div className="flex gap-7 flex-col">
                 {reviews.next.map((review: IReview, index: number) => {
                     return (
@@ -98,10 +124,28 @@ function Reviews({ url }: ReviewsProps) {
                     )
                 })}
             </div>
+            {reviews.count > queryLimit &&
             <button className="mt-7 btn-primary text-main-blue bg-highlight hover:bg-highlight-hover"
             onClick={() => setAllReviewsPopUp(true)}>
                 See all reviews
-            </button>
+            </button>}
+        </div>
+    )
+}
+
+function RatingAverage({ title, average, styles }: RatingAverageProps) {
+    return (
+        <div className={`flex items-center justify-between ${styles}`}>
+            <p className="text-side-text-gray text-sm">{title}</p>
+            <div className="flex items-center gap-2">
+                <StarSvg
+                    backgroundColour="#EEB424"
+                    size="14px"
+                />
+                <p className="text-[#EEB424] text-sm">
+                    {average.toFixed(1)}
+                </p>
+            </div>
         </div>
     )
 }

@@ -13,7 +13,7 @@ export function getPostFilters(req) {
         },
         postedBy: {
             user: {
-                country: req.body.location,
+                country: req.body.country,
                 status: req.body.extraFilters ? 
                 req.body.extraFilters.includes("Active now") ? "ONLINE" : undefined
                 : undefined

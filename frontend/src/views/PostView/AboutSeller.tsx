@@ -41,7 +41,7 @@ function AboutSeller(props: AboutSellerProps) {
                         imgStyles="cursor-pointer"
                         username={props.username}
                         action={navigateToProfile}
-                        size={75}
+                        size={65}
                     />
                     <div className="overflow-hidden">
                         <div className="flex items-center gap-2">

@@ -1,4 +1,4 @@
-import { useState, useRef, useContext } from 'react';
+import { useState, useContext } from 'react';
 import ErrorMessage from "../../components/ErrorMessage";
 import CountriesDropdown from "../../components/CountriesDropdown";
 import { fetchUpdatedUser } from "../../utils/fetchUpdatedUser";
@@ -11,18 +11,14 @@ function UserProfile() {
     const userContext = useContext(UserContext);
     const [username, setUsername] = useState<string>(userContext.userData.username);
     const [errorMessage, setErrorMessage] = useState<string>("");
-    const countryRef = useRef<HTMLSelectElement>(null);
+    const [country, setCountry] = useState<string>(userContext.userData.country);
     
     async function updateProfile(): Promise<string | undefined> {
         try {
-            if (!countryRef.current || !countryRef.current!.value) {
-                return;
-            }
-
             const updated = await fetchUpdatedUser({ 
                 ...userContext.userData, 
                 username, 
-                country: countryRef.current!.value 
+                country: country 
             }, userContext.userData.username);
 
             userContext.setUserData(updated.userData);
@@ -62,8 +58,8 @@ function UserProfile() {
                 <div>
                     <p className="mb-2">Country</p>
                     <CountriesDropdown 
-                        countryRef={countryRef} 
-                        selected={userContext.userData.country}
+                        country={country}
+                        setCountry={setCountry} 
                         title="Country"
                     />
                 </div>

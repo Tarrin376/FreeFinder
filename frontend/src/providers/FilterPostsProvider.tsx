@@ -48,7 +48,8 @@ interface MainFiltersBarProps {
     searchRef: React.RefObject<HTMLInputElement>,
     min: React.MutableRefObject<number>,
     max: React.MutableRefObject<number>,
-    countryRef: React.RefObject<HTMLSelectElement>,
+    country: string,
+    setCountry: React.Dispatch<React.SetStateAction<string>>,
     sort: React.MutableRefObject<string>,
     loading: boolean,
     searchHandler: () => void
@@ -70,7 +71,7 @@ type PostArgs = {
     sort: string,
     min: number,
     max: number,
-    location: string | undefined,
+    country: string | undefined,
     languages: string[],
     deliveryTime: number,
     sellerLevels: string[],
@@ -89,7 +90,6 @@ function FilterPostsProvider({ children, urlPrefix }: FilterPostsContextProps) {
     const sort = useRef<string>(postFilters.sort ?? "most recent");
     const deliveryTime = useRef<number>(postFilters.deliveryTime ?? MAX_DELIVERY_DAYS);
     const searchRef = useRef<HTMLInputElement>(null);
-    const countryRef = useRef<HTMLSelectElement>(null);
     const pageRef = useRef<HTMLDivElement>(null);
 
     const [page, setPage] = useState<{ value: number }>({ value: 1 });
@@ -99,6 +99,7 @@ function FilterPostsProvider({ children, urlPrefix }: FilterPostsContextProps) {
     const [sellerLevels, setSellerLevels] = useState<string[]>(postFilters.sellerLevels ?? []);
     const [extraFilters, setExtraFilters] = useState<string[]>(postFilters.extraFilters ?? []);
     const [selectedWork, setSelectedWork] = useState<string[]>(postFilters.selectedWork ?? []);
+    const [country, setCountry] = useState<string>(postFilters.country ?? "Any country");
     const userContext = useContext(UserContext);
 
     const location = useLocation();
@@ -114,7 +115,7 @@ function FilterPostsProvider({ children, urlPrefix }: FilterPostsContextProps) {
             sort: sortPosts[sort.current],
             min: min.current,
             max: max.current,
-            location: countryRef.current?.value === "Any country" ? undefined : countryRef.current?.value,
+            country: country === "Any country" ? undefined : country,
             languages: selectedLanguages,
             deliveryTime: deliveryTime.current,
             sellerLevels: sellerLevels,
@@ -136,7 +137,7 @@ function FilterPostsProvider({ children, urlPrefix }: FilterPostsContextProps) {
             sort: sort.current,
             min: min.current,
             max: max.current,
-            location: countryRef.current?.value === "Any country" ? undefined : countryRef.current?.value,
+            country: country,
             languages: selectedLanguages,
             deliveryTime: deliveryTime.current,
             sellerLevels: sellerLevels,
@@ -145,7 +146,7 @@ function FilterPostsProvider({ children, urlPrefix }: FilterPostsContextProps) {
         }));
         
         posts.resetState();
-    }, [selectedLanguages, sellerLevels, extraFilters, selectedWork]);
+    }, [selectedLanguages, sellerLevels, extraFilters, selectedWork, country]);
 
     useEffect(() => {
         searchHandler();
@@ -199,8 +200,8 @@ function FilterPostsProvider({ children, urlPrefix }: FilterPostsContextProps) {
                         </div>
                         <div className="border-b border-light-border-gray pb-5 mb-5 min-[1309px]:hidden">
                             <CountriesDropdown 
-                                countryRef={countryRef} 
-                                selected="Any country"
+                                country={country}
+                                setCountry={setCountry}
                                 styles="w-full"
                                 title="Seller lives in"
                                 anyLocation={true}
@@ -241,7 +242,8 @@ function FilterPostsProvider({ children, urlPrefix }: FilterPostsContextProps) {
                             searchRef={searchRef}
                             min={min}
                             max={max}
-                            countryRef={countryRef}
+                            country={country}
+                            setCountry={setCountry}
                             sort={sort}
                             loading={posts.loading}
                             searchHandler={searchHandler}
@@ -264,7 +266,7 @@ function FilterPostsProvider({ children, urlPrefix }: FilterPostsContextProps) {
     )
 }
 
-function MainFiltersBar({ searchRef, min, max, countryRef, sort, loading, searchHandler }: MainFiltersBarProps) {
+function MainFiltersBar({ searchRef, min, max, country, setCountry, sort, loading, searchHandler }: MainFiltersBarProps) {
     return (
         <div className="h-[90px] max-w-[1430px] m-auto flex items-center px-[22.5px]">
             <div className="flex flex-grow items-center border-r border-light-border-gray h-full pr-6">
@@ -289,8 +291,8 @@ function MainFiltersBar({ searchRef, min, max, countryRef, sort, loading, search
             </div>
             <div className="h-full border-r border-light-border-gray px-[12.75px] flex items-center max-[1308px]:hidden">
                 <CountriesDropdown 
-                    countryRef={countryRef} 
-                    selected="Any country"
+                    country={country}
+                    setCountry={setCountry}
                     styles="w-[240px]"
                     title="Seller lives in"
                     anyLocation={true}

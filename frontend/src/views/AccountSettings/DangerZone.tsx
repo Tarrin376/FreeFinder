@@ -11,8 +11,8 @@ function DangerZone({ setSettingsPopUp }: { setSettingsPopUp: React.Dispatch<Rea
     const userContext = useContext(UserContext);
 
     const resetUserState = () => {
-        userContext.setUserData(initialState.userData);
         setSettingsPopUp(false);
+        userContext.setUserData(initialState.userData);
     }
 
     async function deleteAccount(): Promise<string | undefined> {

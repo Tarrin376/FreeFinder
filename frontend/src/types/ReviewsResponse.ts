@@ -1,6 +1,11 @@
 import { PaginationResponse } from "./PaginateResponse";
 
 export type ReviewsResponse<T> = PaginationResponse<T> & {
-    avgRating: number,
+    averages: {
+        rating: number,
+        serviceAsDescribed: number,
+        sellerCommunication: number,
+        serviceDelivery: number
+    }
     stars: number[],
 }

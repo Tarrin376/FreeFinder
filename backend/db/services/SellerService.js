@@ -129,20 +129,6 @@ export async function getSellerDetailsHandler(username) {
             select: {
                 rating: true,
                 sellerID: true,
-                reviews: {
-                    select: {
-                        reviewer: {
-                            select: {
-                                username: true,
-                                country: true
-                            }
-                        },
-                        reviewBody: true,
-                        createdAt: true,
-                        rating: true,
-                        postID: true
-                    }
-                },
                 posts: {
                     take: 10,
                     select: {
@@ -184,11 +170,6 @@ export async function getSellerDetailsHandler(username) {
                 },
                 description: true,
                 summary: true,
-                _count: {
-                    select: { 
-                        reviews: true
-                    }
-                },
                 languages: true,
                 skills: true,
                 sellerLevel: {

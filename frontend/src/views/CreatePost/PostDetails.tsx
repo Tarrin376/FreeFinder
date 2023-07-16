@@ -109,7 +109,7 @@ function PostDetails({ jobCategory, setJobCategory, setTypeOfWork, setErrorMessa
 
     useEffect(() => {
         setJobCategory(jobCategories.categories.length === 0 ? "" : jobCategories.categories[0].name)
-    }, [jobCategories, setJobCategory])
+    }, [jobCategories.categories, setJobCategory]);
 
     return (
         <PopUpWrapper setIsOpen={props.setPostService} title="Enter post details">

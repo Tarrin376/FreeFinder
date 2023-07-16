@@ -53,7 +53,7 @@
         flex items-center justify-center opacity-90 hover:scale-105 hover:opacity-100;
     }
     .success-btn {
-        @apply hover:!bg-light-green !bg-light-green;
+        @apply hover:!bg-light-green !bg-light-green !border-light-green;
     }
     .success-btn * {
         @apply !text-main-white;
@@ -116,5 +116,13 @@
         background-color: #879198;
         border-radius: 20px;
         border: 3px solid #f7f7f7;
+    }
+    ::selection {
+        background: #292929;
+        color: #fdfdfd;
+    }
+    ::-moz-selection {
+        background: #292929;
+        color: #fdfdfd;
     }
 }

@@ -40,7 +40,6 @@ model Seller {
     user          User          @relation(fields: [userID], references: [userID], onDelete: Cascade)
     userID        String        @unique
     rating        Float
-    reviews       Review[]
     orders        Order[]
     posts         Post[]
     description   String
@@ -130,16 +129,18 @@ model Package {
 }
 
 model Review {
-    reviewID   String   @id @default(uuid())
-    seller     Seller   @relation(fields: [sellerID], references: [sellerID])
-    sellerID   String
-    reviewer   User     @relation(fields: [reviewerID], references: [userID])
-    reviewerID String
-    reviewBody String
-    createdAt  DateTime @default(now())
-    rating     Float
-    Post       Post?    @relation(fields: [postID], references: [postID])
-    postID     String?
+    reviewID            String   @id @default(uuid())
+    reviewer            User     @relation(fields: [reviewerID], references: [userID], onDelete: Cascade)
+    reviewerID          String
+    reviewBody          String
+    createdAt           DateTime @default(now())
+    rating              Float
+    serviceAsDescribed  Float
+    sellerCommunication Float
+    serviceDelivery     Float
+    Post                Post     @relation(fields: [postID], references: [postID], onDelete: Cascade)
+    postID              String
+    helpfulCount        Int      @default(0)
 }
 
 model Order {
