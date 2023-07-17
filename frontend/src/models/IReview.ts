@@ -6,4 +6,7 @@ export interface IReview {
     createdAt: Date,
     rating: number,
     reviewID: string,
+    _count: {
+        foundHelpful: number
+    }
 }

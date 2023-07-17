@@ -15,6 +15,9 @@ export async function createJobCategoryHandler(jobCategory) {
             throw new DBError("Something went wrong when trying to create a new job category. Please try again.", 500);
         }
     }
+    finally {
+        await prisma.$disconnect();
+    }
 }
 
 export async function getJobCategoriesHandler() {
@@ -34,5 +37,8 @@ export async function getJobCategoriesHandler() {
     }
     catch (err) {
         throw new DBError("Something went wrong when trying to get all job categories. Please try again.", 500);
+    }
+    finally {
+        await prisma.$disconnect();
     }
 }

@@ -5,6 +5,7 @@ import sellerRouter from './routes/SellerRouter.js';
 import sellerLevelRouter from './routes/SellerLevelRouter.js';
 import jobCategoryRouter from './routes/JobCategoryRouter.js';
 import reviewRouter from './routes/ReviewRouter.js';
+import helpfulReviewRouter from './routes/HelpfulReviewRouter.js';
 
 import { env } from 'process';
 import cookieParser from 'cookie-parser';
@@ -35,6 +36,7 @@ router.use('/sellers', sellerRouter);
 router.use('/seller-levels', sellerLevelRouter);
 router.use('/job-categories', jobCategoryRouter);
 router.use('/reviews', reviewRouter);
+router.use('/helpful-reviews', helpfulReviewRouter);
 
 app.listen(PORT, () => {
     console.log(`Server is listening on port ${PORT}`);

@@ -4,6 +4,7 @@ import axios, { AxiosError } from "axios";
 import { getAPIErrorMessage } from "../../utils/getAPIErrorMessage";
 import Button from "../../components/Button";
 import { UserContext } from '../../providers/UserContext';
+import { MIN_PASS_LENGTH } from '../../components/SignUp';
 
 function ChangePassword() {
     const [currentPass, setCurrentPass] = useState<string>("");
@@ -53,7 +54,7 @@ function ChangePassword() {
         setPass: React.Dispatch<React.SetStateAction<string>>): void {
             
         setPass(pass);
-        if (pass.length >= 8) {
+        if (pass.length >= MIN_PASS_LENGTH) {
             setValid(true);
         } else {
             setValid(false);
@@ -78,18 +79,20 @@ function ChangePassword() {
                     <input type="password" className={`search-bar ${validCurrentPass || currentPass === "" ? '' : 'invalid-input'}`}
                     placeholder="Enter your current password"
                     onChange={(e) => updatePass(e.target.value, setValidCurrentPass, setCurrentPass)} />
+                    {!validCurrentPass && currentPass !== "" &&
                     <p className="text-box-error-message">
-                        {!validCurrentPass && currentPass !== "" ? "Password must be 8 or more characters long" : ""}
-                    </p>
+                        {`Password must be at least ${MIN_PASS_LENGTH} characters long`}
+                    </p>}
                 </div>
                 <div>
                     <p className="mb-2">New password</p>
                     <input type="password" className={`search-bar ${validNewPass || newPass === "" ? '' : 'invalid-input'}`} 
                     placeholder="Enter your new password"
                     onChange={(e) => updatePass(e.target.value, setValidNewPass, setNewPass)} />
+                    {!validNewPass && newPass !== "" &&
                     <p className="text-box-error-message">
-                        {!validNewPass && newPass !== "" ? "Password must be 8 or more characters long" : ""}
-                    </p>
+                        {`Password must be at least ${MIN_PASS_LENGTH} characters long`}
+                    </p>}
                 </div>
                 <div>
                     <p className="mb-2">Confirm new password</p>
@@ -97,7 +100,7 @@ function ChangePassword() {
                     && confirmNewPass === newPass ? '' : 'invalid-input'}`} placeholder="Re-enter your new password"
                     onChange={(e) => updatePass(e.target.value, setValidConfirmNewPass, setConfirmNewPass)} />
                     <p className="text-box-error-message">
-                        {!validConfirmNewPass && confirmNewPass !== "" ? "Password must be 8 or more characters long" : 
+                        {!validConfirmNewPass && confirmNewPass !== "" ? `Password must be at least ${MIN_PASS_LENGTH} characters long` : 
                         confirmNewPass !== newPass ? "Passwords do not match" : ""}
                     </p>
                 </div>

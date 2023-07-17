@@ -13,7 +13,6 @@ export async function fetchUpdatedUser(data: IUser, username: string, profilePic
             profilePicURL: profilePic === "" ? profilePic : data.profilePicURL
         });
 
-
         return {
             message: resp.data.message,
             userData: {

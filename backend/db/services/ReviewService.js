@@ -26,6 +26,11 @@ export async function getPostReviewsHandler(req) {
             reviewBody: true,
             createdAt: true,
             rating: true,
+            _count: {
+                select: {
+                    foundHelpful: true
+                }
+            }
         };
     
         const result = await getPaginatedData(
@@ -40,19 +45,21 @@ export async function getPostReviewsHandler(req) {
         let averages = {};
         if (!req.body.cursor) {
             averages = (await getAvgRatings(req.params.postID))._avg;
+            const promises = new Array(5).fill(0).map((_, index) => countReviewRating(index + 1, req.params.postID).then((x) => x));
+            const starCounts = await Promise.all(promises).then((stars) => stars);
+        
+            return { 
+                ...result, 
+                averages: averages,
+                starCounts: starCounts
+            } 
         }
-    
-        const promises = new Array(5).fill(0).map((_, index) => countReviewRating(index + 1, req.params.postID).then((x) => x));
-        const stars = await Promise.all(promises).then((stars) => stars);
-    
+
         return { 
             ...result, 
-            averages: averages,
-            stars: stars
         } 
     }
     catch (err) {
-        console.log(err);
         if (err instanceof Prisma.PrismaClientValidationError) {
             throw new DBError("Missing required fields or fields provided are invalid.", 400);
         } else {
@@ -64,6 +71,23 @@ export async function getPostReviewsHandler(req) {
 export async function createReviewHandler(req) {
     try {
         await checkUser(req.userData.userID, req.params.username);
+        const post = await prisma.post.findUnique({
+            where: {
+                postID: req.params.postID
+            },
+            select: {
+                postedBy: {
+                    select: {
+                        userID: true
+                    }
+                }
+            }
+        });
+        
+        if (post.postedBy.userID === req.userData.userID) {
+            throw new DBError("You cannot write a review for your own service.", 403);
+        }
+
         const serviceAsDescribed = parseInt(req.body.serviceAsDescribed);
         const sellerCommunication = parseInt(req.body.sellerCommunication);
         const serviceDelivery = parseInt(req.body.serviceDelivery);

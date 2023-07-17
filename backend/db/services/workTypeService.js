@@ -3,21 +3,27 @@ import { prisma } from '../index.js';
 import { DBError } from '../customErrors/DBError.js';
 
 export async function createWorkTypesHandler(workTypes, jobCategoryID) {
-    let failed = [];
+    try {
+        let failed = [];
 
-    for (let workType of workTypes) {
-        try {
-            createWorkType(workType, jobCategoryID);
+        for (let workType of workTypes) {
+            try {
+                createWorkType(workType, jobCategoryID);
+            }
+            catch (err) {
+                failed.push({
+                    name: workType,
+                    error: err.message
+                });
+            }
         }
-        catch (err) {
-            failed.push({
-                name: workType,
-                error: err.message
-            });
-        }
+
+        await prisma.$disconnect();
+        return failed;
     }
-
-    return failed;
+    catch (err) {
+        throw new DBError("Something went wrong when trying to create these work types. Please try again.", 500);
+    }
 }
 
 async function createWorkType(workType, jobCategoryID) {

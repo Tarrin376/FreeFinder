@@ -11,19 +11,20 @@ datasource db {
 }
 
 model User {
-    userID        String        @id @default(uuid())
-    username      String        @unique
+    userID        String          @id @default(uuid())
+    username      String          @unique
     hash          String
     country       String
-    memberDate    DateTime      @default(now())
+    memberDate    DateTime        @default(now())
     status        UserStatus
-    profilePicURL String        @default("")
-    email         String        @unique
+    profilePicURL String          @default("")
+    email         String          @unique
     seller        Seller?
     savedPosts    SavedPost[]
     savedSellers  SavedSeller[]
     reviews       Review[]
     orders        Order[]
+    foundHelpful  HelpfulReview[]
 }
 
 model SavedSeller {
@@ -33,6 +34,15 @@ model SavedSeller {
     userID   String
 
     @@id([userID, sellerID])
+}
+
+model HelpfulReview {
+    user     User   @relation(fields: [userID], references: [userID], onDelete: Cascade)
+    userID   String
+    review   Review @relation(fields: [reviewID], references: [reviewID], onDelete: Cascade)
+    reviewID String
+
+    @@id([userID, reviewID])
 }
 
 model Seller {
@@ -129,18 +139,18 @@ model Package {
 }
 
 model Review {
-    reviewID            String   @id @default(uuid())
-    reviewer            User     @relation(fields: [reviewerID], references: [userID], onDelete: Cascade)
+    reviewID            String          @id @default(uuid())
+    reviewer            User            @relation(fields: [reviewerID], references: [userID], onDelete: Cascade)
     reviewerID          String
     reviewBody          String
-    createdAt           DateTime @default(now())
+    createdAt           DateTime        @default(now())
     rating              Float
     serviceAsDescribed  Float
     sellerCommunication Float
     serviceDelivery     Float
-    Post                Post     @relation(fields: [postID], references: [postID], onDelete: Cascade)
+    Post                Post            @relation(fields: [postID], references: [postID], onDelete: Cascade)
     postID              String
-    helpfulCount        Int      @default(0)
+    foundHelpful        HelpfulReview[]
 }
 
 model Order {

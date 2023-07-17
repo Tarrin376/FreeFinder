@@ -1,0 +1,1 @@
+export type StarCounts = [number, number, number, number, number];

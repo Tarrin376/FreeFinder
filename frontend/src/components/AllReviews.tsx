@@ -7,16 +7,16 @@ import Review from "./Review";
 
 interface AllReviewsProps {
     url: string,
+    postID: string,
     setAllReviewsPopUp: React.Dispatch<React.SetStateAction<boolean>>,
 }
 
-function AllReviews({ url, setAllReviewsPopUp }: AllReviewsProps) {
+function AllReviews({ url, postID, setAllReviewsPopUp }: AllReviewsProps) {
     const [page, setPage] = useState<{ value: number }>({ value: 1 });
     const pageRef = useRef<HTMLDivElement>(null);
     const cursor = useRef<string>();
     
-    const reviews = usePaginateData<{}, IReview, ReviewsResponse<IReview>>(pageRef, cursor, url, page, setPage, {});
-    console.log(reviews);
+    const reviews = usePaginateData<{}, IReview, ReviewsResponse<IReview>>(pageRef, cursor, `${url}/${postID}`, page, setPage, {});
 
     return (
         <PopUpWrapper setIsOpen={setAllReviewsPopUp} title={`Ratings and reviews (${reviews.count.current})`} styles="!max-w-[720px]">
@@ -25,6 +25,7 @@ function AllReviews({ url, setAllReviewsPopUp }: AllReviewsProps) {
                     return (
                         <Review 
                             reviewInfo={review} 
+                            postID={postID}
                             key={index} 
                         />
                     )

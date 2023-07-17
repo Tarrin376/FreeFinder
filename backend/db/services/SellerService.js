@@ -202,6 +202,9 @@ export async function getSellerDetailsHandler(username) {
             throw new DBError("Something went wrong when trying get this seller's details. Please try again.", 500);
         }
     }
+    finally {
+        await prisma.$disconnect();
+    }
 }
 
 export async function getSellersHandler(search, limit, cursor) {
@@ -215,6 +218,9 @@ export async function getSellersHandler(search, limit, cursor) {
         } else {
             throw new DBError("Something went wrong when trying find sellers. Please try again.", 500);
         }
+    }
+    finally {
+        await prisma.$disconnect();
     }
 }
 

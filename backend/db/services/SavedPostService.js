@@ -23,6 +23,9 @@ async function getSavedPostIDs(userID) {
     catch (err) {
         throw new DBError("Something went wrong when trying to perform this action. Please try again.", 500);
     }
+    finally {
+        await prisma.$disconnect();
+    }
 }
 
 export async function savePostHandler(postID, userID, username) {

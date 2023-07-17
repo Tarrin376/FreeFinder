@@ -9,6 +9,7 @@ import { sortPosts } from '../utils/sortPosts.js';
 import { getPostFilters } from '../utils/getPostFilters.js';
 import { postProperties } from '../utils/postProperties.js';
 import { getPaginatedData } from '../utils/getPaginatedData.js';
+import { getPostedBy } from '../utils/getPostedBy.js';
 
 async function uploadImage(postID, image, url, uuid, addImage) {
     const result = await new Promise(async (resolve, reject) => {
@@ -106,27 +107,6 @@ export async function createPostHandler(postData, startingPrice, userID) {
     }
 }
 
-async function getPostedBy(id) {
-    const post = await prisma.post.findUnique({ 
-        where: { 
-            postID: id
-        },
-        select: {
-            postedBy: {
-                select: {
-                    userID: true
-                }
-            }
-        }
-    });
-    
-    if (!post) {
-        throw new DBError("Post not found.", 404);
-    }
-
-    return post.postedBy.userID;
-}
-
 export async function deleteImageHandler(req) {
     try {
         const postedBy = await getPostedBy(req.params.id);
@@ -162,6 +142,9 @@ export async function deleteImageHandler(req) {
         } else {
             throw new DBError("Something went wrong when trying to delete this image. Please try again.", 500);
         }
+    }
+    finally {
+        await prisma.$disconnect();
     }
 }
 
@@ -319,6 +302,9 @@ async function updateImage(req) {
             throw new DBError("Something went wrong when trying to update this post. Please try again.", 500);
         }
     }
+    finally {
+        await prisma.$disconnect();
+    }
 }
 
 export async function updatePostHandler(req) {
@@ -348,6 +334,9 @@ export async function updatePostHandler(req) {
         } else {
             throw new DBError("Something went wrong when trying to update this post. Please try again.", 500);
         }
+    }
+    finally {
+        await prisma.$disconnect();
     }
 }
 
@@ -399,7 +388,6 @@ export async function getPostsHandler(req) {
         return await queryPosts(req);
     }
     catch (err) {
-        console.log(err);
         if (err instanceof Prisma.PrismaClientValidationError) {
             throw new DBError("Missing required fields or fields provided are invalid.", 400);
         } else {

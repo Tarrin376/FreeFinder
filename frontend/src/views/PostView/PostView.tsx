@@ -334,7 +334,10 @@ function PostView() {
                             skills={postData.postedBy.skills}
                             sellerID={postData.sellerID}
                         />
-                        <Reviews url={`/api/reviews/${postData.postID}`} />
+                        <Reviews 
+                            url={`/api/reviews`}
+                            postID={postData.postID}
+                        />
                     </div>
                     <div className="relative min-w-[390px]">
                         <Packages packages={postData.packages} />

@@ -1,11 +1,11 @@
 import PopUpWrapper from "../wrappers/PopUpWrapper";
 import { useState } from 'react';
 import ErrorMessage from "./ErrorMessage";
-import CountriesDropdown from "./CountriesDropdown";
 import { SignUpForm } from "../types/SignUpForm";
 import axios, { AxiosError } from "axios";
 import { getAPIErrorMessage } from "../utils/getAPIErrorMessage";
 import Button from "./Button";
+import CountriesDropdown from "./CountriesDropdown";
 
 interface SignUpProps {
     setLogIn: React.Dispatch<React.SetStateAction<boolean>>,
@@ -14,6 +14,7 @@ interface SignUpProps {
 }
 
 export const emailPattern: RegExp = new RegExp("[a-z0-9]+@[a-zA-Z]+[.][a-z]+$");
+export const MIN_PASS_LENGTH = 8;
 
 const initialFormValues: SignUpForm = {
     emailFirst: "",
@@ -86,12 +87,12 @@ function SignUp({ setLogIn, setSignUp, setAccountCreated }: SignUpProps) {
 
     function checkUsername(e: React.ChangeEvent<HTMLInputElement>): void {
         const username: string = e.target.value;
-        setForm({ ...form, validUsername: username.length > 0, username });
+        setForm({ ...form, validUsername: username.length > 0 && username[0] !== username[0].toUpperCase(), username });
     }
 
     function checkPassword(e: React.ChangeEvent<HTMLInputElement>): void {
         const password: string = e.target.value;
-        setForm({ ...form, validPassword: password.length >= 8, password });
+        setForm({ ...form, validPassword: password.length >= MIN_PASS_LENGTH, password });
     }
 
     function isValidForm(): boolean {
@@ -142,13 +143,18 @@ function SignUp({ setLogIn, setSignUp, setAccountCreated }: SignUpProps) {
                 <input 
                     type="password" 
                     placeholder="Create a password" 
-                    className={`search-bar mt-3 mb-3 ${!form.validPassword && form.password !== "" && "invalid-input"}`} 
+                    className={`search-bar mt-3 ${!form.validPassword && form.password !== "" && "invalid-input"}`} 
                     onChange={(e) => checkPassword(e)} 
                 />
+                {!form.validPassword && form.password !== "" && 
+                <p className="text-box-error-message">
+                    {`Password must be at least ${MIN_PASS_LENGTH} characters long.`}
+                </p>}
                 <CountriesDropdown 
                     country={country}
                     setCountry={setCountry}
                     title="Country"
+                    styles="mt-3"
                 />
             </div>
             <Button

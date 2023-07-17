@@ -9,9 +9,12 @@ import AllReviews from "./AllReviews";
 import { AnimatePresence } from "framer-motion";
 import ErrorPopUp from "./ErrorPopUp";
 import StarSvg from "./StarSvg";
+import { RatingAverages } from "../types/RatingAverages";
+import { StarCounts } from "../types/StarCounts";
 
 interface ReviewsProps {
-    url: string
+    url: string,
+    postID: string
 }
 
 interface RatingAverageProps {
@@ -20,17 +23,29 @@ interface RatingAverageProps {
     styles?: string
 }
 
+const initialRatingAverages = {
+    rating: 0,
+    serviceAsDescribed: 0,
+    sellerCommunication: 0,
+    serviceDelivery: 0
+}
+
+const initialStars: StarCounts = [0, 0, 0, 0, 0];
 const queryLimit = 3;
 
-function Reviews({ url }: ReviewsProps) {
+function Reviews({ url, postID }: ReviewsProps) {
     const [reviews, setReviews] = useState<ReviewsResponse<IReview>>();
+    const [averages, setAverages] = useState<RatingAverages>(initialRatingAverages);
+    const [starCounts, setStarCounts] = useState<StarCounts>(initialStars);
     const [allReviewsPopUp, setAllReviewsPopUp] = useState<boolean>(false);
     const [errorMessage, setErrorMessage] = useState<string>("");
 
     useEffect(() => {
         (async (): Promise<void> => {
             try {
-                const resp = await axios.post<ReviewsResponse<IReview>>(url, { limit: queryLimit });
+                const resp = await axios.post<ReviewsResponse<IReview>>(`${url}/${postID}`, { limit: queryLimit });
+                if (resp.data.averages) setAverages(resp.data.averages);
+                if (resp.data.starCounts) setStarCounts(resp.data.starCounts);
                 setReviews(resp.data);
             }
             catch (err: any) {
@@ -38,7 +53,7 @@ function Reviews({ url }: ReviewsProps) {
                 setErrorMessage(errorMessage);
             }
         })();
-    }, [url]);
+    }, [url, postID]);
 
     if (!reviews) {
         return <p>loading</p>
@@ -62,6 +77,7 @@ function Reviews({ url }: ReviewsProps) {
                 {allReviewsPopUp && 
                 <AllReviews 
                     url={url}
+                    postID={postID}
                     setAllReviewsPopUp={setAllReviewsPopUp}
                 />}
             </AnimatePresence>
@@ -78,7 +94,7 @@ function Reviews({ url }: ReviewsProps) {
             </div>
             <div className="flex gap-7 items-center mb-6">
                 <div className="w-fit">
-                    <p className="text-[3.5rem] text-center">{reviews.averages.rating.toFixed(1)}</p>
+                    <p className="text-[3.5rem] text-center">{averages.rating.toFixed(1)}</p>
                     <p className="text-side-text-gray text-sm text-center">{`${reviews.count} ${reviews.count === 1 ? "review" : "reviews"}`}</p>
                 </div>
                 <div className="flex-grow flex flex-col gap-[1px]">
@@ -88,7 +104,7 @@ function Reviews({ url }: ReviewsProps) {
                                 <p className="text-sm text-side-text-gray">{5 - index}</p>
                                 <div className="flex-grow rounded-full h-[14px] bg-very-light-gray">
                                     <div className="bg-main-blue h-full w-[200px] rounded-full" 
-                                    style={{ width: `calc(100% / ${(reviews.count)} * ${reviews.stars[4 - index]}`}}>
+                                    style={{ width: `calc(100% / ${(reviews.count)} * ${starCounts[4 - index]}`}}>
                                     </div>
                                 </div>
                             </div>
@@ -100,17 +116,17 @@ function Reviews({ url }: ReviewsProps) {
                 <p className="mb-3">Rating breakdown</p>
                 <RatingAverage 
                     title="Service as described" 
-                    average={reviews.averages.serviceAsDescribed}
+                    average={averages.serviceAsDescribed}
                     styles="mb-[2px] pb-[6px] border-b border-light-border-gray" 
                 />
                 <RatingAverage 
                     title="Seller communication" 
-                    average={reviews.averages.sellerCommunication} 
+                    average={averages.sellerCommunication} 
                     styles="py-[6px] mb-[2px] border-b border-light-border-gray"
                 />
                 <RatingAverage 
                     title="Service delivery" 
-                    average={reviews.averages.serviceDelivery}
+                    average={averages.serviceDelivery}
                     styles="pt-[6px]"
                 />
             </div>
@@ -119,6 +135,7 @@ function Reviews({ url }: ReviewsProps) {
                     return (
                         <Review 
                             reviewInfo={review} 
+                            postID={postID}
                             key={index} 
                         />
                     )

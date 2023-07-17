@@ -29,6 +29,12 @@ function UserProfile() {
         }
     }
 
+    function checkUsername() {
+        if (username === "") return "Username cannot be empty";
+        else if (username[0] === username[0].toUpperCase()) return "Username must have a leading alphabetical character";
+        else return "";
+    }
+
     return (
         <>
             <h1 className="text-[20px]">Profile</h1>
@@ -47,12 +53,12 @@ function UserProfile() {
                     <input 
                         type="text" 
                         name="change-username" 
-                        className={`search-bar ${username === "" && "invalid-input"}`} 
+                        className={`search-bar ${checkUsername() !== "" && "invalid-input"}`} 
                         value={username} onChange={(e) => setUsername(e.target.value)} 
                         maxLength={20}
                     />
                     <p className="text-box-error-message">
-                        {username === "" ? "Username cannot be empty" : ""}
+                        {checkUsername()}
                     </p>
                 </div>
                 <div>
@@ -68,7 +74,7 @@ function UserProfile() {
                     completedText="Profile updated successfully"
                     defaultText="Update profile"
                     loadingText="Checking details"
-                    styles={username === "" ? "invalid-button main-btn mt-3" : "mt-3 main-btn"}
+                    styles={checkUsername() !== "" ? "invalid-button main-btn mt-3" : "mt-3 main-btn"}
                     textStyles="text-main-white"
                     setErrorMessage={setErrorMessage}
                     keepErrorMessage={true}
