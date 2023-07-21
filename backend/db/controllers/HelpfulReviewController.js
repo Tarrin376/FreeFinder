@@ -6,7 +6,6 @@ export async function markAsHelpful(req, res) {
         res.json({ message: "success" });
     }
     catch (err) {
-        console.log(err);
         res.status(err.code).json({ message: err.message });
     }
 }

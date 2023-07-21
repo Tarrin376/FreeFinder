@@ -93,7 +93,7 @@ function Post({ postInfo, index, canRemove, count, styles }: PostProps) {
     }
 
     function navigateToProfile(): void {
-        navigate(`/sellers/${postInfo.postedBy.user.username}`);
+        navigate(`/sellers/${postInfo.postedBy.sellerID}`);
     }
 
     if (hide) {
@@ -142,11 +142,11 @@ function Post({ postInfo, index, canRemove, count, styles }: PostProps) {
                             </p>
                             <div className="flex items-center justify-end gap-[7px]">
                                 <img src={StarIcon} className="w-[18px] h-[18px] mb-[2px]" alt="star" />
-                                <p className="text-[15px]">{postInfo.postedBy.rating}</p>
+                                <p className="text-[15px]">{postInfo.rating ? postInfo.rating.toFixed(1) : 0}</p>
                             </div>
                         </div>
                         <p className="text-side-text-gray text-[15px]">
-                            ({postInfo._count.reviews} reviews)
+                            {`(${postInfo._count.reviews} ${postInfo._count.reviews === 1 ? "review" : "reviews"})`}
                         </p>
                     </div>
                 </div>

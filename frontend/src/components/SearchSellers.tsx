@@ -61,10 +61,10 @@ function SearchSellers({ styles, toggleSidebar }: SearchSellersProps) {
         }
     }
 
-    function navigateToProfile(username: string) {
+    function navigateToProfile(sellerID: string) {
         if (toggleSidebar) toggleSidebar();
         setHide(true);
-        navigate(`/sellers/${username}`);
+        navigate(`/sellers/${sellerID}`);
     }
 
     return (
@@ -110,7 +110,7 @@ function SearchSellers({ styles, toggleSidebar }: SearchSellersProps) {
                             {!loading ? sellers.map((seller: SellerData, index: number) => {
                                 return (
                                     <Seller
-                                        navigateToProfile={() => navigateToProfile(seller.user.username)}
+                                        navigateToProfile={() => navigateToProfile(seller.sellerID)}
                                         profilePicURL={seller.user.profilePicURL}
                                         status={seller.user.status}
                                         username={seller.user.username}

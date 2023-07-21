@@ -1,4 +1,3 @@
-import StarSvg from "./StarSvg";
 import { useState, useContext } from "react";
 import axios, { AxiosError } from "axios";
 import { UserContext } from "../providers/UserContext";
@@ -6,20 +5,16 @@ import ErrorPopUp from "./ErrorPopUp";
 import { getAPIErrorMessage } from "../utils/getAPIErrorMessage";
 import { AnimatePresence } from "framer-motion";
 import Button from "./Button";
-
-interface RatingProps {
-    rating: number,
-    setRating: React.Dispatch<React.SetStateAction<number>>,
-    size: string
-}
+import Rating from "./Rating";
 
 interface CreateReviewProps {
-    postID: string
+    postID: string,
+    sellerID: string
 }
 
 const MAX_REVIEW_CHARS = 650;
 
-function CreateReview({ postID }: CreateReviewProps) {
+function CreateReview({ postID, sellerID }: CreateReviewProps) {
     const [serviceAsDescribed, setServiceAsDescribed] = useState<number>(1);
     const [sellerCommunication, setSellerCommunication] = useState<number>(1);
     const [serviceDelivery, setServiceDelivery] = useState<number>(1);
@@ -29,11 +24,13 @@ function CreateReview({ postID }: CreateReviewProps) {
 
     async function createNewReview(): Promise<string | undefined> {
         try {
-            await axios.post<{ message: string }>(`/api/reviews/${userContext.userData.username}/${postID}`, {
+            await axios.post<{ message: string }>(`/api/reviews/${userContext.userData.username}`, {
                 serviceAsDescribed: serviceAsDescribed,
                 sellerCommunication: sellerCommunication,
                 serviceDelivery: serviceDelivery,
                 review: review,
+                sellerID: sellerID,
+                postID: postID
             });
 
             setServiceAsDescribed(1);
@@ -58,28 +55,28 @@ function CreateReview({ postID }: CreateReviewProps) {
                 />}
             </AnimatePresence>
             <h1 className="text-[23px] text-main-white mb-3">Rate your experience</h1>
-            <h2 className="text-main-white">Service as described</h2>
+            <h2 className="text-main-white mb-[2px]">Service as described</h2>
             <Rating 
                 rating={serviceAsDescribed} 
                 setRating={setServiceAsDescribed}
-                size="22px"
+                size={20}
                 key="service as described"
             />
-            <h2 className="text-main-white">Seller communication</h2>
+            <h2 className="text-main-white mt-5 mb-[2px]">Seller communication</h2>
             <Rating 
                 rating={sellerCommunication} 
                 setRating={setSellerCommunication}
-                size="22px"
+                size={20}
                 key="seller communication"
             />
-            <h2 className="text-main-white">Service delivery</h2>
+            <h2 className="text-main-white mt-5 mb-[2px]">Service delivery</h2>
             <Rating 
                 rating={serviceDelivery} 
                 setRating={setServiceDelivery}
-                size="22px"
+                size={20}
                 key="service delivery"
             />
-            <h2 className="text-main-white">{`Review (max ${MAX_REVIEW_CHARS} characters)`}</h2>
+            <h2 className="text-main-white mt-5">{`Review (max ${MAX_REVIEW_CHARS} characters)`}</h2>
             <textarea 
                 className="search-bar bg-transparent text-main-white mt-2 
                 rounded-[8px] placeholder:text-[#fcfcfcec]" 
@@ -100,24 +97,6 @@ function CreateReview({ postID }: CreateReviewProps) {
                 loadingSvgSize="28px"
                 loadingSvgColour="#4E73F8"
             />
-        </div>
-    )
-}
-
-function Rating({ rating, setRating, size }: RatingProps) {
-    return (
-        <div className="flex items-center gap-1 mt-[2px] mb-5">
-            {new Array(5).fill(0).map((_, index: number) => {
-                return (
-                    <StarSvg
-                        key={index}
-                        backgroundColour={index + 1 <= rating ? "#EEB424" : "#1111114d"}
-                        size={size}
-                        action={() => setRating(index + 1)}
-                        styles="cursor-pointer"
-                    />
-                )
-            })}
         </div>
     )
 }

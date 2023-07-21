@@ -29,9 +29,9 @@ function UserProfile() {
         }
     }
 
-    function checkUsername() {
+    function checkUsername(): string {
         if (username === "") return "Username cannot be empty";
-        else if (username[0] === username[0].toUpperCase()) return "Username must have a leading alphabetical character";
+        else if (username[0].toLowerCase() === username[0].toUpperCase()) return "Username must have a leading alphabetical character";
         else return "";
     }
 

@@ -60,34 +60,36 @@ function SignUp({ setLogIn, setSignUp, setAccountCreated }: SignUpProps) {
         const email: string = e.target.value;
         const validEmail: boolean = email.match(emailPattern) !== null;
 
-        if (isFirst) {
-            if (validEmail) {
-                setForm({ 
-                    ...form, 
-                    validEmailFirst: validEmail, 
-                    emailFirst: email, 
-                    validEmailSecond: form.emailSecond === email 
-                });
-            }
-            else {
-                setForm({ 
-                    ...form, 
-                    validEmailFirst: validEmail, 
-                    emailFirst: email 
-                });
-            }
-        } else {
+        if (!isFirst) {
             setForm({ 
                 ...form, 
                 validEmailSecond: validEmail && email === form.emailFirst, 
                 emailSecond: email
+            });
+            
+            return;
+        }
+
+        if (validEmail) {
+            setForm({ 
+                ...form, 
+                validEmailFirst: validEmail, 
+                emailFirst: email, 
+                validEmailSecond: form.emailSecond === email 
+            });
+        }
+        else {
+            setForm({ 
+                ...form, 
+                validEmailFirst: validEmail, 
+                emailFirst: email 
             });
         }
     }
 
     function checkUsername(e: React.ChangeEvent<HTMLInputElement>): void {
         const username: string = e.target.value;
-        setForm({ ...form, validUsername: username.length > 0 && username[0] !== username[0].toUpperCase(), username });
+        setForm({ ...form, validUsername: username.length > 0 && username[0].toLowerCase() !== username[0].toUpperCase(), username });
     }
 
     function checkPassword(e: React.ChangeEvent<HTMLInputElement>): void {

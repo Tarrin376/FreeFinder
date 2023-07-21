@@ -1,11 +1,13 @@
 import { prisma } from '../index.js';
 import { DBError } from "../customErrors/DBError.js";
 
-export async function countReviewRating(rating, postID) {
+export async function countReviewRating(rating, postID, sellerID) {
     try {
         const count = await prisma.review.count({
             where: {
                 postID: postID,
+                sellerID: sellerID,
+                isOldReview: false,
                 rating: {
                     gte: rating,
                     lt: rating + 1

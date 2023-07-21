@@ -15,7 +15,7 @@ module.exports = {
             'very-light-gray': '#EBEBEB',
             'very-light-gray-hover': '#E6E6E6',
             'main-black': '#292929',
-            'side-text-gray': '#9c9c9c',
+            'side-text-gray': '#939393',
             'main-black-hover': '#323232',
             'main-white-hover': '#fbfbfb',
             'error-red': '#fde4e4',

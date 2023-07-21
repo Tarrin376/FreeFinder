@@ -1,8 +1,11 @@
 import { prisma } from '../index.js';
 import { Prisma } from '@prisma/client';
 import { DBError } from "../customErrors/DBError.js";
-import { checkUser } from "../utils/checkUser.js";
 import { sellerProperties } from '../utils/sellerProperties.js';
+import { sortReviews } from '../utils/sortReviews.js';
+import { getPaginatedData } from '../utils/getPaginatedData.js';
+import { getAvgRatings } from '../utils/getAvgRatings.js';
+import { countReviewRating } from '../utils/countReviewRating.js';
 
 export async function findSeller(userID) {
     try {
@@ -86,7 +89,19 @@ async function createSeller(id) {
 
 export async function updateSellerDetailsHandler(req) {
     try {
-        await checkUser(req.userData.userID, req.params.username);
+        const user = await prisma.seller.findUnique({ 
+            where: {
+                sellerID: req.params.sellerID
+            },
+            select: {
+                userID: true
+            }
+        });
+
+        if (req.userData.userID !== user.userID) {
+            throw new DBError("You are not authorized to perform this action.", 403);
+        }
+
         const updatedDetails = await prisma.seller.update({
             where: {
                 userID: req.userData.userID
@@ -118,13 +133,11 @@ export async function updateSellerDetailsHandler(req) {
     }
 }
 
-export async function getSellerDetailsHandler(username) {
+export async function getSellerDetailsHandler(sellerID) {
     try {
         const sellerDetails = await prisma.seller.findMany({
             where: {
-                user: {
-                    username: username
-                }
+                sellerID: sellerID
             },
             select: {
                 rating: true,
@@ -289,4 +302,78 @@ async function querySellers(search, limit, cursor) {
         last: isNaN(limit) || minNum < limit - 1,
         count: count
     };
+}
+
+export async function getReviewsHandler(req) {
+    try {
+        const options = {
+            orderBy: sortReviews[req.query.sort],
+        };
+
+        const filters = {
+            postID: req.query.post,
+            sellerID: req.params.sellerID,
+            isOldReview: req.query.include_old === "true" ? undefined : false,
+            reviewer: {
+                username: req.query.reviewer
+            }
+        };
+    
+        const select = {
+            reviewID: true,
+            sellerID: true,
+            reviewer: {
+                select: {
+                    username: true,
+                    country: true,
+                    memberDate: true,
+                    status: true,
+                    profilePicURL: true,
+                }
+            },
+            reviewBody: true,
+            createdAt: true,
+            rating: true,
+            postID: true,
+            _count: {
+                select: {
+                    foundHelpful: true
+                }
+            }
+        };
+    
+        const result = await getPaginatedData(
+            filters, 
+            select, 
+            "review",
+            req.body.limit, 
+            { reviewID: req.body.cursor }, 
+            "reviewID",
+            options
+        );
+        
+        let averages = {};
+        if (!req.body.cursor) {
+            averages = (await getAvgRatings(req.query.post, req.params.sellerID))._avg;
+            const promises = new Array(5).fill(0).map((_, index) => countReviewRating(index + 1, req.query.post, req.params.sellerID).then(x => x));
+            const starCounts = await Promise.all(promises).then((stars) => stars);
+        
+            return { 
+                ...result, 
+                averages: averages,
+                starCounts: starCounts
+            } 
+        }
+
+        return { 
+            ...result, 
+        } 
+    }
+    catch (err) {
+        if (err instanceof Prisma.PrismaClientValidationError) {
+            throw new DBError("Missing required fields or fields provided are invalid.", 400);
+        } else {
+            throw new DBError("Something went wrong when trying to get more posts. Please try again.", 500);
+        }
+    }
 }

@@ -5,6 +5,7 @@ import { DBError } from "../customErrors/DBError.js";
 import { checkUser } from "../utils/checkUser.js";
 import { getPostFilters } from '../utils/getPostFilters.js';
 import { getPaginatedData } from '../utils/getPaginatedData.js';
+import { getAvgRatings } from '../utils/getAvgRatings.js';
 
 async function getSavedPostIDs(userID) {
     try {
@@ -145,9 +146,19 @@ async function querySavedPosts(req) {
         options
     );
 
+    const promises = result.next.map(cur => getAvgRatings(cur.post.postID, undefined).then(x => x));
+    const postRatings = await Promise.all(promises).then(ratings => ratings);
+
+    const posts = result.next.map((cur, index) => {
+        return {
+            ...cur.post,
+            rating: postRatings[index]._avg.rating
+        }
+    });
+
     return {
         ...result,
-        next: result.next.map((x) => x.post)
+        next: posts
     }
 }
 

@@ -6,6 +6,8 @@ export interface IReview {
     createdAt: Date,
     rating: number,
     reviewID: string,
+    sellerID: string,
+    postID: string,
     _count: {
         foundHelpful: number
     }

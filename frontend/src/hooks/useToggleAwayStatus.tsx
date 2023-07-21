@@ -4,7 +4,7 @@ import axios from "axios";
 import { IUser } from "../models/IUser";
 import { UserStatus } from "../enums/UserStatus";
 
-export function useToggleAwayStatus() {
+export function useToggleAwayStatus(): void {
     const userContext = useContext(UserContext);
     const lastActive = useRef<number>(Date.now());
     

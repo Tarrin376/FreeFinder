@@ -60,6 +60,7 @@ model Seller {
     sellerLevelID String
     sellerXP      Int           @default(0)
     savedSellers  SavedSeller[]
+    reviews       Review[]
 }
 
 model SellerLevel {
@@ -142,6 +143,8 @@ model Review {
     reviewID            String          @id @default(uuid())
     reviewer            User            @relation(fields: [reviewerID], references: [userID], onDelete: Cascade)
     reviewerID          String
+    seller              Seller          @relation(fields: [sellerID], references: [sellerID], onDelete: Cascade)
+    sellerID            String
     reviewBody          String
     createdAt           DateTime        @default(now())
     rating              Float
@@ -151,6 +154,7 @@ model Review {
     Post                Post            @relation(fields: [postID], references: [postID], onDelete: Cascade)
     postID              String
     foundHelpful        HelpfulReview[]
+    isOldReview         Boolean         @default(false)
 }
 
 model Order {

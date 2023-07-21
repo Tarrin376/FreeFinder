@@ -10,6 +10,7 @@ import { getPostFilters } from '../utils/getPostFilters.js';
 import { postProperties } from '../utils/postProperties.js';
 import { getPaginatedData } from '../utils/getPaginatedData.js';
 import { getPostedBy } from '../utils/getPostedBy.js';
+import { getAvgRatings } from '../utils/getAvgRatings.js';
 
 async function uploadImage(postID, image, url, uuid, addImage) {
     const result = await new Promise(async (resolve, reject) => {
@@ -225,7 +226,6 @@ export async function getPostHandler(postID) {
         return postData;
     }
     catch (err) {
-        console.log(err);
         if (err instanceof Prisma.PrismaClientValidationError) {
             throw new DBError("Missing required fields or fields provided are invalid.", 400);
         } else {
@@ -400,6 +400,10 @@ export async function getPostsHandler(req) {
 }
 
 async function queryPosts(req) {
+    const options = {
+        orderBy: sortPosts[req.body.sort],
+    };
+    
     const where = getPostFilters(req);
     const select = {
         postedBy: {
@@ -411,7 +415,7 @@ async function queryPosts(req) {
                         username: true,
                     }
                 },
-                rating: true,
+                sellerID: true,
                 sellerLevel: {
                     select: {
                         name: true
@@ -439,10 +443,6 @@ async function queryPosts(req) {
         }
     };
 
-    const options = {
-        orderBy: sortPosts[req.body.sort],
-    };
-
     const result = await getPaginatedData(
         where,
         select, 
@@ -452,6 +452,19 @@ async function queryPosts(req) {
         "postID", 
         options
     );
-    
-    return result;
+
+    const promises = result.next.map(post => getAvgRatings(post.postID, undefined).then(x => x));
+    const postRatings = await Promise.all(promises).then(ratings => ratings);
+
+    const posts = result.next.map((post, index) => {
+        return {
+            ...post,
+            rating: postRatings[index]._avg.rating
+        }
+    });
+
+    return {
+        ...result,
+        next: posts
+    }
 }

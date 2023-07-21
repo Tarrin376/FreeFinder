@@ -27,11 +27,11 @@ function AboutSeller(props: AboutSellerProps) {
     const userContext = useContext(UserContext);
 
     function navigateToProfile(): void {
-        navigate(`/sellers/${props.username}`);
+        navigate(`/sellers/${props.sellerID}`);
     }
 
     return (
-        <section className="border border-light-border-gray rounded-[12px] p-6 w-full">
+        <section className="border border-light-border-gray bg-main-white rounded-[12px] p-6 w-full">
             <div className="flex justify-between mb-4 gap-5">
                 <div className="flex items-center gap-5 overflow-hidden">
                     <ProfilePicAndStatus 

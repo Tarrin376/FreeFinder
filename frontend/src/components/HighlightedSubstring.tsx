@@ -9,7 +9,6 @@ interface HighlightedSubstringProps {
 
 function HighlightedSubstring({ styles, action, word, substring, foundAt }: HighlightedSubstringProps) {
     const chars = word.split('');
-    console.log(word, substring);
 
     function clickHandler(): void {
         if (action) {

@@ -25,3 +25,4 @@ frontend/yarn-error.log*
 backend/db/node_modules
 # Keep environment variables out of version control
 backend/db/.env
+backend/db/prisma/migrations

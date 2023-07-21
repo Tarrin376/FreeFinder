@@ -10,6 +10,7 @@ import { getPostFilters } from '../utils/getPostFilters.js';
 import { sellerProperties } from '../utils/sellerProperties.js';
 import { userProperties } from '../utils/userProperties.js';
 import { getPaginatedData } from '../utils/getPaginatedData.js';
+import { getAvgRatings } from '../utils/getAvgRatings.js';
 
 export async function updateProfilePictureHandler(req) {
     try {
@@ -303,6 +304,19 @@ async function queryUserPosts(req) {
         "postID", 
         options
     );
+
+    const promises = result.next.map(post => getAvgRatings(post.postID, undefined).then(x => x));
+    const postRatings = await Promise.all(promises).then(ratings => ratings);
+
+    const posts = result.next.map((post, index) => {
+        return {
+            ...post,
+            rating: postRatings[index]._avg.rating
+        }
+    });
     
-    return result;
+    return {
+        ...result,
+        next: posts
+    }
 }

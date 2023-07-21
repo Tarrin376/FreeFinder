@@ -30,9 +30,9 @@ function Sellers({ search, url, setSellersPopUp, savedSellers, option }: Sellers
 
     const sellers = usePaginateData<{}, SellerData, PaginationResponse<SellerData>>(pageRef, cursor, url, page, setPage, {});
 
-    function navigateToProfile(username: string) {
+    function navigateToProfile(sellerID: string) {
         setSellersPopUp(false);
-        navigate(`/sellers/${username}`);
+        navigate(`/sellers/${sellerID}`);
     }
 
     function getTitle(): string {
@@ -54,7 +54,7 @@ function Sellers({ search, url, setSellersPopUp, savedSellers, option }: Sellers
                 {sellers.data.map((seller: SellerData, index: number) => {
                     return (
                         <Seller
-                            navigateToProfile={() => navigateToProfile(seller.user.username)}
+                            navigateToProfile={() => navigateToProfile(seller.sellerID)}
                             profilePicURL={seller.user.profilePicURL}
                             status={seller.user.status}
                             username={seller.user.username}

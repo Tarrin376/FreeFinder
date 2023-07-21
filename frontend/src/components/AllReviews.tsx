@@ -7,25 +7,26 @@ import Review from "./Review";
 
 interface AllReviewsProps {
     url: string,
-    postID: string,
     setAllReviewsPopUp: React.Dispatch<React.SetStateAction<boolean>>,
+    maxWidth: string,
+    maxHeight: string,
+    title: string
 }
 
-function AllReviews({ url, postID, setAllReviewsPopUp }: AllReviewsProps) {
+function AllReviews({ url, setAllReviewsPopUp, maxWidth, maxHeight, title }: AllReviewsProps) {
     const [page, setPage] = useState<{ value: number }>({ value: 1 });
     const pageRef = useRef<HTMLDivElement>(null);
     const cursor = useRef<string>();
     
-    const reviews = usePaginateData<{}, IReview, ReviewsResponse<IReview>>(pageRef, cursor, `${url}/${postID}`, page, setPage, {});
+    const reviews = usePaginateData<{}, IReview, ReviewsResponse<IReview>>(pageRef, cursor, url, page, setPage, {});
 
     return (
-        <PopUpWrapper setIsOpen={setAllReviewsPopUp} title={`Ratings and reviews (${reviews.count.current})`} styles="!max-w-[720px]">
-            <div className="overflow-y-scroll pr-[8px] max-h-[720px] flex gap-7 flex-col" ref={pageRef}>
+        <PopUpWrapper setIsOpen={setAllReviewsPopUp} title={title} styles={maxWidth}>
+            <div className={`overflow-y-scroll pr-[8px] ${maxHeight} flex gap-7 flex-col`} ref={pageRef}>
                 {reviews.data.map((review: IReview, index: number) => {
                     return (
                         <Review 
                             reviewInfo={review} 
-                            postID={postID}
                             key={index} 
                         />
                     )

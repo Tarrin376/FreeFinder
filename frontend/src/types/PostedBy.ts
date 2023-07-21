@@ -7,5 +7,6 @@ export type PostedBy = {
         username: string,
     },
     rating: number,
+    sellerID: string,
     sellerLevel: ISellerLevel
 }

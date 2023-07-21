@@ -32,7 +32,7 @@ function ChangeSellerDetails({ setSellerProfilePopUp }: ChangeSellerDetailsProps
 
     async function updateSellerDetails(): Promise<string | undefined> {
         try {
-            const resp = await axios.put<{ updatedData: ISeller, message: string }>(`/api/sellers/${userContext.userData.username}`, {
+            const resp = await axios.put<{ updatedData: ISeller, message: string }>(`/api/sellers/${userContext.userData.seller?.sellerID}`, {
                 description: description,
                 languages: selectedLanguages,
                 skills: skills,

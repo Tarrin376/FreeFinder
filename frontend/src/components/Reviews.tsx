@@ -11,10 +11,10 @@ import ErrorPopUp from "./ErrorPopUp";
 import StarSvg from "./StarSvg";
 import { RatingAverages } from "../types/RatingAverages";
 import { StarCounts } from "../types/StarCounts";
+import Rating from "./Rating";
 
 interface ReviewsProps {
-    url: string,
-    postID: string
+    url: string
 }
 
 interface RatingAverageProps {
@@ -33,7 +33,7 @@ const initialRatingAverages = {
 const initialStars: StarCounts = [0, 0, 0, 0, 0];
 const queryLimit = 3;
 
-function Reviews({ url, postID }: ReviewsProps) {
+function Reviews({ url }: ReviewsProps) {
     const [reviews, setReviews] = useState<ReviewsResponse<IReview>>();
     const [averages, setAverages] = useState<RatingAverages>(initialRatingAverages);
     const [starCounts, setStarCounts] = useState<StarCounts>(initialStars);
@@ -43,7 +43,7 @@ function Reviews({ url, postID }: ReviewsProps) {
     useEffect(() => {
         (async (): Promise<void> => {
             try {
-                const resp = await axios.post<ReviewsResponse<IReview>>(`${url}/${postID}`, { limit: queryLimit });
+                const resp = await axios.post<ReviewsResponse<IReview>>(url, { limit: queryLimit });
                 if (resp.data.averages) setAverages(resp.data.averages);
                 if (resp.data.starCounts) setStarCounts(resp.data.starCounts);
                 setReviews(resp.data);
@@ -53,22 +53,10 @@ function Reviews({ url, postID }: ReviewsProps) {
                 setErrorMessage(errorMessage);
             }
         })();
-    }, [url, postID]);
+    }, [url]);
 
     if (!reviews) {
         return <p>loading</p>
-    }
-
-    if (!reviews.count) {
-        return (
-            <>
-                {errorMessage !== "" && 
-                <ErrorPopUp 
-                    errorMessage={errorMessage} 
-                    setErrorMessage={setErrorMessage} 
-                />}
-            </>
-        )
     }
 
     return (
@@ -77,25 +65,35 @@ function Reviews({ url, postID }: ReviewsProps) {
                 {allReviewsPopUp && 
                 <AllReviews 
                     url={url}
-                    postID={postID}
                     setAllReviewsPopUp={setAllReviewsPopUp}
+                    maxWidth="max-w-[720px]"
+                    maxHeight="max-h-[720px]"
+                    title={`Ratings and reviews (${reviews.count})`}
+                />}
+                {errorMessage !== "" && 
+                <ErrorPopUp 
+                    errorMessage={errorMessage} 
+                    setErrorMessage={setErrorMessage} 
                 />}
             </AnimatePresence>
-            <div className="flex items-center justify-between mb-3">
-                <div className="flex items-center gap-2 h-[52px]">
-                    <h2 className="text-[1.3rem]">Ratings and reviews for this service</h2>
-                    {reviews.count > queryLimit &&
-                    <div className="w-[52px] h-full flex items-center justify-center 
-                    hover:bg-hover-light-gray rounded-full cursor-pointer" onClick={() => setAllReviewsPopUp(true)}>
-                        <img src={RightArrowIcon} alt="" className="w-[26px] h-[26px]" />
-                    </div>}
-                </div>
-                <p className="text-[15px] text-side-text-gray">Not all reviews are verified</p>
+            <div className="flex items-center gap-2 h-[52px] mb-3">
+                <h2 className="text-[1.3rem]">Ratings and reviews</h2>
+                {reviews.count > queryLimit &&
+                <div className="w-[52px] h-full flex items-center justify-center 
+                hover:bg-hover-light-gray rounded-full cursor-pointer" onClick={() => setAllReviewsPopUp(true)}>
+                    <img src={RightArrowIcon} alt="" className="w-[26px] h-[26px]" />
+                </div>}
             </div>
-            <div className="flex gap-7 items-center mb-6">
+            <div className="flex gap-7 items-end mb-6">
                 <div className="w-fit">
-                    <p className="text-[3.5rem] text-center">{averages.rating.toFixed(1)}</p>
-                    <p className="text-side-text-gray text-sm text-center">{`${reviews.count} ${reviews.count === 1 ? "review" : "reviews"}`}</p>
+                    <p className="text-[3.7rem] mb-[-10px] text-center">{averages.rating ? averages.rating.toFixed(1) : 0}</p>
+                    <Rating 
+                        rating={averages.rating ?? 0} 
+                        size={16} 
+                    />
+                    <p className="text-side-text-gray text-sm text-center mt-[2px]">
+                        {`${reviews.count} ${reviews.count === 1 ? "review" : "reviews"}`}
+                    </p>
                 </div>
                 <div className="flex-grow flex flex-col gap-[1px]">
                     {new Array(5).fill(0).map((_, index: number) => {
@@ -104,7 +102,7 @@ function Reviews({ url, postID }: ReviewsProps) {
                                 <p className="text-sm text-side-text-gray">{5 - index}</p>
                                 <div className="flex-grow rounded-full h-[14px] bg-very-light-gray">
                                     <div className="bg-main-blue h-full w-[200px] rounded-full" 
-                                    style={{ width: `calc(100% / ${(reviews.count)} * ${starCounts[4 - index]}`}}>
+                                    style={{ width: reviews.count > 0 ? `calc(100% / ${(reviews.count)} * ${starCounts[4 - index]}` : '0px' }}>
                                     </div>
                                 </div>
                             </div>
@@ -116,17 +114,17 @@ function Reviews({ url, postID }: ReviewsProps) {
                 <p className="mb-3">Rating breakdown</p>
                 <RatingAverage 
                     title="Service as described" 
-                    average={averages.serviceAsDescribed}
+                    average={averages.serviceAsDescribed ?? 0}
                     styles="mb-[2px] pb-[6px] border-b border-light-border-gray" 
                 />
                 <RatingAverage 
                     title="Seller communication" 
-                    average={averages.sellerCommunication} 
+                    average={averages.sellerCommunication ?? 0} 
                     styles="py-[6px] mb-[2px] border-b border-light-border-gray"
                 />
                 <RatingAverage 
                     title="Service delivery" 
-                    average={averages.serviceDelivery}
+                    average={averages.serviceDelivery ?? 0}
                     styles="pt-[6px]"
                 />
             </div>
@@ -135,7 +133,6 @@ function Reviews({ url, postID }: ReviewsProps) {
                     return (
                         <Review 
                             reviewInfo={review} 
-                            postID={postID}
                             key={index} 
                         />
                     )
@@ -157,7 +154,7 @@ function RatingAverage({ title, average, styles }: RatingAverageProps) {
             <div className="flex items-center gap-2">
                 <StarSvg
                     backgroundColour="#EEB424"
-                    size="14px"
+                    size={14}
                 />
                 <p className="text-[#EEB424] text-sm">
                     {average.toFixed(1)}

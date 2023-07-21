@@ -6,9 +6,10 @@ export interface IPost {
     postID: string,
     startingPrice: number,
     title: string,
+    rating: number | null,
     _count: {
         reviews: number
     },
     postedBy: PostedBy,
-    images: IPostImage[]
+    images: IPostImage[],
 }

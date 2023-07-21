@@ -13,4 +13,4 @@ export const sortPosts = {
     "highest-price": {
         startingPrice: 'desc'
     }
-}
+};

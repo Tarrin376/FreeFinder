@@ -88,7 +88,7 @@ function PostView() {
 
     function navigateToProfile(): void {
         if (postData) {
-            navigate(`/sellers/${postData.postedBy.user.username}`);
+            navigate(`/sellers/${postData.sellerID}`);
         }
     }
 
@@ -156,7 +156,7 @@ function PostView() {
         dispatch({ type: Actions.TOGGLE, payload: cpy });
     }
 
-    function triggerFileUpload() {
+    function triggerFileUpload(): void {
         if (addImageFileRef.current) {
             addImageFileRef.current.click();
         }
@@ -243,7 +243,7 @@ function PostView() {
                             </div>
                             <div>
                                 <div className="flex items-center gap-[7px]">
-                                    <p className="link hover:font-normal !p-0" onClick={navigateToProfile}>
+                                    <p className="link !p-0" onClick={navigateToProfile}>
                                         {postData.postedBy.user.username}
                                     </p>
                                     <img src={StarIcon} className="w-[18px] h-[18px]" alt="star" />
@@ -334,17 +334,17 @@ function PostView() {
                             skills={postData.postedBy.skills}
                             sellerID={postData.sellerID}
                         />
-                        <Reviews 
-                            url={`/api/reviews`}
-                            postID={postData.postID}
-                        />
+                        <Reviews url={`/api/sellers/${postData.sellerID}/reviews?post=${postData.postID}`} />
                     </div>
                     <div className="relative min-w-[390px]">
                         <Packages packages={postData.packages} />
                         <button className="side-btn w-full !h-[48px] mt-[26px] shadow-info-component">
                             {`See Seller Reviews (${0})`}
                         </button>
-                        <CreateReview postID={postData.postID} />
+                        <CreateReview 
+                            postID={postData.postID} 
+                            sellerID={postData.sellerID}
+                        />
                     </div>
                 </div>
             </PageWrapper>

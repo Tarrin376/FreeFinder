@@ -75,7 +75,7 @@ export async function deleteSavedSellerHandler(sellerID, userID, username) {
         } else if (err instanceof Prisma.PrismaClientValidationError) {
             throw new DBError("Missing required fields or fields provided are invalid.", 400);
         } else if (err instanceof Prisma.PrismaClientKnownRequestError && err.code === "P2025") {
-            throw new DBError("Seller not found.", 404);
+            throw new DBError("This seller is not in your saved list.", 404);
         } else {
             throw new DBError("Something went wrong when trying to delete this seller. Please try again.", 500);
         }

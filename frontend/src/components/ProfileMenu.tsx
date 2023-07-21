@@ -50,7 +50,7 @@ function ProfileMenu({ setSettingsPopUp, setSellerProfilePopUp, logout }: Profil
     }
 
     function viewProfile(): void {
-        navigate(`/sellers/${userContext.userData.username}`);
+        navigate(`/sellers/${userContext.userData.seller?.sellerID}`);
         setNavProfileDropdown(false);
     }
 
@@ -76,7 +76,7 @@ function ProfileMenu({ setSettingsPopUp, setSellerProfilePopUp, logout }: Profil
                 </div>
                 <OutsideClickHandler onOutsideClick={() => setNavProfileDropdown(false)}>
                     {navProfileDropdown && 
-                    <ul className="absolute bg-main-white shadow-profile-page-container 
+                    <ul className="absolute bg-main-white shadow-lg
                     mt-2 border border-light-border-gray rounded-[11px] right-0 overflow-hidden">
                         <div className="border-b border-light-border-gray">
                             <p className="whitespace-nowrap p-3 pt-1 pb-1 cursor-default profile-menu-element hover:!bg-main-white">

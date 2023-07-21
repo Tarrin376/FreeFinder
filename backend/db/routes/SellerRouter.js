@@ -3,13 +3,15 @@ import {
     updateSellerDetails, 
     getSellerDetails, 
     getSellers,
+    getReviews
 } from '../controllers/SellerController.js';
 import { cookieJwtAuth } from '../middleware/cookieJwtAuth.js';
 
 const sellerRouter = Router();
 
-sellerRouter.put('/:username', cookieJwtAuth, updateSellerDetails);
 sellerRouter.post('/', getSellers);
-sellerRouter.get('/:username', getSellerDetails);
+sellerRouter.put('/:sellerID', cookieJwtAuth, updateSellerDetails);
+sellerRouter.get('/:sellerID', getSellerDetails);
+sellerRouter.post('/:sellerID/reviews', getReviews);
 
 export default sellerRouter;

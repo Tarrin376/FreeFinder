@@ -1,4 +1,4 @@
-import { useEffect, useState, useContext } from "react";
+import { useEffect, useState, useContext, useRef } from "react";
 import { SellerProfile } from "../../types/SellerProfile";
 import axios, { AxiosError } from "axios";
 import { useLocation } from "react-router-dom";
@@ -13,12 +13,23 @@ import ProfileSummary from "../../components/ProfileSummary";
 import Options from "../../components/Options";
 import SaveSeller from "../../components/SaveSeller";
 import { UserContext } from "../../providers/UserContext";
+import { usePaginateData } from "../../hooks/usePaginateData";
+import { IReview } from "../../models/IReview";
+import { ReviewsResponse } from "../../types/ReviewsResponse";
+import Reviews from "../../components/Reviews";
 
 function SellerProfileView() {
     const [sellerDetails, setSellerDetails] = useState<SellerProfile>();
     const [errorMessage, setErrorMessage] = useState<string>("");
     const userContext = useContext(UserContext);
     const location = useLocation();
+
+    const [page, setPage] = useState<{ value: number }>({ value: 1 });
+    const pageRef = useRef<HTMLDivElement>(null);
+    const cursor = useRef<string>();
+    
+    const reviews = usePaginateData<{}, IReview, ReviewsResponse<IReview>>(pageRef, cursor, `/api${location.pathname}/reviews`, page, setPage, {});
+    console.log(reviews);
 
     useNavigateErrorPage("Uh oh! Failed to retrieve seller...", errorMessage);
 
@@ -78,8 +89,8 @@ function SellerProfileView() {
                                 sellerID={sellerDetails.sellerID}
                             />}
                         </div>
-                        <p className="text-side-text-gray">{sellerDetails.description}</p>
-                        <div className="mt-5 flex items-center justify-between">
+                        <p>{sellerDetails.description}</p>
+                        <div className="mt-5 flex items-end justify-between">
                             <ProfileSummary
                                 styles="w-[400px] bg-[#f5f5f5] p-3 rounded-[8px]"
                                 country={sellerDetails.user.country}
@@ -134,6 +145,7 @@ function SellerProfileView() {
                         })}
                     </div>
                 </>}
+                <Reviews url={`/api${location.pathname}/reviews`} />
             </PageWrapper>
         </div>
     )
