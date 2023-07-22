@@ -20,9 +20,6 @@
     .invalid-button {
         @apply btn-primary !bg-[#575757] hover:!bg-[#575757] pointer-events-none !text-disabled-gray opacity-50;
     }
-    .action-btn {
-        @apply bg-[#36BF54] text-main-white hover:bg-[#45B65E];
-    }
     .profile-menu-element {
         @apply text-main-black bg-main-white hover:bg-main-white-hover whitespace-nowrap px-3 py-1 text-left text-[15px];
     }

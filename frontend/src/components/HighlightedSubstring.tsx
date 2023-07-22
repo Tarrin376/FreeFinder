@@ -17,7 +17,7 @@ function HighlightedSubstring({ styles, action, word, substring, foundAt }: High
     }
 
     return (
-        <p className={`cursor-pointer transition-all ease-linear duration-100 hover:px-2 ${styles}`}
+        <p className={`cursor-pointer transition-all ease-linear duration-100 whitespace-nowrap text-ellipsis overflow-hidden hover:px-2 ${styles}`}
         onClick={clickHandler} key={word}>
             {chars.map((char: string, curIndex: number) => {
                 return (

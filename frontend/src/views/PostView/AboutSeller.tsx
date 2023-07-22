@@ -31,7 +31,7 @@ function AboutSeller(props: AboutSellerProps) {
     }
 
     return (
-        <section className="border border-light-border-gray bg-main-white rounded-[12px] p-6 w-full">
+        <section className="border border-light-border-gray bg-transparent rounded-[12px] p-6 w-full">
             <div className="flex justify-between mb-4 gap-5">
                 <div className="flex items-center gap-5 overflow-hidden">
                     <ProfilePicAndStatus 
@@ -70,7 +70,6 @@ function AboutSeller(props: AboutSellerProps) {
                 styles="mt-4 mb-4"
                 country={props.country}
                 memberDate={props.memberDate}
-                rating={props.rating}
             />
             <p>{`${props.username} speaks`}</p>
             <Options 

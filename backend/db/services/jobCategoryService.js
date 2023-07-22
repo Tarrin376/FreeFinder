@@ -12,7 +12,7 @@ export async function createJobCategoryHandler(jobCategory) {
         } else if (err instanceof Prisma.PrismaClientValidationError) {
             throw new DBError("Missing required fields or fields provided are invalid.", 400);
         } else {
-            throw new DBError("Something went wrong when trying to create a new job category. Please try again.", 500);
+            throw new DBError("Something went wrong when trying to process this request.", 500);
         }
     }
     finally {
@@ -36,7 +36,7 @@ export async function getJobCategoriesHandler() {
         return jobCategories;
     }
     catch (err) {
-        throw new DBError("Something went wrong when trying to get all job categories. Please try again.", 500);
+        throw new DBError("Something went wrong when trying to process this request.", 500);
     }
     finally {
         await prisma.$disconnect();

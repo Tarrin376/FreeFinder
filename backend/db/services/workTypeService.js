@@ -22,7 +22,7 @@ export async function createWorkTypesHandler(workTypes, jobCategoryID) {
         return failed;
     }
     catch (err) {
-        throw new DBError("Something went wrong when trying to create these work types. Please try again.", 500);
+        throw new DBError("Something went wrong when trying to process this request.", 500);
     }
 }
 
@@ -41,7 +41,7 @@ async function createWorkType(workType, jobCategoryID) {
         } else if (err instanceof Prisma.PrismaClientValidationError) {
             throw new DBError("Missing required fields or fields provided are invalid.", 400);
         } else {
-            throw new DBError("Something went wrong when trying to create a new work type. Please try again.", 500);
+            throw new DBError("Something went wrong when trying to process this request.", 500);
         }
     }
 }

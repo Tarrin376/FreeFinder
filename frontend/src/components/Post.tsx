@@ -134,10 +134,10 @@ function Post({ postInfo, index, canRemove, count, styles }: PostProps) {
                         username={postInfo.postedBy.user.username}
                         size={48}
                     />
-                    <div className="flex-grow">
-                        <div className="flex justify-between">
-                            <p className="whitespace-nowrap text-ellipsis overflow-hidden max-w-[170px] 
-                            hover:text-main-blue cursor-pointer" onClick={navigateToProfile}>
+                    <div className="flex-grow overflow-hidden">
+                        <div className="flex justify-between gap-3">
+                            <p className="whitespace-nowrap text-ellipsis overflow-hidden hover:text-main-blue cursor-pointer" 
+                            onClick={navigateToProfile}>
                                 {postInfo.postedBy.user.username}
                             </p>
                             <div className="flex items-center justify-end gap-[7px]">

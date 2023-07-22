@@ -19,7 +19,7 @@ interface PackageProps {
     title: string
 }
 
-export const MAX_PRICE: number = 2500;
+export const MAX_PRICE = 2500;
 export const MAX_DELIVERY_DAYS = 60;
 
 const MAX_REVISIONS = 5;

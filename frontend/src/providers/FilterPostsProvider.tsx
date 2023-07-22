@@ -46,8 +46,10 @@ interface DeliveryTimesProps {
 
 interface MainFiltersBarProps {
     searchRef: React.RefObject<HTMLInputElement>,
-    min: React.MutableRefObject<number>,
-    max: React.MutableRefObject<number>,
+    min: number,
+    max: number,
+    setMin: React.Dispatch<React.SetStateAction<number>>,
+    setMax: React.Dispatch<React.SetStateAction<number>>,
     country: string,
     setCountry: React.Dispatch<React.SetStateAction<string>>,
     sort: React.MutableRefObject<string>,
@@ -85,8 +87,8 @@ function FilterPostsProvider({ children, urlPrefix }: FilterPostsContextProps) {
     const postFilters = JSON.parse(sessionStorage.getItem("post_filters") ?? "{}");
 
     const cursor = useRef<string>();
-    const min = useRef<number>(postFilters.min ?? 0);
-    const max = useRef<number>(postFilters.max ?? MAX_PRICE);
+    const [min, setMin] = useState<number>(postFilters.min ?? 0);
+    const [max, setMax] = useState<number>(postFilters.max ?? 0);
     const sort = useRef<string>(postFilters.sort ?? "most recent");
     const deliveryTime = useRef<number>(postFilters.deliveryTime ?? MAX_DELIVERY_DAYS);
     const searchRef = useRef<HTMLInputElement>(null);
@@ -113,8 +115,8 @@ function FilterPostsProvider({ children, urlPrefix }: FilterPostsContextProps) {
         {
             search: searchRef.current?.value,
             sort: sortPosts[sort.current],
-            min: min.current,
-            max: max.current,
+            min: min,
+            max: max,
             country: country === "Any country" ? undefined : country,
             languages: selectedLanguages,
             deliveryTime: deliveryTime.current,
@@ -135,8 +137,8 @@ function FilterPostsProvider({ children, urlPrefix }: FilterPostsContextProps) {
         sessionStorage.setItem("post_filters", JSON.stringify({
             search: searchRef.current?.value,
             sort: sort.current,
-            min: min.current,
-            max: max.current,
+            min: min,
+            max: max,
             country: country,
             languages: selectedLanguages,
             deliveryTime: deliveryTime.current,
@@ -190,12 +192,16 @@ function FilterPostsProvider({ children, urlPrefix }: FilterPostsContextProps) {
                         <div className="flex items-center gap-3 pb-5 mb-5 min-[1683px]:hidden border-b border-light-border-gray">
                             <Price
                                 value={min} 
+                                maxValue={MAX_PRICE}
                                 title="min price" 
+                                setValue={setMin}
                             />
                             <div>-</div>
                             <Price 
                                 value={max} 
+                                maxValue={MAX_PRICE}
                                 title="max price" 
+                                setValue={setMax}
                             />
                         </div>
                         <div className="border-b border-light-border-gray pb-5 mb-5 min-[1309px]:hidden">
@@ -241,7 +247,9 @@ function FilterPostsProvider({ children, urlPrefix }: FilterPostsContextProps) {
                         <MainFiltersBar
                             searchRef={searchRef}
                             min={min}
+                            setMin={setMin}
                             max={max}
+                            setMax={setMax}
                             country={country}
                             setCountry={setCountry}
                             sort={sort}
@@ -266,7 +274,7 @@ function FilterPostsProvider({ children, urlPrefix }: FilterPostsContextProps) {
     )
 }
 
-function MainFiltersBar({ searchRef, min, max, country, setCountry, sort, loading, searchHandler }: MainFiltersBarProps) {
+function MainFiltersBar(props: MainFiltersBarProps) {
     return (
         <div className="h-[90px] max-w-[1430px] m-auto flex items-center px-[22.5px]">
             <div className="flex flex-grow items-center border-r border-light-border-gray h-full pr-6">
@@ -275,36 +283,40 @@ function MainFiltersBar({ searchRef, min, max, country, setCountry, sort, loadin
                     type="text" 
                     placeholder="Search for post" 
                     className="flex-grow focus:outline-none placeholder-side-text-gray ml-3" 
-                    ref={searchRef}
+                    ref={props.searchRef}
                 />
             </div>
             <div className="h-full border-r border-light-border-gray px-[12.75px] flex items-center gap-3 max-[1682px]:hidden">
                 <Price 
-                    value={min} 
+                    value={props.min} 
+                    maxValue={MAX_PRICE}
                     title="min price" 
+                    setValue={props.setMin}
                 />
                 <div>-</div>
                 <Price 
-                    value={max} 
+                    value={props.max} 
+                    maxValue={MAX_PRICE}
                     title="max price" 
+                    setValue={props.setMax}
                 />
             </div>
             <div className="h-full border-r border-light-border-gray px-[12.75px] flex items-center max-[1308px]:hidden">
                 <CountriesDropdown 
-                    country={country}
-                    setCountry={setCountry}
+                    country={props.country}
+                    setCountry={props.setCountry}
                     styles="w-[240px]"
                     title="Seller lives in"
                     anyLocation={true}
                 />
             </div>
             <div className="h-full border-r border-light-border-gray pl-[12.75px] pr-[10px] flex items-center">
-                <SortBy sortBy={sort} />
+                <SortBy sortBy={props.sort} />
             </div>
             <div className="pl-[22.5px]">
                 <button className={`btn-primary text-main-white bg-main-blue w-[160px] h-[48px] hover:bg-main-blue-hover
-                ${loading ? "invalid-button" : ""}`}
-                onClick={searchHandler}>
+                ${props.loading ? "invalid-button" : ""}`}
+                onClick={props.searchHandler}>
                     Search
                 </button>
             </div>

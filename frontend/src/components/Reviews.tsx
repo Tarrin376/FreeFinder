@@ -14,7 +14,8 @@ import { StarCounts } from "../types/StarCounts";
 import Rating from "./Rating";
 
 interface ReviewsProps {
-    url: string
+    url: string,
+    reviewsRef?: React.RefObject<HTMLDivElement>
 }
 
 interface RatingAverageProps {
@@ -33,7 +34,7 @@ const initialRatingAverages = {
 const initialStars: StarCounts = [0, 0, 0, 0, 0];
 const queryLimit = 3;
 
-function Reviews({ url }: ReviewsProps) {
+function Reviews({ url, reviewsRef }: ReviewsProps) {
     const [reviews, setReviews] = useState<ReviewsResponse<IReview>>();
     const [averages, setAverages] = useState<RatingAverages>(initialRatingAverages);
     const [starCounts, setStarCounts] = useState<StarCounts>(initialStars);
@@ -60,7 +61,7 @@ function Reviews({ url }: ReviewsProps) {
     }
 
     return (
-        <div className="mt-10">
+        <div className="mt-10" ref={reviewsRef}>
             <AnimatePresence>
                 {allReviewsPopUp && 
                 <AllReviews 

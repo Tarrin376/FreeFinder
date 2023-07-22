@@ -5,8 +5,6 @@ import AccountCreated from '../components/AccountCreated';
 import { IUserContext, UserContext } from '../providers/UserContext';
 import { Outlet } from 'react-router-dom';
 import ProfileMenu from '../components/ProfileMenu';
-import AccountSettings from '../views/AccountSettings/AccountSettings';
-import ChangeSellerDetails from '../components/ChangeSellerDetails';
 import { useNavigate } from 'react-router-dom';
 import SearchSellers from '../components/SearchSellers';
 import { useToggleAwayStatus } from '../hooks/useToggleAwayStatus';
@@ -28,8 +26,6 @@ function Navbar() {
     const [logIn, setLogIn] = useState<boolean>(false);
     const [accountCreated, setAccountCreated] = useState<boolean>(false);
     const userContext = useContext<IUserContext>(UserContext);
-    const [settingsPopUp, setSettingsPopUp] = useState<boolean>(false);
-    const [sellerProfilePopUp, setSellerProfilePopUp] = useState<boolean>(false);
     const [savedSellersPopUp, setSavedSellersPopUp] = useState<boolean>(false);
     const [savedDropdown, setSavedDropdown] = useState<boolean>(false);
     const [sidebar, setSidebar] = useState<boolean>(false);
@@ -81,11 +77,9 @@ function Navbar() {
     return (
         <>
             <AnimatePresence>
-                {settingsPopUp && <AccountSettings setSettingsPopUp={setSettingsPopUp} />}
                 {signUp && <SignUp setSignUp={setSignUp} setLogIn={setLogIn} setAccountCreated={setAccountCreated} />}
                 {logIn && <LogIn setLogIn={setLogIn} setSignUp={setSignUp} />}
                 {accountCreated && <AccountCreated setAccountCreated={setAccountCreated} />}
-                {sellerProfilePopUp && <ChangeSellerDetails setSellerProfilePopUp={setSellerProfilePopUp} />}
                 {savedSellersPopUp &&
                 <Sellers
                     search=""
@@ -161,17 +155,12 @@ function Navbar() {
                     </>}
                     {windowSize > 1381 && <SearchSellers styles="ml-8" />}
                 </ul>
+                {userContext.userData.username !== "" && <ProfileMenu logout={logout} />}
                 {userContext.userData.username === "" && windowSize > 523 &&
                 <AccountOptions 
                     setLogIn={setLogIn} 
                     setSignUp={setSignUp} 
                     btnStyles="w-[110px]"
-                />}
-                {userContext.userData.username !== "" &&
-                <ProfileMenu 
-                    setSettingsPopUp={setSettingsPopUp} 
-                    setSellerProfilePopUp={setSellerProfilePopUp}
-                    logout={logout}
                 />}
             </nav>
             <div>

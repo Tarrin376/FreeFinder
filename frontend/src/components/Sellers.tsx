@@ -42,7 +42,7 @@ function Sellers({ search, url, setSellersPopUp, savedSellers, option }: Sellers
     }
 
     return (
-        <PopUpWrapper title={getTitle()} setIsOpen={setSellersPopUp}>
+        <PopUpWrapper title={getTitle()} setIsOpen={setSellersPopUp} styles="max-w-[640px]">
             <AnimatePresence>
                 {sellers.errorMessage !== "" &&
                 <ErrorPopUp
@@ -50,7 +50,7 @@ function Sellers({ search, url, setSellersPopUp, savedSellers, option }: Sellers
                     setErrorMessage={sellers.setErrorMessage}
                 />}
             </AnimatePresence>
-            <div ref={pageRef} className="overflow-y-scroll pr-[8px] max-h-[500px]">
+            <div ref={pageRef} className="overflow-y-scroll pr-[8px] max-h-[640px]">
                 {sellers.data.map((seller: SellerData, index: number) => {
                     return (
                         <Seller

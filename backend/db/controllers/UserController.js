@@ -7,6 +7,8 @@ import
     deleteUserHandler,
     updatePasswordHandler,
     getUserPostsHandler,
+    getBalanceHandler,
+    addToBalanceHandler
 } 
 from '../services/UserService.js';
 import { cookieJwtSign } from '../middleware/cookieJwtSign.js';
@@ -125,6 +127,26 @@ export async function getUserPosts(req, res) {
     try {
         const response = await getUserPostsHandler(req);
         res.json({...response, message: "success" });
+    }
+    catch (err) {
+        res.status(err.code).json({ message: err.message });
+    }
+}
+
+export async function getBalance(req, res) {
+    try {
+        const balance = await getBalanceHandler(req);
+        res.json({ balance: balance, message: "success" });
+    }
+    catch (err) {
+        res.status(err.code).json({ message: err.message });
+    }
+}
+
+export async function addToBalance(req, res) {
+    try {
+        const balance = await addToBalanceHandler(req);
+        res.json({ balance: balance, message: "success" });
     }
     catch (err) {
         res.status(err.code).json({ message: err.message });

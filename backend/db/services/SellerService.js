@@ -36,7 +36,7 @@ export async function findSeller(userID) {
         } else if (err instanceof Prisma.PrismaClientValidationError) {
             throw new DBError("Missing required fields or fields provided are invalid.", 400);
         } else {
-            throw new DBError("Something went wrong when trying to find this seller. Please try again.", 500);
+            throw new DBError("Something went wrong when trying to process this request.", 500);
         }
     }
     finally {
@@ -79,7 +79,7 @@ async function createSeller(id) {
         } else if (err instanceof Prisma.PrismaClientKnownRequestError && err.code === 'P2002') {
             throw new DBError("You are already a seller.", 409);
         } else {
-            throw new DBError("Something went wrong when trying to make you a seller. Please try again.", 500);
+            throw new DBError("Something went wrong when trying to process this request.", 500);
         }
     }
     finally {
@@ -125,7 +125,7 @@ export async function updateSellerDetailsHandler(req) {
         } else if (err instanceof Prisma.PrismaClientKnownRequestError && err.code === "P2025") {
             throw new DBError("Seller not found.", 404);
         } else {
-            throw new DBError("Something went wrong when trying update your seller details. Please try again.", 500);
+            throw new DBError("Something went wrong when trying to process this request.", 500);
         }
     }
     finally {
@@ -212,7 +212,7 @@ export async function getSellerDetailsHandler(sellerID) {
         if (err instanceof DBError) {
             throw err;
         } else {
-            throw new DBError("Something went wrong when trying get this seller's details. Please try again.", 500);
+            throw new DBError("Something went wrong when trying to process this request.", 500);
         }
     }
     finally {
@@ -229,7 +229,7 @@ export async function getSellersHandler(search, limit, cursor) {
         if (err instanceof Prisma.PrismaClientValidationError) {
             throw new DBError("Missing required fields or fields provided are invalid.", 400);
         } else {
-            throw new DBError("Something went wrong when trying find sellers. Please try again.", 500);
+            throw new DBError("Something went wrong when trying to process this request.", 500);
         }
     }
     finally {
@@ -373,7 +373,7 @@ export async function getReviewsHandler(req) {
         if (err instanceof Prisma.PrismaClientValidationError) {
             throw new DBError("Missing required fields or fields provided are invalid.", 400);
         } else {
-            throw new DBError("Something went wrong when trying to get more posts. Please try again.", 500);
+            throw new DBError("Something went wrong when trying to process this request.", 500);
         }
     }
 }

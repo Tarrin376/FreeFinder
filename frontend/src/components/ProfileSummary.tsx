@@ -6,10 +6,9 @@ interface ProfileSummaryProps {
     styles?: string,
     country: string,
     memberDate: Date,
-    rating: number
 }
 
-function ProfileSummary({ styles, country, memberDate, rating }: ProfileSummaryProps) {
+function ProfileSummary({ styles, country, memberDate }: ProfileSummaryProps) {
     return (
         <div className={styles}>
             <div className="flex gap-2 items-center">
@@ -24,8 +23,8 @@ function ProfileSummary({ styles, country, memberDate, rating }: ProfileSummaryP
             </div>
             <div className="flex gap-2 items-center mt-2">
                 <img src={StarGrayIcon} width="20px" height="20px" alt="location" />
-                <p className="text-side-text-gray">Seller rating</p>
-                <p className="ml-auto">{rating}</p>
+                <p className="text-side-text-gray">Clients served</p>
+                <p className="ml-auto">6</p>
             </div>
         </div>
     )

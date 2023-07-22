@@ -100,7 +100,7 @@ export async function createPostHandler(postData, startingPrice, userID) {
         } else if (err instanceof Prisma.PrismaClientValidationError) {
             throw new DBError("Missing required fields or fields provided are invalid.", 400);
         } else {
-            throw new DBError("Something went wrong when trying to create your post. Please try again.", 500);
+            throw new DBError("Something went wrong when trying to process this request.", 500);
         }
     }
     finally {
@@ -141,7 +141,7 @@ export async function deleteImageHandler(req) {
         } else if (err instanceof Prisma.PrismaClientValidationError) {
             throw new DBError("Missing required fields or fields provided are invalid.", 400);
         } else {
-            throw new DBError("Something went wrong when trying to delete this image. Please try again.", 500);
+            throw new DBError("Something went wrong when trying to process this request.", 500);
         }
     }
     finally {
@@ -179,7 +179,7 @@ export async function addImageHandler(req) {
         } else if (err instanceof Prisma.PrismaClientValidationError) {
             throw new DBError("Missing required fields or fields provided are invalid.", 400);
         } else {
-            throw new DBError("Something went wrong when trying to add this image. Please try again.", 500);
+            throw new DBError("Something went wrong when trying to process this request.", 500);
         }
     }
     finally {
@@ -206,7 +206,7 @@ async function createPostPackage(packageData, postID, type) {
         if (err instanceof Prisma.PrismaClientValidationError) {
             throw new DBError("Missing required fields or fields provided are invalid.", 400);
         } else {
-            throw new DBError("Something went wrong when trying to create this package. Please try again.", 500);
+            throw new DBError("Something went wrong when trying to process this request.", 500);
         }
     }
     finally {
@@ -229,7 +229,7 @@ export async function getPostHandler(postID) {
         if (err instanceof Prisma.PrismaClientValidationError) {
             throw new DBError("Missing required fields or fields provided are invalid.", 400);
         } else {
-            throw new DBError("Something went wrong when trying to get this post. Please try again.", 500);
+            throw new DBError("Something went wrong when trying to process this request.", 500);
         }
     }
     finally {
@@ -299,7 +299,7 @@ async function updateImage(req) {
         if (err instanceof DBError) {
             throw err;
         } else {
-            throw new DBError("Something went wrong when trying to update this post. Please try again.", 500);
+            throw new DBError("Something went wrong when trying to process this request.", 500);
         }
     }
     finally {
@@ -332,7 +332,7 @@ export async function updatePostHandler(req) {
         } else if (err instanceof Prisma.PrismaClientValidationError) {
             throw new DBError("Missing required fields or fields provided are invalid.", 400);
         } else {
-            throw new DBError("Something went wrong when trying to update this post. Please try again.", 500);
+            throw new DBError("Something went wrong when trying to process this request.", 500);
         }
     }
     finally {
@@ -375,7 +375,7 @@ export async function deletePostHandler(postID, userID) {
         } else if (err instanceof Prisma.PrismaClientKnownRequestError && err.code === "P2025") {
             throw new DBError("Post not found.", 404);
         } else {
-            throw new DBError("Something went wrong when trying to delete this post. Please try again.", 500);
+            throw new DBError("Something went wrong when trying to process this request.", 500);
         }
     }
     finally {
@@ -391,7 +391,7 @@ export async function getPostsHandler(req) {
         if (err instanceof Prisma.PrismaClientValidationError) {
             throw new DBError("Missing required fields or fields provided are invalid.", 400);
         } else {
-            throw new DBError("Something went wrong when trying to get more posts. Please try again.", 500);
+            throw new DBError("Something went wrong when trying to process this request.", 500);
         }
     }
     finally {

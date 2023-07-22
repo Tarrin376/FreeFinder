@@ -25,6 +25,7 @@ import { MAX_FILE_UPLOADS } from "../CreatePost/UploadPostFiles";
 import LoadingSvg from "../../components/LoadingSvg";
 import Reviews from "../../components/Reviews";
 import CreateReview from "../../components/CreateReview";
+import { scrollIntoView } from "../../utils/scrollIntoView";
 
 type UpdatePostToggles = "aboutToggle" | "titleToggle";
 
@@ -76,6 +77,7 @@ function PostView() {
     const navigate = useNavigate();
     const userContext = useContext(UserContext);
     const addImageFileRef = useRef<HTMLInputElement>(null);
+    const reviewsRef = useRef<HTMLDivElement>(null);
 
     const [postData, setPostData] = useState<PostPage>();
     const [errorMessage, setErrorMessage] = useState<string>("");
@@ -208,7 +210,7 @@ function PostView() {
                     />}
                 </AnimatePresence>
                 <div className="flex gap-16">
-                    <div className="flex-grow overflow-hidden">
+                    <div className="flex-grow">
                         <div className="flex gap-3 items-center">
                             {isOwner &&
                             <p className="change mb-3" onClick={() => confirmChanges({ title: state.data.title?.trim() }, "titleToggle")}>
@@ -334,12 +336,16 @@ function PostView() {
                             skills={postData.postedBy.skills}
                             sellerID={postData.sellerID}
                         />
-                        <Reviews url={`/api/sellers/${postData.sellerID}/reviews?post=${postData.postID}`} />
+                        <Reviews 
+                            url={`/api/sellers/${postData.sellerID}/reviews?post=${postData.postID}`} 
+                            reviewsRef={reviewsRef}
+                        />
                     </div>
                     <div className="relative min-w-[390px]">
                         <Packages packages={postData.packages} />
-                        <button className="side-btn w-full !h-[48px] mt-[26px] shadow-info-component">
-                            {`See Seller Reviews (${0})`}
+                        <button className="side-btn w-full !h-[48px] mt-[26px] shadow-info-component" 
+                        onClick={() => scrollIntoView(reviewsRef)}>
+                            See Seller Reviews
                         </button>
                         <CreateReview 
                             postID={postData.postID} 

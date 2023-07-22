@@ -41,7 +41,7 @@ async function checkCanReview(userID, postID, reviewID) {
         if (err instanceof Prisma.PrismaClientValidationError) {
             throw new DBError("Missing required fields or fields provided are invalid.", 400);
         } else {
-            throw new DBError("Something went wrong. Please try again.", 500);
+            throw new DBError("Something went wrong when trying to process this request.", 500);
         }
     }
 }
@@ -68,7 +68,7 @@ export async function markAsHelpfulHandler(req) {
         } else if (err instanceof Prisma.PrismaClientValidationError) {
             throw new DBError("Missing required fields or fields provided are invalid.", 400);
         } else {
-            throw new DBError("Something went wrong. Please try again.", 500);
+            throw new DBError("Something went wrong when trying to process this request.", 500);
         }
     }
     finally {
@@ -100,7 +100,7 @@ export async function markAsUnhelpfulHandler(req) {
         } else if (err instanceof Prisma.PrismaClientValidationError) {
             throw new DBError("Missing required fields or fields provided are invalid.", 400);
         } else {
-            throw new DBError("Something went wrong. Please try again.", 500);
+            throw new DBError("Something went wrong when trying to process this request.", 500);
         }
     }
     finally {

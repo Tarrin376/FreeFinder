@@ -1,4 +1,4 @@
-import { useEffect, useState, useContext, useRef } from "react";
+import { useEffect, useState, useContext } from "react";
 import { SellerProfile } from "../../types/SellerProfile";
 import axios, { AxiosError } from "axios";
 import { useLocation } from "react-router-dom";
@@ -13,9 +13,6 @@ import ProfileSummary from "../../components/ProfileSummary";
 import Options from "../../components/Options";
 import SaveSeller from "../../components/SaveSeller";
 import { UserContext } from "../../providers/UserContext";
-import { usePaginateData } from "../../hooks/usePaginateData";
-import { IReview } from "../../models/IReview";
-import { ReviewsResponse } from "../../types/ReviewsResponse";
 import Reviews from "../../components/Reviews";
 
 function SellerProfileView() {
@@ -23,13 +20,6 @@ function SellerProfileView() {
     const [errorMessage, setErrorMessage] = useState<string>("");
     const userContext = useContext(UserContext);
     const location = useLocation();
-
-    const [page, setPage] = useState<{ value: number }>({ value: 1 });
-    const pageRef = useRef<HTMLDivElement>(null);
-    const cursor = useRef<string>();
-    
-    const reviews = usePaginateData<{}, IReview, ReviewsResponse<IReview>>(pageRef, cursor, `/api${location.pathname}/reviews`, page, setPage, {});
-    console.log(reviews);
 
     useNavigateErrorPage("Uh oh! Failed to retrieve seller...", errorMessage);
 
@@ -54,8 +44,8 @@ function SellerProfileView() {
         <div className="overflow-y-scroll h-[calc(100vh-90px)]">
             <PageWrapper styles="p-[38px] pt-[58px]" locationStack={["Sellers", sellerDetails.user.username]}>
                 <div className="mb-5 border-b border-b-light-border-gray pb-7">
-                    <div className="bg-main-white border border-light-border-gray shadow-info-component rounded-[12px] p-6">
-                        <div className="flex justify-between gap-5 mb-5">
+                    <div className="bg-transparent">
+                        <div className="flex justify-between gap-5 pb-7 mb-7 border-b border-light-border-gray">
                             <div className="flex items-center flex-grow gap-5 overflow-hidden">
                                 <div className="relative">
                                     <ProfilePicAndStatus
@@ -92,10 +82,9 @@ function SellerProfileView() {
                         <p>{sellerDetails.description}</p>
                         <div className="mt-5 flex items-end justify-between">
                             <ProfileSummary
-                                styles="w-[400px] bg-[#f5f5f5] p-3 rounded-[8px]"
+                                styles="w-[400px] bg-[#f8f8f8] p-3 rounded-[8px]"
                                 country={sellerDetails.user.country}
                                 memberDate={sellerDetails.user.memberDate}
-                                rating={sellerDetails.rating}
                             />
                             <div>
                                 <button className="main-btn block !h-[42px] mb-3 w-[155px]">Contact seller</button>
@@ -132,7 +121,7 @@ function SellerProfileView() {
                         {`${sellerDetails.user.username}${sellerDetails.user.username[sellerDetails.user.username.length - 1] === 's' ? 
                         "'" : "'s"} available services`}
                     </h2>
-                    <div className="overflow-x-scroll whitespace-nowrap">
+                    <div className="overflow-x-scroll whitespace-nowrap pb-5">
                         {sellerDetails.posts.map((post: IPost, index: number) => {
                             return (
                                 <Post

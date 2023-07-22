@@ -12,6 +12,8 @@ import { userProperties } from '../utils/userProperties.js';
 import { getPaginatedData } from '../utils/getPaginatedData.js';
 import { getAvgRatings } from '../utils/getAvgRatings.js';
 
+const MAX_AMOUNT = 500;
+
 export async function updateProfilePictureHandler(req) {
     try {
         await checkUser(req.userData.userID, req.username);
@@ -65,7 +67,7 @@ export async function updateProfilePictureHandler(req) {
         } else if (err instanceof Prisma.PrismaClientKnownRequestError && err.code === 413) {
             throw new DBError("Error updating profile picture: File size exceeds limit.", 413);
         } else {
-            throw new DBError("Something went wrong when trying to update your profile picture. Please try again.", 500);
+            throw new DBError("Something went wrong when trying to process this request.", 500);
         }
     }
     finally {
@@ -91,7 +93,7 @@ export async function updatePasswordHandler(req) {
         } else if (err instanceof Prisma.PrismaClientKnownRequestError && err.code === 'P2025') {
             throw new DBError("User not found.", 404);
         } else {
-            throw new DBError("Something went wrong when trying to update your password. Please try again.", 500)
+            throw new DBError("Something went wrong when trying to process this request.", 500)
         }
     }
     finally {
@@ -117,7 +119,7 @@ export async function registerUserHandler(userData) {
         } else if (err instanceof Prisma.PrismaClientKnownRequestError && err.code === 'P2002') {
             throw new DBError("This username or email address is already taken.", 409)
         } else {
-            throw new DBError("Something went wrong when trying to register you. Please try again.", 500)
+            throw new DBError("Something went wrong when trying to process this request.", 500)
         }
     }
     finally {
@@ -160,7 +162,7 @@ export async function authenticateUserHandler(usernameOrEmail, password) {
         } else if (err instanceof Prisma.PrismaClientValidationError) {
             throw new DBError("Missing required fields or fields provided are invalid.", 400);
         } else {
-            throw new DBError("Something went wrong when trying to get this user. Please try again.", 500);
+            throw new DBError("Something went wrong when trying to process this request.", 500);
         }
     }
     finally {
@@ -194,7 +196,7 @@ export async function updateUserHandler(req) {
         } if (err instanceof Prisma.PrismaClientKnownRequestError && err.code === 'P2002') {
             throw new DBError("There already exists a user with this username or email address.", 409);
         } else {
-            throw new DBError("Something went wrong when trying update this user. Please try again.", 500);
+            throw new DBError("Something went wrong when trying to process this request.", 500);
         }
     }
     finally {
@@ -217,7 +219,7 @@ export async function deleteUserHandler(req) {
         } else if (err instanceof Prisma.PrismaClientKnownRequestError && err.code === "P2025") {
             throw new DBError("User not found.", 404);
         } else {
-            throw new DBError("Something went wrong when trying to delete this user. Please try again.", 500);
+            throw new DBError("Something went wrong when trying to process this request.", 500);
         }
     }
     finally {
@@ -236,7 +238,7 @@ export async function getUserPostsHandler(req) {
         } else if (err instanceof Prisma.PrismaClientValidationError) {
             throw new DBError("Missing required fields or fields provided are invalid.", 400);
         } else {
-            throw new DBError("Something went wrong when trying to get this seller's posts. Please try again.", 500);
+            throw new DBError("Something went wrong when trying to process this request.", 500);
         }
     }
     finally {
@@ -318,5 +320,65 @@ async function queryUserPosts(req) {
     return {
         ...result,
         next: posts
+    }
+}
+
+export async function getBalanceHandler(req) {
+    try {
+        await checkUser(req.userData.userID, req.username);
+        const data = await prisma.user.findUnique({
+            where: {
+                userID: req.userData.userID
+            },
+            select: {
+                balance: true
+            }
+        });
+
+        return data.balance;
+    }
+    catch (err) {
+        if (err instanceof DBError) {
+            throw err;
+        } else {
+            throw new DBError("Something went wrong when trying to process this request.", 500);
+        }
+    }
+}
+
+export async function addToBalanceHandler(req) {
+    try {
+        await checkUser(req.userData.userID, req.username);
+
+        if (!req.body.amount || !`${req.body.amount}`.match(new RegExp(`[0-9]+$`))) {
+            throw new DBError("Invalid amount or no amount provided.", 400);
+        }
+
+        if (req.body.amount > MAX_AMOUNT || req.body.amount < 1) {
+            throw new DBError(`Amount must be between 1 and ${MAX_AMOUNT}.`, 400);
+        }
+
+        const updated = await prisma.user.update({
+            where: {
+                userID: req.userData.userID
+            },
+            data: {
+                balance: {
+                    increment: req.body.amount
+                }
+            },
+            select: {
+                balance: true
+            }
+        });
+
+        return updated.balance;
+    }
+    catch (err) {
+        if (err instanceof DBError) {
+            throw err;
+        } else {
+            throw new DBError("Something went wrong when trying to process this request.", 500);
+        }
     }
 }

@@ -17,7 +17,7 @@ export async function getSellerLevelsHandler() {
         return sellerLevels;
     }
     catch (err) {
-        throw new DBError("Something went wrong when trying retrieve the seller levels. Please try again.", 500);
+        throw new DBError("Something went wrong when trying to process this request.", 500);
     }
     finally {
         await prisma.$disconnect();
@@ -39,7 +39,7 @@ export async function createSellerLevelHandler(body) {
         if (err instanceof Prisma.PrismaClientValidationError) {
             throw new DBError("Missing required fields or fields provided are invalid.", 400);
         } else {
-            throw new DBError("Something went wrong when trying to create this seller level. Please try again.", 500);
+            throw new DBError("Something went wrong when trying to process this request.", 500);
         }
     }
     finally {
@@ -62,7 +62,7 @@ export async function updateSellerLevelHandler(req) {
         if (err instanceof Prisma.PrismaClientValidationError) {
             throw new DBError("Missing required fields or fields provided are invalid.", 400);
         } else {
-            throw new DBError("Something went wrong when trying to update this seller level. Please try again.", 500);
+            throw new DBError("Something went wrong when trying to process this request.", 500);
         }
     }
     finally {
@@ -75,7 +75,7 @@ export async function deleteSellerLevelHandler(req) {
         await prisma.sellerLevel.delete({ where: { id: req.params.id } });
     }
     catch (err) {
-        throw new DBError("Something went wrong when trying to delete this seller level. Please try again.", 500);
+        throw new DBError("Something went wrong when trying to process this request.", 500);
     }
     finally {
         await prisma.$disconnect();

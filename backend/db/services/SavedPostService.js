@@ -22,7 +22,7 @@ async function getSavedPostIDs(userID) {
         return savedPostIDs;
     }
     catch (err) {
-        throw new DBError("Something went wrong when trying to perform this action. Please try again.", 500);
+        throw new DBError("Something went wrong when trying to process this request.", 500);
     }
     finally {
         await prisma.$disconnect();
@@ -50,7 +50,7 @@ export async function savePostHandler(postID, userID, username) {
         } else if (err instanceof Prisma.PrismaClientKnownRequestError && err.code === 'P2002') {
             throw new DBError("Post already saved.", 409);
         } else {
-            throw new DBError("Something went wrong when trying to save this post. Please try again.", 500);
+            throw new DBError("Something went wrong when trying to process this request.", 500);
         }
     }
     finally {
@@ -69,7 +69,7 @@ export async function getSavedPostsHandler(req) {
         } else if (err instanceof Prisma.PrismaClientValidationError) {
             throw new DBError("Missing required fields or fields provided are invalid.", 400);
         } else {
-            throw new DBError("Something went wrong when trying to get your saved posts. Please try again.", 500);
+            throw new DBError("Something went wrong when trying to process this request.", 500);
         }
     }
     finally {
@@ -185,7 +185,7 @@ export async function deleteSavedPostHandler(postID, userID, username) {
         } else if (err instanceof Prisma.PrismaClientKnownRequestError && err.code === "P2025") {
             throw new DBError("Post not found.", 404);
         } else {
-            throw new DBError("Something went wrong when trying to delete this post. Please try again.", 500);
+            throw new DBError("Something went wrong when trying to process this request.", 500);
         }
     }
     finally {
