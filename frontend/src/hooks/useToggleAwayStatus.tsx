@@ -4,13 +4,21 @@ import axios from "axios";
 import { IUser } from "../models/IUser";
 import { UserStatus } from "../enums/UserStatus";
 
+const AWAY_TRIGGER_DURATION = 120;
+
 export function useToggleAwayStatus(): void {
     const userContext = useContext(UserContext);
     const lastActive = useRef<number>(Date.now());
+    const canCheck = useRef<boolean>(true);
     
     const updateLastActive = useCallback((): void => {
         (async () => {
             try {
+                if (!canCheck.current) {
+                    return;
+                }
+
+                canCheck.current = false;
                 if (userContext.userData.status === UserStatus.AWAY) {
                     const setToOnline = await axios.put<{ userData: IUser, message: string }>
                     (`/api/users/${userContext.userData.username}`, { 
@@ -23,6 +31,10 @@ export function useToggleAwayStatus(): void {
                         savedSellers: new Set(setToOnline.data.userData.savedSellers)
                     });
                 }
+
+                setTimeout(() => {
+                    canCheck.current = true;
+                }, 10000);
             }
             catch (err: any) {
                 // Ignore failure setting the user status to online and try again every time the cursor moves.
@@ -38,7 +50,7 @@ export function useToggleAwayStatus(): void {
             (async () => {
                 try {
                     const now = Date.now();
-                    if ((now - lastActive.current) / 1000 >= 120 && userContext.userData.status === UserStatus.ONLINE) {
+                    if ((now - lastActive.current) / 1000 >= AWAY_TRIGGER_DURATION && userContext.userData.status === UserStatus.ONLINE) {
                         const setToAway = await axios.put<{ userData: IUser, message: string }>
                         (`/api/users/${userContext.userData.username}`, { 
                             status: UserStatus.AWAY 
@@ -55,7 +67,7 @@ export function useToggleAwayStatus(): void {
                     // Ignore failure setting user status to away and try again every 5 seconds.
                 }
             })();
-        }, 5000);
+        }, 10000);
 
         return () => {
             clearInterval(interval);

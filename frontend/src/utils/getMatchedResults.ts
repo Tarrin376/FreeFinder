@@ -1,5 +1,5 @@
 export function getMatchedResults(arr: string[], search: string): string[][] {
-    if (search === "") {
+    if (search.trim() === "") {
         return [];
     }
 

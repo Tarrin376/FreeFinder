@@ -11,6 +11,7 @@ import ChangeSellerDetails from "./ChangeSellerDetails";
 import { AnimatePresence } from "framer-motion";
 import AccountBalance from "./AccountBalance";
 import ChatIcon from "../assets/chat.png";
+import Messages from "./Messages";
 
 interface ProfileMenuProps {
     logout: () => Promise<void>
@@ -22,6 +23,7 @@ function ProfileMenu({ logout }: ProfileMenuProps) {
     const [settingsPopUp, setSettingsPopUp] = useState<boolean>(false);
     const [sellerProfilePopUp, setSellerProfilePopUp] = useState<boolean>(false);
     const [balancePopUp, setBalancePopUp] = useState<boolean>(false);
+    const [messagesPopUp, setMessagesPopUp] = useState<boolean>(false);
     const userContext = useContext(UserContext);
     const navigate = useNavigate();
 
@@ -45,17 +47,17 @@ function ProfileMenu({ logout }: ProfileMenuProps) {
         }
     }
 
-    function openSettings(): void {
+    function viewSettings(): void {
         setNavProfileDropdown(false);
         setSettingsPopUp(true);
     }
 
-    function openSellerProfile(): void {
+    function viewSellerProfile(): void {
         setNavProfileDropdown(false);
         setSellerProfilePopUp(true);
     }
 
-    function openBalance(): void {
+    function viewBalance(): void {
         setNavProfileDropdown(false);
         setBalancePopUp(true);
     }
@@ -65,18 +67,24 @@ function ProfileMenu({ logout }: ProfileMenuProps) {
         setNavProfileDropdown(false);
     }
 
+    function viewMessages(): void {
+        setNavProfileDropdown(false);
+        setMessagesPopUp(true);
+    }
+
     return (
         <div className="flex gap-7 items-center z-30">
             <AnimatePresence>
                 {settingsPopUp && <AccountSettings setSettingsPopUp={setSettingsPopUp} />}
                 {sellerProfilePopUp && <ChangeSellerDetails setSellerProfilePopUp={setSellerProfilePopUp} />}
                 {balancePopUp && <AccountBalance setBalancePopUp={setBalancePopUp} />}
+                {messagesPopUp && <Messages setMessagesPopUp={setMessagesPopUp} />}
             </AnimatePresence>
-            <div className="flex gap-3 items-center">
-                <img src={ChatIcon} className="w-[37px] h-[37px] cursor-pointer" alt="chat" />
+            <div className="flex gap-4 items-center">
+                <img src={ChatIcon} className="w-[32px] h-[32px] cursor-pointer" alt="chat" onClick={viewMessages} />
                 <div className="relative cursor-pointer">
-                    <img src={NotificationIcon} className="w-[37px] h-[37px]" alt="notifications" />
-                    <span className="absolute top-[4px] right-[5px] flex h-3 w-3">
+                    <img src={NotificationIcon} className="w-[32px] h-[32px]" alt="notifications" />
+                    <span className="absolute top-[2px] right-[3px] flex h-3 w-3">
                         <span className="animate-ping absolute inline-flex h-full w-full rounded-full bg-error-text opacity-75"></span>
                         <span className="relative inline-flex rounded-full h-3 w-3 bg-error-text"></span>
                     </span>
@@ -101,18 +109,18 @@ function ProfileMenu({ logout }: ProfileMenuProps) {
                             </p>
                         </div>
                         <div className="border-b border-light-border-gray flex flex-col">
-                            <p className="profile-menu-element" onClick={openBalance}>
+                            <p className="profile-menu-element" onClick={viewBalance}>
                                 Your balance
                             </p>
                             {userContext.userData.seller &&
                             <p className="profile-menu-element" onClick={viewProfile}>
                                 View profile
                             </p>}
-                            <p className="profile-menu-element" onClick={openSettings}>
+                            <p className="profile-menu-element" onClick={viewSettings}>
                                 Account settings
                             </p>
                             {userContext.userData.seller && 
-                            <p className="profile-menu-element" onClick={openSellerProfile}>
+                            <p className="profile-menu-element" onClick={viewSellerProfile}>
                                 Update seller profile
                             </p>}
                             <button className="profile-menu-element" onClick={toggleStatus} disabled={disabled}>

@@ -5,13 +5,18 @@ import RevisionsIcon from '../../assets/revisions.png';
 import FeatureIcon from '../../assets/feature.png';
 import { PackageTypes } from "../../enums/PackageTypes";
 import { capitalizeWord } from "../../utils/capitalizeWord";
+import CreateGroup from "../../components/CreateGroup";
+import { FoundUsers } from "../../types/FoundUsers";
 
 interface PackagesProps {
     packages: IPackage[],
+    seller: FoundUsers[number],
+    postID: string
 }
 
-function Packages({ packages }: PackagesProps) {
+function Packages({ packages, seller, postID }: PackagesProps) {
     const [curPkg, setCurPkg] = useState<IPackage>();
+    const [createGroupPopUp, setCreateGroupPopUp] = useState<boolean>(false);
     
     useEffect(() => {
         const basicPkg = packages.find((x) => x.type === PackageTypes.BASIC);
@@ -38,6 +43,12 @@ function Packages({ packages }: PackagesProps) {
     return (
         <div className="bg-main-white rounded-[12px] border border-light-border-gray 
         shadow-info-component w-full h-[605px] overflow-hidden">
+            {createGroupPopUp &&
+            <CreateGroup
+                setCreateGroupPopUp={setCreateGroupPopUp}
+                initialServiceID={postID}
+                seller={seller}
+            />}
             {curPkg &&
             <>
                 <div className="flex justify-evenly">
@@ -96,8 +107,11 @@ function Packages({ packages }: PackagesProps) {
                             })}
                         </ul>
                     </div>
-                    <button className="main-btn mt-6">
-                        Request An Order
+                    <button className="side-btn w-full !h-12 mt-6" onClick={() => setCreateGroupPopUp(true)}>
+                        Message seller
+                    </button>
+                    <button className="main-btn mt-3">
+                        Request an order
                     </button>
                 </div>
             </>}

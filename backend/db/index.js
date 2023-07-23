@@ -6,7 +6,8 @@ import sellerLevelRouter from './routes/SellerLevelRouter.js';
 import jobCategoryRouter from './routes/JobCategoryRouter.js';
 import reviewRouter from './routes/ReviewRouter.js';
 import helpfulReviewRouter from './routes/HelpfulReviewRouter.js';
-
+import http from 'http';
+import { Server as SocketIOServer } from 'socket.io';
 import { env } from 'process';
 import cookieParser from 'cookie-parser';
 import pkg from 'cloudinary';
@@ -22,7 +23,7 @@ cloudinary.config({
 });
 
 const app = express();
-const PORT = env.PORT || 8000;
+const server = http.createServer(app);
 const router = express.Router();
 
 app.use(json({ limit: 2500000 }));
@@ -38,6 +39,24 @@ router.use('/job-categories', jobCategoryRouter);
 router.use('/reviews', reviewRouter);
 router.use('/helpful-reviews', helpfulReviewRouter);
 
-app.listen(PORT, () => {
+const io = new SocketIOServer(server, {
+    cors: {
+        origin: ["http://localhost:3000"],
+    }
+});
+
+io.on("connection", (socket) => {
+    console.log(socket.id);
+    socket.on("disconnect", () => {
+        console.log("Client disconnected");
+    });
+
+    socket.on("message", (message) => {
+        console.log(message);
+    });
+});
+
+const PORT = env.PORT || 8000;
+server.listen(PORT, () => {
     console.log(`Server is listening on port ${PORT}`);
 });

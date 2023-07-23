@@ -100,7 +100,12 @@ function Package(props: PackageProps) {
                 value={props.pkgState.title}
                 maxLength={70}
             />
-            <h3 className="mb-2">{`Package cost (£1 - £${MAX_PRICE})`}</h3>
+            <h3 className="mb-2">
+                Package cost
+                <span className="text-side-text-gray">
+                    {` (£1 - £${MAX_PRICE})`}
+                </span>
+            </h3>
             <div className="flex items-center search-bar mb-4">
                 <p className="select-none">£</p>
                 <input 
@@ -113,7 +118,12 @@ function Package(props: PackageProps) {
                     onChange={updatePackageAmount} 
                 />
             </div>
-            <h3 className="mb-2">Delivery time (in days)</h3>
+            <h3 className="mb-2">
+                Delivery time
+                <span className="text-side-text-gray">
+                    {` (in days)`}
+                </span>
+            </h3>
             <input 
                 type="text" 
                 min={1} 

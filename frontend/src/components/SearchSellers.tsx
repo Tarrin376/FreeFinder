@@ -53,11 +53,14 @@ function SearchSellers({ styles, toggleSidebar }: SearchSellersProps) {
 
     async function searchHandler(e: React.ChangeEvent<HTMLInputElement>): Promise<void> {
         const query = e.target.value;
-        const matchedSellers = await getMatchedSellers(query);
+        if (query.trim() === "") {
+            setSellers([]);
+            return;
+        }
 
+        const matchedSellers = await getMatchedSellers(query);
         if (matchedSellers !== undefined) {
-            if (query === "") setSellers([]);
-            else setSellers(matchedSellers);
+            setSellers(matchedSellers);
         }
     }
 

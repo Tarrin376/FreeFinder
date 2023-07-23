@@ -11,21 +11,53 @@ datasource db {
 }
 
 model User {
-    userID        String          @id @default(uuid())
-    username      String          @unique
-    hash          String
-    country       String
-    memberDate    DateTime        @default(now())
-    status        UserStatus
-    profilePicURL String          @default("")
-    email         String          @unique
-    seller        Seller?
-    savedPosts    SavedPost[]
-    savedSellers  SavedSeller[]
-    reviews       Review[]
-    orders        Order[]
-    foundHelpful  HelpfulReview[]
-    balance       Int             @default(0)
+    userID           String          @id @default(uuid())
+    username         String          @unique
+    hash             String
+    country          String
+    memberDate       DateTime        @default(now())
+    status           UserStatus
+    profilePicURL    String          @default("")
+    email            String          @unique
+    seller           Seller?
+    savedPosts       SavedPost[]
+    savedSellers     SavedSeller[]
+    reviews          Review[]
+    orders           Order[]
+    foundHelpful     HelpfulReview[]
+    balance          Int             @default(0)
+    socketID         String?
+    sentMessages     Message[]       @relation("SentMessage")
+    recievedMessages Message[]       @relation("RecievedMessage")
+    messageGroups    GroupMember[]
+}
+
+model MessageGroup {
+    groupID   String        @id @default(uuid())
+    groupName String
+    messages  Message[]
+    members   GroupMember[]
+}
+
+model GroupMember {
+    group   MessageGroup @relation(fields: [groupID], references: [groupID], onDelete: Cascade)
+    groupID String
+    user    User         @relation(fields: [userID], references: [userID], onDelete: Cascade)
+    userID  String
+
+    @@id([groupID, userID])
+}
+
+model Message {
+    messageID   String       @id @default(uuid())
+    from        User         @relation("SentMessage", fields: [fromID], references: [userID], onDelete: Cascade)
+    fromID      String
+    to          User         @relation("RecievedMessage", fields: [toID], references: [userID], onDelete: Cascade)
+    toID        String
+    group       MessageGroup @relation(fields: [groupID], references: [groupID], onDelete: Cascade)
+    groupID     String
+    messageText String
+    createdAt   DateTime     @default(now())
 }
 
 model SavedSeller {

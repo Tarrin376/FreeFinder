@@ -88,7 +88,7 @@ function FilterPostsProvider({ children, urlPrefix }: FilterPostsContextProps) {
 
     const cursor = useRef<string>();
     const [min, setMin] = useState<number>(postFilters.min ?? 0);
-    const [max, setMax] = useState<number>(postFilters.max ?? 0);
+    const [max, setMax] = useState<number>(postFilters.max ?? MAX_PRICE);
     const sort = useRef<string>(postFilters.sort ?? "most recent");
     const deliveryTime = useRef<number>(postFilters.deliveryTime ?? MAX_DELIVERY_DAYS);
     const searchRef = useRef<HTMLInputElement>(null);
@@ -133,7 +133,7 @@ function FilterPostsProvider({ children, urlPrefix }: FilterPostsContextProps) {
         setPostService(true);
     }
 
-    const searchHandler = useCallback((): void => {
+    function searchHandler(): void {
         sessionStorage.setItem("post_filters", JSON.stringify({
             search: searchRef.current?.value,
             sort: sort.current,
@@ -148,11 +148,11 @@ function FilterPostsProvider({ children, urlPrefix }: FilterPostsContextProps) {
         }));
         
         posts.resetState();
-    }, [selectedLanguages, sellerLevels, extraFilters, selectedWork, country]);
+    };
 
     useEffect(() => {
         searchHandler();
-    }, [selectedLanguages, sellerLevels, extraFilters, searchHandler])
+    }, [selectedLanguages, sellerLevels, extraFilters])
 
     return (
         <>
@@ -170,8 +170,7 @@ function FilterPostsProvider({ children, urlPrefix }: FilterPostsContextProps) {
             </AnimatePresence>
             <div className="flex">
                 <div className="h-[calc(100vh-90px)] w-[360px] bg-main-white border-r border-light-border-gray p-[22.5px]">
-                    <button onClick={openPostService} className={`btn-primary text-main-white bg-main-blue w-full px-5 h-[48px] 
-                    hover:bg-main-blue-hover flex items-center justify-center gap-2 mb-[50.5px] 
+                    <button onClick={openPostService} className={`main-btn flex items-center justify-center gap-2 mb-[50.5px] 
                     ${userContext.userData.username === "" ? "invalid-button" : ""}`}>
                         <img src={AddIcon} alt="" className="w-[16px] h-[16px]" />
                         Create new post

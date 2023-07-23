@@ -127,6 +127,30 @@ export async function registerUserHandler(userData) {
     }
 }
 
+export async function searchUsersHandler(search, take) {
+    try {
+        const users = await prisma.user.findMany({
+            take: take ? take : undefined,
+            where: {
+                username: search ? {
+                    contains: search,
+                    mode: 'insensitive'
+                } : undefined
+            },
+            select: {
+                profilePicURL: true,
+                username: true,
+                status: true
+            }
+        });
+
+        return users;
+    }
+    catch (err) {
+        throw new DBError("Something went wrong when trying to process this request.", 500);
+    }
+}
+
 export async function authenticateUserHandler(usernameOrEmail, password) {
     try {
         const res = await prisma.user.findFirst({

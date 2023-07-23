@@ -8,7 +8,8 @@ import
     updatePasswordHandler,
     getUserPostsHandler,
     getBalanceHandler,
-    addToBalanceHandler
+    addToBalanceHandler,
+    searchUsersHandler
 } 
 from '../services/UserService.js';
 import { cookieJwtSign } from '../middleware/cookieJwtSign.js';
@@ -16,7 +17,7 @@ import { cookieJwtSign } from '../middleware/cookieJwtSign.js';
 export async function authenticateUser(req, res) {
     try {
         const user = await authenticateUserHandler(req.body.usernameOrEmail, req.body.password);
-        req.body = { status: "ONLINE" };
+        req.body = { status: "ONLINE", socketID: req.body.socketID };
         req.userData = user;
         req.username = user.username;
 
@@ -33,7 +34,8 @@ export async function authenticateUser(req, res) {
 
 export async function jwtAuthenticateUser(req, res) {
     try {
-        req.body = { status: "ONLINE" };
+        req.body = { status: "ONLINE", socketID: req.body.socketID };
+        console.log(req.body);
         req.username = req.userData.username;
 
         const setOnline = await updateUserHandler(req);
@@ -46,7 +48,7 @@ export async function jwtAuthenticateUser(req, res) {
 
 export async function deleteUserSession(req, res) {
     try {
-        req.body = { status: "OFFLINE" };
+        req.body = { status: "OFFLINE", socketID: null };
         req.username = req.userData.username;
 
         await updateUserHandler(req);
@@ -74,6 +76,16 @@ export async function registerUser(req, res) {
     try {
         await registerUserHandler(req.body);
         res.status(201).json({ message: "success" });
+    }
+    catch (err) {
+        res.status(err.code).json({ message: err.message });
+    }
+}
+
+export async function searchUsers(req, res) {
+    try {
+        const users = await searchUsersHandler(req.query.search, parseInt(req.query.limit));
+        res.json({ users: users, message: "success" });
     }
     catch (err) {
         res.status(err.code).json({ message: err.message });

@@ -18,7 +18,7 @@ function PostSkeleton() {
                 <div className="w-[100%] h-[16px] loading mb-2 mt-4"></div>
                 <div className="w-[80%] h-[16px] loading mb-4"></div>
                 <div className="flex items-center justify-between border-t border-t-very-light-gray pt-4 pb-2">
-                    <div className="w-[55%] h-[17px] loading"></div>
+                    <div className="w-[55%] h-[16px] loading"></div>
                 </div>
             </div>
         </div>

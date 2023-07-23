@@ -65,15 +65,19 @@ function PostDetails({ jobCategory, setJobCategory, setTypeOfWork, setErrorMessa
     }
 
     function searchHandler(search: string): void {
-        const category = jobCategories.categories.find(x => x.name === jobCategory);
+        setTypeOfWork(search);
+        if (search.trim() === "") {
+            setMatchedWork([]);
+            return;
+        }
 
+        const category = jobCategories.categories.find(x => x.name === jobCategory);
         if (!category) {
             return;
         }
 
         const matched = getMatchedResults(category.workTypes.map((workType: IWorkType) => workType.name), search);
         setMatchedWork(matched);
-        setTypeOfWork(search);
     }
 
     async function retryFileUpload(upload: FailedUpload): Promise<string | undefined> {

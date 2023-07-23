@@ -14,10 +14,11 @@ import { motion } from "framer-motion";
 import AllReviews from "./AllReviews";
 
 interface ReviewProps {
-    reviewInfo: IReview
+    reviewInfo: IReview,
+    hideActions?: boolean
 }
 
-function Review({ reviewInfo }: ReviewProps) {
+function Review({ reviewInfo, hideActions }: ReviewProps) {
     const userContext = useContext(UserContext);
     const [errorMessage, setErrorMessage] = useState<string>("");
     const [helpfulCount, setHelpfulCount] = useState<number>(reviewInfo._count.foundHelpful);
@@ -67,6 +68,7 @@ function Review({ reviewInfo }: ReviewProps) {
                     maxHeight="max-h-[620px]"
                     title={`${reviewInfo.reviewer.username[reviewInfo.reviewer.username.length - 1] === 's' ? 
                     `${reviewInfo.reviewer.username}'` : `${reviewInfo.reviewer.username}'s`} review history`}
+                    hideActions={true}
                 />}
             </AnimatePresence>
             <div className="flex items-center justify-between mb-4">
@@ -80,6 +82,7 @@ function Review({ reviewInfo }: ReviewProps) {
                     />
                     <p>{reviewInfo.reviewer.username}</p>
                 </div>
+                {!hideActions &&
                 <div className="w-[50px] h-[50px] relative">
                     <div className="w-full h-full hover:bg-hover-light-gray flex items-center justify-center rounded-full cursor-pointer" 
                     onClick={() => setToggleActions((cur) => !cur)}>
@@ -99,7 +102,7 @@ function Review({ reviewInfo }: ReviewProps) {
                             </OutsideClickHandler>
                         </motion.div>}
                     </AnimatePresence>
-                </div>
+                </div>}
             </div>
             <div className="flex items-center gap-2 mb-2">
                 <Rating

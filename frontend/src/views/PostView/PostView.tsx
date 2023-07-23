@@ -171,6 +171,12 @@ function PostView() {
 
         toggle(change);
     }
+
+    function copyServiceID() {
+        if (postData) {
+            navigator.clipboard.writeText(postData.postID);
+        }
+    }
     
     useEffect(() => {
         (async (): Promise<void> => {
@@ -232,7 +238,7 @@ function PostView() {
                         <h1 className="text-[1.7rem] mb-3">
                             {postData.title}
                         </h1>}
-                        <div className="flex gap-3 items-center mb-6">
+                        <div className="flex gap-3 items-center mb-5">
                             <div className="relative">
                                 <ProfilePicAndStatus 
                                     profilePicURL={postData.postedBy.user.profilePicURL} 
@@ -260,6 +266,15 @@ function PostView() {
                                     {getTimePosted(postData.createdAt)}
                                 </p>
                             </div>
+                        </div>
+                        <div className="flex items-center gap-3 mb-4">
+                            <p>
+                                Service ID:
+                                <span className="text-main-blue">{` ${postData.postID}`}</span>
+                            </p>
+                            <button className="side-btn w-fit !h-[30px]" onClick={copyServiceID}>
+                                copy
+                            </button>
                         </div>
                         <Carousel
                             images={postData.images}
@@ -342,10 +357,19 @@ function PostView() {
                         />
                     </div>
                     <div className="relative min-w-[390px]">
-                        <Packages packages={postData.packages} />
-                        <button className="side-btn w-full !h-[48px] mt-[26px] shadow-info-component" 
+                        <Packages 
+                            packages={postData.packages}
+                            postID={postData.postID}
+                            seller={{
+                                username: postData.postedBy.user.username,
+                                status: postData.postedBy.user.status,
+                                profilePicURL: postData.postedBy.user.profilePicURL
+                            }} 
+                        />
+                        <button className="btn-primary text-main-white bg-main-black hover:bg-main-black-hover 
+                        w-full !h-[48px] mt-[26px] shadow-info-component" 
                         onClick={() => scrollIntoView(reviewsRef)}>
-                            See Seller Reviews
+                            See seller reviews
                         </button>
                         <CreateReview 
                             postID={postData.postID} 

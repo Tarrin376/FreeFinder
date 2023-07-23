@@ -10,10 +10,11 @@ interface AllReviewsProps {
     setAllReviewsPopUp: React.Dispatch<React.SetStateAction<boolean>>,
     maxWidth: string,
     maxHeight: string,
-    title: string
+    title: string,
+    hideActions?: boolean
 }
 
-function AllReviews({ url, setAllReviewsPopUp, maxWidth, maxHeight, title }: AllReviewsProps) {
+function AllReviews({ url, setAllReviewsPopUp, maxWidth, maxHeight, title, hideActions }: AllReviewsProps) {
     const [page, setPage] = useState<{ value: number }>({ value: 1 });
     const pageRef = useRef<HTMLDivElement>(null);
     const cursor = useRef<string>();
@@ -28,6 +29,7 @@ function AllReviews({ url, setAllReviewsPopUp, maxWidth, maxHeight, title }: All
                         <Review 
                             reviewInfo={review} 
                             key={index} 
+                            hideActions={hideActions}
                         />
                     )
                 })}

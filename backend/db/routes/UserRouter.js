@@ -15,7 +15,8 @@ import
     deleteUserSession,
     getUserPosts,
     getBalance,
-    addToBalance
+    addToBalance,
+    searchUsers
 } from '../controllers/UserController.js';
 
 const userRouter = Router();
@@ -30,10 +31,11 @@ userRouter.param('username', (req, _, next, value) => {
 });
 
 userRouter.post('/', registerUser);
+userRouter.get('/', searchUsers);
 
 userRouter.post('/session', authenticateUser);
 userRouter.delete('/session', cookieJwtAuth, deleteUserSession);
-userRouter.get('/jwt-auth', cookieJwtAuth, jwtAuthenticateUser);
+userRouter.post('/jwt-auth', cookieJwtAuth, jwtAuthenticateUser);
 
 userRouter.post('/:usernameOrEmail', findUser);
 userRouter.put('/:username', cookieJwtAuth, updateUser);

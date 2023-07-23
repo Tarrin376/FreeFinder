@@ -36,6 +36,7 @@ function LogIn({ setLogIn, setSignUp }: LogInProps) {
             const resp = await axios.post<{ userData: IUser, message: string }>(`/api/users/session`, {
                 usernameOrEmail,
                 password,
+                socketID: userContext.socket ? userContext.socket.id : undefined
             });
 
             userContext.setUserData({

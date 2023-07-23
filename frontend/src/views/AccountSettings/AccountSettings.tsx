@@ -1,12 +1,19 @@
 import PopUpWrapper from "../../wrappers/PopUpWrapper";
 import ProfilePicAndStatus from "../../components/ProfilePicAndStatus";
-import { useState, useContext } from 'react';
+import { useState, useContext, useRef } from 'react';
 import ErrorMessage from "../../components/ErrorMessage";
 import MyDetails from "./MyDetails";
 import UserProfile from "./UserProfile";
 import ChangePassword from "./ChangePassword";
 import DangerZone from "./DangerZone";
 import { UserContext } from "../../providers/UserContext";
+import EditIcon from '../../assets/edit.png';
+import { parseImage } from "../../utils/parseImage";
+import { fetchUpdatedUser } from "../../utils/fetchUpdatedUser";
+import { getAPIErrorMessage } from "../../utils/getAPIErrorMessage";
+import { AxiosError } from "axios";
+import { checkFile } from "../../utils/checkFile";
+import OutsideClickHandler from "react-outside-click-handler";
 
 interface SettingsProps {
     setSettingsPopUp: React.Dispatch<React.SetStateAction<boolean>>,
@@ -19,11 +26,15 @@ enum Options {
     dangerZone
 }
 
+const MAX_PROFILE_PIC_BYTES = 1000000;
+
 function AccountSettings({ setSettingsPopUp }: SettingsProps) {
     const [errorMessage, setErrorMessage] = useState<string>("");
     const [option, setOption] = useState<Options>(Options.details);
     const [loading, setLoading] = useState<boolean>(false);
     const userContext = useContext(UserContext);
+    const inputFileRef = useRef<HTMLInputElement>(null);
+    const [profileDropdown, setProfileDropdown] = useState<boolean>(false);
 
     function updateOption(next: Options): void {
         setOption(next);
@@ -42,6 +53,60 @@ function AccountSettings({ setSettingsPopUp }: SettingsProps) {
         }
     }
 
+    function triggerUpload(): void {
+        if (inputFileRef.current) {
+            inputFileRef.current.click();
+        }
+    }
+
+    async function updatePhoto(profile: string | unknown): Promise<void> {
+        if (!setErrorMessage || !setLoading) {
+            return;
+        }
+
+        try {
+            const response = await fetchUpdatedUser({...userContext.userData}, userContext.userData.username, profile);
+            userContext.setUserData(response.userData);
+            setErrorMessage("");
+        }
+        catch (err: any) {
+            const errorMessage = getAPIErrorMessage(err as AxiosError<{ message: string }>);
+            setErrorMessage(errorMessage);
+        }
+        finally {
+            setLoading(false);
+        }
+    }
+
+    function removePhoto(): void {
+        if (!setLoading || userContext.userData.profilePicURL === "") {
+            return;
+        }
+
+        setLoading(true);
+        updatePhoto("");
+    }
+
+    async function uploadPhoto(e: React.ChangeEvent<HTMLInputElement>): Promise<void> {
+        const files = e.target.files;
+        if (!files || !setLoading || !setErrorMessage) {
+            return;
+        }
+
+        setLoading(true);
+        const profilePic = files[0];
+        const valid = checkFile(profilePic, MAX_PROFILE_PIC_BYTES);
+
+        if (valid) {
+            const base64Str = await parseImage(profilePic);
+            updatePhoto(base64Str);
+        } else {
+            setErrorMessage(`Failed to upload profile picture. Please check that the file format is
+            supported and the image does not exceed ${MAX_PROFILE_PIC_BYTES / 1000000}MB in size.`);
+            setLoading(false);
+        }
+    }
+
     return (
         <PopUpWrapper setIsOpen={setSettingsPopUp} title="Account Settings">
             {errorMessage !== "" && 
@@ -51,18 +116,47 @@ function AccountSettings({ setSettingsPopUp }: SettingsProps) {
                 setErrorMessage={setErrorMessage}
             />}
             <div className="flex gap-5">
-                <div className="relative">
+                <div className="relative w-fit h-fit">
                     <ProfilePicAndStatus 
                         profilePicURL={userContext.userData.profilePicURL} 
                         profileStatus={userContext.userData.status} 
-                        statusStyles="before:left-[55px] before:top-[60px] before:w-5 before:h-5"
+                        statusStyles="before:hidden"
                         username={userContext.userData.username}
                         setErrorMessage={setErrorMessage} 
                         setLoading={setLoading} 
-                        showEdit={true} 
                         loading={loading} 
                         size={80}
                     />
+                    {!loading &&
+                    <>
+                        <button className="flex gap-1 items-center absolute top-[62px] right-0 bg-main-white 
+                      hover:bg-main-white-hover border border-light-border-gray btn-primary py-[3px] px-2 h-fit 
+                        cursor-pointer rounded-[6px]" onClick={() => setProfileDropdown(true)}>
+                            <img src={EditIcon} alt="edit" className="w-4 h-4" />
+                            <p className="text-main-black text-[13px]">Edit</p>
+                        </button>
+                        {profileDropdown && 
+                        <OutsideClickHandler onOutsideClick={() => setProfileDropdown(false)}>
+                            <div className="absolute bg-main-white left-[20px] mt-[17px] flex flex-col rounded-[6px] 
+                            border border-light-border-gray shadow-profile-page-container overflow-hidden">
+                                <p className="text-[13px] cursor-pointer hover:bg-main-white-hover 
+                                profile-menu-element pt-[6px] pb-[6px]" onClick={triggerUpload}>
+                                    {`Upload (max ${MAX_PROFILE_PIC_BYTES / 1000000}MB)`}
+                                </p>
+                                <p className="text-[13px] cursor-pointer hover:bg-main-white-hover 
+                                profile-menu-element pt-[6px] pb-[6px] border-t border-t-light-border-gray"
+                                onClick={removePhoto}>
+                                    Remove
+                                </p>
+                                <input 
+                                    type='file' 
+                                    ref={inputFileRef} 
+                                    className="hidden"
+                                    onChange={uploadPhoto} 
+                                />
+                            </div>
+                        </OutsideClickHandler>}
+                    </>}
                 </div>
                 <div>
                     <p>Username: <span className="text-main-blue">{userContext.userData.username}</span></p>
