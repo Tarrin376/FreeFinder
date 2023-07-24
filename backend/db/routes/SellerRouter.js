@@ -3,7 +3,7 @@ import {
     updateSellerDetails, 
     getSellerDetails, 
     getSellers,
-    getReviews
+    getReviews,
 } from '../controllers/SellerController.js';
 import { cookieJwtAuth } from '../middleware/cookieJwtAuth.js';
 

@@ -3,9 +3,9 @@ import { generateLetterAvatar } from '../utils/generateLetterAvatar';
 
 interface ProfilePicAndStatusProps {
     profilePicURL: string, 
-    profileStatus: string,
     size: number,
     username: string,
+    profileStatus?: UserStatus,
     statusStyles?: string,
     imgStyles?: string,
     setErrorMessage?: React.Dispatch<React.SetStateAction<string>>,
@@ -45,7 +45,7 @@ function ProfilePicAndStatus(props: ProfilePicAndStatusProps) {
             </div> :
             <img 
                 src={props.profilePicURL} alt="" 
-                className={`rounded-full object-cover ${props.imgStyles} border border-b-nav-search-gray`}
+                className={`rounded-full object-cover ${props.imgStyles} border border-nav-search-gray`}
                 style={{ width: `${props.size}px`, height: `${props.size}px` }}
             />}
         </div>

@@ -28,7 +28,7 @@ function ProfileMenu({ logout }: ProfileMenuProps) {
     const navigate = useNavigate();
 
     async function toggleStatus(): Promise<void> {
-        const toggledStatus: string = userContext.userData.status === UserStatus.ONLINE ? UserStatus.OFFLINE : UserStatus.ONLINE;
+        const toggledStatus = userContext.userData.status === UserStatus.ONLINE ? UserStatus.OFFLINE : UserStatus.ONLINE;
         setDisabled(true);
 
         try {

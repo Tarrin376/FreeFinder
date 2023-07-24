@@ -11,25 +11,24 @@ datasource db {
 }
 
 model User {
-    userID           String          @id @default(uuid())
-    username         String          @unique
-    hash             String
-    country          String
-    memberDate       DateTime        @default(now())
-    status           UserStatus
-    profilePicURL    String          @default("")
-    email            String          @unique
-    seller           Seller?
-    savedPosts       SavedPost[]
-    savedSellers     SavedSeller[]
-    reviews          Review[]
-    orders           Order[]
-    foundHelpful     HelpfulReview[]
-    balance          Int             @default(0)
-    socketID         String?
-    sentMessages     Message[]       @relation("SentMessage")
-    recievedMessages Message[]       @relation("RecievedMessage")
-    messageGroups    GroupMember[]
+    userID        String          @id @default(uuid())
+    username      String          @unique
+    hash          String
+    country       String
+    memberDate    DateTime        @default(now())
+    status        UserStatus
+    profilePicURL String          @default("")
+    email         String          @unique
+    seller        Seller?
+    savedPosts    SavedPost[]
+    savedSellers  SavedSeller[]
+    reviews       Review[]
+    orders        Order[]
+    foundHelpful  HelpfulReview[]
+    balance       Int             @default(0)
+    socketID      String?
+    sentMessages  Message[]       @relation("SentMessage")
+    messageGroups GroupMember[]
 }
 
 model MessageGroup {
@@ -37,6 +36,8 @@ model MessageGroup {
     groupName String
     messages  Message[]
     members   GroupMember[]
+    post      Post          @relation(fields: [postID], references: [postID], onDelete: Cascade)
+    postID    String
 }
 
 model GroupMember {
@@ -52,8 +53,6 @@ model Message {
     messageID   String       @id @default(uuid())
     from        User         @relation("SentMessage", fields: [fromID], references: [userID], onDelete: Cascade)
     fromID      String
-    to          User         @relation("RecievedMessage", fields: [toID], references: [userID], onDelete: Cascade)
-    toID        String
     group       MessageGroup @relation(fields: [groupID], references: [groupID], onDelete: Cascade)
     groupID     String
     messageText String
@@ -117,20 +116,21 @@ model SavedPost {
 }
 
 model Post {
-    postID        String      @id @default(uuid())
+    postID        String         @id @default(uuid())
     savedPosts    SavedPost[]
     orders        Order[]
-    postedBy      Seller      @relation(fields: [sellerID], references: [sellerID], onDelete: Cascade)
+    postedBy      Seller         @relation(fields: [sellerID], references: [sellerID], onDelete: Cascade)
     sellerID      String
     about         String
-    createdAt     DateTime    @default(now())
+    createdAt     DateTime       @default(now())
     title         String
-    startingPrice Decimal     @db.Money
+    startingPrice Decimal        @db.Money
     reviews       Review[]
     packages      Package[]
-    images        PostImage[] @relation("Images")
-    workType      WorkType    @relation(fields: [workTypeID], references: [id], onDelete: Cascade)
+    images        PostImage[]    @relation("Images")
+    workType      WorkType       @relation(fields: [workTypeID], references: [id], onDelete: Cascade)
     workTypeID    String
+    messageGroups MessageGroup[]
 }
 
 model JobCategory {

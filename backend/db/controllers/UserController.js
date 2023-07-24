@@ -9,7 +9,11 @@ import
     getUserPostsHandler,
     getBalanceHandler,
     addToBalanceHandler,
-    searchUsersHandler
+    searchUsersHandler,
+    createMessageGroupHandler,
+    getMessageGroupsHandler,
+    getMessagesHandler,
+    sendMessageHandler
 } 
 from '../services/UserService.js';
 import { cookieJwtSign } from '../middleware/cookieJwtSign.js';
@@ -35,7 +39,6 @@ export async function authenticateUser(req, res) {
 export async function jwtAuthenticateUser(req, res) {
     try {
         req.body = { status: "ONLINE", socketID: req.body.socketID };
-        console.log(req.body);
         req.username = req.userData.username;
 
         const setOnline = await updateUserHandler(req);
@@ -159,6 +162,46 @@ export async function addToBalance(req, res) {
     try {
         const balance = await addToBalanceHandler(req);
         res.json({ balance: balance, message: "success" });
+    }
+    catch (err) {
+        res.status(err.code).json({ message: err.message });
+    }
+}
+
+export async function getMessageGroups(req, res) {
+    try {
+        const result = await getMessageGroupsHandler(req);
+        res.json({ ...result, message: "success" });
+    }
+    catch (err) {
+        res.status(err.code).json({ message: err.message });
+    }
+}
+
+export async function createMessageGroup(req, res) {
+    try {
+        await createMessageGroupHandler(req);
+        res.json({ message: "success" });
+    }
+    catch (err) {
+        res.status(err.code).json({ message: err.message });
+    }
+}
+
+export async function getMessages(req, res) {
+    try {
+        const result = await getMessagesHandler(req);
+        res.json({ ...result, message: "success" });
+    }
+    catch (err) {
+        res.status(err.code).json({ message: err.message });
+    }
+}
+
+export async function sendMessage(req, res) {
+    try {
+        await sendMessageHandler(req);
+        res.json({ message: "success" });
     }
     catch (err) {
         res.status(err.code).json({ message: err.message });

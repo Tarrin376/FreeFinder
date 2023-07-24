@@ -141,7 +141,7 @@ function Navbar() {
                                     <p className="cursor-pointer hover:bg-main-white-hover 
                                     profile-menu-element pt-[6px] pb-[6px]" 
                                     onClick={(e) => goToPage(e, `/${userContext.userData.username}/saved/posts`)}>
-                                        posts
+                                        services
                                     </p>
                                     <p className="cursor-pointer hover:bg-main-white-hover 
                                     profile-menu-element pt-[6px] pb-[6px]" onClick={() => setSavedSellersPopUp(true)}>
@@ -151,7 +151,7 @@ function Navbar() {
                             </OutsideClickHandler>}
                         </li>
                         <li className="nav-item" onClick={(e) => goToPage(e, `${userContext.userData.username}/posts`)}>
-                            My posts
+                            My services
                         </li>
                     </>}
                     {windowSize > 1381 && <SearchSellers styles="ml-8" />}

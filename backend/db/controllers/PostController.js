@@ -6,6 +6,7 @@ import {
     getPostsHandler,
     updatePostHandler,
     deleteImageHandler,
+    getSellerSummaryHandler
 } from "../services/PostService.js";
 
 export async function createPost(req, res) {
@@ -72,6 +73,16 @@ export async function getPosts(req, res) {
     try {
         const posts = await getPostsHandler(req);
         res.json({ ...posts, message: "success" });
+    }
+    catch (err) {
+        res.status(err.code).json({ message: err.message });
+    }
+}
+
+export async function getSellerSummary(req, res) {
+    try {
+        const sellerSummary = await getSellerSummaryHandler(req.params.id);
+        res.json({ sellerSummary: sellerSummary, message: "success" });
     }
     catch (err) {
         res.status(err.code).json({ message: err.message });

@@ -2,7 +2,7 @@ import {
     updateSellerDetailsHandler, 
     getSellerDetailsHandler, 
     getSellersHandler, 
-    getReviewsHandler 
+    getReviewsHandler
 } from "../services/SellerService.js";
 
 export async function updateSellerDetails(req, res) {

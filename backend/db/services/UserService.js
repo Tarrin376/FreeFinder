@@ -19,9 +19,7 @@ export async function updateProfilePictureHandler(req) {
         await checkUser(req.userData.userID, req.username);
         let result = "";
 
-        if (req.body.profilePic === "") {
-            await deleteCloudinaryResource(`FreeFinder/ProfilePictures/${req.userData.userID}`, "file");
-        } else {
+        if (req.body.profilePic !== "") {
             result = await new Promise(async (resolve, reject) => {
                 const upload = cloudinary.uploader.upload(req.body.profilePic, { 
                     public_id: `FreeFinder/ProfilePictures/${req.userData.userID}` 
@@ -38,6 +36,8 @@ export async function updateProfilePictureHandler(req) {
                 .catch(err => reject(new DBError(err.message, err.http_code || 500)));
                 return success;
             });
+        } else {
+            await deleteCloudinaryResource(`FreeFinder/ProfilePictures/${req.userData.userID}`, "file");
         }
 
         const updated = await prisma.user.update({
@@ -148,6 +148,9 @@ export async function searchUsersHandler(search, take) {
     }
     catch (err) {
         throw new DBError("Something went wrong when trying to process this request.", 500);
+    }
+    finally {
+        await prisma.$disconnect();
     }
 }
 
@@ -368,6 +371,9 @@ export async function getBalanceHandler(req) {
             throw new DBError("Something went wrong when trying to process this request.", 500);
         }
     }
+    finally {
+        await prisma.$disconnect();
+    }
 }
 
 export async function addToBalanceHandler(req) {
@@ -404,5 +410,222 @@ export async function addToBalanceHandler(req) {
         } else {
             throw new DBError("Something went wrong when trying to process this request.", 500);
         }
+    }
+    finally {
+        await prisma.$disconnect();
+    }
+}
+
+export async function getMessageGroupsHandler(req) {
+    try {
+        return await queryMessageGroups(req);
+    }
+    finally {
+        await prisma.$disconnect();
+    }
+}
+
+async function queryMessageGroups(req) {
+    await checkUser(req.userData.userID, req.username);
+
+    const where = {
+        userID: req.userData.userID
+    };
+
+    const select = {
+        group: {
+            select: {
+                groupName: true,
+                groupID: true,
+                messages: {
+                    take: 1,
+                    orderBy: {
+                        createdAt: 'desc'
+                    },
+                    select: {
+                        from: {
+                            select: {
+                                username: true
+                            }
+                        },
+                        messageText: true,
+                        createdAt: true
+                    }
+                }
+            }
+        }
+    };
+
+    const cursor = req.body.cursor ? { 
+        groupID_userID: {
+            groupID: req.body.cursor,
+            postID: req.userData.userID
+        }
+    } : {};
+
+    const result = await getPaginatedData(
+        where,
+        select, 
+        "groupMember", 
+        req.body.limit, 
+        cursor, 
+        "groupID_userID", 
+    );
+
+    const groups = result.next.map((x) => {
+        return {
+            ...x.group,
+            lastMessage: x.group.messages.length > 0 ? x.group.messages[0] : null
+        }
+    });
+
+    return {
+        ...result,
+        next: groups
+    }
+}
+
+export async function createMessageGroupHandler(req) {
+    try {
+        await checkUser(req.userData.userID, req.username);
+        if (!Array.isArray(req.body.members) || req.body.members.length === 0 || typeof req.body.members[0] !== "string") {
+            throw new DBError("Members must be a non-empty string array.", 400);
+        }
+
+        await prisma.$transaction(async (tx) => {
+            const group = await tx.messageGroup.create({
+                data: {
+                    groupName: req.body.groupName,
+                    postID: req.body.postID
+                }
+            });
+
+            const members = [req.username, ...req.body.members];
+            for (const member of members) {
+                await tx.groupMember.create({
+                    data: {
+                        group: {
+                            connect: {
+                                groupID: group.groupID
+                            }
+                        },
+                        user: {
+                            connect: {
+                                username: member
+                            }
+                        }
+                    }
+                });
+            }
+        });
+    }
+    catch (err) {
+        if (err instanceof DBError) {
+            throw err;
+        } else if (err instanceof Prisma.PrismaClientValidationError) {
+            throw new DBError("Missing required fields or fields provided are invalid.", 400);
+        } else {
+            throw new DBError("Something went wrong when trying to process this request.", 500);
+        }
+    }
+    finally {
+        await prisma.$disconnect();
+    }
+}
+
+export async function getMessagesHandler(req) {
+    try {
+        return await queryMessages(req);
+    }
+    finally {
+        await prisma.$disconnect();
+    }
+}
+
+async function queryMessages(req) {
+    await checkUser(req.userData.userID, req.username);
+    
+    const group = !req.body.cursor ? await prisma.messageGroup.findUnique({
+        where: {
+            groupID: req.params.groupID
+        },
+        select: {
+            groupName: true,
+            groupID: true,
+            members: {
+                select: {
+                    user: {
+                        select: {
+                            username: true,
+                            profilePicURL: true,
+                            status: true
+                        }
+                    }
+                }
+            }
+        }
+    }) : undefined;
+
+    const where = {
+        groupID: req.params.groupID
+    };
+
+    const options = {
+        orderBy: {
+            createdAt: 'desc'
+        }
+    };
+
+    const select = {
+        from: {
+            select: {
+                username: true,
+                profilePicURL: true,
+                status: true
+            }
+        },
+        messageText: true,
+        createdAt: true,
+        messageID: true
+    };
+
+    const result = await getPaginatedData(
+        where, 
+        select, 
+        "message", 
+        req.body.limit, 
+        { messageID: req.body.cursor }, 
+        "messageID", 
+        options
+    );
+
+    return {
+        ...result,
+        ...group
+    }
+}
+
+export async function sendMessageHandler(req) {
+    try {
+        await checkUser(req.userData.userID, req.username);
+        await prisma.message.create({
+            data: {
+                fromID: req.userData.userID,
+                groupID: req.params.groupID,
+                messageText: req.body.message
+            }
+        });
+    }
+    catch (err) {
+        if (err instanceof DBError) {
+            throw err;
+        } else if (err instanceof Prisma.PrismaClientValidationError) {
+            throw new DBError("Missing required fields or fields provided are invalid.", 400);
+        } else {
+            throw new DBError("Something went wrong when trying to process this request.", 500);
+        }
+    }
+    finally {
+        await prisma.$disconnect();
     }
 }

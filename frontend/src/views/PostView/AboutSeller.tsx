@@ -6,11 +6,12 @@ import SaveSeller from "../../components/SaveSeller";
 import { useNavigate } from "react-router-dom";
 import { useContext } from "react";
 import { UserContext } from "../../providers/UserContext";
+import { UserStatus } from "../../enums/UserStatus";
 
 interface AboutSellerProps {
     description: string,
     profilePicURL: string,
-    status: string,
+    status: UserStatus,
     username: string,
     sellerLevel: string,
     summary: string,

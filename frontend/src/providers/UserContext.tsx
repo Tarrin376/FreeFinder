@@ -2,6 +2,7 @@ import { createContext, useState, useEffect } from 'react';
 import { IUser } from '../models/IUser';
 import axios from "axios";
 import io, { Socket } from "socket.io-client";
+import { UserStatus } from '../enums/UserStatus';
 
 export const initialState: IUserContext = {
     userData: {
@@ -9,7 +10,7 @@ export const initialState: IUserContext = {
         country: "",
         profilePicURL: "",
         email: "",
-        status: "",
+        status: UserStatus.ONLINE,
         userID: "",
         seller: null,
         savedPosts: new Set(),
@@ -39,7 +40,7 @@ function UserProvider({ children }: { children?: React.ReactNode }) {
 
             const ws = io(`http://localhost:8000`);
             ws.on('connect', () => {
-                axios.post<{ userData: IUser, message: string }>(`/api/users/jwt-auth`, { socketID: ws.id })
+                axios.get<{ userData: IUser, message: string }>(`/api/users/jwt-auth`)
                 .then((resp) => {
                     setSocket(ws);
                     setUserData({

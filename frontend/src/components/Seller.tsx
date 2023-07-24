@@ -11,12 +11,13 @@ import Button from "./Button";
 import { useWindowSize } from "../hooks/useWindowSize";
 import ErrorPopUp from "./ErrorPopUp";
 import { AnimatePresence } from "framer-motion";
+import { UserStatus } from "../enums/UserStatus";
 
 interface SellerProps {
     navigateToProfile: () => void,
     profilePicURL: string,
     profilePicSize: number,
-    status: string,
+    status: UserStatus,
     username: string,
     searchQuery: string,
     sellerLevel: string,

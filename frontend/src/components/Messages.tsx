@@ -1,11 +1,15 @@
 import PopUpWrapper from "../wrappers/PopUpWrapper";
-import { useEffect, useContext, useState } from "react";
+import { useContext, useState, useRef, useEffect } from "react";
 import { UserContext } from "../providers/UserContext";
-import SendIcon from "../assets/send.png";
 import AllMessagesIcon from "../assets/AllMessages.png";
 import AddGroupIcon from "../assets/AddGroup.png";
 import CreateGroup from "./CreateGroup";
 import { AnimatePresence } from "framer-motion";
+import { usePaginateData } from "../hooks/usePaginateData";
+import { GroupPreview } from "../types/GroupPreview";
+import { PaginationResponse } from "../types/PaginateResponse";
+import GroupPreviewMessage from "./GroupPreviewMessage";
+import Chat from "./Chat";
 
 interface MessagesProps {
     setMessagesPopUp: React.Dispatch<React.SetStateAction<boolean>>
@@ -14,16 +18,27 @@ interface MessagesProps {
 function Messages({ setMessagesPopUp }: MessagesProps) {
     const userContext = useContext(UserContext);
     const [createGroupPopUp, setCreateGroupPopUp] = useState<boolean>(false);
+    const [page, setPage] = useState<{ value: number }>({ value: 1 });
+    const [group, setGroup] = useState<GroupPreview>();
+
+    const pageRef = useRef<HTMLDivElement>(null);
+    const cursor = useRef<string>();
+    const url = `/api/users/${userContext.userData.username}/message-groups/all`;
+    const messageGroups = usePaginateData<{}, GroupPreview, PaginationResponse<GroupPreview>>(pageRef, cursor, url, page, setPage, {});
 
     function openCreateGroupPopUp() {
         setCreateGroupPopUp(true);
     }
 
+    function updateMessageGroup(group: GroupPreview) {
+        setGroup(group);
+    }
+
     useEffect(() => {
-        if (userContext.socket) {
-            userContext.socket.emit("message", () => console.log("hello there"));
+        if (messageGroups.data.length > 0 && page.value === 1) {
+            setGroup(messageGroups.data[0]);
         }
-    }, [userContext]);
+    }, [messageGroups.data, page]);
 
     return (
         <PopUpWrapper setIsOpen={setMessagesPopUp} title="Messages" styles="!max-w-[1000px] h-[1000px]">
@@ -33,12 +48,12 @@ function Messages({ setMessagesPopUp }: MessagesProps) {
                     setCreateGroupPopUp={setCreateGroupPopUp} 
                 />}
             </AnimatePresence>
-            <div className="flex flex-1 gap-3">
-                <div className="bg-transparent rounded-[8px] overflow-y-scroll scrollbar-hide w-[330px]">
+            <div className="flex flex-1">
+                <div className="flex flex-col w-[330px] border-r border-light-border-gray pr-3">
                     <div className="flex items-center justify-between w-full">
                         <div className="flex items-center gap-2">
                             <img src={AllMessagesIcon} className="w-[16px] h-[16px]" alt="" />
-                            <p className="text-side-text-gray text-[15px]">All messages</p>
+                            <p className="text-side-text-gray text-[15px]">{`All messages (${messageGroups.count.current})`}</p>
                         </div>
                         <img 
                             src={AddGroupIcon} 
@@ -47,27 +62,24 @@ function Messages({ setMessagesPopUp }: MessagesProps) {
                             alt="" 
                         />
                     </div>
-                </div>
-                <div className="flex-grow rounded-[8px] overflow-hidden flex flex-col gap-4">
-                    <div className="border border-light-border-gray bg-transparent p-6 h-[100px] rounded-[8px] w-full">
-
-                    </div>
-                    <div className="bg-[#f6f6f8] flex-grow w-full rounded-[8px]">
-
-                    </div>
-                    <div className="search-bar flex w-full">
-                        <input 
-                            type="text"
-                            className="focus:outline-none placeholder-search-text bg-transparent flex-grow"
-                            placeholder="Send a message" 
-                        />
-                        <img 
-                            src={SendIcon} 
-                            className="w-[23px] h-[23px] cursor-pointer" 
-                            alt="Send" 
-                        />
+                    <div className="overflow-y-scroll flex-grow w-full scrollbar-hide" ref={pageRef}>
+                        {messageGroups.data.map((msgGroup: GroupPreview, index: number) => {
+                            return (
+                                <GroupPreviewMessage 
+                                    group={msgGroup}
+                                    selectedGroup={group}
+                                    action={updateMessageGroup}
+                                    key={index}
+                                />
+                            )
+                        })}
                     </div>
                 </div>
+                {group ? 
+                <Chat groupID={group.groupID} /> : 
+                <div className="flex-grow flex items-center justify-center">
+                    <p className="text-side-text-gray text-[18px]">You have had no conversations yet.</p>
+                </div>}
             </div>
         </PopUpWrapper>
     )

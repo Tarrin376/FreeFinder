@@ -43,14 +43,7 @@ export type InitialPackageState = {
 
 export type ReducerAction = { 
     type: PackageTypes,
-    payload: { 
-        revisions?: string,
-        features?: string[],
-        deliveryTime?: number,
-        amount?: number,
-        description?: string,
-        title?: string
-    }
+    payload: Partial<InitialPackageState>
 };
 
 const initialPkgState: InitialPackageState = {

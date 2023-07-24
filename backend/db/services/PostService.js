@@ -387,13 +387,6 @@ export async function getPostsHandler(req) {
     try {
         return await queryPosts(req);
     }
-    catch (err) {
-        if (err instanceof Prisma.PrismaClientValidationError) {
-            throw new DBError("Missing required fields or fields provided are invalid.", 400);
-        } else {
-            throw new DBError("Something went wrong when trying to process this request.", 500);
-        }
-    }
     finally {
         await prisma.$disconnect();
     }
@@ -466,5 +459,43 @@ async function queryPosts(req) {
     return {
         ...result,
         next: posts
+    }
+}
+
+export async function getSellerSummaryHandler(postID) {
+    try {
+        const sellerSummary = await prisma.post.findUnique({
+            where: {
+                postID: postID 
+            },
+            select: {
+                postedBy: {
+                    select: {
+                        user: {
+                            select: {
+                                profilePicURL: true,
+                                status: true,
+                                username: true
+                            }
+                        }
+                    }
+                }
+            }
+        });
+
+        if (!sellerSummary) {
+            throw new DBError("Service ID does not exist.", 404);
+        }
+
+        return sellerSummary.postedBy.user;
+    }
+    catch (err) {
+        if (err instanceof DBError) {
+            throw err;
+        } else if (err instanceof Prisma.PrismaClientValidationError) {
+            throw new DBError("Missing required fields or fields provided are invalid.", 400);
+        } else {
+            throw new DBError("Something went wrong when trying to process this request.", 500);
+        }
     }
 }

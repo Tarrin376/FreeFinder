@@ -16,7 +16,11 @@ import
     getUserPosts,
     getBalance,
     addToBalance,
-    searchUsers
+    searchUsers,
+    getMessageGroups,
+    createMessageGroup,
+    getMessages,
+    sendMessage
 } from '../controllers/UserController.js';
 
 const userRouter = Router();
@@ -35,7 +39,7 @@ userRouter.get('/', searchUsers);
 
 userRouter.post('/session', authenticateUser);
 userRouter.delete('/session', cookieJwtAuth, deleteUserSession);
-userRouter.post('/jwt-auth', cookieJwtAuth, jwtAuthenticateUser);
+userRouter.get('/jwt-auth', cookieJwtAuth, jwtAuthenticateUser);
 
 userRouter.post('/:usernameOrEmail', findUser);
 userRouter.put('/:username', cookieJwtAuth, updateUser);
@@ -44,5 +48,9 @@ userRouter.put('/:username/profile-picture', cookieJwtAuth, updateProfilePicture
 userRouter.put('/:username/password', cookieJwtAuth, updatePassword);
 userRouter.get('/:username/balance', cookieJwtAuth, getBalance);
 userRouter.put('/:username/balance', cookieJwtAuth, addToBalance);
+userRouter.post('/:username/message-groups', cookieJwtAuth, createMessageGroup);
+userRouter.post('/:username/message-groups/all', cookieJwtAuth, getMessageGroups);
+userRouter.post('/:username/message-groups/:groupID/all', cookieJwtAuth, getMessages);
+userRouter.post('/:username/message-groups/:groupID', cookieJwtAuth, sendMessage);
 
 export default userRouter;
