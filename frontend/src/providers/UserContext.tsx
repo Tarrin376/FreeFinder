@@ -40,9 +40,8 @@ function UserProvider({ children }: { children?: React.ReactNode }) {
 
             const ws = io(`http://localhost:8000`);
             ws.on('connect', () => {
-                axios.get<{ userData: IUser, message: string }>(`/api/users/jwt-auth`)
+                axios.post<{ userData: IUser, message: string }>(`/api/users/jwt-auth`, { socketID: ws.id })
                 .then((resp) => {
-                    setSocket(ws);
                     setUserData({
                         ...resp.data.userData, 
                         savedPosts: new Set(resp.data.userData.savedPosts),
@@ -52,6 +51,9 @@ function UserProvider({ children }: { children?: React.ReactNode }) {
                 .catch(() => {
                     // Do nothing if the user's session has expired or is invalid.
                 })
+                .finally(() => {
+                    setSocket(ws);
+                });
             });
         }
         catch (err: any) {

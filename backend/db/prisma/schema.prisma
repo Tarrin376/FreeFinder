@@ -26,9 +26,9 @@ model User {
     orders        Order[]
     foundHelpful  HelpfulReview[]
     balance       Int             @default(0)
-    socketID      String?
     sentMessages  Message[]       @relation("SentMessage")
     messageGroups GroupMember[]
+    createdGroups MessageGroup[]
 }
 
 model MessageGroup {
@@ -38,10 +38,12 @@ model MessageGroup {
     members   GroupMember[]
     post      Post          @relation(fields: [postID], references: [postID], onDelete: Cascade)
     postID    String
+    creator   User          @relation(fields: [creatorID], references: [userID], onDelete: Cascade)
+    creatorID String
 }
 
 model GroupMember {
-    group   MessageGroup @relation(fields: [groupID], references: [groupID], onDelete: Cascade)
+    group   MessageGroup @relation(fields: [groupID], references: [groupID])
     groupID String
     user    User         @relation(fields: [userID], references: [userID], onDelete: Cascade)
     userID  String

@@ -1,6 +1,6 @@
 import SearchIcon from '../assets/search.png';
 import Price from '../components/Price';
-import { useRef, createContext, useState, useContext, useEffect, useCallback } from 'react';
+import { useRef, createContext, useState, useContext, useEffect } from 'react';
 import { MAX_PRICE, MAX_DELIVERY_DAYS } from '../views/CreatePost/Package';
 import { usePaginateData } from '../hooks/usePaginateData';
 import { IPost } from '../models/IPost';

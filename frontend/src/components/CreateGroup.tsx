@@ -149,11 +149,12 @@ function CreateGroup({ setCreateGroupPopUp, seller, initialServiceID }: CreateGr
             {userSearch.trim() !== "" &&
             <div className="border-b border-x border-light-border-gray rounded-b-[8px] 
             overflow-y-scroll p-4 bg-main-white flex flex-col gap-3">
-                {!loading ? foundUsers.map((user: FoundUsers[number], index: number) => {
+                {!loading ? foundUsers.filter((user: FoundUsers[number]) => user.username !== userContext.userData.username)
+                .map((user: FoundUsers[number], index: number) => {
                     const added = addedUsers.find((x) => x.username === user.username) !== undefined;
                     return (
-                        <div className="flex justify-between items-center" key={index}>
-                            <div className="flex items-center gap-3">
+                        <div className="flex justify-between items-center gap-[8px]" key={index}>
+                            <div className="flex items-center gap-3 overflow-hidden">
                                 <ProfilePicAndStatus
                                     profilePicURL={user.profilePicURL}
                                     profileStatus={user.status}
@@ -168,7 +169,7 @@ function CreateGroup({ setCreateGroupPopUp, seller, initialServiceID }: CreateGr
                                     styles="hover:!px-0"
                                 />
                             </div>
-                            <button className={`side-btn w-fit !h-[33px] ${added ? `!bg-light-green !text-main-white 
+                            <button className={`side-btn w-fit !h-fit py-1 ${added ? `!bg-light-green !text-main-white 
                             !border-light-green pointer-events-none` : ""}`}
                             onClick={() => addUser(user)}>
                                 {added ? "Added" : "Add"}

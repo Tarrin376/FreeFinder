@@ -45,7 +45,7 @@ function ProfilePicAndStatus(props: ProfilePicAndStatusProps) {
             </div> :
             <img 
                 src={props.profilePicURL} alt="" 
-                className={`rounded-full object-cover ${props.imgStyles} border border-nav-search-gray`}
+                className={`rounded-full object-cover ${props.imgStyles} border border-light-gray`}
                 style={{ width: `${props.size}px`, height: `${props.size}px` }}
             />}
         </div>

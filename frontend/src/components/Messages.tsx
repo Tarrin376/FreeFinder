@@ -35,22 +35,39 @@ function Messages({ setMessagesPopUp }: MessagesProps) {
     }
 
     useEffect(() => {
-        if (messageGroups.data.length > 0 && page.value === 1) {
+        if (!group && messageGroups.data.length > 0) {
             setGroup(messageGroups.data[0]);
         }
-    }, [messageGroups.data, page]);
+    }, [group, messageGroups.data]);
+
+    useEffect(() => {
+        if (userContext.socket) {
+            userContext.socket.on("user-typing", (username, id) => {
+                console.log(username, id);
+            });
+
+            userContext.socket.on("receive-message", (message, id) => {
+                console.log(message, id);
+            });
+        }
+
+        return () => {
+            userContext.socket?.removeAllListeners("user-typing");
+            userContext.socket?.removeAllListeners("receive-message");
+        }
+    }, [userContext.socket]);
 
     return (
-        <PopUpWrapper setIsOpen={setMessagesPopUp} title="Messages" styles="!max-w-[1000px] h-[1000px]">
+        <PopUpWrapper setIsOpen={setMessagesPopUp} title="Messages" styles="!max-w-[1100px] h-[1100px]">
             <AnimatePresence>
                 {createGroupPopUp && 
                 <CreateGroup 
                     setCreateGroupPopUp={setCreateGroupPopUp} 
                 />}
             </AnimatePresence>
-            <div className="flex flex-1">
-                <div className="flex flex-col w-[330px] border-r border-light-border-gray pr-3">
-                    <div className="flex items-center justify-between w-full">
+            <div className="flex flex-1 overflow-y-hidden">
+                <div className="flex flex-col w-[340px] flex-shrink-0 border-r border-light-border-gray pr-3">
+                    <div className="flex items-center justify-between w-full mb-4">
                         <div className="flex items-center gap-2">
                             <img src={AllMessagesIcon} className="w-[16px] h-[16px]" alt="" />
                             <p className="text-side-text-gray text-[15px]">{`All messages (${messageGroups.count.current})`}</p>
@@ -62,7 +79,7 @@ function Messages({ setMessagesPopUp }: MessagesProps) {
                             alt="" 
                         />
                     </div>
-                    <div className="overflow-y-scroll flex-grow w-full scrollbar-hide" ref={pageRef}>
+                    <div className="overflow-y-scroll flex-grow w-full pr-[8px] flex flex-col gap-2" ref={pageRef}>
                         {messageGroups.data.map((msgGroup: GroupPreview, index: number) => {
                             return (
                                 <GroupPreviewMessage 
@@ -76,7 +93,10 @@ function Messages({ setMessagesPopUp }: MessagesProps) {
                     </div>
                 </div>
                 {group ? 
-                <Chat groupID={group.groupID} /> : 
+                <Chat 
+                    group={group} 
+                    key={group.groupID} 
+                /> : 
                 <div className="flex-grow flex items-center justify-center">
                     <p className="text-side-text-gray text-[18px]">You have had no conversations yet.</p>
                 </div>}

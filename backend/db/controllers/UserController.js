@@ -21,7 +21,7 @@ import { cookieJwtSign } from '../middleware/cookieJwtSign.js';
 export async function authenticateUser(req, res) {
     try {
         const user = await authenticateUserHandler(req.body.usernameOrEmail, req.body.password);
-        req.body = { status: "ONLINE", socketID: req.body.socketID };
+        req.body = { status: "ONLINE" };
         req.userData = user;
         req.username = user.username;
 
@@ -38,7 +38,7 @@ export async function authenticateUser(req, res) {
 
 export async function jwtAuthenticateUser(req, res) {
     try {
-        req.body = { status: "ONLINE", socketID: req.body.socketID };
+        req.body = { status: "ONLINE" };
         req.username = req.userData.username;
 
         const setOnline = await updateUserHandler(req);
@@ -51,7 +51,7 @@ export async function jwtAuthenticateUser(req, res) {
 
 export async function deleteUserSession(req, res) {
     try {
-        req.body = { status: "OFFLINE", socketID: null };
+        req.body = { status: "OFFLINE" };
         req.username = req.userData.username;
 
         await updateUserHandler(req);
@@ -200,8 +200,8 @@ export async function getMessages(req, res) {
 
 export async function sendMessage(req, res) {
     try {
-        await sendMessageHandler(req);
-        res.json({ message: "success" });
+        const newMessage = await sendMessageHandler(req);
+        res.json({ newMessage: newMessage, message: "success" });
     }
     catch (err) {
         res.status(err.code).json({ message: err.message });

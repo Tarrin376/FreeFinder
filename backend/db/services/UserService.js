@@ -437,6 +437,7 @@ async function queryMessageGroups(req) {
             select: {
                 groupName: true,
                 groupID: true,
+                creatorID: true,
                 messages: {
                     take: 1,
                     orderBy: {
@@ -450,6 +451,17 @@ async function queryMessageGroups(req) {
                         },
                         messageText: true,
                         createdAt: true
+                    }
+                },
+                members: {
+                    select: {
+                        user: {
+                            select: {
+                                username: true,
+                                profilePicURL: true,
+                                status: true,
+                            }
+                        }
                     }
                 }
             }
@@ -496,7 +508,8 @@ export async function createMessageGroupHandler(req) {
             const group = await tx.messageGroup.create({
                 data: {
                     groupName: req.body.groupName,
-                    postID: req.body.postID
+                    postID: req.body.postID,
+                    creatorID: req.userData.userID
                 }
             });
 
@@ -522,6 +535,8 @@ export async function createMessageGroupHandler(req) {
     catch (err) {
         if (err instanceof DBError) {
             throw err;
+        } else if (err instanceof Prisma.PrismaClientKnownRequestError && err.code === "P2002") {
+            throw new DBError("One or more members are already in a group for this service.", 409);
         } else if (err instanceof Prisma.PrismaClientValidationError) {
             throw new DBError("Missing required fields or fields provided are invalid.", 400);
         } else {
@@ -544,27 +559,6 @@ export async function getMessagesHandler(req) {
 
 async function queryMessages(req) {
     await checkUser(req.userData.userID, req.username);
-    
-    const group = !req.body.cursor ? await prisma.messageGroup.findUnique({
-        where: {
-            groupID: req.params.groupID
-        },
-        select: {
-            groupName: true,
-            groupID: true,
-            members: {
-                select: {
-                    user: {
-                        select: {
-                            username: true,
-                            profilePicURL: true,
-                            status: true
-                        }
-                    }
-                }
-            }
-        }
-    }) : undefined;
 
     const where = {
         groupID: req.params.groupID
@@ -599,22 +593,33 @@ async function queryMessages(req) {
         options
     );
 
-    return {
-        ...result,
-        ...group
-    }
+    return result;
 }
 
 export async function sendMessageHandler(req) {
     try {
         await checkUser(req.userData.userID, req.username);
-        await prisma.message.create({
+        const newMessage = await prisma.message.create({
             data: {
                 fromID: req.userData.userID,
                 groupID: req.params.groupID,
                 messageText: req.body.message
+            },
+            select: {
+                from: {
+                    select: {
+                        username: true,
+                        profilePicURL: true,
+                        status: true
+                    }
+                },
+                messageText: true,
+                createdAt: true,
+                messageID: true
             }
         });
+
+        return newMessage;
     }
     catch (err) {
         if (err instanceof DBError) {

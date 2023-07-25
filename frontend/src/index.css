@@ -82,6 +82,12 @@
     .sidebar-item {
         @apply pt-9 link;
     }
+    .dot {
+        @apply w-[6px] h-[6px] rounded-full bg-side-text-gray opacity-0 animate-user-typing;
+    }
+    .dropdown {
+        @apply border border-light-border-gray bg-main-white rounded-[8px] p-4 absolute shadow-post top-full right-0;
+    }
 }
 
 @layer base {

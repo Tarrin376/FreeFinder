@@ -462,11 +462,11 @@ async function queryPosts(req) {
     }
 }
 
-export async function getSellerSummaryHandler(postID) {
+export async function getSellerSummaryHandler(req) {
     try {
         const sellerSummary = await prisma.post.findUnique({
             where: {
-                postID: postID 
+                postID: req.params.id 
             },
             select: {
                 postedBy: {
@@ -475,7 +475,8 @@ export async function getSellerSummaryHandler(postID) {
                             select: {
                                 profilePicURL: true,
                                 status: true,
-                                username: true
+                                username: true,
+                                userID: true
                             }
                         }
                     }
@@ -487,7 +488,12 @@ export async function getSellerSummaryHandler(postID) {
             throw new DBError("Service ID does not exist.", 404);
         }
 
-        return sellerSummary.postedBy.user;
+        if (req.userData.userID === sellerSummary.postedBy.user.userID) {
+            throw new DBError("You cannot create a group for your own service.", 409);
+        }
+
+        const { userID, ...res } = sellerSummary.postedBy.user;
+        return res;
     }
     catch (err) {
         if (err instanceof DBError) {

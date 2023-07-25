@@ -64,7 +64,7 @@ function Seller(props: SellerProps) {
     }
 
     return (
-        <div className="flex items-center justify-between gap-[5px]">
+        <div className="flex items-center justify-between gap-[8px]">
             <div className="flex items-center gap-3 cursor-pointer hover:bg-[#f7f7f7] rounded-[6px]
             transition-all ease-out duration-100 p-2 flex-grow overflow-hidden" onClick={props.navigateToProfile}>
                 {windowSize > 400 &&

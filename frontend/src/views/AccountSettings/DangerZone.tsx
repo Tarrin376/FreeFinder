@@ -42,7 +42,7 @@ function DangerZone({ setSettingsPopUp }: { setSettingsPopUp: React.Dispatch<Rea
                 completedText="Account deleted"
                 defaultText="Delete account"
                 loadingText="Deleting account"
-                styles="red-btn"
+                styles="red-btn w-fit"
                 textStyles="text-error-text"
                 setErrorMessage={setErrorMessage}
                 whenComplete={resetUserState}

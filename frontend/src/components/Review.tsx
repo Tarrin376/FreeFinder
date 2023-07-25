@@ -90,7 +90,7 @@ function Review({ reviewInfo, hideActions }: ReviewProps) {
                     </div>
                     <AnimatePresence>
                         {toggleActions &&
-                        <motion.div className="border border-light-border-gray bg-main-white rounded-[8px] p-4 absolute top-full right-0 shadow-post"
+                        <motion.div className="dropdown"
                         initial={{ opacity: 0 }} animate={{ opacity: 1 }} exit={{ opacity: 0 }} transition={{ duration: 0.1 }}>
                             <OutsideClickHandler onOutsideClick={() => setToggleActions(false)}>
                                 <p className="whitespace-nowrap mb-4 link">

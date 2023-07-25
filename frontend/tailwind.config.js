@@ -5,6 +5,19 @@ module.exports = {
   content: ["./src/**/*.{jsx,tsx}"],
   theme: {
     extend: {
+        keyframes: {
+            typing: {
+                "0%": {
+                    opacity: 0
+                },
+                "50%": {
+                    opacity: 0.8
+                },
+                "100%": {
+                    opacity: 0
+                }
+            }
+        },
         colors: {
             'main-blue': '#4E73F8',
             'bg-light': '#fdfdfd',
@@ -15,7 +28,7 @@ module.exports = {
             'very-light-gray': '#EBEBEB',
             'very-light-gray-hover': '#E6E6E6',
             'main-black': '#292929',
-            'side-text-gray': '#939393', // #9c9c9c old
+            'side-text-gray': '#8d8c91', // #9c9c9c old
             'main-black-hover': '#323232',
             'main-white-hover': '#fbfbfb',
             'error-red': '#fde4e4',
@@ -42,6 +55,9 @@ module.exports = {
         },
         fontFamily: {
             railway: ['"Mulish"', ...defaultTheme.fontFamily.sans]
+        },
+        animation: {
+            "user-typing": "typing 1.7s infinite"
         }
     },
     screens: {

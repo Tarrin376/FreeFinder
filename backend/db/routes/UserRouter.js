@@ -39,7 +39,7 @@ userRouter.get('/', searchUsers);
 
 userRouter.post('/session', authenticateUser);
 userRouter.delete('/session', cookieJwtAuth, deleteUserSession);
-userRouter.get('/jwt-auth', cookieJwtAuth, jwtAuthenticateUser);
+userRouter.post('/jwt-auth', cookieJwtAuth, jwtAuthenticateUser);
 
 userRouter.post('/:usernameOrEmail', findUser);
 userRouter.put('/:username', cookieJwtAuth, updateUser);

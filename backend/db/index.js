@@ -46,13 +46,20 @@ const io = new SocketIOServer(server, {
 });
 
 io.on("connection", (socket) => {
-    console.log(socket.id);
-    socket.on("disconnect", () => {
-        console.log("Client disconnected");
+    socket.on("send-message", (message, groupID) => {
+        socket.to(groupID).emit("receive-message", message, groupID);
     });
 
-    socket.on("message", (message) => {
-        console.log(message);
+    socket.on("join-message-group", (groupID) => {
+        socket.join(groupID);
+    });
+
+    socket.on("typing-message", (username, groupID) => {
+        socket.to(groupID).emit("user-typing", username, groupID);
+    });
+
+    socket.on("disconnect", () => {
+        console.log("disconnected");
     });
 });
 

@@ -3,18 +3,21 @@ import { useEffect } from "react";
 export const MOD = 5;
 
 export function usePaginationScroll(pageRef: React.RefObject<HTMLDivElement>, loading: boolean, 
-    reachedBottom: boolean, goToNextPage: () => void, page: number) {
+    reachedBottom: boolean, goToNextPage: () => void, page: number, reverseScroll?: boolean): void {
 
     function loadMoreContent(): void {
         if (!pageRef.current) {
             return;
         }
 
-        let scrollTop = pageRef.current.scrollTop;
-        let scrollHeight = pageRef.current.scrollHeight;
-        let offsetHeight = pageRef.current.offsetHeight;
+        const scrollTop = pageRef.current.scrollTop;
+        const scrollHeight = pageRef.current.scrollHeight;
+        const offsetHeight = pageRef.current.offsetHeight;
 
-        if (scrollHeight - offsetHeight - 200 <= scrollTop && !reachedBottom && !loading && page % MOD !== 0) {
+        const hitScrollBottom = scrollHeight - offsetHeight - 200 <= scrollTop && !reverseScroll;
+        const hitScrollTop = scrollHeight - offsetHeight - 200 <= Math.abs(scrollTop) && reverseScroll;
+
+        if ((hitScrollBottom || hitScrollTop) && !reachedBottom && !loading && page % MOD !== 0) {
             goToNextPage();
         }
     }
