@@ -101,7 +101,7 @@ function PostImage(props: PostImageProps) {
                         <motion.div className="w-full h-full rounded-[8px] flex items-center gap-2
                         justify-center bg-[#1d1d1db7] absolute top-0 left-0" initial={{ opacity: 0 }}
                         animate={{ opacity: 1 }} exit={{ opacity: 0 }} transition={{ duration: 0.2 }}>
-                            <LoadingSvg size="24px" />
+                            <LoadingSvg size={24} />
                             <p className="text-main-white">{updatingImage ? "Updating" : "Removing"}</p>
                         </motion.div>}
                     </AnimatePresence>

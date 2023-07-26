@@ -67,7 +67,7 @@ function ChangePassword() {
             <p className="text-side-text-gray mt-1 pb-4 border-b border-b-nav-search-gray">
                 Please enter your current password to change your password
             </p>
-            <div className="flex mt-7 flex-col gap-4">
+            <form className="flex mt-7 flex-col gap-4">
                 <div>
                     {errorMessage !== "" && 
                     <ErrorMessage 
@@ -76,9 +76,13 @@ function ChangePassword() {
                         setErrorMessage={setErrorMessage}
                     />}
                     <p className="mb-2">Current password</p>
-                    <input type="password" className={`search-bar ${validCurrentPass || currentPass === "" ? '' : 'invalid-input'}`}
-                    placeholder="Enter your current password"
-                    onChange={(e) => updatePass(e.target.value, setValidCurrentPass, setCurrentPass)} />
+                    <input 
+                        type="password" 
+                        className={`search-bar ${validCurrentPass || currentPass === "" ? '' : 'invalid-input'}`}
+                        placeholder="Enter your current password"
+                        onChange={(e) => updatePass(e.target.value, setValidCurrentPass, setCurrentPass)}
+                        autoComplete="current-password" 
+                    />
                     {!validCurrentPass && currentPass !== "" &&
                     <p className="text-box-error-message">
                         {`Password must be at least ${MIN_PASS_LENGTH} characters long`}
@@ -86,9 +90,13 @@ function ChangePassword() {
                 </div>
                 <div>
                     <p className="mb-2">New password</p>
-                    <input type="password" className={`search-bar ${validNewPass || newPass === "" ? '' : 'invalid-input'}`} 
-                    placeholder="Enter your new password"
-                    onChange={(e) => updatePass(e.target.value, setValidNewPass, setNewPass)} />
+                    <input 
+                        type="password" 
+                        className={`search-bar ${validNewPass || newPass === "" ? '' : 'invalid-input'}`} 
+                        placeholder="Enter your new password"
+                        onChange={(e) => updatePass(e.target.value, setValidNewPass, setNewPass)} 
+                        autoComplete="new-password"
+                    />
                     {!validNewPass && newPass !== "" &&
                     <p className="text-box-error-message">
                         {`Password must be at least ${MIN_PASS_LENGTH} characters long`}
@@ -96,9 +104,14 @@ function ChangePassword() {
                 </div>
                 <div>
                     <p className="mb-2">Confirm new password</p>
-                    <input type="password" className={`search-bar ${(validConfirmNewPass || confirmNewPass === "")
-                    && confirmNewPass === newPass ? '' : 'invalid-input'}`} placeholder="Re-enter your new password"
-                    onChange={(e) => updatePass(e.target.value, setValidConfirmNewPass, setConfirmNewPass)} />
+                    <input 
+                        type="password" 
+                        className={`search-bar ${(validConfirmNewPass || confirmNewPass === "")
+                        && confirmNewPass === newPass ? '' : 'invalid-input'}`} 
+                        placeholder="Re-enter your new password"
+                        onChange={(e) => updatePass(e.target.value, setValidConfirmNewPass, setConfirmNewPass)}
+                        autoComplete="new-password"
+                    />
                     <p className="text-box-error-message">
                         {!validConfirmNewPass && confirmNewPass !== "" ? `Password must be at least ${MIN_PASS_LENGTH} characters long` : 
                         confirmNewPass !== newPass ? "Passwords do not match" : ""}
@@ -112,10 +125,9 @@ function ChangePassword() {
                     styles={!checkInputs() ? "invalid-button mt-3 main-btn" : "mt-3 main-btn"}
                     textStyles="text-main-white"
                     setErrorMessage={setErrorMessage}
-                    keepErrorMessage={true}
-                    loadingSvgSize="28px"
+                    loadingSvgSize={28}
                 />
-            </div>
+            </form>
         </>
     );
 }

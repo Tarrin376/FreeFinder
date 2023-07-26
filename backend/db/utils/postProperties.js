@@ -9,6 +9,7 @@ export const postProperties = {
                         memberDate: true,
                         status: true,
                         profilePicURL: true,
+                        userID: true
                     }
                 },
                 rating: true,

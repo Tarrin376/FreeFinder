@@ -2,7 +2,6 @@ import { useLocation } from "react-router-dom";
 import { useEffect, useState, useContext, useReducer, useRef } from 'react';
 import { PostPage } from "../../types/PostPage";
 import ProfilePicAndStatus from "../../components/ProfilePicAndStatus";
-import StarIcon from '../../assets/star.png';
 import { getTimePosted } from "../../utils/getTimePosted";
 import AboutSeller from "./AboutSeller";
 import Packages from "./Packages";
@@ -26,6 +25,7 @@ import LoadingSvg from "../../components/LoadingSvg";
 import Reviews from "../../components/Reviews";
 import CreateReview from "../../components/CreateReview";
 import { scrollIntoView } from "../../utils/scrollIntoView";
+import StarSvg from "../../components/StarSvg";
 
 type UpdatePostToggles = "aboutToggle" | "titleToggle";
 
@@ -250,15 +250,17 @@ function PostView() {
                                 />
                             </div>
                             <div>
-                                <div className="flex items-center gap-[7px]">
+                                <div className="flex items-center gap-[10px]">
                                     <p className="link !p-0" onClick={navigateToProfile}>
                                         {postData.postedBy.user.username}
                                     </p>
-                                    <img src={StarIcon} className="w-[18px] h-[18px]" alt="star" />
-                                    <p className="text-[15px]">
-                                        {postData.postedBy.rating}
-                                    </p>
-                                    <p className="text-[15px] text-side-text-gray">
+                                    <div className="flex items-center gap-[5px]">
+                                        <StarSvg size={15} backgroundColour="#292929" />
+                                        <p className="text-[15px] mt-[1px]">
+                                            {postData.postedBy.rating}
+                                        </p>
+                                    </div>
+                                    <p className="text-[15px] text-side-text-gray mt-[1px]">
                                         ({0} reviews)
                                     </p>
                                 </div>
@@ -270,9 +272,11 @@ function PostView() {
                         <div className="flex items-center gap-3 mb-4">
                             <p>
                                 Service ID:
-                                <span className="text-main-blue">{` ${postData.postID}`}</span>
+                                <span className="text-main-blue">
+                                    {` ${postData.postID}`}
+                                </span>
                             </p>
-                            <button className="side-btn w-fit !h-[30px]" onClick={copyServiceID}>
+                            <button className="side-btn w-fit !h-[30px] text-[15px] rounded-[6px]" onClick={copyServiceID}>
                                 copy
                             </button>
                         </div>
@@ -309,7 +313,7 @@ function PostView() {
                                 onClick={triggerFileUpload}>
                                     <button className="change relative w-full h-[85px] flex items-center 
                                     justify-center rounded-[8px] gap-2">
-                                        {addingImage && <LoadingSvg size="24px" colour="#4E73F8" />}
+                                        {addingImage && <LoadingSvg size={24} colour="#4E73F8" />}
                                         <span className="text-main-blue">{addingImage ? "Uploading" : "+ Add image"}</span>
                                     </button>
                                 </div>
@@ -363,8 +367,9 @@ function PostView() {
                             seller={{
                                 username: postData.postedBy.user.username,
                                 status: postData.postedBy.user.status,
-                                profilePicURL: postData.postedBy.user.profilePicURL
-                            }} 
+                                profilePicURL: postData.postedBy.user.profilePicURL,
+                                userID: postData.postedBy.user.userID
+                            }}
                         />
                         <button className="btn-primary text-main-white bg-main-black hover:bg-main-black-hover 
                         w-full !h-[48px] mt-[26px] shadow-info-component" 

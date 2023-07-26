@@ -1,5 +1,5 @@
 import { IPackage } from "../../models/IPackage";
-import { useState, useEffect } from "react";
+import { useState, useEffect, useContext } from "react";
 import DeliveryTimeIcon from '../../assets/delivery-time.png';
 import RevisionsIcon from '../../assets/revisions.png';
 import FeatureIcon from '../../assets/feature.png';
@@ -7,6 +7,8 @@ import { PackageTypes } from "../../enums/PackageTypes";
 import { capitalizeWord } from "../../utils/capitalizeWord";
 import CreateGroup from "../../components/CreateGroup";
 import { FoundUsers } from "../../types/FoundUsers";
+import { UserContext } from "../../providers/UserContext";
+import { AnimatePresence } from "framer-motion";
 
 interface PackagesProps {
     packages: IPackage[],
@@ -17,6 +19,7 @@ interface PackagesProps {
 function Packages({ packages, seller, postID }: PackagesProps) {
     const [curPkg, setCurPkg] = useState<IPackage>();
     const [createGroupPopUp, setCreateGroupPopUp] = useState<boolean>(false);
+    const userContext = useContext(UserContext);
     
     useEffect(() => {
         const basicPkg = packages.find((x) => x.type === PackageTypes.BASIC);
@@ -43,12 +46,14 @@ function Packages({ packages, seller, postID }: PackagesProps) {
     return (
         <div className="bg-main-white rounded-[12px] border border-light-border-gray 
         shadow-info-component w-full h-[605px] overflow-hidden">
-            {createGroupPopUp &&
-            <CreateGroup
-                setCreateGroupPopUp={setCreateGroupPopUp}
-                initialServiceID={postID}
-                seller={seller}
-            />}
+            <AnimatePresence>
+                {createGroupPopUp &&
+                <CreateGroup
+                    setCreateGroupPopUp={setCreateGroupPopUp}
+                    initialServiceID={postID}
+                    seller={seller}
+                />}
+            </AnimatePresence>
             {curPkg &&
             <>
                 <div className="flex justify-evenly">
@@ -107,10 +112,11 @@ function Packages({ packages, seller, postID }: PackagesProps) {
                             })}
                         </ul>
                     </div>
+                    {userContext.userData.username !== "" &&
                     <button className="side-btn w-full !h-12 mt-6" onClick={() => setCreateGroupPopUp(true)}>
                         Message seller
-                    </button>
-                    <button className="main-btn mt-3">
+                    </button>}
+                    <button className={`main-btn ${userContext.userData.username !== "" ? "mt-3" : "mt-6"}`}>
                         Request an order
                     </button>
                 </div>

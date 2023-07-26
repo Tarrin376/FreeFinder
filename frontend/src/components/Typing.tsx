@@ -1,9 +1,11 @@
 
 interface TypingProps {
-    usersTyping: string[]
+    usersTyping: string[],
+    textStyles?: string,
+    dotStyles?: string
 }
 
-function Typing({ usersTyping }: TypingProps) {
+function Typing({ usersTyping, textStyles, dotStyles }: TypingProps) {
     function showUsersTyping(): string {
         if (usersTyping.length === 1) return `${usersTyping[0]} is typing`;
         else if (usersTyping.length === 2) return `${usersTyping[0]} and ${usersTyping[1]} are typing`;
@@ -17,14 +19,14 @@ function Typing({ usersTyping }: TypingProps) {
                 {new Array(3).fill(0).map((_, index) => {
                     return (
                         <span 
-                            className="dot"
+                            className={`dot ${dotStyles}`}
                             style={{ animationDelay: `${0.2 * index}s` }}
                             key={index}>
                         </span>
                     )
                 })}
             </div>
-            <p className="text-side-text-gray text-[15px]">
+            <p className={`text-side-text-gray text-[15px] ${textStyles}`}>
                 {showUsersTyping()}
             </p>
         </div>

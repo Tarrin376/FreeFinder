@@ -16,7 +16,8 @@ export function useFetchUsers(userSearch: string, limit: number, setErrorMessage
                     return;
                 }
                 
-                const resp = await axios.get<{ users: FoundUsers, message: string }>(`/api/users?search=${userSearch}&limit=${limit}`);
+                const resp = await axios.get<{ users: FoundUsers, message: string }>
+                (`/api/users?search=${userSearch}&limit=${limit}`);
                 setUsers(resp.data.users);
             }
             catch (err: any) {

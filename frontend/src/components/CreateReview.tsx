@@ -94,7 +94,7 @@ function CreateReview({ postID, sellerID }: CreateReviewProps) {
                 styles="side-btn h-[48px] w-full mt-6"
                 textStyles="text-main-blue"
                 setErrorMessage={setErrorMessage}
-                loadingSvgSize="28px"
+                loadingSvgSize={28}
                 loadingSvgColour="#4E73F8"
             />
         </div>

@@ -24,7 +24,6 @@ function AccountBalance({ setBalancePopUp }: AccountBalanceProps) {
         try {
             const resp = await axios.put<{ balance: number, message: string }>(endpoint, { amount: amount });
             setBalance(resp.data.balance);
-            setAmount(0);
         }
         catch (err: any) {
             const errorMessage = getAPIErrorMessage(err as AxiosError<{ message: string }>);
@@ -45,7 +44,7 @@ function AccountBalance({ setBalancePopUp }: AccountBalanceProps) {
                 }
             })();
         }, 2000)
-    }, [userContext.userData.username, endpoint]);
+    }, [endpoint]);
 
     return (
         <PopUpWrapper setIsOpen={setBalancePopUp} title="Account Balance">
@@ -62,8 +61,8 @@ function AccountBalance({ setBalancePopUp }: AccountBalanceProps) {
             <div className="mt-7 flex items-center justify-between gap-3 flex-wrap">
                 <div className="flex-grow">
                     <p className="text-sm text-side-text-gray mb-[-2px]">Total balance</p>
-                    <p className={`text-[2rem] ${!balance && "loading w-[120px] h-[36px] mt-3"}`}>
-                        {balance ? `£${balance.toFixed(2)}` : ""}
+                    <p className={`text-[2rem] ${balance === undefined && "loading w-[120px] h-[36px] mt-3"}`}>
+                        {balance !== undefined ? `£${balance.toFixed(2)}` : ""}
                     </p>
                 </div>
                 <Price 
@@ -81,7 +80,8 @@ function AccountBalance({ setBalancePopUp }: AccountBalanceProps) {
                 styles={`main-btn mt-7 ${amount === 0 ? "invalid-button" : ""}`}
                 textStyles="text-main-white"
                 setErrorMessage={setErrorMessage}
-                loadingSvgSize="28px"
+                loadingSvgSize={28}
+                whenComplete={() => setAmount(0)}
             />
         </PopUpWrapper>
     )

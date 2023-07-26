@@ -138,13 +138,12 @@ function Navbar() {
                             <OutsideClickHandler onOutsideClick={toggleSavedDropdown}>
                                 <div className="absolute bg-main-white top-[30px] left-0 flex flex-col rounded-[6px] 
                                 border border-light-border-gray shadow-profile-page-container overflow-hidden w-[120px] z-30">
-                                    <p className="cursor-pointer hover:bg-main-white-hover 
-                                    profile-menu-element pt-[6px] pb-[6px]" 
+                                    <p className="cursor-pointer hover:bg-main-white-hover profile-menu-element pt-[6px] pb-[6px] link" 
                                     onClick={(e) => goToPage(e, `/${userContext.userData.username}/saved/posts`)}>
                                         services
                                     </p>
-                                    <p className="cursor-pointer hover:bg-main-white-hover 
-                                    profile-menu-element pt-[6px] pb-[6px]" onClick={() => setSavedSellersPopUp(true)}>
+                                    <p className="cursor-pointer hover:bg-main-white-hover profile-menu-element pt-[6px] pb-[6px] link" 
+                                    onClick={() => setSavedSellersPopUp(true)}>
                                         sellers
                                     </p>
                                 </div>

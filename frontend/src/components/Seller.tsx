@@ -118,10 +118,10 @@ function Seller(props: SellerProps) {
                 completedText="Removed"
                 defaultText="Remove"
                 loadingText="Removing"
-                styles="red-btn h-[33px] w-fit rounded-[6px]"
+                styles="red-btn h-[30px] w-fit rounded-[6px]"
                 textStyles="text-error-text"
                 setErrorMessage={setErrorMessage}
-                loadingSvgSize="24px"
+                loadingSvgSize={24}
                 loadingSvgColour="#F43C3C"
             />}
         </div>

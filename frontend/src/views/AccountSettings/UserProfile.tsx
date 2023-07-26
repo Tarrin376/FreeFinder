@@ -77,8 +77,7 @@ function UserProfile() {
                     styles={checkUsername() !== "" ? "invalid-button main-btn mt-3" : "mt-3 main-btn"}
                     textStyles="text-main-white"
                     setErrorMessage={setErrorMessage}
-                    keepErrorMessage={true}
-                    loadingSvgSize="28px"
+                    loadingSvgSize={28}
                 />
             </div>
         </>

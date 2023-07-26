@@ -20,7 +20,11 @@ import
     getMessageGroups,
     createMessageGroup,
     getMessages,
-    sendMessage
+    sendMessage,
+    removeUserFromGroup,
+    deleteGroup,
+    leaveGroup,
+    updateGroup
 } from '../controllers/UserController.js';
 
 const userRouter = Router();
@@ -48,9 +52,13 @@ userRouter.put('/:username/profile-picture', cookieJwtAuth, updateProfilePicture
 userRouter.put('/:username/password', cookieJwtAuth, updatePassword);
 userRouter.get('/:username/balance', cookieJwtAuth, getBalance);
 userRouter.put('/:username/balance', cookieJwtAuth, addToBalance);
-userRouter.post('/:username/message-groups', cookieJwtAuth, createMessageGroup);
 userRouter.post('/:username/message-groups/all', cookieJwtAuth, getMessageGroups);
-userRouter.post('/:username/message-groups/:groupID/all', cookieJwtAuth, getMessages);
 userRouter.post('/:username/message-groups/:groupID', cookieJwtAuth, sendMessage);
+userRouter.delete('/:username/message-groups/:groupID', cookieJwtAuth, leaveGroup);
+userRouter.post('/:username/message-groups/:groupID/all', cookieJwtAuth, getMessages);
+userRouter.post('/:username/created-groups', cookieJwtAuth, createMessageGroup);
+userRouter.delete('/:username/created-groups/:groupID', cookieJwtAuth, deleteGroup);
+userRouter.put('/:username/created-groups/:groupID', cookieJwtAuth, updateGroup);
+userRouter.delete('/:username/created-groups/:groupID/:userToDelete', cookieJwtAuth, removeUserFromGroup);
 
 export default userRouter;

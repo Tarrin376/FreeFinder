@@ -3,15 +3,14 @@ import LoadingSvg from "./LoadingSvg";
 
 interface ButtonProps {
     action: () => Promise<string | undefined>,
-    completedText: string,
     defaultText: string,
     loadingText: string,
     styles: string,
-    children?: React.ReactNode,
     textStyles: string,
     setErrorMessage: React.Dispatch<React.SetStateAction<string>>,
-    loadingSvgSize: string,
-    keepErrorMessage?: boolean,
+    loadingSvgSize: number,
+    children?: React.ReactNode,
+    completedText?: string,
     whenComplete?: () => void,
     loadingSvgColour?: string,
 }
@@ -26,14 +25,14 @@ function Button(props: ButtonProps) {
 
         if (!error) {
             props.setErrorMessage("");
-            setBtnText(props.completedText);
+            if (props.completedText) {
+                setBtnText(props.completedText);
+            }
         } else {
             props.setErrorMessage(error);
-            if (!props.keepErrorMessage) {
-                setTimeout(() => {
-                    props.setErrorMessage("");
-                }, 7000);
-            } 
+            setTimeout(() => {
+                props.setErrorMessage("");
+            }, 7000);
 
             setBtnText(props.defaultText);
         }

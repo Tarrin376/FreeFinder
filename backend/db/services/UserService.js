@@ -140,7 +140,8 @@ export async function searchUsersHandler(search, take) {
             select: {
                 profilePicURL: true,
                 username: true,
-                status: true
+                status: true,
+                userID: true
             }
         });
 
@@ -460,6 +461,7 @@ async function queryMessageGroups(req) {
                                 username: true,
                                 profilePicURL: true,
                                 status: true,
+                                userID: true
                             }
                         }
                     }
@@ -497,6 +499,25 @@ async function queryMessageGroups(req) {
     }
 }
 
+async function addMembers(members, groupID, tx) {
+    for (const member of members) {
+        await tx.groupMember.create({
+            data: {
+                group: {
+                    connect: {
+                        groupID: groupID
+                    }
+                },
+                user: {
+                    connect: {
+                        username: member
+                    }
+                }
+            }
+        });
+    }
+}
+
 export async function createMessageGroupHandler(req) {
     try {
         await checkUser(req.userData.userID, req.username);
@@ -514,22 +535,7 @@ export async function createMessageGroupHandler(req) {
             });
 
             const members = [req.username, ...req.body.members];
-            for (const member of members) {
-                await tx.groupMember.create({
-                    data: {
-                        group: {
-                            connect: {
-                                groupID: group.groupID
-                            }
-                        },
-                        user: {
-                            connect: {
-                                username: member
-                            }
-                        }
-                    }
-                });
-            }
+            await addMembers(members, group.groupID, tx);
         });
     }
     catch (err) {
@@ -632,5 +638,121 @@ export async function sendMessageHandler(req) {
     }
     finally {
         await prisma.$disconnect();
+    }
+}
+
+export async function removeUserFromGroupHandler(req) {
+    try {
+        await checkUser(req.userData.userID, req.username);
+        await prisma.groupMember.delete({
+            where: {
+                groupID_userID: {
+                    groupID: req.params.groupID,
+                    userID: req.params.userToDelete
+                }
+            }
+        });
+    }
+    catch (err) {
+        if (err instanceof DBError) {
+            throw err;
+        } else if (err instanceof Prisma.PrismaClientKnownRequestError && err.code === "P2025") {
+            throw new DBError("User was not found in this group or the group does not exist.", 404);
+        } else if (err instanceof Prisma.PrismaClientValidationError) {
+            throw new DBError("Missing required fields or fields provided are invalid.", 400);
+        } else {
+            throw new DBError("Something went wrong when trying to process this request.", 500);
+        }
+    }
+}
+
+export async function deleteGroupHandler(req) {
+    try {
+        await checkUser(req.userData.userID, req.username);
+        const group = await prisma.messageGroup.findUnique({
+            where: {
+                groupID: req.params.groupID
+            },
+            select: {
+                creatorID: true
+            }
+        });
+
+        if (!group) {
+            throw new DBError("Group does not exist.", 404);
+        }
+
+        if (group.creatorID !== req.userData.userID) {
+            throw new DBError("You are not the creator of this group.", 403);
+        }
+
+        await prisma.messageGroup.delete({
+            where: {
+                groupID: req.params.groupID,
+            }
+        });
+    }
+    catch (err) {
+        if (err instanceof DBError) {
+            throw err;
+        } else if (err instanceof Prisma.PrismaClientValidationError) {
+            throw new DBError("Missing required fields or fields provided are invalid.", 400);
+        } else {
+            throw new DBError("Something went wrong when trying to process this request.", 500);
+        }
+    }
+}
+
+export async function leaveGroupHandler(req) {
+    try {
+        await checkUser(req.userData.userID, req.username);
+        await prisma.groupMember.delete({
+            where: {
+                groupID_userID: {
+                    groupID: req.params.groupID,
+                    userID: req.userData.userID
+                }
+            }
+        });
+    }
+    catch (err) {
+        if (err instanceof DBError) {
+            throw err;
+        } else if (err instanceof Prisma.PrismaClientKnownRequestError && err.code === "P2025") {
+            throw new DBError("You are not in this group or the group does not exist.", 404);
+        } else if (err instanceof Prisma.PrismaClientValidationError) {
+            throw new DBError("Missing required fields or fields provided are invalid.", 400);
+        } else {
+            throw new DBError("Something went wrong when trying to process this request.", 500);
+        }
+    }
+}
+
+export async function updateGroupHandler(req) {
+    try {
+        await checkUser(req.userData.userID, req.username);
+        await prisma.messageGroup.update({
+            where: {
+                groupID: req.params.groupID
+            },
+            data: {
+                groupName: req.body.groupName,
+            }
+        });
+
+        if (Array.isArray(req.body.members) && req.body.members.length > 0 && typeof req.body.members[0] === "string") {
+            await addMembers(req.body.members, req.params.groupID, prisma);
+        }
+    }
+    catch (err) {
+        if (err instanceof DBError) {
+            throw err;
+        } else if (err instanceof Prisma.PrismaClientKnownRequestError && err.code === "P2025") {
+            throw new DBError("Message group not found.", 404);
+        } else if (err instanceof Prisma.PrismaClientValidationError) {
+            throw new DBError("Missing required fields or fields provided are invalid.", 400);
+        } else {
+            throw new DBError("Something went wrong when trying to process this request.", 500);
+        }
     }
 }

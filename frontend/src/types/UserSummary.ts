@@ -6,4 +6,5 @@ export type UserSummary = {
     memberDate: Date,
     status: UserStatus,
     profilePicURL: string,
+    userID: string
 }

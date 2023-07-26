@@ -114,7 +114,7 @@ function ChangeSellerDetails({ setSellerProfilePopUp }: ChangeSellerDetailsProps
                 onChange={(e) => setSkill(e.target.value)}
             />
             {skill !== "" &&
-            <button className="side-btn w-fit !h-[33px] mt-4" onClick={addSkill}>
+            <button className="side-btn w-fit !h-[30px] rounded-[6px] mt-4" onClick={addSkill}>
                 Add skill
             </button>}
             <Options
@@ -133,8 +133,7 @@ function ChangeSellerDetails({ setSellerProfilePopUp }: ChangeSellerDetailsProps
                 textStyles="text-main-white"
                 setErrorMessage={setErrorMessage}
                 whenComplete={closeSellerProfilePopUp}
-                loadingSvgSize="28px"
-                keepErrorMessage={true}
+                loadingSvgSize={28}
             />
         </PopUpWrapper>
     );

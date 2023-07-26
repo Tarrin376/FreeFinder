@@ -29,6 +29,7 @@ model User {
     sentMessages  Message[]       @relation("SentMessage")
     messageGroups GroupMember[]
     createdGroups MessageGroup[]
+    socketID      String?
 }
 
 model MessageGroup {
@@ -43,7 +44,7 @@ model MessageGroup {
 }
 
 model GroupMember {
-    group   MessageGroup @relation(fields: [groupID], references: [groupID])
+    group   MessageGroup @relation(fields: [groupID], references: [groupID], onDelete: Cascade)
     groupID String
     user    User         @relation(fields: [userID], references: [userID], onDelete: Cascade)
     userID  String

@@ -9,7 +9,8 @@ export const limit = 20;
 
 export function usePaginateData<T1, T2, T3 extends PaginationResponse<T2>>(
     pageRef: React.RefObject<HTMLDivElement>, curCursor: React.MutableRefObject<string | undefined>, url: string, 
-    page: { value: number }, setPage: React.Dispatch<React.SetStateAction<{ value: number }>>, args: T1, reverseScroll?: boolean)
+    page: { value: number }, setPage: React.Dispatch<React.SetStateAction<{ value: number }>>, args: T1, reverseScroll?: boolean,
+    cb?: (value: T3) => void)
 : PaginateData<T2> {
     const reachedBottom = useRef<boolean>(false);
     const total = useRef<number>(0);
@@ -45,6 +46,10 @@ export function usePaginateData<T1, T2, T3 extends PaginationResponse<T2>>(
                     cursor: curCursor.current,
                     limit: limit
                 });
+
+                if (cb) {
+                    cb(resp.data);
+                }
 
                 setData((state) => [...state, ...resp.data.next]);
                 curCursor.current = resp.data.cursor;

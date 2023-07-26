@@ -167,8 +167,7 @@ function SignUp({ setLogIn, setSignUp, setAccountCreated }: SignUpProps) {
                 styles={`main-btn ${!isValidForm() ? "invalid-button" : ""}`}
                 textStyles="text-main-white"
                 setErrorMessage={setErrorMessage}
-                keepErrorMessage={true}
-                loadingSvgSize="28px"
+                loadingSvgSize={28}
             />
             <p className="mt-6 text-side-text-gray text-[15px]">Already have an account? 
                 <span className="text-main-blue ml-2 cursor-pointer hover:text-main-black" onClick={openLogIn}>

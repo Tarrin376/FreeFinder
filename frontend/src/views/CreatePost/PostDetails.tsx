@@ -151,7 +151,7 @@ function PostDetails({ jobCategory, setJobCategory, setTypeOfWork, setErrorMessa
                                 textStyles="text-error-text"
                                 setErrorMessage={setErrorMessage}
                                 whenComplete={() => ignoreUpload(upload)}
-                                loadingSvgSize="24px"
+                                loadingSvgSize={24}
                                 loadingSvgColour="#F43C3C"
                             />
                         </File>
@@ -224,7 +224,7 @@ function PostDetails({ jobCategory, setJobCategory, setTypeOfWork, setErrorMessa
                     textStyles="text-error-text"
                     setErrorMessage={setErrorMessage}
                     whenComplete={() => props.setPostService(false)}
-                    loadingSvgSize="24px"
+                    loadingSvgSize={24}
                     loadingSvgColour="#F43C3C"
                 /> :
                 <Button
@@ -235,7 +235,7 @@ function PostDetails({ jobCategory, setJobCategory, setTypeOfWork, setErrorMessa
                     styles={`min-w-[185px] w-fit ${!validInputs() ? "invalid-button" : "main-btn !h-[42px]"}`}
                     textStyles="text-main-white"
                     setErrorMessage={setErrorMessage}
-                    loadingSvgSize="24px"
+                    loadingSvgSize={24}
                     whenComplete={() => props.setCreatedPost(true)}
                 />}
             </div>

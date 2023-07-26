@@ -1,6 +1,5 @@
 import { IReview } from "../models/IReview";
 import ProfilePicAndStatus from "./ProfilePicAndStatus";
-import ActionsIcon from "../assets/actions.png";
 import { parseDate } from "../utils/parseDate";
 import { UserContext } from "../providers/UserContext";
 import { useContext, useState } from "react";
@@ -9,9 +8,8 @@ import ErrorPopUp from "./ErrorPopUp";
 import { AnimatePresence } from "framer-motion";
 import axios, { AxiosError } from "axios";
 import Rating from "./Rating";
-import OutsideClickHandler from "react-outside-click-handler";
-import { motion } from "framer-motion";
 import AllReviews from "./AllReviews";
+import Actions from "./Actions";
 
 interface ReviewProps {
     reviewInfo: IReview,
@@ -23,7 +21,6 @@ function Review({ reviewInfo, hideActions }: ReviewProps) {
     const [errorMessage, setErrorMessage] = useState<string>("");
     const [helpfulCount, setHelpfulCount] = useState<number>(reviewInfo._count.foundHelpful);
     const [toggled, setToggled] = useState<boolean>(false);
-    const [toggleActions, setToggleActions] = useState<boolean>(false);
     const [allReviewsPopUp, setAllReviewsPopUp] = useState<boolean>(false);
 
     async function markAsHelpful(): Promise<void> {
@@ -83,26 +80,14 @@ function Review({ reviewInfo, hideActions }: ReviewProps) {
                     <p>{reviewInfo.reviewer.username}</p>
                 </div>
                 {!hideActions &&
-                <div className="w-[50px] h-[50px] relative">
-                    <div className="w-full h-full hover:bg-hover-light-gray flex items-center justify-center rounded-full cursor-pointer" 
-                    onClick={() => setToggleActions((cur) => !cur)}>
-                        <img src={ActionsIcon} className="w-[27px] h-[27px]" alt="" />
-                    </div>
-                    <AnimatePresence>
-                        {toggleActions &&
-                        <motion.div className="dropdown"
-                        initial={{ opacity: 0 }} animate={{ opacity: 1 }} exit={{ opacity: 0 }} transition={{ duration: 0.1 }}>
-                            <OutsideClickHandler onOutsideClick={() => setToggleActions(false)}>
-                                <p className="whitespace-nowrap mb-4 link">
-                                    Flag inappropriate
-                                </p>
-                                <p className="whitespace-nowrap link" onClick={() => setAllReviewsPopUp(true)}>
-                                    Show review history
-                                </p>
-                            </OutsideClickHandler>
-                        </motion.div>}
-                    </AnimatePresence>
-                </div>}
+                <Actions>
+                    <p className="whitespace-nowrap link">
+                        Flag inappropriate
+                    </p>
+                    <p className="whitespace-nowrap link" onClick={() => setAllReviewsPopUp(true)}>
+                        Show review history
+                    </p>
+                </Actions>}
             </div>
             <div className="flex items-center gap-2 mb-2">
                 <Rating

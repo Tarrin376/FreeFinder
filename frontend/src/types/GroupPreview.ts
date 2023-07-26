@@ -16,6 +16,7 @@ export type GroupPreview = {
             username: string,
             profilePicURL: string,
             status: UserStatus,
+            userID: string
         }
     }[]
 };

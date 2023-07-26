@@ -46,9 +46,8 @@ function DangerZone({ setSettingsPopUp }: { setSettingsPopUp: React.Dispatch<Rea
                 textStyles="text-error-text"
                 setErrorMessage={setErrorMessage}
                 whenComplete={resetUserState}
-                loadingSvgSize="24px"
+                loadingSvgSize={24}
                 loadingSvgColour="#F43C3C"
-                keepErrorMessage={true}
             />
         </>
     );

@@ -11,6 +11,10 @@ import ErrorPopUp from "./ErrorPopUp";
 import { PaginationResponse } from "../types/PaginateResponse";
 import Typing from "./Typing";
 import { useUsersTyping } from "../hooks/useUsersTyping";
+import AttachIcon from "../assets/attach.png";
+import EmojiIcon from "../assets/emoji.png";
+import EmojiPicker from "emoji-picker-react";
+import { motion } from "framer-motion";
 
 interface ChatBoxProps {
     groupID: string
@@ -28,6 +32,7 @@ function ChatBox({ groupID }: ChatBoxProps) {
     const url = `/api/users/${userContext.userData.username}/message-groups/${groupID}/all`;
     const messages = usePaginateData<{}, IMessage, PaginationResponse<IMessage>>(pageRef, cursor, url, page, setPage, {}, true);
     const [newMessages, setNewMessages] = useState<IMessage[]>([]);
+    const [toggleEmojiPicker, setToggleEmojiPicker] = useState<boolean>(false);
     const usersTyping = useUsersTyping(groupID);
 
     async function sendMessage(e: React.FormEvent<HTMLFormElement>): Promise<void> {
@@ -62,8 +67,13 @@ function ChatBox({ groupID }: ChatBoxProps) {
     }
 
     function typingMessage() {
-        if (userContext.socket) {
-            userContext.socket.emit("typing-message", userContext.userData.username, groupID);
+        userContext.socket?.emit("typing-message", userContext.userData.username, groupID);
+    }
+
+    function addEmoji(emoji: string): void {
+        if (searchRef.current) {
+            searchRef.current.value += emoji;
+            setToggleEmojiPicker(false);
         }
     }
 
@@ -73,24 +83,22 @@ function ChatBox({ groupID }: ChatBoxProps) {
         }
     }, []);
 
+    const showMessage = useCallback((message: IMessage, id: string) => {
+        if (id === groupID) {
+            addMessage(message);
+        }
+    }, [groupID]);
+
     useEffect(() => {
         scrollToBottom();
     }, [newMessages, scrollToBottom]);
 
     useEffect(() => {
-        if (userContext.socket) {
-            userContext.socket.emit("join-message-group", groupID);
-            userContext.socket.on("receive-message", (message, id) => {
-                if (id === groupID) {
-                    addMessage(message);
-                }
-            });
-        }
-
+        userContext.socket?.on("receive-message", showMessage);
         return () => {
-            userContext.socket?.removeAllListeners("receive-message");
+            userContext.socket?.off("receive-message", showMessage);
         }
-    }, [userContext.socket, groupID, scrollToBottom]);
+    }, [userContext.socket, showMessage]);
 
     return (
         <>
@@ -111,17 +119,38 @@ function ChatBox({ groupID }: ChatBoxProps) {
                     )
                 })}
             </div>
-            <div className="p-3 pb-0 flex-shrink-0">
+            <div className="p-3 pb-0 flex-shrink-0 relative">
+                <AnimatePresence>
+                    {toggleEmojiPicker &&
+                    <motion.div className="absolute bottom-[55px] right-[14px] z-20" initial={{ opacity: 0 }} animate={{ opacity: 1 }} 
+                    exit={{ opacity: 0 }} transition={{ duration: 0.1 }}>
+                        <EmojiPicker 
+                            onEmojiClick={(data, _) => addEmoji(data.emoji)} 
+                            lazyLoadEmojis={true}
+                        />
+                    </motion.div>}
+                </AnimatePresence>
                 <div className="mb-1">
                     <Typing usersTyping={usersTyping} />
                 </div>
-                <form className="search-bar flex w-full" onSubmit={sendMessage}>
+                <form className="search-bar flex w-full items-center" onSubmit={sendMessage}>
                     <input 
                         type="text"
                         className="focus:outline-none placeholder-search-text bg-transparent flex-grow"
                         placeholder="Send a message" 
                         ref={searchRef}
                         onKeyDown={typingMessage}
+                    />
+                    <img 
+                        src={EmojiIcon} 
+                        className="[23px] h-[23px] ml-3 cursor-pointer" 
+                        onClick={() => setToggleEmojiPicker((cur) => !cur)}
+                        alt="" 
+                    />
+                    <img 
+                        src={AttachIcon} 
+                        className="[23px] h-[23px] ml-3 mr-5 cursor-pointer" 
+                        alt="" 
                     />
                     <button className="w-[23px] h-[23px] cursor-pointer" type="submit"
                     style={{ backgroundImage: `url('${SendIcon}')`, backgroundSize: "contain" }}>

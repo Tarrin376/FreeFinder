@@ -15,6 +15,7 @@
     "@types/react-router-dom": "^5.3.3",
     "@types/socket.io-client": "^3.0.0",
     "axios": "^1.4.0",
+    "emoji-picker-react": "^4.4.10",
     "framer-motion": "^10.12.18",
     "html-react-parser": "^4.0.0",
     "react": "^18.2.0",

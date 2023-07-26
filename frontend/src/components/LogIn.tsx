@@ -44,6 +44,8 @@ function LogIn({ setLogIn, setSignUp }: LogInProps) {
                 savedPosts: new Set(resp.data.userData.savedPosts),
                 savedSellers: new Set(resp.data.userData.savedSellers)
             });
+
+            closeLoginPopUp();
         }
         catch (err: any) {
             const errorMessage = getAPIErrorMessage(err as AxiosError<{ message: string }>);
@@ -66,15 +68,12 @@ function LogIn({ setLogIn, setSignUp }: LogInProps) {
             </div>
             <Button
                 action={logInAttempt}
-                completedText="Logged in"
                 defaultText="Log In"
                 loadingText="Logging in"
                 styles="main-btn"
                 textStyles="text-main-white"
                 setErrorMessage={setErrorMessage}
-                whenComplete={closeLoginPopUp}
-                keepErrorMessage={true}
-                loadingSvgSize="28px"
+                loadingSvgSize={28}
             />
             <p className="mt-6 text-side-text-gray text-[15px]">Dont yet have an account? 
                 <span className="text-main-blue ml-2 cursor-pointer hover:text-main-black" onClick={openSignUp}>

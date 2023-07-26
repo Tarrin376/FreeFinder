@@ -1,4 +1,3 @@
-import StarIcon from '../assets/star.png';
 import { useState, useContext } from 'react';
 import { IPost } from '../models/IPost';
 import ProfilePicAndStatus from './ProfilePicAndStatus';
@@ -14,6 +13,7 @@ import { UserContext } from '../providers/UserContext';
 import { motion } from 'framer-motion';
 import { limit } from '../hooks/usePaginateData';
 import Save from './Save';
+import StarSvg from './StarSvg';
 
 type CanRemovePost = {
     deletingPost: boolean,
@@ -140,8 +140,8 @@ function Post({ postInfo, index, canRemove, count, styles }: PostProps) {
                             onClick={navigateToProfile}>
                                 {postInfo.postedBy.user.username}
                             </p>
-                            <div className="flex items-center justify-end gap-[7px]">
-                                <img src={StarIcon} className="w-[18px] h-[18px] mb-[2px]" alt="star" />
+                            <div className="flex items-center justify-end gap-[5px]">
+                                <StarSvg size={15} styles="mb-[2px]" backgroundColour="#292929" />
                                 <p className="text-[15px]">{postInfo.rating ? postInfo.rating.toFixed(1) : 0}</p>
                             </div>
                         </div>
@@ -178,11 +178,11 @@ function Post({ postInfo, index, canRemove, count, styles }: PostProps) {
                         completedText="Removed"
                         defaultText="Remove"
                         loadingText="Removing"
-                        styles="red-btn h-[33px] w-fit rounded-[6px]"
+                        styles="red-btn h-[30px] w-fit rounded-[6px]"
                         textStyles="text-error-text text-[15px]"
                         setErrorMessage={setErrorMessage}
                         whenComplete={() => setHide(true)}
-                        loadingSvgSize="24px"
+                        loadingSvgSize={24}
                         loadingSvgColour="#F43C3C"
                     />}
                 </div>

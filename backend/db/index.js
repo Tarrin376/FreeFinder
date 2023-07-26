@@ -58,6 +58,16 @@ io.on("connection", (socket) => {
         socket.to(groupID).emit("user-typing", username, groupID);
     });
 
+    socket.on("leave-room", (userID, groupID) => {
+        socket.to(groupID).emit("left-room", userID, groupID);
+    });
+
+    socket.on("leave-rooms", () => {
+        for (const room of socket.rooms) {
+            socket.leave(room);
+        }
+    });
+
     socket.on("disconnect", () => {
         console.log("disconnected");
     });

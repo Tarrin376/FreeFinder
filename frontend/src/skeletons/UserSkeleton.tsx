@@ -5,7 +5,8 @@ function UserSkeleton() {
                 <div className="loading rounded-full w-[41px] h-[41px]"></div>
                 <p className="h-[16px] loading w-[80px]"></p>
             </div>
-            <div className="loading w-[80px] h-[33px]"></div>
+            <div className="loading w-[80px] h-[30px] rounded-[6px]">
+            </div>
         </div>
     )
 }
