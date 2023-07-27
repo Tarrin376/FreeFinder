@@ -6,14 +6,13 @@ export function useUsersTyping(groupID: string): string[] {
     const [usersTyping, setUsersTyping] = useState<string[]>([]);
 
     const updateUsersTyping = useCallback((username: string, id: string) => {
-        console.log(username, id);
-        if (id !== groupID || usersTyping.includes(username)) {
+        if (id !== groupID || usersTyping.includes(username) || username === userContext.userData.username) {
             return;
         }
 
         setUsersTyping((cur) => [...cur, username]);
         setTimeout(() => setUsersTyping((cur) => cur.filter((x) => x !== username)), 5000);
-    }, [usersTyping, groupID]);
+    }, [usersTyping, groupID, userContext.userData.username]);
 
     useEffect(() => {
         userContext.socket?.on("user-typing", updateUsersTyping);

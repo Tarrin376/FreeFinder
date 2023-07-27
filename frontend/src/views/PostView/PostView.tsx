@@ -17,9 +17,9 @@ import { aboutLimit, titleLimit } from "../CreatePost/PostDetails";
 import PostImage from "./PostImage";
 import ErrorPopUp from "../../components/ErrorPopUp";
 import { AnimatePresence } from "framer-motion";
-import { checkFile } from "../../utils/checkFile";
+import { checkImageType } from "../../utils/checkImageType";
 import { MAX_FILE_BYTES } from "../CreatePost/UploadPostFiles";
-import { parseImage } from "../../utils/parseImage";
+import { parseFileBase64 } from "../../utils/parseFileBase64";
 import { MAX_FILE_UPLOADS } from "../CreatePost/UploadPostFiles";
 import LoadingSvg from "../../components/LoadingSvg";
 import Reviews from "../../components/Reviews";
@@ -27,49 +27,26 @@ import CreateReview from "../../components/CreateReview";
 import { scrollIntoView } from "../../utils/scrollIntoView";
 import StarSvg from "../../components/StarSvg";
 
-type UpdatePostToggles = "aboutToggle" | "titleToggle";
-
-type UpdatePostArgs = {
-    data: {
-        about?: string,
-        title?: string,
-    }
-    toggles: {
-        aboutToggle?: boolean,
-        titleToggle?: boolean,
-    }
-}
-
-enum Actions {
-    TOGGLE,
-    UPDATE
-}
-
-type ReducerAction = {
-    type: Actions,
-    payload: UpdatePostArgs["data"] | UpdatePostArgs["toggles"]
+export type PostViewState = {
+    about: string,
+    title: string,
+    aboutToggle: boolean,
+    titleToggle: boolean,
+    postData: PostPage | undefined,
+    index: number,
+    addingImage: boolean,
+    removingImage: number
 }
 
 const initialState = {
-    data: {
-        about: "",
-        title: "",
-    },
-    toggles: {
-        aboutToggle: false,
-        titleToggle: false,
-    }
-}
-
-function reducer(state: UpdatePostArgs, action: ReducerAction): UpdatePostArgs {
-    switch (action.type) {
-        case Actions.TOGGLE:
-            return { ...state, toggles: { ...state.toggles, ...action.payload } };
-        case Actions.UPDATE:
-            return { ...state, data: { ...state.data, ...action.payload } };
-        default:
-            throw new Error("Invalid action type or payload given.");
-    }
+    about: "",
+    title: "",
+    aboutToggle: false,
+    titleToggle: false,
+    postData: undefined,
+    index: 0,
+    addingImage: false,
+    removingImage: -1
 }
 
 function PostView() {
@@ -78,26 +55,24 @@ function PostView() {
     const userContext = useContext(UserContext);
     const addImageFileRef = useRef<HTMLInputElement>(null);
     const reviewsRef = useRef<HTMLDivElement>(null);
-
-    const [postData, setPostData] = useState<PostPage>();
     const [errorMessage, setErrorMessage] = useState<string>("");
-    const [index, setIndex] = useState<number>(0);
-    const [addingImage, setAddingImage] = useState<boolean>(false);
-    const [removingImage, setRemovingImage] = useState<number>(-1);
 
-    const [state, dispatch] = useReducer(reducer, initialState);
-    const isOwner = postData?.postedBy.user.username === userContext.userData.username;
+    const [state, dispatch] = useReducer((cur: PostViewState, payload: Partial<PostViewState>) => {
+        return { ...cur, ...payload };
+    }, initialState);
+
+    const isOwner = state.postData?.postedBy.user.username === userContext.userData.username;
 
     function navigateToProfile(): void {
-        if (postData) {
-            navigate(`/sellers/${postData.sellerID}`);
+        if (state.postData) {
+            navigate(`/sellers/${state.postData.sellerID}`);
         }
     }
 
-    async function updatePost(data: UpdatePostArgs["data"]) {
+    async function updatePost(data: Partial<{ title: string, about: string }>) {
         try {
             const resp = await axios.put<{ post: PostPage, message: string }>(`/api${location.pathname}`, data);
-            setPostData(resp.data.post);
+            dispatch({ postData: resp.data.post });
             setErrorMessage("");
         }
         catch (err: any) {
@@ -113,11 +88,16 @@ function PostView() {
             }
 
             const newImage = ref.current.files[0];
-            const valid = checkFile(newImage, MAX_FILE_BYTES);
+            const valid = checkImageType(newImage, MAX_FILE_BYTES);
 
             if (valid) {
-                const base64Str = await parseImage(newImage);
-                return base64Str;
+                try {
+                    const base64Str = await parseFileBase64(newImage);
+                    return base64Str;
+                }
+                catch (_: any) {
+                    setErrorMessage("Something went wrong. Please try again.");
+                }
             } else {
                 setErrorMessage(`Image format is unsupported or image size is over ${MAX_FILE_BYTES / 1000000}MB.`);
             }
@@ -130,9 +110,9 @@ function PostView() {
 
     async function addImage(): Promise<void> {
         try {
-            setAddingImage(true);
+            dispatch({ addingImage: true });
             const image = await getImage(addImageFileRef);
-            if (image === undefined || !postData) {
+            if (image === undefined || !state.postData) {
                 return;
             }
 
@@ -140,22 +120,18 @@ function PostView() {
                 image: image,
             });
 
-            setPostData(resp.data.updatedPost);
-            setIndex(postData.images.length);
+            dispatch({
+                postData: resp.data.updatedPost,
+                index: state.postData.images.length
+            });
         }
         catch (err: any) {
             const errorMessage = getAPIErrorMessage(err as AxiosError<{ message: string }>);
             setErrorMessage(errorMessage);
         }
         finally {
-            setAddingImage(false);
+            dispatch({ addingImage: false });
         }
-    }
-
-    function toggle(change: UpdatePostToggles) {
-        const cpy = {...state.toggles};
-        cpy[change] = !cpy[change];
-        dispatch({ type: Actions.TOGGLE, payload: cpy });
     }
 
     function triggerFileUpload(): void {
@@ -164,17 +140,23 @@ function PostView() {
         }
     }
 
-    function confirmChanges(data: UpdatePostArgs["data"], change: UpdatePostToggles) {
-        if (state.toggles[change]) {
-            updatePost(data);
-        }
-
-        toggle(change);
+    async function confirmChanges(data: Partial<PostViewState>) {
+        await updatePost({ title: data.title || state.title, about: data.about || state.about });
+        dispatch({ ...data });
     }
 
     function copyServiceID() {
-        if (postData) {
-            navigator.clipboard.writeText(postData.postID);
+        if (state.postData) {
+            navigator.clipboard.writeText(state.postData.postID);
+        }
+    }
+    
+    function toggleChange(isOpen: boolean, updateState: Partial<PostViewState>, 
+        toggleOn: Partial<{ titleToggle: boolean, aboutToggle: boolean }>): void {
+        if (isOpen) {
+            confirmChanges(updateState);
+        } else {
+            dispatch({ ...toggleOn });
         }
     }
     
@@ -182,11 +164,11 @@ function PostView() {
         (async (): Promise<void> => {
             try {
                 const resp = await axios.get<{ post: PostPage, message: string }>(`/api${location.pathname}`);
-                setPostData(resp.data.post);
-                dispatch({ type: Actions.UPDATE, payload: { 
-                    about: resp.data.post.about, 
-                    title: resp.data.post.title 
-                }});
+                dispatch({
+                    postData: resp.data.post,
+                    about: resp.data.post.about,
+                    title: resp.data.post.title
+                });
             }
             catch (err: any) {
                 const errorMessage = getAPIErrorMessage(err as AxiosError<{ message: string }>);
@@ -195,7 +177,7 @@ function PostView() {
         })();
     }, [location.pathname]);
 
-    if (!postData) {
+    if (!state.postData) {
         return (
             <p>loading</p>
         );
@@ -204,9 +186,9 @@ function PostView() {
     return (
         <div className="overflow-y-scroll h-[calc(100vh-90px)]">
             <PageWrapper styles="p-[38px] pt-[58px]" locationStack={[
-                postData.workType.jobCategory.name,
-                postData.workType.name,
-                postData.title
+                state.postData.workType.jobCategory.name,
+                state.postData.workType.name,
+                state.postData.title
             ]}>
                 <AnimatePresence>
                     {errorMessage !== "" && 
@@ -217,47 +199,51 @@ function PostView() {
                 </AnimatePresence>
                 <div className="flex gap-16">
                     <div className="flex-grow">
-                        <div className="flex gap-3 items-center">
+                        <div className="flex gap-3 items-center mb-4">
                             {isOwner &&
-                            <p className="change mb-3" onClick={() => confirmChanges({ title: state.data.title?.trim() }, "titleToggle")}>
-                                {state.toggles.titleToggle ? "Confirm changes" : "Change"}
+                            <p className="change" onClick={() => toggleChange(
+                                state.titleToggle, 
+                                { title: state.title.trim(), titleToggle: false }, 
+                                { titleToggle: true })
+                            }>
+                                {state.titleToggle ? "Confirm changes" : "Change"}
                             </p>}
-                            {isOwner && state.toggles.titleToggle &&
-                            <p className="cancel-change mb-2" onClick={() => toggle("titleToggle")}>
+                            {isOwner && state.titleToggle &&
+                            <p className="cancel-change" onClick={() => { dispatch({ titleToggle: false })}}>
                                 Cancel changes
                             </p>}
                         </div>
-                        {state.toggles.titleToggle ? 
+                        {state.titleToggle ? 
                         <input
                             type="text" 
                             className="w-full text-[1.3rem] search-bar mt-2 mb-6 focus:outline-none"
-                            value={state.data.title}
+                            value={state.title}
                             maxLength={titleLimit}
-                            onChange={(e) => dispatch({ type: Actions.UPDATE, payload: { title: e.target.value } })}
+                            onChange={(e) => dispatch({ title: e.target.value })}
                         /> :
                         <h1 className="text-[1.7rem] mb-3">
-                            {postData.title}
+                            {state.postData.title}
                         </h1>}
                         <div className="flex gap-3 items-center mb-5">
                             <div className="relative">
                                 <ProfilePicAndStatus 
-                                    profilePicURL={postData.postedBy.user.profilePicURL} 
-                                    profileStatus={postData.postedBy.user.status}
+                                    profilePicURL={state.postData.postedBy.user.profilePicURL} 
+                                    profileStatus={state.postData.postedBy.user.status}
                                     statusStyles="before:left-[33px] before:top-[34px] cursor-pointer"
                                     action={navigateToProfile}
-                                    username={postData.postedBy.user.username}
+                                    username={state.postData.postedBy.user.username}
                                     size={50}
                                 />
                             </div>
                             <div>
                                 <div className="flex items-center gap-[10px]">
                                     <p className="link !p-0" onClick={navigateToProfile}>
-                                        {postData.postedBy.user.username}
+                                        {state.postData.postedBy.user.username}
                                     </p>
                                     <div className="flex items-center gap-[5px]">
                                         <StarSvg size={15} backgroundColour="#292929" />
                                         <p className="text-[15px] mt-[1px]">
-                                            {postData.postedBy.rating}
+                                            {state.postData.postedBy.rating}
                                         </p>
                                     </div>
                                     <p className="text-[15px] text-side-text-gray mt-[1px]">
@@ -265,7 +251,7 @@ function PostView() {
                                     </p>
                                 </div>
                                 <p className="text-side-text-gray text-[15px] mt-[1px]">
-                                    {getTimePosted(postData.createdAt)}
+                                    {getTimePosted(state.postData.createdAt)}
                                 </p>
                             </div>
                         </div>
@@ -273,7 +259,7 @@ function PostView() {
                             <p>
                                 Service ID:
                                 <span className="text-main-blue">
-                                    {` ${postData.postID}`}
+                                    {` ${state.postData.postID}`}
                                 </span>
                             </p>
                             <button className="side-btn w-fit !h-[30px] text-[15px] rounded-[6px]" onClick={copyServiceID}>
@@ -281,94 +267,96 @@ function PostView() {
                             </button>
                         </div>
                         <Carousel
-                            images={postData.images}
+                            images={state.postData.images}
                             btnSize={50}
                             wrapperStyles="bg-very-light-gray rounded-[12px] border 
                             border-very-light-gray shadow-info-component h-[510px]"
                             imageStyles="object-contain object-center"
-                            startIndex={index}
+                            startIndex={state.index}
                         />
                         <div className="mt-5 whitespace-nowrap overflow-x-scroll relative pb-5">
-                            {postData.images.map((_, index: number) => {
+                            {state.postData.images.map((_, index: number) => {
                                 return (
                                     <PostImage
-                                        images={postData.images}
+                                        images={state.postData!.images}
                                         index={index}
                                         isOwner={isOwner}
-                                        removingImage={removingImage}
-                                        setPostData={setPostData}
-                                        setIndex={setIndex}
-                                        setRemovingImage={setRemovingImage}
-                                        action={() => setIndex(index)}
+                                        removingImage={state.removingImage}
+                                        dispatch={dispatch}
+                                        action={() => dispatch({ index: index })}
                                         getImage={getImage}
                                         key={index}
                                     />
                                 )
                             })}
-                            {isOwner && postData.images.length < MAX_FILE_UPLOADS &&
+                            {isOwner && state.postData.images.length < MAX_FILE_UPLOADS &&
                             <>
                                 <input type='file' ref={addImageFileRef} className="hidden" onChange={addImage} />
-                                <div className={`inline-block absolute w-[140px] ${postData.images.length > 0 ? "ml-3" : ""}
-                                ${addingImage ? "pointer-events-none" : ""}`}
+                                <div className={`inline-block absolute w-[140px] ${state.postData.images.length > 0 ? "ml-3" : ""}
+                                ${state.addingImage ? "pointer-events-none" : ""}`}
                                 onClick={triggerFileUpload}>
                                     <button className="change relative w-full h-[85px] flex items-center 
                                     justify-center rounded-[8px] gap-2">
-                                        {addingImage && <LoadingSvg size={24} colour="#4E73F8" />}
-                                        <span className="text-main-blue">{addingImage ? "Uploading" : "+ Add image"}</span>
+                                        {state.addingImage && <LoadingSvg size={24} colour="#4E73F8" />}
+                                        <span className="text-main-blue">{state.addingImage ? "Uploading" : "+ Add image"}</span>
                                     </button>
                                 </div>
                             </>}
                         </div>
                         <section className="mt-8 mb-10 w-full">
-                            <div className="mb-3 flex items-center gap-3">
+                            <div className="flex items-center gap-3 mb-4">
                                 <h2 className="text-[1.3rem]">About this service</h2>
                                 {isOwner &&
-                                <p className="change" onClick={() => confirmChanges({ about: state.data.about }, "aboutToggle")}>
-                                    {state.toggles.aboutToggle ? "Confirm changes" : "Change"}
+                                <p className="change" onClick={() => toggleChange(
+                                    state.aboutToggle, 
+                                    { about: state.about, aboutToggle: false }, 
+                                    { aboutToggle: true })
+                                }>
+                                    {state.aboutToggle ? "Confirm changes" : "Change"}
                                 </p>}
-                                {isOwner && state.toggles.aboutToggle &&
-                                <p className="cancel-change" onClick={() => toggle("aboutToggle")}>
+                                {isOwner && state.aboutToggle &&
+                                <p className="cancel-change" onClick={() => dispatch({ aboutToggle: false })}>
                                     Cancel changes
                                 </p>}
                             </div>
-                            {state.toggles.aboutToggle ? 
+                            {state.aboutToggle ? 
                             <TextEditor
-                                value={state.data.about}
-                                setValue={(value: string) => dispatch({ type: Actions.UPDATE, payload: { about: value } })}
+                                value={state.about}
+                                setValue={(value: string) => dispatch({ about: value })}
                                 limit={aboutLimit}
                             /> : 
                             <>
-                                {parse(postData.about)}
+                                {parse(state.postData.about)}
                             </>}
                         </section>
                         <AboutSeller 
-                            description={postData.postedBy.description}
-                            profilePicURL={postData.postedBy.user.profilePicURL}
-                            status={postData.postedBy.user.status}
-                            username={postData.postedBy.user.username}
-                            sellerLevel={postData.postedBy.sellerLevel.name}
-                            summary={postData.postedBy.summary}
-                            country={postData.postedBy.user.country}
-                            memberDate={postData.postedBy.user.memberDate}
-                            rating={postData.postedBy.rating}
-                            languages={postData.postedBy.languages}
-                            skills={postData.postedBy.skills}
-                            sellerID={postData.sellerID}
+                            description={state.postData.postedBy.description}
+                            profilePicURL={state.postData.postedBy.user.profilePicURL}
+                            status={state.postData.postedBy.user.status}
+                            username={state.postData.postedBy.user.username}
+                            sellerLevel={state.postData.postedBy.sellerLevel.name}
+                            summary={state.postData.postedBy.summary}
+                            country={state.postData.postedBy.user.country}
+                            memberDate={state.postData.postedBy.user.memberDate}
+                            rating={state.postData.postedBy.rating}
+                            languages={state.postData.postedBy.languages}
+                            skills={state.postData.postedBy.skills}
+                            sellerID={state.postData.sellerID}
                         />
                         <Reviews 
-                            url={`/api/sellers/${postData.sellerID}/reviews?post=${postData.postID}`} 
+                            url={`/api/sellers/${state.postData.sellerID}/reviews?post=${state.postData.postID}`} 
                             reviewsRef={reviewsRef}
                         />
                     </div>
                     <div className="relative min-w-[390px]">
                         <Packages 
-                            packages={postData.packages}
-                            postID={postData.postID}
+                            packages={state.postData.packages}
+                            postID={state.postData.postID}
                             seller={{
-                                username: postData.postedBy.user.username,
-                                status: postData.postedBy.user.status,
-                                profilePicURL: postData.postedBy.user.profilePicURL,
-                                userID: postData.postedBy.user.userID
+                                username: state.postData.postedBy.user.username,
+                                status: state.postData.postedBy.user.status,
+                                profilePicURL: state.postData.postedBy.user.profilePicURL,
+                                userID: state.postData.postedBy.user.userID
                             }}
                         />
                         <button className="btn-primary text-main-white bg-main-black hover:bg-main-black-hover 
@@ -377,8 +365,8 @@ function PostView() {
                             See seller reviews
                         </button>
                         <CreateReview 
-                            postID={postData.postID} 
-                            sellerID={postData.sellerID}
+                            postID={state.postData.postID} 
+                            sellerID={state.postData.sellerID}
                         />
                     </div>
                 </div>

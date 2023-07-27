@@ -37,7 +37,7 @@ export function useToggleAwayStatus(): void {
                 }, 10000);
             }
             catch (err: any) {
-                // Ignore failure setting the user status to online and try again every time the cursor moves.
+                // Ignore failure setting the user status to online and try again later.
             }
             finally {
                 lastActive.current = Date.now();

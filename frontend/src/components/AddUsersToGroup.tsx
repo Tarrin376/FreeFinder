@@ -25,10 +25,15 @@ function AddUsersToGroup({ groupID, groupMembers, setGroupMembers, setToggleAddU
     async function addUsersToGroup(): Promise<string | undefined> {
         try {
             const usernames = addedUsers.map((user) => user.username);
-            await axios.put<{ message: string }>(`/api/users/${userContext.userData.username}/created-groups/${groupID}`, {
+            const resp = await axios.put<{ group: GroupPreview, sockets: string[], message: string }>
+            (`/api/users/${userContext.userData.username}/created-groups/${groupID}`, {
                 members: usernames
             });
-
+            
+            for (const socket of resp.data.sockets) {
+                userContext.socket?.emit("added-to-group", socket, resp.data.group);
+            }
+            
             setGroupMembers((cur) => [...cur, ...addedUsers.map((user) => { return { user: user } })]);
         }
         catch (err: any) {

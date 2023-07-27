@@ -26,13 +26,13 @@ export type PostData = {
     thumbnail: unknown
 }
 
-export type InitialState = {
-    basic: InitialPackageState,
-    standard: InitialPackageState,
-    superior: InitialPackageState
+export type CreatePostState = {
+    basic: PackageState,
+    standard: PackageState,
+    superior: PackageState
 }
 
-export type InitialPackageState = {
+export type PackageState = {
     revisions: string,
     features: string[],
     deliveryTime: number,
@@ -43,10 +43,10 @@ export type InitialPackageState = {
 
 export type ReducerAction = { 
     type: PackageTypes,
-    payload: Partial<InitialPackageState>
+    payload: Partial<PackageState>
 };
 
-const initialPkgState: InitialPackageState = {
+const initialPkgState: PackageState = {
     revisions: "1",
     features: [],
     deliveryTime: 0,
@@ -55,7 +55,7 @@ const initialPkgState: InitialPackageState = {
     title: "",
 }
 
-const initialState: InitialState = {
+const initialState: CreatePostState = {
     basic: {
         ...initialPkgState
     },
@@ -67,7 +67,7 @@ const initialState: InitialState = {
     }
 }
 
-function reducer(state: InitialState, action: ReducerAction): InitialState {
+function reducer(state: CreatePostState, action: ReducerAction): CreatePostState {
     switch (action.type) {
         case PackageTypes.BASIC:
             return { ...state, basic: { ...state.basic, ...action.payload } };
@@ -97,7 +97,7 @@ function CreatePost({ setPostService, resetState }: CreatePostProps) {
     
     const [state, dispatch] = useReducer(reducer, initialState);
 
-    function constructPackage(pkg: InitialPackageState, type: ReducerAction["type"]): IPackage {
+    function constructPackage(pkg: PackageState, type: ReducerAction["type"]): IPackage {
         return {
             ...pkg,
             numOrders: 0,

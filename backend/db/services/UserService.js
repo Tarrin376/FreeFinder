@@ -11,6 +11,7 @@ import { sellerProperties } from '../utils/sellerProperties.js';
 import { userProperties } from '../utils/userProperties.js';
 import { getPaginatedData } from '../utils/getPaginatedData.js';
 import { getAvgRatings } from '../utils/getAvgRatings.js';
+import { groupPreviewProperties } from '../utils/groupPreviewProperties.js';
 
 const MAX_AMOUNT = 500;
 
@@ -435,38 +436,7 @@ async function queryMessageGroups(req) {
 
     const select = {
         group: {
-            select: {
-                groupName: true,
-                groupID: true,
-                creatorID: true,
-                messages: {
-                    take: 1,
-                    orderBy: {
-                        createdAt: 'desc'
-                    },
-                    select: {
-                        from: {
-                            select: {
-                                username: true
-                            }
-                        },
-                        messageText: true,
-                        createdAt: true
-                    }
-                },
-                members: {
-                    select: {
-                        user: {
-                            select: {
-                                username: true,
-                                profilePicURL: true,
-                                status: true,
-                                userID: true
-                            }
-                        }
-                    }
-                }
-            }
+            ...groupPreviewProperties
         }
     };
 
@@ -500,8 +470,19 @@ async function queryMessageGroups(req) {
 }
 
 async function addMembers(members, groupID, tx) {
+    let allMembers = [];
+
     for (const member of members) {
-        await tx.groupMember.create({
+        const socket = await prisma.user.findUnique({
+            where: {
+                username: member
+            },
+            select: {
+                socketID: true
+            }
+        });
+
+        const newMember = await tx.groupMember.create({
             data: {
                 group: {
                     connect: {
@@ -513,9 +494,26 @@ async function addMembers(members, groupID, tx) {
                         username: member
                     }
                 }
+            },
+            select: {
+                user: {
+                    select: {
+                        username: true,
+                        profilePicURL: true,
+                        status: true,
+                        userID: true
+                    }
+                }
             }
         });
+
+        allMembers.push({
+            member: newMember,
+            socketID: socket.socketID
+        });
     }
+
+    return allMembers;
 }
 
 export async function createMessageGroupHandler(req) {
@@ -524,18 +522,25 @@ export async function createMessageGroupHandler(req) {
         if (!Array.isArray(req.body.members) || req.body.members.length === 0 || typeof req.body.members[0] !== "string") {
             throw new DBError("Members must be a non-empty string array.", 400);
         }
-
-        await prisma.$transaction(async (tx) => {
+       
+        return await prisma.$transaction(async (tx) => {
             const group = await tx.messageGroup.create({
                 data: {
                     groupName: req.body.groupName,
                     postID: req.body.postID,
                     creatorID: req.userData.userID
-                }
+                },
+                ...groupPreviewProperties
             });
 
-            const members = [req.username, ...req.body.members];
-            await addMembers(members, group.groupID, tx);
+            const allMembers = await addMembers([req.username, ...req.body.members], group.groupID, tx);
+            return {
+                group: {
+                    ...group,
+                    members: allMembers.map((x) => x.member)
+                },
+                sockets: allMembers.map((x) => x.socketID).filter((socketID) => socketID !== null)
+            }
         });
     }
     catch (err) {
@@ -731,18 +736,34 @@ export async function leaveGroupHandler(req) {
 export async function updateGroupHandler(req) {
     try {
         await checkUser(req.userData.userID, req.username);
-        await prisma.messageGroup.update({
-            where: {
-                groupID: req.params.groupID
-            },
-            data: {
-                groupName: req.body.groupName,
+
+        return await prisma.$transaction(async (tx) => {
+            const group = await tx.messageGroup.update({
+                where: {
+                    groupID: req.params.groupID
+                },
+                data: {
+                    groupName: req.body.groupName,
+                },
+                ...groupPreviewProperties
+            });
+    
+            if (Array.isArray(req.body.members) && req.body.members.length > 0 && typeof req.body.members[0] === "string") {
+                const allMembers = await addMembers(req.body.members, group.groupID, tx);
+                return {
+                    group: {
+                        ...group,
+                        members: allMembers.map((x) => x.member)
+                    },
+                    sockets: allMembers.map((x) => x.socketID).filter((socketID) => socketID !== null)
+                }
+            }
+    
+            return {
+                group: group,
+                sockets: []
             }
         });
-
-        if (Array.isArray(req.body.members) && req.body.members.length > 0 && typeof req.body.members[0] === "string") {
-            await addMembers(req.body.members, req.params.groupID, prisma);
-        }
     }
     catch (err) {
         if (err instanceof DBError) {

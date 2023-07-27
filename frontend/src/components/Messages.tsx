@@ -10,7 +10,6 @@ import { GroupPreview } from "../types/GroupPreview";
 import { PaginationResponse } from "../types/PaginateResponse";
 import GroupPreviewMessage from "./GroupPreviewMessage";
 import Chat from "./Chat";
-import { IMessage } from "../models/IMessage";
 
 interface MessagesProps {
     setMessagesPopUp: React.Dispatch<React.SetStateAction<boolean>>
@@ -28,7 +27,7 @@ function Messages({ setMessagesPopUp }: MessagesProps) {
     const url = `/api/users/${userContext.userData.username}/message-groups/all`;
     const messageGroups = usePaginateData<{}, GroupPreview, PaginationResponse<GroupPreview>>(pageRef, cursor, url, page, setPage, {}, false, joinRooms);
     const [allGroups, setAllGroups] = useState<GroupPreview[]>([]);
-    const [usersTyping, setUsersTyping] = useState<{ [key: string]: string[] }>({});
+    const [groupCount, setGroupCount] = useState<number>(0);
 
     function openCreateGroupPopUp() {
         setCreateGroupPopUp(true);
@@ -40,65 +39,20 @@ function Messages({ setMessagesPopUp }: MessagesProps) {
 
     function joinRooms(resp: PaginationResponse<GroupPreview>) {
         for (const group of resp.next) {
-            userContext?.socket?.emit("join-message-group", group.groupID);
+            userContext.socket?.emit("join-message-group", group.groupID);
         }
     }
 
-    const updateUsersTyping = useCallback((username: string, id: string): void => {
-        if (usersTyping[id]?.includes(username)) {
-            return;
-        }
-
-        setUsersTyping((cur) => {
-            const cpy = { ...cur };
-            if (!cpy[id]) cpy[id] = [username];
-            else cpy[id].push(username);
-            return cpy;
-        });
-
-        setTimeout(() => {
-            setUsersTyping((cur) => {
-                const cpy = { ...cur };
-                if (cpy[id]) {
-                    cpy[id] = cpy[id].filter((user) => user !== username);
-                    if (cpy[id].length === 0) {
-                        delete cpy[id];
-                    }
-                }
-
-                return cpy;
-            });
-        }, 5000);
-    }, [usersTyping]);
-
-    const showNewMessages = useCallback((message: IMessage, id: string): void => {
-        setAllGroups((cur) => {
-            return cur.map((x) => {
-                if (x.groupID === id) {
-                    return {
-                        ...x,
-                        lastMessage: message
-                    }
-                } else {
-                    return x;
-                }
-            })
-        });
-    }, []);
+    const showNewGroup = useCallback((group: GroupPreview) => {
+        userContext.socket?.emit("join-message-group", group.groupID);
+        setAllGroups((cur) => [group, ...cur]);
+        setGroupCount((cur) => cur + 1);
+    }, [userContext.socket]);
 
     useEffect(() => {
-        userContext.socket?.on("user-typing", updateUsersTyping);
-        userContext.socket?.on("receive-message", showNewMessages);
-
-        return () => {
-            userContext.socket?.off("user-typing", updateUsersTyping);
-            userContext.socket?.off("receive-message", showNewMessages);
-        }
-    }, [userContext.socket, updateUsersTyping, showNewMessages]);
-
-    useEffect(() => {
+        setGroupCount(messageGroups.count.current);
         setAllGroups(messageGroups.data);
-    }, [messageGroups.data]);
+    }, [messageGroups.data, messageGroups.count]);
 
     useEffect(() => {
         if (!group && allGroups.length > 0) {
@@ -107,13 +61,16 @@ function Messages({ setMessagesPopUp }: MessagesProps) {
     }, [group, allGroups]);
 
     useEffect(() => {
+        userContext.socket?.on("new-group", showNewGroup);
+
         return () => {
             userContext.socket?.emit("leave-rooms");
+            userContext.socket?.off("new-group", showNewGroup);
         }
-    }, [userContext.socket]);
+    }, [userContext.socket, showNewGroup]);
 
     return (
-        <PopUpWrapper setIsOpen={setMessagesPopUp} title="Messages" styles="!max-w-[1100px] h-[1100px]">
+        <PopUpWrapper setIsOpen={setMessagesPopUp} title="Messages" styles="!max-w-[900px] h-[900px]">
             <AnimatePresence>
                 {createGroupPopUp && 
                 <CreateGroup 
@@ -121,11 +78,11 @@ function Messages({ setMessagesPopUp }: MessagesProps) {
                 />}
             </AnimatePresence>
             <div className="flex flex-1 overflow-y-hidden">
-                <div className="flex flex-col w-[340px] flex-shrink-0 border-r border-light-border-gray pr-3">
+                <div className="flex flex-col w-[290px] flex-shrink-0 border-r border-light-border-gray pr-3">
                     <div className="flex items-center justify-between w-full mb-4">
                         <div className="flex items-center gap-2">
                             <img src={AllMessagesIcon} className="w-[16px] h-[16px]" alt="" />
-                            <p className="text-side-text-gray text-[15px]">{`All messages (${messageGroups.count.current})`}</p>
+                            <p className="text-side-text-gray text-[15px]">{`All messages (${groupCount})`}</p>
                         </div>
                         <img 
                             src={AddGroupIcon} 
@@ -134,12 +91,11 @@ function Messages({ setMessagesPopUp }: MessagesProps) {
                             alt="" 
                         />
                     </div>
-                    <div className="overflow-y-scroll flex-grow w-full pr-[8px] flex flex-col gap-2" ref={pageRef}>
+                    <div className="overflow-y-scroll scrollbar-hide flex-grow w-full flex flex-col gap-2" ref={pageRef}>
                         {allGroups.map((msgGroup: GroupPreview, index: number) => {
                             return (
                                 <GroupPreviewMessage 
                                     group={msgGroup}
-                                    usersTyping={usersTyping}
                                     selectedGroup={group}
                                     action={updateMessageGroup}
                                     key={index}
@@ -152,6 +108,7 @@ function Messages({ setMessagesPopUp }: MessagesProps) {
                 <Chat 
                     group={group}
                     setAllGroups={setAllGroups}
+                    setGroupCount={setGroupCount}
                     setGroup={setGroup}
                     key={group.groupID} 
                 /> : 

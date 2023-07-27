@@ -184,8 +184,8 @@ export async function getMessageGroups(req, res) {
 
 export async function createMessageGroup(req, res) {
     try {
-        await createMessageGroupHandler(req);
-        res.json({ message: "success" });
+        const { group, sockets } = await createMessageGroupHandler(req);
+        res.json({ group, sockets, message: "success" });
     }
     catch (err) {
         res.status(err.code).json({ message: err.message });
@@ -244,8 +244,8 @@ export async function leaveGroup(req, res) {
 
 export async function updateGroup(req, res) {
     try {
-        await updateGroupHandler(req);
-        res.json({ message: "success" });
+        const { group, sockets } = await updateGroupHandler(req);
+        res.json({ group, sockets, message: "success" });
     }
     catch (err) {
         res.status(err.code).json({ message: err.message });

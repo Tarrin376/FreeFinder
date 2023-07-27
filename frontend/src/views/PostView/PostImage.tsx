@@ -8,14 +8,14 @@ import { AnimatePresence } from "framer-motion";
 import { motion } from "framer-motion";
 import ErrorPopUp from "../../components/ErrorPopUp";
 import LoadingSvg from "../../components/LoadingSvg";
+import { PostViewState } from "./PostView";
+
 interface PostImageProps {
     images: IPostImage[],
     index: number,
     isOwner: boolean,
     removingImage: number,
-    setPostData: React.Dispatch<React.SetStateAction<PostPage | undefined>>,
-    setIndex: React.Dispatch<React.SetStateAction<number>>,
-    setRemovingImage: React.Dispatch<React.SetStateAction<number>>,
+    dispatch: React.Dispatch<Partial<PostViewState>>,
     action: () => void,
     getImage: (ref: React.RefObject<HTMLInputElement>) => Promise<unknown | undefined>
 }
@@ -45,8 +45,8 @@ function PostImage(props: PostImageProps) {
                 newImage: image,
                 imageURL: props.images[props.index].url
             });
-
-            props.setPostData(resp.data.post);
+            
+            props.dispatch({ postData: resp.data.post });
         } catch (err: any) {
             const errorMessage = getAPIErrorMessage(err as AxiosError<{ message: string }>);
             setErrorMessage(errorMessage);
@@ -62,19 +62,21 @@ function PostImage(props: PostImageProps) {
         }
 
         try {
-            props.setRemovingImage(props.index);
+            props.dispatch({ removingImage: props.index });
             const resp = await axios.delete<{ updatedPost: PostPage, message: string }>
             (`/api${location.pathname}/${props.images[props.index].cloudinaryID}`);
 
-            props.setIndex(props.images.length - 2);
-            props.setPostData(resp.data.updatedPost);
+            props.dispatch({
+                index: props.images.length - 2,
+                postData: resp.data.updatedPost
+            });
         }
         catch (err: any) {
             const errorMessage = getAPIErrorMessage(err as AxiosError<{ message: string }>);
             setErrorMessage(errorMessage);
         }
         finally {
-            props.setRemovingImage(-1);
+            props.dispatch({ removingImage: -1 });
         }
     }
 

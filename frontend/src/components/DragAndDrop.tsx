@@ -1,6 +1,12 @@
 import { useState, useRef } from 'react';
 
-function DragAndDrop({ children, handleDrop }: { children?: React.ReactNode, handleDrop: Function }) {
+interface DragAndDropProps {
+    children?: React.ReactNode,
+    handleDrop: (files: FileList) => void,
+    styles?: string
+}
+
+function DragAndDrop({ children, handleDrop, styles }: DragAndDropProps) {
     const [dragging, setDragging] = useState<boolean>(false);
     const counter = useRef<number>(0);
 
@@ -43,7 +49,7 @@ function DragAndDrop({ children, handleDrop }: { children?: React.ReactNode, han
     return (
         <div onDragEnter={dragInHandler} onDragLeave={dragOutHandler} onDragOver={dragHandler} onDrop={dropHandler}
         className={`w-full h-[260px] outline-2 outline-dashed rounded-[8px] relative
-        ${dragging ? 'outline-main-blue bg-[#e0f9e03a]' : 'outline-light-gray'}`}>
+        ${dragging ? 'outline-main-blue bg-[#f8f9ff]' : 'outline-light-gray'} ${styles}`}>
             {children}
         </div>
     )

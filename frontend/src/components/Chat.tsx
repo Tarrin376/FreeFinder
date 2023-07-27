@@ -17,12 +17,13 @@ import AddUsersToGroup from "./AddUsersToGroup";
 interface ChatProps {
     group: GroupPreview,
     setAllGroups: React.Dispatch<React.SetStateAction<GroupPreview[]>>,
+    setGroupCount: React.Dispatch<React.SetStateAction<number>>,
     setGroup: React.Dispatch<React.SetStateAction<GroupPreview | undefined>>
 }
 
 const visibleMembers = 3;
 
-function Chat({ group, setAllGroups, setGroup }: ChatProps) {
+function Chat({ group, setAllGroups, setGroupCount, setGroup }: ChatProps) {
     const [toggleGroupMembers, setToggleGroupMembers] = useState<boolean>(false);
     const [errorMessage, setErrorMessage] = useState<string>("");
     const [groupMembers, setGroupMembers] = useState<GroupPreview["members"]>(group.members);
@@ -39,7 +40,7 @@ function Chat({ group, setAllGroups, setGroup }: ChatProps) {
         }
     }
 
-    function updateGroupMembers(userID: string) {
+    function removeGroupMember(userID: string) {
         setGroupMembers((members) => members.filter((member) => member.user.userID !== userID));
     }
 
@@ -70,9 +71,15 @@ function Chat({ group, setAllGroups, setGroup }: ChatProps) {
 
     const updateUserLeftRoom = useCallback((userID: string, id: string) => {
         if (id === group.groupID) {
-            updateGroupMembers(userID);
+            removeGroupMember(userID);
         }
-    }, [group.groupID]);
+
+        if (userID === userContext.userData.userID) {
+            setAllGroups((cur) => cur.filter((x) => x.groupID !== id));
+            setGroupCount((cur) => cur - 1);
+            setGroup(undefined);
+        }
+    }, [group.groupID, userContext.userData.userID, setAllGroups, setGroup, setGroupCount]);
 
     useEffect(() => {
         setAllGroups((cur) => {
@@ -113,7 +120,7 @@ function Chat({ group, setAllGroups, setGroup }: ChatProps) {
                     setToggleAddUsersPopUp={setToggleAddUsersPopUp}
                 />}
             </AnimatePresence>
-            <div className="border-b border-light-border-gray bg-transparent pl-6 pb-6 w-full flex items-center justify-between flex-shrink-0">
+            <div className="border-b border-light-border-gray bg-transparent pl-4 pb-4 w-full flex items-center justify-between flex-shrink-0">
                 <div className="flex items-center gap-4">
                     <ProfilePicAndStatus
                         profilePicURL=""
@@ -121,12 +128,9 @@ function Chat({ group, setAllGroups, setGroup }: ChatProps) {
                         username={group.groupName}
                         statusStyles="before:hidden"
                     />
-                    <div>
-                        <div className="flex items-center gap-3">
-                            <p className="text-[20px]">{group.groupName}</p>
-                            <button className="change">Change</button>
-                        </div>
-                    </div>
+                    <p className="text-[18px]">
+                        {group.groupName}
+                    </p>
                 </div>
                 <div className="flex items-center gap-2">
                     <div className="inline-flex relative" onMouseLeave={() => setToggleGroupMembers(false)}>
@@ -149,6 +153,7 @@ function Chat({ group, setAllGroups, setGroup }: ChatProps) {
                                             setErrorMessage(result);
                                         } else {
                                             userContext.socket?.emit("leave-room", member.user.userID, group.groupID);
+                                            removeGroupMember(member.user.userID);
                                         }
                                     }}>
                                         <CloseSvg 
@@ -181,7 +186,7 @@ function Chat({ group, setAllGroups, setGroup }: ChatProps) {
                     {group.creatorID === userContext.userData.userID && 
                     <img 
                         src={AddUserIcon} 
-                        className="w-[25px] h-[25px] cursor-pointer"
+                        className="w-[25px] h-[25px] cursor-pointer ml-[5px]"
                         onClick={() => setToggleAddUsersPopUp(true)}
                         alt=""
                     />}

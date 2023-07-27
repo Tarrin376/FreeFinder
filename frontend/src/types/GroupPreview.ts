@@ -1,16 +1,11 @@
 import { UserStatus } from "../enums/UserStatus";
+import { IMessage } from "../models/IMessage";
 
 export type GroupPreview = {
     groupName: string,
     groupID: string,
     creatorID: string,
-    lastMessage: {
-        from: {
-            username: string
-        },
-        messageText: string,
-        createdAt: Date
-    },
+    lastMessage: IMessage,
     members: {
         user: {
             username: string,

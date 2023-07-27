@@ -3,7 +3,7 @@ import ErrorMessage from "../../components/ErrorMessage";
 import { Sections } from "../../enums/Sections";
 import { FailedUpload } from "../../types/FailedUploaded";
 import { useState, useEffect } from "react";
-import File from "../../components/File";
+import UploadedImage from "../../components/UploadedImage";
 import Button from "../../components/Button";
 import axios, { AxiosError } from "axios";
 import { getAPIErrorMessage } from "../../utils/getAPIErrorMessage";
@@ -137,7 +137,7 @@ function PostDetails({ jobCategory, setJobCategory, setTypeOfWork, setErrorMessa
             <div className="max-h-[250px] items-center overflow-y-scroll mt-6 pr-[8px] flex flex-col gap-[15px]">
                 {props.failedUploads.map((upload: FailedUpload, index: number) => {
                     return (
-                        <File file={upload.imageData.file} key={index} description={upload.errorMessage} error={true}>
+                        <UploadedImage file={upload.imageData.file} key={index} description={upload.errorMessage} error={true}>
                             <button className="bg-main-white border-2 border-light-border-gray btn-primary min-w-[120px] px-3
                             hover:bg-main-white-hover" onClick={() => ignoreUpload(upload)}>
                                 Ignore
@@ -154,7 +154,7 @@ function PostDetails({ jobCategory, setJobCategory, setTypeOfWork, setErrorMessa
                                 loadingSvgSize={24}
                                 loadingSvgColour="#F43C3C"
                             />
-                        </File>
+                        </UploadedImage>
                     )
                 })}
             </div>}

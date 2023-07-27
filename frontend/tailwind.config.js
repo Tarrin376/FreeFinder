@@ -25,8 +25,8 @@ module.exports = {
             'main-white': '#fdfdfd',
             'light-gray': '#e1e3e8',
             'nav-search-gray': '#cdcdcd',
-            'very-light-gray': '#EBEBEB',
-            'very-light-gray-hover': '#E6E6E6',
+            'very-light-gray': '#f1f1f1',
+            'very-light-gray-hover': '#ebebeb',
             'main-black': '#292929',
             'side-text-gray': '#8d8c91', // #9c9c9c old
             'main-black-hover': '#323232',

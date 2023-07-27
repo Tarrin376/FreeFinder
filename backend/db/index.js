@@ -62,6 +62,10 @@ io.on("connection", (socket) => {
         socket.to(groupID).emit("left-room", userID, groupID);
     });
 
+    socket.on("added-to-group", (socketID, group) => {
+        socket.to(socketID).emit("new-group", group);
+    });
+
     socket.on("leave-rooms", () => {
         for (const room of socket.rooms) {
             socket.leave(room);

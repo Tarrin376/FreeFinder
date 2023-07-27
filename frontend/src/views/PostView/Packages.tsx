@@ -113,12 +113,14 @@ function Packages({ packages, seller, postID }: PackagesProps) {
                         </ul>
                     </div>
                     {userContext.userData.username !== "" &&
-                    <button className="side-btn w-full !h-12 mt-6" onClick={() => setCreateGroupPopUp(true)}>
+                    <>
+                        <button className="side-btn w-full !h-12 mt-6" onClick={() => setCreateGroupPopUp(true)}>
                         Message seller
-                    </button>}
-                    <button className={`main-btn ${userContext.userData.username !== "" ? "mt-3" : "mt-6"}`}>
-                        Request an order
-                    </button>
+                        </button>
+                        <button className={`main-btn ${userContext.userData.username !== "" ? "mt-3" : "mt-6"}`}>
+                            Request an order
+                        </button>
+                    </>}
                 </div>
             </>}
         </div>

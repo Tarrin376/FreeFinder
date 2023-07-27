@@ -5,13 +5,13 @@ import Storage from '../../assets/storage.png';
 import { Sections } from "../../enums/Sections";
 import ErrorMessage from "../../components/ErrorMessage";
 import { useState } from "react";
-import File from "../../components/File";
+import UploadedImage from "../../components/UploadedImage";
 import { getUniqueArray } from "../../utils/getUniqueArray";
 import { ImageData } from "../../types/ImageData";
-import { parseImage } from "../../utils/parseImage";
-import { checkFile } from "../../utils/checkFile";
+import { parseFileBase64 } from "../../utils/parseFileBase64";
+import { checkImageType } from "../../utils/checkImageType";
 
-export const MAX_FILE_UPLOADS: number = 20;
+export const MAX_FILE_UPLOADS = 20;
 export const MAX_FILE_BYTES = 2000000;
 
 interface UploadPostFilesProps {
@@ -34,14 +34,19 @@ function UploadPostFiles({ setPostService, setSection, uploadedImages, setUpload
         let failed = 0;
 
         while (index < files.length && filesToAdd > 0) {
-            const validFile: boolean = checkFile(files[index], MAX_FILE_BYTES);
+            const validFile: boolean = checkImageType(files[index], MAX_FILE_BYTES);
             if (validFile) {
-                const parsedImage = await parseImage(files[index]);
-                uploaded.push({
-                    file: files[index],
-                    image: parsedImage
-                });
-                filesToAdd--;
+                try {
+                    const parsedImage = await parseFileBase64(files[index]);
+                    uploaded.push({
+                        file: files[index],
+                        image: parsedImage
+                    });
+                    filesToAdd--;
+                }
+                catch (_: any) {
+                    failed++;
+                }
             } else {
                 failed++;
             }
@@ -82,7 +87,7 @@ function UploadPostFiles({ setPostService, setSection, uploadedImages, setUpload
             <DragAndDrop handleDrop={handleDrop}>
                 <div className="absolute top-[50%] left-[50%] translate-x-[-50%] translate-y-[-50%]">
                     <img src={Storage} className="block m-auto w-[50px] h-[50px] mb-3" alt="storage" />
-                    <p className="text-center">Drag and Drop file here or</p>
+                    <p className="text-center">Drag and Drop files here or</p>
                     <p className="underline cursor-pointer text-center" onClick={triggerFileUpload}>Choose file</p>
                 </div>
             </DragAndDrop>
@@ -104,7 +109,7 @@ function UploadPostFiles({ setPostService, setSection, uploadedImages, setUpload
             <div className="max-h-[250px] items-center overflow-y-scroll mt-6 pr-[8px] flex flex-col gap-[15px]">
                 {uploadedImages.map((image: ImageData, index: number) => {
                     return (
-                        <File file={image.file} key={index} description="You can download this file to verify that it is the correct one.">
+                        <UploadedImage file={image.file} key={index} description="You can download this file to verify that it is the correct one.">
                             <a href={URL.createObjectURL(image.file)} download={image.file.name}>
                                 <button className="side-btn w-[120px]">
                                     Download
@@ -114,12 +119,12 @@ function UploadPostFiles({ setPostService, setSection, uploadedImages, setUpload
                             hover:bg-error-red-hover" onClick={() => deleteImage(image)}>
                                 Remove
                             </button>
-                        </File>
+                        </UploadedImage>
                     );
                 })}
             </div>
             <div className="mt-[35px] flex gap-3 ml-auto w-fit">
-                <input type='file' ref={inputFileRef} className="hidden" onChange={uploadFile} />
+                <input type="file" ref={inputFileRef} className="hidden" onChange={uploadFile} />
                 <button className="side-btn w-[110px]" onClick={() => setPostService(false)}>
                     Cancel
                 </button>

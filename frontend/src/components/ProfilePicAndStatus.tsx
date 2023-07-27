@@ -10,7 +10,6 @@ interface ProfilePicAndStatusProps {
     imgStyles?: string,
     setErrorMessage?: React.Dispatch<React.SetStateAction<string>>,
     loading?: boolean,
-    setLoading?: React.Dispatch<React.SetStateAction<boolean>>,
     action?: () => void,
 }
 

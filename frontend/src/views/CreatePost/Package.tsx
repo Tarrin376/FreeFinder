@@ -1,10 +1,10 @@
 import { Sections } from "../../enums/Sections";
 import { checkIsNumeric } from "../../utils/checkIsNumeric";
 import PopUpWrapper from "../../wrappers/PopUpWrapper";
-import { InitialPackageState } from "./CreatePost";
+import { PackageState } from "./CreatePost";
 import { ReducerAction } from "./CreatePost";
 import { PackageTypes } from "../../enums/PackageTypes";
-import { InitialState } from "./CreatePost";
+import { CreatePostState } from "./CreatePost";
 
 interface PackageProps {
     setSection: React.Dispatch<React.SetStateAction<Sections>>,
@@ -12,8 +12,8 @@ interface PackageProps {
     back: Sections,
     skip?: Sections,
     next: Sections,
-    pkgState: InitialPackageState,
-    state: InitialState,
+    pkgState: PackageState,
+    state: CreatePostState,
     dispatch: React.Dispatch<ReducerAction>,
     packageType: PackageTypes,
     title: string

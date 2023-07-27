@@ -32,18 +32,16 @@ function AccountBalance({ setBalancePopUp }: AccountBalanceProps) {
     }
 
     useEffect(() => {
-        setTimeout(() => {
-            (async (): Promise<void> => {
-                try {
-                    const resp = await axios.get<{ balance: number, message: string }>(endpoint);
-                    setBalance(resp.data.balance);
-                }
-                catch (err: any) {
-                    const errorMessage = getAPIErrorMessage(err as AxiosError<{ message: string }>);
-                    setErrorMessage(errorMessage);
-                }
-            })();
-        }, 2000)
+        (async (): Promise<void> => {
+            try {
+                const resp = await axios.get<{ balance: number, message: string }>(endpoint);
+                setBalance(resp.data.balance);
+            }
+            catch (err: any) {
+                const errorMessage = getAPIErrorMessage(err as AxiosError<{ message: string }>);
+                setErrorMessage(errorMessage);
+            }
+        })();
     }, [endpoint]);
 
     return (

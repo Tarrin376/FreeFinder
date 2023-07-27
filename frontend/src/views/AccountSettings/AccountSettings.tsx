@@ -1,6 +1,6 @@
 import PopUpWrapper from "../../wrappers/PopUpWrapper";
 import ProfilePicAndStatus from "../../components/ProfilePicAndStatus";
-import { useState, useContext, useRef } from 'react';
+import { useState, useContext, useRef, useReducer } from 'react';
 import ErrorMessage from "../../components/ErrorMessage";
 import MyDetails from "./MyDetails";
 import UserProfile from "./UserProfile";
@@ -8,11 +8,11 @@ import ChangePassword from "./ChangePassword";
 import DangerZone from "./DangerZone";
 import { UserContext } from "../../providers/UserContext";
 import EditIcon from '../../assets/edit.png';
-import { parseImage } from "../../utils/parseImage";
+import { parseFileBase64 } from "../../utils/parseFileBase64";
 import { fetchUpdatedUser } from "../../utils/fetchUpdatedUser";
 import { getAPIErrorMessage } from "../../utils/getAPIErrorMessage";
 import { AxiosError } from "axios";
-import { checkFile } from "../../utils/checkFile";
+import { checkImageType } from "../../utils/checkImageType";
 import OutsideClickHandler from "react-outside-click-handler";
 
 interface SettingsProps {
@@ -26,22 +26,35 @@ enum Options {
     dangerZone
 }
 
+type AccountSettingsState = {
+    option: Options,
+    loading: boolean,
+    profileDropdown: boolean
+}
+
+const initialState: AccountSettingsState = {
+    option: Options.details,
+    loading: false,
+    profileDropdown: false
+}
+
 const MAX_PROFILE_PIC_BYTES = 1000000;
 
 function AccountSettings({ setSettingsPopUp }: SettingsProps) {
     const [errorMessage, setErrorMessage] = useState<string>("");
-    const [option, setOption] = useState<Options>(Options.details);
-    const [loading, setLoading] = useState<boolean>(false);
     const userContext = useContext(UserContext);
     const inputFileRef = useRef<HTMLInputElement>(null);
-    const [profileDropdown, setProfileDropdown] = useState<boolean>(false);
+
+    const [state, dispatch] = useReducer((state: AccountSettingsState, payload: Partial<AccountSettingsState>) => {
+        return { ...state, ...payload };
+    }, initialState);
 
     function updateOption(next: Options): void {
-        setOption(next);
+        dispatch({ option: next });
     }
 
     function getOption(): React.ReactElement<any> {
-        switch (option) {
+        switch (state.option) {
             case Options.details:
                 return <MyDetails />
             case Options.profile:
@@ -60,7 +73,7 @@ function AccountSettings({ setSettingsPopUp }: SettingsProps) {
     }
 
     async function updatePhoto(profile: string | unknown): Promise<void> {
-        if (!setErrorMessage || !setLoading) {
+        if (!setErrorMessage || state.loading) {
             return;
         }
 
@@ -74,36 +87,42 @@ function AccountSettings({ setSettingsPopUp }: SettingsProps) {
             setErrorMessage(errorMessage);
         }
         finally {
-            setLoading(false);
+            dispatch({ loading: false });
         }
     }
 
     function removePhoto(): void {
-        if (!setLoading || userContext.userData.profilePicURL === "") {
+        if (state.loading || userContext.userData.profilePicURL === "") {
             return;
         }
 
-        setLoading(true);
+        dispatch({ loading: true });
         updatePhoto("");
     }
 
     async function uploadPhoto(e: React.ChangeEvent<HTMLInputElement>): Promise<void> {
         const files = e.target.files;
-        if (!files || !setLoading || !setErrorMessage) {
+        if (!files || state.loading || !setErrorMessage) {
             return;
         }
 
-        setLoading(true);
+        dispatch({ loading: true });
         const profilePic = files[0];
-        const valid = checkFile(profilePic, MAX_PROFILE_PIC_BYTES);
+        const valid = checkImageType(profilePic, MAX_PROFILE_PIC_BYTES);
 
         if (valid) {
-            const base64Str = await parseImage(profilePic);
-            updatePhoto(base64Str);
+            try {
+                const base64Str = await parseFileBase64(profilePic);
+                updatePhoto(base64Str);
+            }
+            catch (err: any) {
+                setErrorMessage("Something went wrong. Please try again.");
+                dispatch({ loading: false });
+            }
         } else {
             setErrorMessage(`Failed to upload profile picture. Please check that the file format is
             supported and the image does not exceed ${MAX_PROFILE_PIC_BYTES / 1000000}MB in size.`);
-            setLoading(false);
+            dispatch({ loading: false });
         }
     }
 
@@ -123,20 +142,19 @@ function AccountSettings({ setSettingsPopUp }: SettingsProps) {
                         statusStyles="before:hidden"
                         username={userContext.userData.username}
                         setErrorMessage={setErrorMessage} 
-                        setLoading={setLoading} 
-                        loading={loading} 
+                        loading={state.loading} 
                         size={80}
                     />
-                    {!loading &&
+                    {!state.loading &&
                     <>
                         <button className="flex gap-1 items-center absolute top-[62px] right-0 bg-main-white 
                       hover:bg-main-white-hover border border-light-border-gray btn-primary py-[3px] px-2 h-fit 
-                        cursor-pointer rounded-[6px]" onClick={() => setProfileDropdown(true)}>
+                        cursor-pointer rounded-[6px]" onClick={() => dispatch({ profileDropdown: true })}>
                             <img src={EditIcon} alt="edit" className="w-4 h-4" />
                             <p className="text-main-black text-[13px]">Edit</p>
                         </button>
-                        {profileDropdown && 
-                        <OutsideClickHandler onOutsideClick={() => setProfileDropdown(false)}>
+                        {state.profileDropdown && 
+                        <OutsideClickHandler onOutsideClick={() => dispatch({ profileDropdown: false })}>
                             <div className="absolute bg-main-white left-[20px] mt-[17px] flex flex-col rounded-[6px] 
                             border border-light-border-gray shadow-profile-page-container overflow-hidden">
                                 <p className="text-[13px] cursor-pointer hover:bg-main-white-hover 
@@ -166,13 +184,13 @@ function AccountSettings({ setSettingsPopUp }: SettingsProps) {
             </div>
             <div className="mt-9 mb-5">
                 <ul className="border-b border-b-nav-search-gray flex justify-between mt-5 list-none">
-                    <li className={option === Options.details ? "settings-selection" : "settings-unselected"}
+                    <li className={state.option === Options.details ? "settings-selection" : "settings-unselected"}
                     onClick={() => updateOption(Options.details)}>My details</li>
-                    <li className={option === Options.profile ? "settings-selection" : "settings-unselected"}
+                    <li className={state.option === Options.profile ? "settings-selection" : "settings-unselected"}
                     onClick={() => updateOption(Options.profile)}>Profile</li>
-                    <li className={option === Options.password ? "settings-selection" : "settings-unselected"}
+                    <li className={state.option === Options.password ? "settings-selection" : "settings-unselected"}
                     onClick={() => updateOption(Options.password)}>Password</li>
-                    <li className={option === Options.dangerZone ? "settings-selection" : "settings-unselected"}
+                    <li className={state.option === Options.dangerZone ? "settings-selection" : "settings-unselected"}
                     onClick={() => updateOption(Options.dangerZone)}>Danger Zone</li>
                 </ul>
             </div>

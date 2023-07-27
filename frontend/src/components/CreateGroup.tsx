@@ -8,6 +8,7 @@ import { getAPIErrorMessage } from "../utils/getAPIErrorMessage";
 import Button from "./Button";
 import { UserContext } from "../providers/UserContext";
 import AddPeople from "./AddPeople";
+import { GroupPreview } from "../types/GroupPreview";
 
 interface CreateGroupProps {
     setCreateGroupPopUp: React.Dispatch<React.SetStateAction<boolean>>,
@@ -47,11 +48,16 @@ function CreateGroup({ setCreateGroupPopUp, seller, initialServiceID }: CreateGr
 
     async function createNewGroup(): Promise<string | undefined> {
         try {
-            await axios.post<{ message: string }>(`/api/users/${userContext.userData.username}/created-groups`, {
+            const resp = await axios.post<{ group: GroupPreview, sockets: string[], message: string }>
+            (`/api/users/${userContext.userData.username}/created-groups`, {
                 members: addedUsers.map((user) => user.username),
                 groupName: groupName,
                 postID: serviceID
             });
+
+            for (const socketID of resp.data.sockets) {
+                userContext.socket?.emit("added-to-group", socketID, resp.data.group);
+            }
         }
         catch (err: any) {
             const errorMessage = getAPIErrorMessage(err as AxiosError<{ message: string }>);
