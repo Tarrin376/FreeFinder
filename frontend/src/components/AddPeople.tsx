@@ -51,7 +51,7 @@ function AddPeople({ groupMembers, addedUsers, setAddedUsers, setErrorMessage }:
                             absolute top-[33px] left-[30px] flex items-center justify-center cursor-pointer"
                             onClick={() => removeUser(user.username)}>
                                 <CloseSvg 
-                                    size="12px"
+                                    size={12}
                                     colour="#fdfdfd" 
                                 />
                             </div>}

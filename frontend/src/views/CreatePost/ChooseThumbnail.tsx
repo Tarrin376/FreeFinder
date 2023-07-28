@@ -1,17 +1,17 @@
 import PopUpWrapper from "../../wrappers/PopUpWrapper";
 import { Sections } from "../../enums/Sections";
-import { ImageData } from "../../types/ImageData";
+import { FileData } from "../../types/FileData";
 
 interface ChooseThumbnailProps {
     setSection: React.Dispatch<React.SetStateAction<Sections>>,
     setPostService: React.Dispatch<React.SetStateAction<boolean>>,
-    uploadedImages: ImageData[],
-    thumbnail: ImageData | undefined,
-    setThumbnail: React.Dispatch<React.SetStateAction<ImageData | undefined>>
+    uploadedImages: FileData[],
+    thumbnail: FileData | undefined,
+    setThumbnail: React.Dispatch<React.SetStateAction<FileData | undefined>>
 }
 
 function ChooseThumbnail({ setSection, setPostService, uploadedImages, thumbnail, setThumbnail }: ChooseThumbnailProps) {
-    function changeThumbnail(newThumbnail: ImageData) {
+    function changeThumbnail(newThumbnail: FileData) {
         setThumbnail(newThumbnail);
     }
 
@@ -19,12 +19,12 @@ function ChooseThumbnail({ setSection, setPostService, uploadedImages, thumbnail
         <PopUpWrapper setIsOpen={setPostService} title="Choose thumbnail" styles="flex flex-col">
             {uploadedImages.length > 0 &&
             <div className={`flex flex-col gap-9 flex-grow overflow-y-scroll pr-[8px] max-h-[570px] ${!thumbnail ? "mb-9" : ""}`}>
-                {uploadedImages.map((imageData: ImageData, index: number) => {
+                {uploadedImages.map((imageData: FileData, index: number) => {
                     return (
                         <div className={`w-full min-h-[300px] h-[300px] bg-center bg-cover rounded-[8px] relative cursor-pointer 
                         border-2 border-light-border-gray hover:border-main-blue transition ease-out duration-200 
                         ${imageData === thumbnail ? "border-main-blue" : ""}`} 
-                        style={{ backgroundImage: `url(${imageData.image})` }} key={index} onClick={() => changeThumbnail(imageData)}>
+                        style={{ backgroundImage: `url(${imageData.base64Str})` }} key={index} onClick={() => changeThumbnail(imageData)}>
                             {imageData === thumbnail &&
                             <p className="absolute top-5 right-5 bg-[#0f0f0fb4] text-main-white seller-level">
                                 Use as thumbnail

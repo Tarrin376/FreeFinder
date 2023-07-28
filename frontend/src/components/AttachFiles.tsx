@@ -2,11 +2,11 @@ import { motion } from "framer-motion";
 import { useRef } from "react";
 import DragAndDrop from "./DragAndDrop";
 import StorageIcon from "../assets/storage.png";
-import { parseFileBase64 } from "../utils/parseFileBase64";
 import { FileData } from "../types/FileData";
 import { ChatBoxState } from "./ChatBox";
+import { parseFiles } from "../utils/parseFiles";
 
-const MAX_FILE_UPLOADS = 10;
+const MAX_FILE_UPLOADS = 3;
 const MAX_FILE_BYTES = 5000000;
 
 interface AttachFileProps {
@@ -19,30 +19,7 @@ function AttachFiles({ uploadedFiles, dispatch, setErrorMessage }: AttachFilePro
     const fileRef = useRef<HTMLInputElement>(null);
 
     async function handleDrop(files: FileList): Promise<void> {
-        let filesToAdd: number = Math.min(MAX_FILE_UPLOADS - uploadedFiles.length, files.length);
-        let uploaded: FileData[] = [];
-        let index = 0, failed = 0;
-
-        while (index < files.length && filesToAdd > 0) {
-            if (files[index].size > MAX_FILE_BYTES) {
-                failed++;
-                index++;
-                continue;
-            }
-
-            try {
-                const base64Str = await parseFileBase64(files[index]);
-                uploaded.push({
-                    file: files[index],
-                    base64Str: base64Str
-                });
-            }
-            catch (_: any) {
-                failed++;
-            }
-
-            index++;
-        }
+        const { failed, allFiles } = await parseFiles(files, uploadedFiles, MAX_FILE_BYTES, MAX_FILE_UPLOADS);
 
         if (failed > 0) {
             setErrorMessage(`Failed to upload ${failed} files. Please ensure that each file does not 
@@ -52,7 +29,7 @@ function AttachFiles({ uploadedFiles, dispatch, setErrorMessage }: AttachFilePro
         }
 
         dispatch({
-            uploadedFiles: [...uploadedFiles, ...uploaded]
+            uploadedFiles: allFiles
         });
     }
 
@@ -80,7 +57,11 @@ function AttachFiles({ uploadedFiles, dispatch, setErrorMessage }: AttachFilePro
             </DragAndDrop>
             <div className="flex items-center justify-between gap-5">
                 <input type="file" className="hidden" ref={fileRef} onChange={uploadFile} />
-                <p className="text-side-text-gray text-sm">{`0 / ${MAX_FILE_UPLOADS} files uploaded`}</p>
+                <p className="text-side-text-gray text-sm">Files uploaded:
+                    <span className={`${uploadedFiles.length === MAX_FILE_UPLOADS ? 'text-error-text' : 'text-light-green'} text-sm`}>
+                        {` ${uploadedFiles.length} / ${MAX_FILE_UPLOADS}`}
+                    </span>
+                </p>
                 <button className="main-btn w-fit !h-[33px] text-[15px]" onClick={triggerFileUpload}>
                     Upload file
                 </button>

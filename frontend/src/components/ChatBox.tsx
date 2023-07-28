@@ -18,9 +18,11 @@ import { motion } from "framer-motion";
 import AttachFiles from "./AttachFiles";
 import { FileData } from "../types/FileData";
 import UploadedFile from "./UploadedFile";
+import { GroupPreview } from "../types/GroupPreview";
 
 interface ChatBoxProps {
-    groupID: string
+    groupID: string,
+    groupMembers: GroupPreview["members"]
 }
 
 export type ChatBoxState = {
@@ -39,7 +41,7 @@ const initialState: ChatBoxState = {
     toggleAttachFiles: false
 }
 
-function ChatBox({ groupID }: ChatBoxProps) {
+function ChatBox({ groupID, groupMembers }: ChatBoxProps) {
     const userContext = useContext(UserContext);
     const [errorMessage, setErrorMessage] = useState<string>("");
     const [page, setPage] = useState<{ value: number }>({ value: 1 });
@@ -173,13 +175,14 @@ function ChatBox({ groupID }: ChatBoxProps) {
                             key={index}
                             isLastMessage={index === 0}
                             sendingMessage={state.sendingMessage}
+                            groupMembers={groupMembers}
                         />
                     )
                 })}
             </div>
             <div className="p-3 pb-0 flex-shrink-0 relative">
                 <AnimatePresence>
-                    {state.toggleEmojiPicker &&
+                    {state.toggleEmojiPicker ?
                     <motion.div className="absolute bottom-[calc(100%-30px)] right-[14px] z-20 shadow-post rounded-[8px]" 
                     initial={{ opacity: 0 }} animate={{ opacity: 1 }} exit={{ opacity: 0 }} transition={{ duration: 0.1 }}>
                         <EmojiPicker 
@@ -190,8 +193,8 @@ function ChatBox({ groupID }: ChatBoxProps) {
                             height={300}
                             width={300}
                         />
-                    </motion.div>}
-                    {state.toggleAttachFiles &&
+                    </motion.div> :
+                    state.toggleAttachFiles &&
                     <AttachFiles 
                         uploadedFiles={state.uploadedFiles}
                         dispatch={dispatch}
@@ -215,16 +218,16 @@ function ChatBox({ groupID }: ChatBoxProps) {
                         <p className="text-side-text-gray text-sm">
                             Your uploaded files will appear here.
                         </p> : 
-                        <>
-                            {state.uploadedFiles.map((file: FileData, index: number) => {
+                        <div className="flex-grow flex flex-wrap gap-3 overflow-hidden">
+                            {state.uploadedFiles.map((x: FileData, index: number) => {
                                 return (
                                     <UploadedFile 
-                                        file={file} 
+                                        file={x.file} 
                                         key={index} 
                                     />
                                 );
                             })}
-                        </>}
+                        </div>}
                         <div className="flex items-center flex-shrink-0">
                             <button onClick={toggleEmojiPopUp} type="button">
                                 <img 

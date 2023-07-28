@@ -25,7 +25,7 @@ function Options({ options, removeOption, styles, bgColour, textColour }: Option
                         {removeOption && 
                         <div className="min-w-[15px]">
                             <CloseSvg 
-                                size="15px"
+                                size={15}
                                 colour={textColour}
                             />
                         </div>}

@@ -83,7 +83,7 @@ function PostDetails({ jobCategory, setJobCategory, setTypeOfWork, setErrorMessa
     async function retryFileUpload(upload: FailedUpload): Promise<string | undefined> {
         try {
             await axios.post<{ updatedPost: PostPage, message: string }>(`/api/posts/${props.postID}`, { 
-                image: upload.imageData.image 
+                image: upload.imageData.base64Str 
             });
         }
         catch (err: any) {
@@ -94,7 +94,7 @@ function PostDetails({ jobCategory, setJobCategory, setTypeOfWork, setErrorMessa
 
     function ignoreUpload(upload: FailedUpload): void {
         if (props.failedUploads.length === 1) setErrorMessage("");
-        props.setFailedUploads((cur) => cur.filter((x: FailedUpload) => x.imageData.image !== upload.imageData.image));
+        props.setFailedUploads((cur) => cur.filter((x: FailedUpload) => x.imageData.base64Str !== upload.imageData.base64Str));
     }
 
     async function deletePost(): Promise<string | undefined> {

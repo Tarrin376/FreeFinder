@@ -157,7 +157,7 @@ function Chat({ group, setAllGroups, setGroupCount, setGroup }: ChatProps) {
                                         }
                                     }}>
                                         <CloseSvg 
-                                            size="12px"
+                                            size={12}
                                             colour="#fdfdfd" 
                                         />
                                     </div>}
@@ -215,7 +215,10 @@ function Chat({ group, setAllGroups, setGroupCount, setGroup }: ChatProps) {
                     </Actions>
                 </div>
             </div>
-            <ChatBox groupID={group.groupID} />
+            <ChatBox 
+                groupID={group.groupID} 
+                groupMembers={groupMembers}
+            />
         </div>
     )
 }

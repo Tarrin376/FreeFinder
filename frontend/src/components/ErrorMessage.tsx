@@ -23,7 +23,7 @@ function ErrorMessage({ message, title, styles, setErrorMessage }: ErrorMessageP
                 </div>
                 <div className="min-w-[24px]">
                     <CloseSvg
-                        size="24px"
+                        size={24}
                         colour="#9c9c9c"
                         action={closeErrorMessage}
                     />

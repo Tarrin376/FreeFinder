@@ -34,7 +34,7 @@ function Sidebar(props: SidebarProps) {
                 <div className="flex-grow">
                     <div className="flex items-center gap-3 mb-4">
                         <CloseSvg
-                            size="27px"
+                            size={27}
                             colour="#9c9c9c"
                             action={props.toggleSidebar}
                         />

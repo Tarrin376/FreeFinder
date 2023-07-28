@@ -1,5 +1,5 @@
 interface CloseSvgProps {
-    size: string,
+    size: number,
     colour?: string,
     action?: () => void
 }
@@ -13,7 +13,7 @@ function CloseSvg({ size, colour, action }: CloseSvgProps) {
 
     return (
         <div style={{ minWidth: `${size}px` }}>
-            <svg xmlns="http://www.w3.org/2000/svg" viewBox="0,0,256,256" width={size} height={size} fillRule="nonzero"
+            <svg xmlns="http://www.w3.org/2000/svg" viewBox="0,0,256,256" width={`${size}px`} height={`${size}px`} fillRule="nonzero"
             onClick={handleClick} className="cursor-pointer">
                 <g fillOpacity="0" fill="#dddddd" fillRule="nonzero" stroke="none" strokeWidth="1" strokeLinecap="butt" 
                 strokeLinejoin="miter" strokeMiterlimit="10" strokeDasharray="" strokeDashoffset="0" fontFamily="none" 

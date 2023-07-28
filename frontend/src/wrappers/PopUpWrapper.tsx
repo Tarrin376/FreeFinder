@@ -22,7 +22,7 @@ function PopUpWrapper({ children, setIsOpen, title, styles } : PopUpWrapperProps
                 <div className="flex items-center w-full justify-between gap-[14px] mb-7">
                     <h1 className="text-[23px]">{title}</h1>
                     <CloseSvg
-                        size="27px"
+                        size={27}
                         colour="#9c9c9c"
                         action={closePopUp}
                     />

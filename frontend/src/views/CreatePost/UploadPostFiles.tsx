@@ -7,9 +7,9 @@ import ErrorMessage from "../../components/ErrorMessage";
 import { useState } from "react";
 import UploadedImage from "../../components/UploadedImage";
 import { getUniqueArray } from "../../utils/getUniqueArray";
-import { ImageData } from "../../types/ImageData";
-import { parseFileBase64 } from "../../utils/parseFileBase64";
 import { checkImageType } from "../../utils/checkImageType";
+import { FileData } from "../../types/FileData";
+import { parseFiles } from "../../utils/parseFiles";
 
 export const MAX_FILE_UPLOADS = 20;
 export const MAX_FILE_BYTES = 2000000;
@@ -17,10 +17,10 @@ export const MAX_FILE_BYTES = 2000000;
 interface UploadPostFilesProps {
     setPostService: React.Dispatch<React.SetStateAction<boolean>>,
     setSection: React.Dispatch<React.SetStateAction<Sections>>,
-    setUploadedImages: React.Dispatch<React.SetStateAction<ImageData[]>>,
-    uploadedImages: ImageData[],
-    thumbnail: ImageData | undefined,
-    setThumbnail: React.Dispatch<React.SetStateAction<ImageData | undefined>>
+    setUploadedImages: React.Dispatch<React.SetStateAction<FileData[]>>,
+    uploadedImages: FileData[],
+    thumbnail: FileData | undefined,
+    setThumbnail: React.Dispatch<React.SetStateAction<FileData | undefined>>
 }
 
 function UploadPostFiles({ setPostService, setSection, uploadedImages, setUploadedImages, thumbnail, setThumbnail }: UploadPostFilesProps) {
@@ -28,31 +28,7 @@ function UploadPostFiles({ setPostService, setSection, uploadedImages, setUpload
     const [errorMessage, setErrorMessage] = useState<string>("");
 
     async function handleDrop(files: FileList): Promise<void> {
-        let filesToAdd: number = Math.min(MAX_FILE_UPLOADS - uploadedImages.length, files.length);
-        const uploaded: ImageData[] = [];
-        let index = 0;
-        let failed = 0;
-
-        while (index < files.length && filesToAdd > 0) {
-            const validFile: boolean = checkImageType(files[index], MAX_FILE_BYTES);
-            if (validFile) {
-                try {
-                    const parsedImage = await parseFileBase64(files[index]);
-                    uploaded.push({
-                        file: files[index],
-                        image: parsedImage
-                    });
-                    filesToAdd--;
-                }
-                catch (_: any) {
-                    failed++;
-                }
-            } else {
-                failed++;
-            }
-
-            index++;
-        }
+        const { failed, allFiles } = await parseFiles(files, uploadedImages, MAX_FILE_BYTES, MAX_FILE_UPLOADS, checkImageType);
 
         if (failed > 0) {
             setErrorMessage(`Failed to upload ${failed} ${failed === 1 ? "file" : "files"}. Please check that the file formats are 
@@ -61,8 +37,7 @@ function UploadPostFiles({ setPostService, setSection, uploadedImages, setUpload
             setErrorMessage("");
         }
 
-        const allFiles = [...uploadedImages, ...getUniqueArray<ImageData, unknown>(uploaded, (x: ImageData) => x.image)];
-        setUploadedImages([...getUniqueArray<ImageData, unknown>(allFiles, (x: ImageData) => x.image)]);
+        setUploadedImages([...getUniqueArray<FileData, unknown>(allFiles, (x: FileData) => x.base64Str)]);
     }
 
     function uploadFile(): void {
@@ -77,7 +52,7 @@ function UploadPostFiles({ setPostService, setSection, uploadedImages, setUpload
         }
     }
 
-    function deleteImage(image: ImageData): void {
+    function deleteImage(image: FileData): void {
         if (image === thumbnail) setThumbnail(undefined);
         setUploadedImages((state) => state.filter((x) => x !== image));
     }
@@ -96,7 +71,7 @@ function UploadPostFiles({ setPostService, setSection, uploadedImages, setUpload
                 <p className="text-side-text-gray">{`Maximum size: ${MAX_FILE_BYTES / 1000000}MB`}</p>
             </div>
             <p className="text-side-text-gray mt-3 mb-4">Files uploaded:
-                <span className={uploadedImages.length === MAX_FILE_UPLOADS ? 'text-error-text' : 'text-[#36BF54]'}>
+                <span className={uploadedImages.length === MAX_FILE_UPLOADS ? 'text-error-text' : 'text-light-green'}>
                     {` ${uploadedImages.length} / ${MAX_FILE_UPLOADS}`}
                 </span>
             </p>
@@ -107,7 +82,7 @@ function UploadPostFiles({ setPostService, setSection, uploadedImages, setUpload
                 setErrorMessage={setErrorMessage}
             />}
             <div className="max-h-[250px] items-center overflow-y-scroll mt-6 pr-[8px] flex flex-col gap-[15px]">
-                {uploadedImages.map((image: ImageData, index: number) => {
+                {uploadedImages.map((image: FileData, index: number) => {
                     return (
                         <UploadedImage file={image.file} key={index} description="You can download this file to verify that it is the correct one.">
                             <a href={URL.createObjectURL(image.file)} download={image.file.name}>
@@ -115,8 +90,7 @@ function UploadPostFiles({ setPostService, setSection, uploadedImages, setUpload
                                     Download
                                 </button>
                             </a>
-                            <button className="bg-error-red text-error-text btn-primary w-[120px] px-3
-                            hover:bg-error-red-hover" onClick={() => deleteImage(image)}>
+                            <button className="red-btn w-[120px]" onClick={() => deleteImage(image)}>
                                 Remove
                             </button>
                         </UploadedImage>

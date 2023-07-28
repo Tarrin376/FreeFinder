@@ -7,11 +7,11 @@ import { IPackage } from '../../models/IPackage';
 import axios, { AxiosError } from "axios";
 import { getAPIErrorMessage } from "../../utils/getAPIErrorMessage";
 import { FailedUpload } from '../../types/FailedUploaded';
-import { ImageData } from '../../types/ImageData';
 import { ISeller } from '../../models/ISeller';
 import { UserContext } from '../../providers/UserContext';
 import { PackageTypes } from '../../enums/PackageTypes';
 import { Sections } from '../../enums/Sections';
+import { FileData } from '../../types/FileData';
 
 interface CreatePostProps {
     setPostService: React.Dispatch<React.SetStateAction<boolean>>,
@@ -83,8 +83,8 @@ function reducer(state: CreatePostState, action: ReducerAction): CreatePostState
 function CreatePost({ setPostService, resetState }: CreatePostProps) {
     const [section, setSection] = useState<Sections>(Sections.UploadFiles);
     const [errorMessage, setErrorMessage] = useState<string>("");
-    const [uploadedImages, setUploadedImages] = useState<ImageData[]>([]);
-    const [thumbnail, setThumbnail] = useState<ImageData | undefined>();
+    const [uploadedImages, setUploadedImages] = useState<FileData[]>([]);
+    const [thumbnail, setThumbnail] = useState<FileData | undefined>();
     const [failedUploads, setFailedUploads] = useState<FailedUpload[]>([]);
     const [createdPost, setCreatedPost] = useState<boolean>(false);
     const postID = useRef<string>("");
@@ -111,7 +111,7 @@ function CreatePost({ setPostService, resetState }: CreatePostProps) {
             about: about.trim(), 
             title: title.trim(),
             workType: typeOfWork,
-            thumbnail: thumbnail?.image,
+            thumbnail: thumbnail?.base64Str,
             packages: [constructPackage(state.basic, PackageTypes.BASIC)]
         };
 
@@ -164,7 +164,7 @@ function CreatePost({ setPostService, resetState }: CreatePostProps) {
             try {
                 if (uploadedImages[i] !== thumbnail) {
                     await axios.post<{ secure_url: string, message: string }>(`/api/posts/${postID}`, {
-                        image: uploadedImages[i].image,
+                        image: uploadedImages[i].base64Str,
                     });
                 }
             }

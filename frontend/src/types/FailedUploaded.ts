@@ -1,6 +1,6 @@
-import { ImageData } from "./ImageData"
+import { FileData } from "./FileData";
 
 export type FailedUpload = {
-    imageData: ImageData,
+    imageData: FileData,
     errorMessage: string
 }
