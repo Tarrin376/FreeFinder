@@ -19,6 +19,7 @@ import AttachFiles from "./AttachFiles";
 import { FileData } from "../types/FileData";
 import UploadedFile from "./UploadedFile";
 import { GroupPreview } from "../types/GroupPreview";
+import TagSuggestions from "./TagSuggestions";
 
 interface ChatBoxProps {
     groupID: string,
@@ -30,7 +31,9 @@ export type ChatBoxState = {
     newMessages: IMessage[],
     uploadedFiles: FileData[],
     toggleEmojiPicker: boolean,
-    toggleAttachFiles: boolean
+    toggleAttachFiles: boolean,
+    showTagSuggestions: boolean,
+    tag: string
 }
 
 const initialState: ChatBoxState = {
@@ -38,7 +41,9 @@ const initialState: ChatBoxState = {
     newMessages: [],
     uploadedFiles: [],
     toggleEmojiPicker: false,
-    toggleAttachFiles: false
+    toggleAttachFiles: false,
+    showTagSuggestions: false,
+    tag: ""
 }
 
 function ChatBox({ groupID, groupMembers }: ChatBoxProps) {
@@ -66,7 +71,8 @@ function ChatBox({ groupID, groupMembers }: ChatBoxProps) {
         try {
             dispatch({ sendingMessage: true });
             const message = searchRef.current.value;
-
+            
+            searchRef.current.value = "";
             addMessage({
                 from: {
                     username: userContext.userData.username,
@@ -84,7 +90,6 @@ function ChatBox({ groupID, groupMembers }: ChatBoxProps) {
             });
 
             userContext.socket.emit("send-message", resp.data.newMessage, groupID);
-            searchRef.current.value = "";
             dispatch({ sendingMessage: false });
         }
         catch (err: any) {
@@ -94,13 +99,31 @@ function ChatBox({ groupID, groupMembers }: ChatBoxProps) {
     }
 
     const addMessage = useCallback((message: IMessage): void => {
-        dispatch({
-            newMessages: [message, ...state.newMessages]
-        });
+        dispatch({ newMessages: [message, ...state.newMessages] });
     }, [state.newMessages]);
 
-    function typingMessage() {
+    function handleKeyDown(e: React.KeyboardEvent<HTMLInputElement>): void {
         userContext.socket?.emit("typing-message", userContext.userData.username, groupID);
+
+        if (e.key === "@") {
+            dispatch({ showTagSuggestions: true });
+            return;
+        } else if (e.key === " ") {
+            dispatch({ showTagSuggestions: false, tag: "" });
+            return;
+        } else if (e.key === "Backspace" && searchRef.current?.value !== "" 
+            && searchRef.current?.value[searchRef.current.value.length - 1] === "@") {
+            dispatch({ showTagSuggestions: false });
+            return;
+        }
+
+        if (state.showTagSuggestions) {
+            if (e.key === "Backspace") {
+                dispatch({ tag: state.tag.substring(0, state.tag.length - 1) });
+            } else {
+                dispatch({ tag: `${state.tag}${e.key}` });
+            }
+        }
     }
 
     function addEmoji(emoji: string): void {
@@ -119,7 +142,8 @@ function ChatBox({ groupID, groupMembers }: ChatBoxProps) {
 
         dispatch({
             toggleEmojiPicker: true,
-            toggleAttachFiles: false
+            toggleAttachFiles: false,
+            showTagSuggestions: false
         });
     }
 
@@ -131,7 +155,8 @@ function ChatBox({ groupID, groupMembers }: ChatBoxProps) {
 
         dispatch({
             toggleAttachFiles: true,
-            toggleEmojiPicker: false
+            toggleEmojiPicker: false,
+            showTagSuggestions: false
         });
     }
 
@@ -180,10 +205,10 @@ function ChatBox({ groupID, groupMembers }: ChatBoxProps) {
                     )
                 })}
             </div>
-            <div className="p-3 pb-0 flex-shrink-0 relative">
+            <div className="pl-3 pt-3 flex-shrink-0 relative">
                 <AnimatePresence>
                     {state.toggleEmojiPicker ?
-                    <motion.div className="absolute bottom-[calc(100%-30px)] right-[14px] z-20 shadow-post rounded-[8px]" 
+                    <motion.div className="absolute bottom-[calc(100%-30px)] right-[14px] z-20 shadow-pop-up rounded-[8px]" 
                     initial={{ opacity: 0 }} animate={{ opacity: 1 }} exit={{ opacity: 0 }} transition={{ duration: 0.1 }}>
                         <EmojiPicker 
                             onEmojiClick={(data, _) => addEmoji(data.emoji)} 
@@ -200,6 +225,13 @@ function ChatBox({ groupID, groupMembers }: ChatBoxProps) {
                         dispatch={dispatch}
                         setErrorMessage={setErrorMessage}
                     />}
+                    {state.showTagSuggestions &&
+                    <TagSuggestions 
+                        groupMembers={groupMembers} 
+                        tag={state.tag}
+                        searchRef={searchRef}
+                        dispatch={dispatch}
+                    />}
                 </AnimatePresence>
                 <div className="mb-1">
                     <Typing 
@@ -211,9 +243,10 @@ function ChatBox({ groupID, groupMembers }: ChatBoxProps) {
                         className="focus:outline-none placeholder-search-text bg-transparent mb-3 w-full"
                         placeholder="Send a message" 
                         ref={searchRef}
-                        onKeyDown={typingMessage}
+                        onKeyDown={handleKeyDown}
+                        onFocus={() => dispatch({ toggleAttachFiles: false, toggleEmojiPicker: false })}
                     />
-                    <div className="flex w-full justify-between items-start">
+                    <div className="flex w-full justify-between items-end">
                         {state.uploadedFiles.length === 0 ? 
                         <p className="text-side-text-gray text-sm">
                             Your uploaded files will appear here.

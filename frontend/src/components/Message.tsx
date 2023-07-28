@@ -5,6 +5,7 @@ import ProfilePicAndStatus from "./ProfilePicAndStatus";
 import { getTime } from "../utils/getTime";
 import MessageSent from "./MessageSent";
 import { GroupPreview } from "../types/GroupPreview";
+import Tags from "./Tags";
 
 interface MessageProps {
     message: IMessage,
@@ -16,12 +17,7 @@ interface MessageProps {
 function Message({ message, isLastMessage, sendingMessage, groupMembers }: MessageProps) {
     const userContext = useContext(UserContext);
     const isOwnMessage = message.from.username === userContext.userData.username;
-    const words = message.messageText.split(" ");
-
-    function mentionedUser(word: string): boolean {
-        return word[0] === "@" && groupMembers.find((x) => x.user.username === word.substring(1)) !== undefined; 
-    }
-
+    
     return (
         <div className={`flex gap-3 items-start w-full ${isOwnMessage ? "flex-row-reverse" : ""}`}>
             <ProfilePicAndStatus
@@ -37,19 +33,14 @@ function Message({ message, isLastMessage, sendingMessage, groupMembers }: Messa
                 </div>
                 <div className="flex gap-[5px] items-end">
                     {isOwnMessage && <MessageSent sendingMessage={sendingMessage && isLastMessage} />}
-                    <div className={`rounded-[13px] p-2 px-4 w-fit ${isOwnMessage ? "rounded-tr-none bg-highlight self-end" : 
+                    <p className={`rounded-[13px] p-2 px-4 w-fit ${isOwnMessage ? "rounded-tr-none bg-highlight self-end" : 
                     "bg-[#eeeff3] rounded-tl-none"}`}>
-                        <p>
-                            {words.map((word: string, index: number) => {
-                                return (
-                                    <span className={`${mentionedUser(word) ? "font-bold text-main-blue" : ""}
-                                    ${isOwnMessage ? "text-main-blue" : "rounded-tl-none"}`} key={index}>
-                                        {index < words.length - 1 ? `${word} ` : word}
-                                    </span>
-                                );
-                            })}
-                        </p>
-                    </div>
+                        <Tags
+                            isOwnMessage={isOwnMessage}
+                            messageText={message.messageText}
+                            groupMembers={groupMembers}
+                        />
+                    </p>
                 </div>
             </div>
         </div>

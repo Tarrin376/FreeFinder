@@ -101,6 +101,7 @@ function CreateGroup({ setCreateGroupPopUp, seller, initialServiceID }: CreateGr
                 placeholder="Enter group name"
                 value={groupName}
                 onChange={(e) => setGroupName(e.target.value)}
+                maxLength={30}
             />
             <AddPeople
                 addedUsers={addedUsers}

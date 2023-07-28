@@ -7,6 +7,7 @@ import { useUsersTyping } from "../hooks/useUsersTyping";
 import { IMessage } from "../models/IMessage";
 import { getTime } from "../utils/getTime";
 import MessageSent from "./MessageSent";
+import Tags from "./Tags";
 
 interface GroupPreviewMessageProps {
     group: GroupPreview,
@@ -55,10 +56,12 @@ function GroupPreviewMessage({ group, selectedGroup, action }: GroupPreviewMessa
                     statusStyles="before:hidden"
                 />
                 <div className="overflow-hidden flex-grow">
-                    <div className="flex justify-between items-center mb-[2px]">
-                        <span>{group.groupName}</span>
+                    <div className="flex justify-between items-center gap-2">
+                        <span className="text-ellipsis whitespace-nowrap overflow-hidden text-[15px]">
+                            {group.groupName}
+                        </span>
                         {lastMessage && 
-                        <span className="text-sm text-side-text-gray">
+                        <span className="text-sm text-side-text-gray flex-shrink-0">
                             {getTime(lastMessage.createdAt)}
                         </span>}
                     </div>
@@ -70,9 +73,17 @@ function GroupPreviewMessage({ group, selectedGroup, action }: GroupPreviewMessa
                             dotStyles="w-[4px] h-[4px]"
                         /> : 
                         <div className="flex justify-between items-center overflow-hidden">
-                            <p className="text-ellipsis whitespace-nowrap overflow-hidden flex-grow text-sm text-side-text-gray">
-                                {!lastMessage ? "Say hello and get collaborating!" : 
-                                `${isOwnMessage ? "You" : lastMessage.from.username}: ${lastMessage.messageText}`}
+                            <p className="text-ellipsis whitespace-nowrap overflow-hidden flex-grow">
+                                {!lastMessage ? 
+                                <span className="text-sm text-side-text-gray">
+                                    Say hello and get collaborating!
+                                </span> : 
+                                <Tags
+                                    isOwnMessage={isOwnMessage}
+                                    messageText={`${isOwnMessage ? "You" : lastMessage.from.username}: ${lastMessage.messageText}`}
+                                    groupMembers={group.members}
+                                    styles="text-side-text-gray text-sm"
+                                />}
                             </p>
                         </div>}
                         {unreadMessages > 0 ?

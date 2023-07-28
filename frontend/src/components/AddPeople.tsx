@@ -15,7 +15,7 @@ interface AddPeopleProps {
     setErrorMessage: React.Dispatch<React.SetStateAction<string>>,
 }
 
-const limit = 3;
+const limit = 2;
 
 function AddPeople({ groupMembers, addedUsers, setAddedUsers, setErrorMessage }: AddPeopleProps) {
     const [userSearch, setUserSearch] = useState<string>("");

@@ -21,7 +21,7 @@ interface ChatProps {
     setGroup: React.Dispatch<React.SetStateAction<GroupPreview | undefined>>
 }
 
-const visibleMembers = 3;
+const visibleMembers = 2;
 
 function Chat({ group, setAllGroups, setGroupCount, setGroup }: ChatProps) {
     const [toggleGroupMembers, setToggleGroupMembers] = useState<boolean>(false);
@@ -33,6 +33,13 @@ function Chat({ group, setAllGroups, setGroupCount, setGroup }: ChatProps) {
     async function removeUser(userID: string): Promise<string | undefined> {
         try {
             await axios.delete<{ message: string }>(`/api/users/${userContext.userData.username}/created-groups/${group.groupID}/${userID}`);
+            userContext.socket?.emit("leave-room", userID, group.groupID);
+
+            if (groupMembers.length - 1 === visibleMembers) {
+                setToggleGroupMembers(false);
+            }
+
+            removeGroupMember(userID);
         }
         catch (err: any) {
             const errorMessage = getAPIErrorMessage(err as AxiosError<{ message: string }>);
@@ -120,20 +127,23 @@ function Chat({ group, setAllGroups, setGroupCount, setGroup }: ChatProps) {
                     setToggleAddUsersPopUp={setToggleAddUsersPopUp}
                 />}
             </AnimatePresence>
-            <div className="border-b border-light-border-gray bg-transparent pl-4 pb-4 w-full flex items-center justify-between flex-shrink-0">
-                <div className="flex items-center gap-4">
+            <div className="border-b border-light-border-gray bg-transparent pl-4 pb-4 w-full flex items-center justify-between flex-shrink-0 gap-5">
+                <div className="flex items-center gap-4 overflow-hidden">
                     <ProfilePicAndStatus
                         profilePicURL=""
-                        size={50}
+                        size={60}
                         username={group.groupName}
                         statusStyles="before:hidden"
                     />
-                    <p className="text-[18px]">
-                        {group.groupName}
-                    </p>
+                    <div className="overflow-hidden">
+                        <p className="text-[18px] text-ellipsis whitespace-nowrap overflow-hidden mb-1">
+                            {group.groupName}
+                        </p>
+                        <button className="change">Change</button>
+                    </div>
                 </div>
                 <div className="flex items-center gap-2">
-                    <div className="inline-flex relative" onMouseLeave={() => setToggleGroupMembers(false)}>
+                    <div className="inline-flex relative flex-shrink-0" onMouseLeave={() => setToggleGroupMembers(false)}>
                         {groupMembers.slice(0, visibleMembers).map((member, index) => {
                             return (
                                 <div className="w-fit h-fit relative ml-[-12px] outline outline-[3px] outline-main-white rounded-full" key={index}>
@@ -144,23 +154,20 @@ function Chat({ group, setAllGroups, setGroupCount, setGroup }: ChatProps) {
                                         statusStyles="before:hidden"
                                         key={index}
                                     />
-                                    {member.user.username !== userContext.userData.username && userContext.userData.userID === group.creatorID && 
-                                    <div className="bg-error-text text-main-white rounded-full w-[18px] h-[18px] border-2 border-main-white
+                                    {member.user.username !== userContext.userData.username && userContext.userData.userID === group.creatorID &&
+                                    <button className="bg-error-text text-main-white rounded-full w-[18px] h-[18px] border-2 border-main-white
                                     absolute top-[30px] left-[0px] flex items-center justify-center cursor-pointer"
                                     onClick={async () => {
-                                        const result = await removeUser(member.user.userID);
-                                        if (result) {
-                                            setErrorMessage(result);
-                                        } else {
-                                            userContext.socket?.emit("leave-room", member.user.userID, group.groupID);
-                                            removeGroupMember(member.user.userID);
+                                        const errorMessage = await removeUser(member.user.userID);
+                                        if (errorMessage) {
+                                            setErrorMessage(errorMessage);
                                         }
                                     }}>
                                         <CloseSvg 
                                             size={12}
                                             colour="#fdfdfd" 
                                         />
-                                    </div>}
+                                    </button>}
                                 </div>
                             )
                         })}

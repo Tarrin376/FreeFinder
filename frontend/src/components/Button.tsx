@@ -13,13 +13,15 @@ interface ButtonProps {
     completedText?: string,
     whenComplete?: () => void,
     loadingSvgColour?: string,
+    type?: "button" | "submit" | "reset"
 }
 
 function Button(props: ButtonProps) {
     const btnRef = useRef<HTMLButtonElement>(null);
     const [btnText, setBtnText] = useState(props.defaultText);
   
-    const handleAction = async () => {
+    const handleAction = async (e: React.MouseEvent<HTMLButtonElement>) => {
+        e.preventDefault();
         setBtnText(props.loadingText);
         const error = await props.action();
 
@@ -61,7 +63,7 @@ function Button(props: ButtonProps) {
   
     return (
         <button className={`${props.styles} ${btnText !== props.defaultText ? "pointer-events-none" : ""}`} 
-        ref={btnRef} onClick={handleAction} type="submit">
+        ref={btnRef} onClick={handleAction} type={props.type ?? "button"}>
             <div className="flex items-center justify-center gap-[10px]">
                 {btnText === props.loadingText ? 
                 <LoadingSvg

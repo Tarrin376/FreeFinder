@@ -270,7 +270,7 @@ function PostView() {
                             images={state.postData.images}
                             btnSize={50}
                             wrapperStyles="bg-very-light-gray rounded-[12px] border 
-                            border-very-light-gray shadow-info-component h-[510px]"
+                            border-light-border-gray shadow-info-component h-[510px]"
                             imageStyles="object-contain object-center"
                             startIndex={state.index}
                         />

@@ -28,9 +28,8 @@ function ProfilePicAndStatus(props: ProfilePicAndStatusProps) {
         before:rounded-full ${props.statusStyles}`}
         onClick={handleAction}>
             {props.loading ? 
-            <div 
-                className={`rounded-full loading ${props.imgStyles}`} 
-                style={{ width: `${props.size}px`, height: `${props.size}px` }}>
+            <div className={`rounded-full loading ${props.imgStyles}`} 
+            style={{ width: `${props.size}px`, height: `${props.size}px` }}>
             </div> : 
             props.profilePicURL === "" ? 
             <div className={`flex items-center justify-center rounded-full ${props.imgStyles}`} style={{ 

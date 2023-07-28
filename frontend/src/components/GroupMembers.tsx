@@ -45,7 +45,6 @@ function GroupMembers({ groupMembers, creatorID, removeUser, setErrorMessage, gr
                         {member.user.username !== userContext.userData.username && userContext.userData.userID === creatorID &&
                         <Button
                             action={() => removeUser(member.user.userID)}
-                            completedText="Removed"
                             defaultText="Remove"
                             loadingText="Removing"
                             styles="red-btn w-fit h-[30px] rounded-[6px]"
@@ -53,7 +52,6 @@ function GroupMembers({ groupMembers, creatorID, removeUser, setErrorMessage, gr
                             setErrorMessage={setErrorMessage}
                             loadingSvgSize={20}
                             loadingSvgColour="#F43C3C"
-                            whenComplete={() => userContext.socket?.emit("leave-room", member.user.userID, groupID)}
                         />}
                     </div>
                 )

@@ -121,7 +121,7 @@ function Post({ postInfo, index, canRemove, count, styles }: PostProps) {
             <Carousel
                 images={postInfo.images}
                 btnSize={35}
-                wrapperStyles="bg-very-light-gray rounded-[12px] h-[235px]"
+                wrapperStyles="bg-very-light-gray border border-light-border-gray rounded-[12px] h-[235px]"
                 imageStyles="object-cover w-full"
             />
             <div className="mt-3">

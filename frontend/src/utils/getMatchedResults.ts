@@ -1,5 +1,5 @@
-export function getMatchedResults(arr: string[], search: string): string[][] {
-    if (search.trim() === "") {
+export function getMatchedResults(arr: string[], search: string, allowEmptySearch?: boolean): string[][] {
+    if (search.trim() === "" && !allowEmptySearch) {
         return [];
     }
 

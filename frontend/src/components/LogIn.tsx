@@ -55,26 +55,29 @@ function LogIn({ setLogIn, setSignUp }: LogInProps) {
 
     return (
         <PopUpWrapper setIsOpen={setLogIn} title="Welcome back!" styles="!max-w-[470px]">
-            <p className="mb-6 text-side-text-gray text-[16px]">Enter your details below</p>
-            {errorMessage !== "" && 
-            <ErrorMessage 
-                message={errorMessage} 
-                title="There was a problem signing in."
-                setErrorMessage={setErrorMessage}
-            />}
-            <div className="flex gap-3 flex-col mb-8">
-                <input type="text" placeholder="Your email or username" className="search-bar" onChange={(e) => setUsernameOrEmail(e.target.value)} />
-                <input type="password" placeholder="Password" className="search-bar" onChange={(e) => setPassword(e.target.value)} />
-            </div>
-            <Button
-                action={logInAttempt}
-                defaultText="Log In"
-                loadingText="Logging in"
-                styles="main-btn"
-                textStyles="text-main-white"
-                setErrorMessage={setErrorMessage}
-                loadingSvgSize={28}
-            />
+            <form>
+                <p className="mb-6 text-side-text-gray text-[16px]">Enter your details below</p>
+                {errorMessage !== "" && 
+                <ErrorMessage 
+                    message={errorMessage} 
+                    title="There was a problem signing in."
+                    setErrorMessage={setErrorMessage}
+                />}
+                <div className="flex gap-3 flex-col mb-8">
+                    <input type="text" placeholder="Your email or username" className="search-bar" onChange={(e) => setUsernameOrEmail(e.target.value)} />
+                    <input type="password" placeholder="Password" className="search-bar" onChange={(e) => setPassword(e.target.value)} />
+                </div>
+                <Button
+                    action={logInAttempt}
+                    defaultText="Log In"
+                    loadingText="Logging in"
+                    styles="main-btn"
+                    textStyles="text-main-white"
+                    setErrorMessage={setErrorMessage}
+                    loadingSvgSize={28}
+                    type="submit"
+                />
+            </form>
             <p className="mt-6 text-side-text-gray text-[15px]">Dont yet have an account? 
                 <span className="text-main-blue ml-2 cursor-pointer hover:text-main-black" onClick={openSignUp}>
                     Sign Up

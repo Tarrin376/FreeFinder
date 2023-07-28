@@ -533,7 +533,7 @@ export async function createMessageGroupHandler(req) {
                 ...groupPreviewProperties
             });
 
-            const allMembers = await addMembers([req.username, ...req.body.members], group.groupID, tx);
+            const allMembers = await addMembers(req.body.members, group.groupID, tx);
             return {
                 group: {
                     ...group,
@@ -544,6 +544,7 @@ export async function createMessageGroupHandler(req) {
         });
     }
     catch (err) {
+        console.log(err);
         if (err instanceof DBError) {
             throw err;
         } else if (err instanceof Prisma.PrismaClientKnownRequestError && err.code === "P2002") {
