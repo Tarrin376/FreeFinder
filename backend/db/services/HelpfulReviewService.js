@@ -6,9 +6,7 @@ import { checkUser } from '../utils/checkUser.js';
 async function checkCanReview(userID, postID, reviewID) {
     try {
         const post = await prisma.post.findUnique({ 
-            where: { 
-                postID: postID 
-            },
+            where: { postID: postID },
             select: {
                 postedBy: {
                     select: {
@@ -23,19 +21,11 @@ async function checkCanReview(userID, postID, reviewID) {
         }
     
         const review = await prisma.review.findUnique({ 
-            where: {
-                reviewID: reviewID
-            },
-            select: {
-                reviewerID: true
-            }
+            where: { reviewID: reviewID },
+            select: { reviewerID: true }
         });
     
-        if (review.reviewerID === userID) {
-            return false;
-        }
-    
-        return true;
+        return review.reviewerID !== userID;
     }
     catch (err) {
         if (err instanceof Prisma.PrismaClientValidationError) {

@@ -81,7 +81,7 @@ export async function getPosts(req, res) {
 
 export async function getSellerSummary(req, res) {
     try {
-        const sellerSummary = await getSellerSummaryHandler(req);
+        const sellerSummary = await getSellerSummaryHandler(req.params.id);
         res.json({ sellerSummary: sellerSummary, message: "success" });
     }
     catch (err) {

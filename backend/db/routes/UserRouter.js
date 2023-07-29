@@ -24,7 +24,8 @@ import
     removeUserFromGroup,
     deleteGroup,
     leaveGroup,
-    updateGroup
+    updateGroup,
+    addMessageFile
 } from '../controllers/UserController.js';
 
 const userRouter = Router();
@@ -56,9 +57,10 @@ userRouter.post('/:username/message-groups/all', cookieJwtAuth, getMessageGroups
 userRouter.post('/:username/message-groups/:groupID', cookieJwtAuth, sendMessage);
 userRouter.delete('/:username/message-groups/:groupID', cookieJwtAuth, leaveGroup);
 userRouter.post('/:username/message-groups/:groupID/all', cookieJwtAuth, getMessages);
+userRouter.post('/:username/message-groups/:groupID/:messageID', cookieJwtAuth, addMessageFile);
 userRouter.post('/:username/created-groups', cookieJwtAuth, createMessageGroup);
 userRouter.delete('/:username/created-groups/:groupID', cookieJwtAuth, deleteGroup);
 userRouter.put('/:username/created-groups/:groupID', cookieJwtAuth, updateGroup);
-userRouter.delete('/:username/created-groups/:groupID/:userToDelete', cookieJwtAuth, removeUserFromGroup);
+userRouter.delete('/:username/created-groups/:groupID/:removeUserID', cookieJwtAuth, removeUserFromGroup);
 
 export default userRouter;

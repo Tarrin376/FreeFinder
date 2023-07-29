@@ -4,7 +4,9 @@ import { DBError } from '../customErrors/DBError.js';
 
 export async function createJobCategoryHandler(jobCategory) {
     try {
-        await prisma.jobCategory.create({ data: { name: jobCategory } });
+        await prisma.jobCategory.create({ 
+            data: { name: jobCategory } 
+        });
     }
     catch (err) {
         if (err instanceof Prisma.PrismaClientKnownRequestError) {

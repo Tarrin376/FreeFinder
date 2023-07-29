@@ -22,7 +22,7 @@ function AttachFiles({ uploadedFiles, dispatch, setErrorMessage }: AttachFilePro
         const { failed, allFiles } = await parseFiles(files, uploadedFiles, MAX_FILE_BYTES, MAX_FILE_UPLOADS);
 
         if (failed > 0) {
-            setErrorMessage(`Failed to upload ${failed} files. Please ensure that each file does not 
+            setErrorMessage(`Failed to upload ${failed} ${failed === 1 ? "file" : "files"}. Please ensure that each file does not 
             exceed ${MAX_FILE_BYTES / 1000000}MB in size.`);
         } else {
             setErrorMessage("");

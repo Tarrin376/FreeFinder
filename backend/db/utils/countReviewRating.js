@@ -20,4 +20,7 @@ export async function countReviewRating(rating, postID, sellerID) {
     catch (err) {
         throw new DBError("Something went wrong. Please try again.", 500);
     }
+    finally {
+        await prisma.$disconnect();
+    }
 }

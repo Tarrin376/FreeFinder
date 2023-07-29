@@ -140,23 +140,27 @@ function PostView() {
         }
     }
 
-    async function confirmChanges(data: Partial<PostViewState>) {
-        await updatePost({ title: data.title || state.title, about: data.about || state.about });
-        dispatch({ ...data });
-    }
-
     function copyServiceID() {
         if (state.postData) {
             navigator.clipboard.writeText(state.postData.postID);
         }
     }
-    
-    function toggleChange(isOpen: boolean, updateState: Partial<PostViewState>, 
-        toggleOn: Partial<{ titleToggle: boolean, aboutToggle: boolean }>): void {
-        if (isOpen) {
-            confirmChanges(updateState);
+
+    async function updateTitle() {
+        if (state.titleToggle && state.title.length > 0) {
+            await updatePost({ title: state.title });
+            dispatch({ title: state.title, titleToggle: false });
         } else {
-            dispatch({ ...toggleOn });
+            dispatch({ titleToggle: true });
+        }
+    }
+
+    async function updateAbout() {
+        if (state.aboutToggle) {
+            await updatePost({ about: state.about });
+            dispatch({ about: state.about, aboutToggle: false });
+        } else {
+            dispatch({ aboutToggle: true });
         }
     }
     
@@ -201,11 +205,7 @@ function PostView() {
                     <div className="flex-grow">
                         <div className="flex gap-3 items-center mb-4">
                             {isOwner &&
-                            <p className="change" onClick={() => toggleChange(
-                                state.titleToggle, 
-                                { title: state.title.trim(), titleToggle: false }, 
-                                { titleToggle: true })
-                            }>
+                            <p className="change" onClick={updateTitle}>
                                 {state.titleToggle ? "Confirm changes" : "Change"}
                             </p>}
                             {isOwner && state.titleToggle &&
@@ -307,11 +307,7 @@ function PostView() {
                             <div className="flex items-center gap-3 mb-4">
                                 <h2 className="text-[1.3rem]">About this service</h2>
                                 {isOwner &&
-                                <p className="change" onClick={() => toggleChange(
-                                    state.aboutToggle, 
-                                    { about: state.about, aboutToggle: false }, 
-                                    { aboutToggle: true })
-                                }>
+                                <p className="change" onClick={updateAbout}>
                                     {state.aboutToggle ? "Confirm changes" : "Change"}
                                 </p>}
                                 {isOwner && state.aboutToggle &&

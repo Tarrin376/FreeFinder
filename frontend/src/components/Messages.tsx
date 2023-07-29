@@ -44,8 +44,9 @@ function Messages({ setMessagesPopUp }: MessagesProps) {
     }
 
     const showNewGroup = useCallback((group: GroupPreview) => {
+        console.log(group);
         userContext.socket?.emit("join-message-group", group.groupID);
-        setAllGroups((cur) => [group, ...cur]);
+        setAllGroups((cur) => [...cur, group]);
         setGroupCount((cur) => cur + 1);
     }, [userContext.socket]);
 

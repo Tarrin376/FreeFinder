@@ -50,7 +50,7 @@ function CreateGroup({ setCreateGroupPopUp, seller, initialServiceID }: CreateGr
         try {
             const resp = await axios.post<{ group: GroupPreview, sockets: string[], message: string }>
             (`/api/users/${userContext.userData.username}/created-groups`, {
-                members: addedUsers.map((user) => user.username),
+                members: [userContext.userData.username, ...addedUsers.map((user) => user.username)],
                 groupName: groupName,
                 postID: serviceID
             });
@@ -58,6 +58,8 @@ function CreateGroup({ setCreateGroupPopUp, seller, initialServiceID }: CreateGr
             for (const socketID of resp.data.sockets) {
                 userContext.socket?.emit("added-to-group", socketID, resp.data.group);
             }
+
+            userContext.socket?.emit("new-group", userContext?.socket.id, resp.data.group);
         }
         catch (err: any) {
             const errorMessage = getAPIErrorMessage(err as AxiosError<{ message: string }>);

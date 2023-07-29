@@ -2,7 +2,6 @@ import { Prisma } from '@prisma/client';
 import { findSeller } from './SellerService.js';
 import { DBError } from "../customErrors/DBError.js";
 import { deleteCloudinaryResource } from '../utils/deleteCloudinaryResource.js';
-import { cloudinary } from '../index.js';
 import { prisma } from '../index.js';
 import { v4 as uuidv4 } from 'uuid';
 import { sortPosts } from '../utils/sortPosts.js';
@@ -11,34 +10,32 @@ import { postProperties } from '../utils/postProperties.js';
 import { getPaginatedData } from '../utils/getPaginatedData.js';
 import { getPostedBy } from '../utils/getPostedBy.js';
 import { getAvgRatings } from '../utils/getAvgRatings.js';
+import { uploadFile } from '../utils/uploadFile.js';
 
 async function uploadImage(postID, image, url, uuid, addImage) {
-    const result = await new Promise(async (resolve, reject) => {
-        const upload = cloudinary.uploader.upload(image, { public_id: `${url}/${uuid}` }, (err, result) => {
-            if (err) {
-                reject(new DBError(err.message, err.http_code || 500));
-            } else {
-                resolve(result);
-            }
-        });
+    try {
+        const result = await uploadFile(image, `${url}/${uuid}`);
+        if (addImage) {
+            await prisma.postImage.create({
+                data: {
+                    postID: postID,
+                    url: result.secure_url,
+                    cloudinaryID: uuid
+                }
+            });
+        }
 
-        const success = await upload.then((data) => data);
-        return success;
-    });
-
-    if (addImage) {
-        await prisma.postImage.create({
-            data: {
-                postID: postID,
-                url: result.secure_url,
-                cloudinaryID: uuid
-            }
-        });
+        return {
+            cloudinaryID: uuid,
+            url: result.secure_url
+        }
     }
-
-    return {
-        cloudinaryID: uuid,
-        url: result.secure_url
+    catch (err) {
+        if (err instanceof DBError) {
+            throw err;
+        } else {
+            throw new DBError("Something went wrong when trying to process this request.", 500);
+        }
     }
 }
 
@@ -51,23 +48,17 @@ export async function createPostHandler(postData, startingPrice, userID) {
         }
 
         const res = await prisma.post.create({
+            select: { postID: true },
             data: {
                 about: postData.about,
                 title: postData.title,
                 postedBy: {
-                    connect: {
-                        sellerID: seller.sellerID
-                    }
+                    connect: { sellerID: seller.sellerID }
                 },
                 workType: {
-                    connect: {
-                        name: postData.workType
-                    }
+                    connect: { name: postData.workType }
                 },
                 startingPrice: startingPrice,
-            },
-            select: {
-                postID: true
             }
         });
 
@@ -88,7 +79,7 @@ export async function createPostHandler(postData, startingPrice, userID) {
             true
         );
         
-        const {_count, ...filtered} = seller;
+        const { _count, ...filtered } = seller;
         return {
             postID: res.postID,
             seller: filtered
@@ -115,21 +106,19 @@ export async function deleteImageHandler(req) {
             throw new DBError("You are not authorized to add an image to this post.", 403);
         }
 
-        await prisma.postImage.delete({
-            where: {
-                cloudinaryID: req.params.cloudinaryID
-            }
+        await prisma.$transaction(async (tx) => {
+            await tx.postImage.delete({
+                where: { cloudinaryID: req.params.cloudinaryID }
+            });
+    
+            await deleteCloudinaryResource(
+                `FreeFinder/PostImages/${req.userData.userID}/${req.params.id}/${req.params.cloudinaryID}`, 
+                "file"
+            );
         });
 
-        await deleteCloudinaryResource(
-            `FreeFinder/PostImages/${req.userData.userID}/${req.params.id}/${req.params.cloudinaryID}`, 
-            "file"
-        );
-
         const updatedPost = await prisma.post.findUnique({ 
-            where: {
-                postID: req.params.id
-            },
+            where: { postID: req.params.id },
             ...postProperties
         });
 
@@ -165,9 +154,7 @@ export async function addImageHandler(req) {
         );
 
         const updatedPost = await prisma.post.findUnique({ 
-            where: {
-                postID: req.params.id
-            },
+            where: { postID: req.params.id },
             ...postProperties
         });
 
@@ -217,9 +204,7 @@ async function createPostPackage(packageData, postID, type) {
 export async function getPostHandler(postID) {
     try {
         const postData = await prisma.post.findUnique({
-            where: {
-                postID: postID
-            },
+            where: { postID: postID },
             ...postProperties
         });
         
@@ -267,33 +252,35 @@ async function updateImage(req) {
         if (req.userData.userID !== image.post.postedBy.userID) {
             throw new DBError("You are not authorized to update this image.", 403);
         }
-    
-        const newImageUUID = uuidv4();
-        const newImage = await uploadImage(
-            req.params.id, 
-            req.body.newImage, 
-            `FreeFinder/PostImages/${req.userData.userID}/${req.params.id}`, 
-            newImageUUID,
-            false
-        );
-    
-        await prisma.postImage.update({ 
-            where: {
-                postID_url: {
-                    postID: req.params.id,
-                    url: req.body.imageURL
+        
+        await prisma.$transaction(async (tx) => {
+            const newImageUUID = uuidv4();
+            const newImage = await uploadImage(
+                req.params.id, 
+                req.body.newImage, 
+                `FreeFinder/PostImages/${req.userData.userID}/${req.params.id}`, 
+                newImageUUID,
+                false
+            );
+        
+            await tx.postImage.update({ 
+                where: {
+                    postID_url: {
+                        postID: req.params.id,
+                        url: req.body.imageURL
+                    }
+                },
+                data: {
+                    cloudinaryID: newImageUUID,
+                    url: newImage.url
                 }
-            },
-            data: {
-                cloudinaryID: newImageUUID,
-                url: newImage.url
-            }
+            });
+        
+            await deleteCloudinaryResource(
+                `FreeFinder/PostImages/${req.userData.userID}/${req.params.id}/${image.cloudinaryID}`, 
+                "file"
+            );
         });
-    
-        await deleteCloudinaryResource(
-            `FreeFinder/PostImages/${req.userData.userID}/${req.params.id}/${image.cloudinaryID}`, 
-            "file"
-        );
     }
     catch (err) {
         if (err instanceof DBError) {
@@ -309,22 +296,24 @@ async function updateImage(req) {
 
 export async function updatePostHandler(req) {
     try {
-        if (req.body.newImage && req.body.imageURL) {
-            await updateImage(req);
-        }
+        return await prisma.$transaction(async (tx) => {
+            const updatedPost = await tx.post.update({ 
+                where: {
+                    postID: req.params.id
+                },
+                data: {
+                    about: req.body.about,
+                    title: req.body.title,
+                },
+                ...postProperties
+            });
+            
+            if (req.body.newImage && req.body.imageURL) {
+                await updateImage(req);
+            }
 
-        const updatedPost = await prisma.post.update({ 
-            where: {
-                postID: req.params.id
-            },
-            data: {
-                about: req.body.about,
-                title: req.body.title,
-            },
-            ...postProperties
+            return updatedPost;
         });
-        
-        return updatedPost;
     }
     catch (err) {
         if (err instanceof DBError) {
@@ -342,11 +331,12 @@ export async function updatePostHandler(req) {
 
 export async function deletePostHandler(postID, userID) {
     try {
-        const post = await prisma.post.findUnique({ where: { postID: postID } });
+        const post = await prisma.post.findUnique({ 
+            where: { postID: postID } 
+        });
+
         const user = await prisma.user.findUnique({ 
-            where: { 
-                userID: userID 
-            },
+            where: { userID: userID },
             select: {
                 seller: {
                     select: {
@@ -364,8 +354,10 @@ export async function deletePostHandler(postID, userID) {
             throw new DBError("You do not have authorization to delete this post.", 403);
         } 
         
-        await prisma.post.delete({ where: { postID: postID } });
-        await deleteCloudinaryResource(`FreeFinder/PostImages/${userID}/${postID}`, "folder");
+        await prisma.$transaction(async (tx) => {
+            await tx.post.delete({ where: { postID: postID } });
+            await deleteCloudinaryResource(`FreeFinder/PostImages/${userID}/${postID}`, "folder");
+        });
     }
     catch (err) {
         if (err instanceof DBError) {
@@ -385,89 +377,83 @@ export async function deletePostHandler(postID, userID) {
 
 export async function getPostsHandler(req) {
     try {
-        return await queryPosts(req);
+        const options = {
+            orderBy: sortPosts[req.body.sort],
+        };
+        
+        const where = getPostFilters(req);
+        const select = {
+            postedBy: {
+                select: {
+                    user: {
+                        select: {
+                            profilePicURL: true,
+                            status: true,
+                            username: true,
+                        }
+                    },
+                    sellerID: true,
+                    sellerLevel: {
+                        select: {
+                            name: true
+                        }
+                    }
+                }
+            },
+            createdAt: true,
+            _count: {
+                select: { 
+                    reviews: true
+                }
+            },
+            startingPrice: true,
+            title: true,
+            postID: true,
+            images: {
+                select: {
+                    url: true,
+                    cloudinaryID: true
+                },
+                orderBy: {
+                    createdAt: 'asc'
+                }
+            }
+        };
+    
+        const result = await getPaginatedData(
+            where,
+            select, 
+            "post", 
+            req.body.limit, 
+            { postID: req.body.cursor }, 
+            "postID", 
+            options
+        );
+    
+        const promises = result.next.map(post => getAvgRatings(post.postID, undefined).then(x => x));
+        const postRatings = await Promise.all(promises).then(ratings => ratings);
+    
+        const posts = result.next.map((post, index) => {
+            return {
+                ...post,
+                rating: postRatings[index]._avg.rating
+            }
+        });
+    
+        return {
+            ...result,
+            next: posts
+        }
     }
     finally {
         await prisma.$disconnect();
     }
 }
 
-async function queryPosts(req) {
-    const options = {
-        orderBy: sortPosts[req.body.sort],
-    };
-    
-    const where = getPostFilters(req);
-    const select = {
-        postedBy: {
-            select: {
-                user: {
-                    select: {
-                        profilePicURL: true,
-                        status: true,
-                        username: true,
-                    }
-                },
-                sellerID: true,
-                sellerLevel: {
-                    select: {
-                        name: true
-                    }
-                }
-            }
-        },
-        createdAt: true,
-        _count: {
-            select: { 
-                reviews: true
-            }
-        },
-        startingPrice: true,
-        title: true,
-        postID: true,
-        images: {
-            select: {
-                url: true,
-                cloudinaryID: true
-            },
-            orderBy: {
-                createdAt: 'asc'
-            }
-        }
-    };
-
-    const result = await getPaginatedData(
-        where,
-        select, 
-        "post", 
-        req.body.limit, 
-        { postID: req.body.cursor }, 
-        "postID", 
-        options
-    );
-
-    const promises = result.next.map(post => getAvgRatings(post.postID, undefined).then(x => x));
-    const postRatings = await Promise.all(promises).then(ratings => ratings);
-
-    const posts = result.next.map((post, index) => {
-        return {
-            ...post,
-            rating: postRatings[index]._avg.rating
-        }
-    });
-
-    return {
-        ...result,
-        next: posts
-    }
-}
-
-export async function getSellerSummaryHandler(req) {
+export async function getSellerSummaryHandler(postID) {
     try {
         const sellerSummary = await prisma.post.findUnique({
-            where: {
-                postID: req.params.id 
-            },
+            where: { postID: postID },
             select: {
                 postedBy: {
                     select: {
@@ -486,10 +472,6 @@ export async function getSellerSummaryHandler(req) {
 
         if (!sellerSummary) {
             throw new DBError("Service ID does not exist.", 404);
-        }
-
-        if (req.userData.userID === sellerSummary.postedBy.user.userID) {
-            throw new DBError("You cannot create a group for your own service.", 409);
         }
 
         const { userID, ...res } = sellerSummary.postedBy.user;

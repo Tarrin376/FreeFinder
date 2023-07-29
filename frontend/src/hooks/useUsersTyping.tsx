@@ -11,7 +11,7 @@ export function useUsersTyping(groupID: string): string[] {
         }
 
         setUsersTyping((cur) => [...cur, username]);
-        setTimeout(() => setUsersTyping((cur) => cur.filter((x) => x !== username)), 5000);
+        setTimeout(() => setUsersTyping((cur) => cur.filter((x) => x !== username)), 4000);
     }, [usersTyping, groupID, userContext.userData.username]);
 
     useEffect(() => {

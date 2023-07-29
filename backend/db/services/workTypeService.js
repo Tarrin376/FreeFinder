@@ -4,34 +4,14 @@ import { DBError } from '../customErrors/DBError.js';
 
 export async function createWorkTypesHandler(workTypes, jobCategoryID) {
     try {
-        let failed = [];
-
-        for (let workType of workTypes) {
-            try {
-                createWorkType(workType, jobCategoryID);
-            }
-            catch (err) {
-                failed.push({
-                    name: workType,
-                    error: err.message
+        await prisma.$transaction(async (tx) => {
+            for (const workType of workTypes) {
+                await tx.workType.create({
+                    data: {
+                        name: workType,
+                        jobCategoryID: jobCategoryID
+                    }
                 });
-            }
-        }
-
-        await prisma.$disconnect();
-        return failed;
-    }
-    catch (err) {
-        throw new DBError("Something went wrong when trying to process this request.", 500);
-    }
-}
-
-async function createWorkType(workType, jobCategoryID) {
-    try {
-        await prisma.workType.create({
-            data: {
-                name: workType,
-                jobCategoryID: jobCategoryID
             }
         });
     }
@@ -43,5 +23,8 @@ async function createWorkType(workType, jobCategoryID) {
         } else {
             throw new DBError("Something went wrong when trying to process this request.", 500);
         }
+    }
+    finally {
+        await prisma.$disconnect();
     }
 }

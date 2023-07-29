@@ -50,7 +50,7 @@ function Sidebar(props: SidebarProps) {
                         {props.windowSize <= 681 && 
                         <>
                             <li className="sidebar-item" onClick={() => navigateToPage('posts/all')}>Browse all</li>
-                            {!userContext.userData.seller &&
+                            {userContext.userData.seller &&
                             <>
                                 <li className="sidebar-item">Client orders</li>
                             </>}

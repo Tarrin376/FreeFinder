@@ -1,8 +1,8 @@
 import { prisma } from "../index.js";
 import { DBError } from "../customErrors/DBError.js";
 
-export async function checkUser(userID, username) {
-    await new Promise(async (resolve, reject) => {
+export function checkUser(userID, username) {
+    return new Promise(async (resolve, reject) => {
         const user = await prisma.user.findUnique({ 
             where: { 
                 username: username 

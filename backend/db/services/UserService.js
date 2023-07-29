@@ -4,7 +4,6 @@ import { DBError } from '../customErrors/DBError.js';
 import { checkUser } from '../utils/checkUser.js';
 import { sortPosts } from '../utils/sortPosts.js';
 import { deleteCloudinaryResource } from '../utils/deleteCloudinaryResource.js';
-import { cloudinary } from '../index.js';
 import { prisma } from '../index.js';
 import { getPostFilters } from '../utils/getPostFilters.js';
 import { sellerProperties } from '../utils/sellerProperties.js';
@@ -12,6 +11,7 @@ import { userProperties } from '../utils/userProperties.js';
 import { getPaginatedData } from '../utils/getPaginatedData.js';
 import { getAvgRatings } from '../utils/getAvgRatings.js';
 import { groupPreviewProperties } from '../utils/groupPreviewProperties.js';
+import { uploadFile } from '../utils/uploadFile.js';
 
 const MAX_AMOUNT = 500;
 
@@ -21,22 +21,7 @@ export async function updateProfilePictureHandler(req) {
         let result = "";
 
         if (req.body.profilePic !== "") {
-            result = await new Promise(async (resolve, reject) => {
-                const upload = cloudinary.uploader.upload(req.body.profilePic, { 
-                    public_id: `FreeFinder/ProfilePictures/${req.userData.userID}` 
-                }, (err, result) => {
-                    if (err) {
-                        reject(new DBError(err.message, err.http_code || 500));
-                    } else {
-                        resolve(result);
-                    }
-                });
-    
-                const success = await upload
-                .then(data => data)
-                .catch(err => reject(new DBError(err.message, err.http_code || 500)));
-                return success;
-            });
+            result = await uploadFile(req.body.profilePic, `FreeFinder/ProfilePictures/${req.userData.userID}`);
         } else {
             await deleteCloudinaryResource(`FreeFinder/ProfilePictures/${req.userData.userID}`, "file");
         }
@@ -45,9 +30,7 @@ export async function updateProfilePictureHandler(req) {
             where: { userID: req.userData.userID },
             data: { profilePicURL: result.secure_url || "" },
             select: {
-                seller: {
-                    ...sellerProperties,
-                },
+                seller: { ...sellerProperties },
                 username: true,
                 country: true,
                 profilePicURL: true,
@@ -183,7 +166,12 @@ export async function authenticateUserHandler(usernameOrEmail, password) {
         const {savedPosts, savedSellers, hash, ...filtered} = res;
         const savedPostIDs = savedPosts.map((post) => post.postID);
         const savedSellerIDs = savedSellers.map((seller) => seller.sellerID);
-        return { ...filtered, savedPosts: savedPostIDs, savedSellers: savedSellerIDs };
+
+        return { 
+            ...filtered, 
+            savedPosts: savedPostIDs, 
+            savedSellers: savedSellerIDs 
+        };
     }
     catch (err) {
         if (err instanceof DBError) {
@@ -207,15 +195,18 @@ export async function updateUserHandler(req) {
         const updated = await prisma.user.update({
             where: { userID: req.userData.userID },
             data: { ...res },
-            select: {
-                ...userProperties
-            }
+            select: { ...userProperties }
         });
         
         const { savedPosts, savedSellers, ...filtered } = updated;
         const savedPostIDs = savedPosts.map((post) => post.postID);
         const savedSellerIDs = savedSellers.map((seller) => seller.sellerID);
-        return { ...filtered, savedPosts: savedPostIDs, savedSellers: savedSellerIDs };
+
+        return { 
+            ...filtered, 
+            savedPosts: savedPostIDs, 
+            savedSellers: savedSellerIDs 
+        };
     }
     catch (err) {
         if (err instanceof DBError) {
@@ -236,9 +227,11 @@ export async function updateUserHandler(req) {
 export async function deleteUserHandler(req) {
     try {
         await checkUser(req.userData.userID, req.username);
-        await prisma.user.delete({ where: { userID: req.userData.userID } });
-        await deleteCloudinaryResource(`FreeFinder/ProfilePictures/${req.userData.userID}`, "file");
-        await deleteCloudinaryResource(`FreeFinder/PostImages/${req.userData.userID}`, "folder");
+        await prisma.$transaction(async (tx) => {
+            await tx.user.delete({ where: { userID: req.userData.userID } });
+            await deleteCloudinaryResource(`FreeFinder/ProfilePictures/${req.userData.userID}`, "file");
+            await deleteCloudinaryResource(`FreeFinder/PostImages/${req.userData.userID}`, "folder");
+        });
     }
     catch (err) {
         if (err instanceof DBError) {
@@ -356,12 +349,8 @@ export async function getBalanceHandler(req) {
     try {
         await checkUser(req.userData.userID, req.username);
         const data = await prisma.user.findUnique({
-            where: {
-                userID: req.userData.userID
-            },
-            select: {
-                balance: true
-            }
+            where: { userID: req.userData.userID },
+            select: { balance: true }
         });
 
         return data.balance;
@@ -391,17 +380,11 @@ export async function addToBalanceHandler(req) {
         }
 
         const updated = await prisma.user.update({
-            where: {
-                userID: req.userData.userID
-            },
+            where: { userID: req.userData.userID },
             data: {
-                balance: {
-                    increment: req.body.amount
-                }
+                balance: { increment: req.body.amount }
             },
-            select: {
-                balance: true
-            }
+            select: { balance: true }
         });
 
         return updated.balance;
@@ -474,25 +457,17 @@ async function addMembers(members, groupID, tx) {
 
     for (const member of members) {
         const socket = await prisma.user.findUnique({
-            where: {
-                username: member
-            },
-            select: {
-                socketID: true
-            }
+            where: { username: member },
+            select: { socketID: true }
         });
 
         const newMember = await tx.groupMember.create({
             data: {
                 group: {
-                    connect: {
-                        groupID: groupID
-                    }
+                    connect: { groupID: groupID }
                 },
                 user: {
-                    connect: {
-                        username: member
-                    }
+                    connect: { username: member }
                 }
             },
             select: {
@@ -519,10 +494,6 @@ async function addMembers(members, groupID, tx) {
 export async function createMessageGroupHandler(req) {
     try {
         await checkUser(req.userData.userID, req.username);
-        if (!Array.isArray(req.body.members) || req.body.members.length === 0 || typeof req.body.members[0] !== "string") {
-            throw new DBError("Members must be a non-empty string array.", 400);
-        }
-       
         return await prisma.$transaction(async (tx) => {
             const group = await tx.messageGroup.create({
                 data: {
@@ -544,11 +515,10 @@ export async function createMessageGroupHandler(req) {
         });
     }
     catch (err) {
-        console.log(err);
         if (err instanceof DBError) {
             throw err;
         } else if (err instanceof Prisma.PrismaClientKnownRequestError && err.code === "P2002") {
-            throw new DBError("One or more members are already in a group for this service.", 409);
+            throw new DBError("You cannot create a group for your own service.", 409);
         } else if (err instanceof Prisma.PrismaClientValidationError) {
             throw new DBError("Missing required fields or fields provided are invalid.", 400);
         } else {
@@ -654,7 +624,7 @@ export async function removeUserFromGroupHandler(req) {
             where: {
                 groupID_userID: {
                     groupID: req.params.groupID,
-                    userID: req.params.userToDelete
+                    userID: req.params.removeUserID
                 }
             }
         });
@@ -676,12 +646,8 @@ export async function deleteGroupHandler(req) {
     try {
         await checkUser(req.userData.userID, req.username);
         const group = await prisma.messageGroup.findUnique({
-            where: {
-                groupID: req.params.groupID
-            },
-            select: {
-                creatorID: true
-            }
+            where: { groupID: req.params.groupID },
+            select: { creatorID: true }
         });
 
         if (!group) {
@@ -693,9 +659,7 @@ export async function deleteGroupHandler(req) {
         }
 
         await prisma.messageGroup.delete({
-            where: {
-                groupID: req.params.groupID,
-            }
+            where: { groupID: req.params.groupID }
         });
     }
     catch (err) {
@@ -740,16 +704,12 @@ export async function updateGroupHandler(req) {
 
         return await prisma.$transaction(async (tx) => {
             const group = await tx.messageGroup.update({
-                where: {
-                    groupID: req.params.groupID
-                },
-                data: {
-                    groupName: req.body.groupName,
-                },
+                where: { groupID: req.params.groupID },
+                data: { groupName: req.body.groupName },
                 ...groupPreviewProperties
             });
     
-            if (Array.isArray(req.body.members) && req.body.members.length > 0 && typeof req.body.members[0] === "string") {
+            if (req.body.members) {
                 const allMembers = await addMembers(req.body.members, group.groupID, tx);
                 return {
                     group: {
@@ -777,4 +737,8 @@ export async function updateGroupHandler(req) {
             throw new DBError("Something went wrong when trying to process this request.", 500);
         }
     }
+}
+
+export async function addMessageFileHandler(req) {
+
 }

@@ -17,10 +17,10 @@ interface GroupPreviewMessageProps {
 
 function GroupPreviewMessage({ group, selectedGroup, action }: GroupPreviewMessageProps) {
     const userContext = useContext(UserContext);
-    const isOwnMessage = group.lastMessage && group.lastMessage.from.username === userContext.userData.username;
     const [lastMessage, setLastMessage] = useState<IMessage>(group.lastMessage);
     const [unreadMessages, setUnreadMessages] = useState<number>(0);
     const usersTyping = useUsersTyping(group.groupID);
+    const isOwnMessage = lastMessage && lastMessage.from.username === userContext.userData.username;
 
     const showNewMessages = useCallback((message: IMessage, id: string): void => {
         if (id === group.groupID) {
@@ -69,7 +69,7 @@ function GroupPreviewMessage({ group, selectedGroup, action }: GroupPreviewMessa
                         {usersTyping.length > 0 ?
                         <Typing 
                             usersTyping={usersTyping}
-                            textStyles="!text-sm"
+                            textStyles="!text-sm mt-[4px]"
                             dotStyles="w-[4px] h-[4px]"
                         /> : 
                         <div className="flex justify-between items-center overflow-hidden">

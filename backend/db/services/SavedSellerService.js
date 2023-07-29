@@ -6,12 +6,8 @@ import { checkUser } from "../utils/checkUser.js";
 async function getSavedSellerIDs(userID) {
     try {
         const savedSellers = await prisma.savedSeller.findMany({
-            where: {
-                userID: userID
-            },
-            select: {
-                sellerID: true
-            }
+            where: { userID: userID },
+            select: { sellerID: true }
         });
 
         const savedSellerIDs = savedSellers.map((seller) => seller.sellerID);

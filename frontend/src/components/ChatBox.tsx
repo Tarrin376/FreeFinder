@@ -62,6 +62,10 @@ function ChatBox({ groupID, groupMembers }: ChatBoxProps) {
         return { ...cur, ...payload };
     }, initialState);
 
+    async function addMessageFiles(messageID: string): Promise<boolean> {
+        return true;
+    }
+
     async function sendMessage(e: React.FormEvent<HTMLFormElement>): Promise<void> {
         e.preventDefault();
         if (!searchRef.current || state.sendingMessage || !userContext.socket || searchRef.current.value === "") {
@@ -89,8 +93,13 @@ function ChatBox({ groupID, groupMembers }: ChatBoxProps) {
                 message: message 
             });
 
-            userContext.socket.emit("send-message", resp.data.newMessage, groupID);
-            dispatch({ sendingMessage: false });
+            const addedFiles = await addMessageFiles(resp.data.newMessage.messageID);
+            if (addedFiles) {
+                userContext.socket.emit("send-message", resp.data.newMessage, groupID);
+                dispatch({ sendingMessage: false });
+            } else {
+                console.log("error");
+            }
         }
         catch (err: any) {
             const errorMessage = getAPIErrorMessage(err as AxiosError<{ message: string }>);
@@ -255,8 +264,10 @@ function ChatBox({ groupID, groupMembers }: ChatBoxProps) {
                             {state.uploadedFiles.map((x: FileData, index: number) => {
                                 return (
                                     <UploadedFile 
-                                        file={x.file} 
-                                        key={index} 
+                                        fileData={x} 
+                                        key={index}
+                                        dispatch={dispatch}
+                                        uploadedFiles={state.uploadedFiles}
                                     />
                                 );
                             })}

@@ -171,7 +171,7 @@ function CreatePost({ setPostService, resetState }: CreatePostProps) {
             catch (err: any) {
                 const errorMessage = getAPIErrorMessage(err as AxiosError<{ message: string }>);
                 failed.push({
-                    imageData: uploadedImages[i], 
+                    fileData: uploadedImages[i], 
                     errorMessage: errorMessage
                 });
             }

@@ -53,13 +53,22 @@ model GroupMember {
 }
 
 model Message {
-    messageID   String       @id @default(uuid())
-    from        User         @relation(fields: [fromID], references: [userID], onDelete: Cascade)
+    messageID   String        @id @default(uuid())
+    from        User          @relation(fields: [fromID], references: [userID], onDelete: Cascade)
     fromID      String
-    group       MessageGroup @relation(fields: [groupID], references: [groupID], onDelete: Cascade)
+    group       MessageGroup  @relation(fields: [groupID], references: [groupID], onDelete: Cascade)
     groupID     String
     messageText String
-    createdAt   DateTime     @default(now())
+    createdAt   DateTime      @default(now())
+    files       MessageFile[]
+}
+
+model MessageFile {
+    message   Message @relation(fields: [messageID], references: [messageID], onDelete: Cascade)
+    messageID String
+    url       String
+
+    @@id([messageID, url])
 }
 
 model SavedSeller {

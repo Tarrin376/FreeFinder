@@ -5,9 +5,7 @@ import { Prisma } from "@prisma/client";
 export async function getSellerLevelsHandler() {
     try {
         const sellerLevels = await prisma.sellerLevel.findMany({
-            orderBy: {
-                xpRequired: 'asc'
-            },
+            orderBy: { xpRequired: 'asc' },
             include: {
                 nextLevel: true,
                 prevLevel: true
@@ -50,12 +48,8 @@ export async function createSellerLevelHandler(body) {
 export async function updateSellerLevelHandler(req) {
     try {
         await prisma.sellerLevel.update({
-            where: {
-                id: req.params.id
-            },
-            data: {
-                ...req.body
-            }
+            where: { id: req.params.id },
+            data: { ...req.body }
         });
     }
     catch (err) {
@@ -72,7 +66,9 @@ export async function updateSellerLevelHandler(req) {
 
 export async function deleteSellerLevelHandler(req) {
     try {
-        await prisma.sellerLevel.delete({ where: { id: req.params.id } });
+        await prisma.sellerLevel.delete({ 
+            where: { id: req.params.id } 
+        });
     }
     catch (err) {
         throw new DBError("Something went wrong when trying to process this request.", 500);

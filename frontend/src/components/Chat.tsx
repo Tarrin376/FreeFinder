@@ -54,8 +54,7 @@ function Chat({ group, setAllGroups, setGroupCount, setGroup }: ChatProps) {
     async function deleteGroup(): Promise<string | undefined> {
         try {
             await axios.delete<{ message: string }>(`/api/users/${userContext.userData.username}/created-groups/${group.groupID}`);
-            setAllGroups((cur) => cur.filter((x) => x.groupID !== group.groupID));
-            setGroup(undefined);
+            updateUserLeftRoom(userContext.userData.userID, group.groupID);
         }
         catch (err: any) {
             const errorMessage = getAPIErrorMessage(err as AxiosError<{ message: string }>);
@@ -66,9 +65,7 @@ function Chat({ group, setAllGroups, setGroupCount, setGroup }: ChatProps) {
     async function leaveGroup(): Promise<string | undefined> {
         try {
             await axios.delete<{ message: string }>(`/api/users/${userContext.userData.username}/message-groups/${group.groupID}`);
-            setAllGroups((cur) => cur.filter((x) => x.groupID !== group.groupID));
-            setGroup(undefined);
-            userContext.socket?.emit("leave-room", userContext.userData.userID, group.groupID);
+            updateUserLeftRoom(userContext.userData.userID, group.groupID);
         }
         catch (err: any) {
             const errorMessage = getAPIErrorMessage(err as AxiosError<{ message: string }>);
@@ -142,8 +139,8 @@ function Chat({ group, setAllGroups, setGroupCount, setGroup }: ChatProps) {
                         <button className="change">Change</button>
                     </div>
                 </div>
-                <div className="flex items-center gap-2">
-                    <div className="inline-flex relative flex-shrink-0" onMouseLeave={() => setToggleGroupMembers(false)}>
+                <div className="flex items-center gap-2 flex-shrink-0">
+                    <div className="inline-flex relative" onMouseLeave={() => setToggleGroupMembers(false)}>
                         {groupMembers.slice(0, visibleMembers).map((member, index) => {
                             return (
                                 <div className="w-fit h-fit relative ml-[-12px] outline outline-[3px] outline-main-white rounded-full" key={index}>

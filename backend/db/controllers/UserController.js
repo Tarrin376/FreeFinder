@@ -17,7 +17,8 @@ import
     removeUserFromGroupHandler,
     deleteGroupHandler,
     leaveGroupHandler,
-    updateGroupHandler
+    updateGroupHandler,
+    addMessageFileHandler
 } 
 from '../services/UserService.js';
 import { cookieJwtSign } from '../middleware/cookieJwtSign.js';
@@ -246,6 +247,16 @@ export async function updateGroup(req, res) {
     try {
         const { group, sockets } = await updateGroupHandler(req);
         res.json({ group, sockets, message: "success" });
+    }
+    catch (err) {
+        res.status(err.code).json({ message: err.message });
+    }
+}
+
+export async function addMessageFile(req, res) {
+    try {
+        await addMessageFileHandler(req);
+        res.json({ message: "success" });
     }
     catch (err) {
         res.status(err.code).json({ message: err.message });

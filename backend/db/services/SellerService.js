@@ -10,14 +10,12 @@ import { countReviewRating } from '../utils/countReviewRating.js';
 export async function findSeller(userID) {
     try {
         const seller = await prisma.seller.findUnique({ 
-            where: { 
-                userID: userID 
-            },
+            where: { userID: userID },
             select: {
                 ...sellerProperties.select,
                 _count: {
-                    select: {
-                        posts: true
+                    select: { 
+                        posts: true 
                     }
                 }
             }
@@ -46,7 +44,7 @@ export async function findSeller(userID) {
 
 async function createSeller(id) {
     try {
-        const newSeller = await prisma.sellerLevel.findFirst({ where: { xpRequired: 5000 } });
+        const newSeller = await prisma.sellerLevel.findFirst({ where: { xpRequired: 0 } });
         if (!newSeller) {
             throw new DBError("Newbie seller level does not exist.", 400);
         }
@@ -90,12 +88,8 @@ async function createSeller(id) {
 export async function updateSellerDetailsHandler(req) {
     try {
         const user = await prisma.seller.findUnique({ 
-            where: {
-                sellerID: req.params.sellerID
-            },
-            select: {
-                userID: true
-            }
+            where: { sellerID: req.params.sellerID },
+            select: { userID: true }
         });
 
         if (req.userData.userID !== user.userID) {
@@ -103,9 +97,7 @@ export async function updateSellerDetailsHandler(req) {
         }
 
         const updatedDetails = await prisma.seller.update({
-            where: {
-                userID: req.userData.userID
-            },
+            where: { userID: req.userData.userID },
             data: {
                 description: req.body.description,
                 languages: req.body.languages,
@@ -370,7 +362,9 @@ export async function getReviewsHandler(req) {
         } 
     }
     catch (err) {
-        if (err instanceof Prisma.PrismaClientValidationError) {
+        if (err instanceof DBError) {
+            throw err;
+        } else if (err instanceof Prisma.PrismaClientValidationError) {
             throw new DBError("Missing required fields or fields provided are invalid.", 400);
         } else {
             throw new DBError("Something went wrong when trying to process this request.", 500);

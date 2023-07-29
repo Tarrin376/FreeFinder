@@ -57,7 +57,17 @@ function Reviews({ url, reviewsRef }: ReviewsProps) {
     }, [url]);
 
     if (!reviews) {
-        return <p>loading</p>
+        return (
+            <AnimatePresence>
+                <p>loading</p>
+                {errorMessage !== "" && 
+                <ErrorPopUp 
+                    errorMessage={errorMessage} 
+                    setErrorMessage={setErrorMessage}
+                    key="error"
+                />}
+            </AnimatePresence>
+        )
     }
 
     return (

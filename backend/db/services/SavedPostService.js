@@ -10,12 +10,8 @@ import { getAvgRatings } from '../utils/getAvgRatings.js';
 async function getSavedPostIDs(userID) {
     try {
         const savedPosts = await prisma.savedPost.findMany({
-            where: {
-                userID: userID
-            },
-            select: {
-                postID: true
-            }
+            where: { userID: userID },
+            select: { postID: true }
         });
     
         const savedPostIDs = savedPosts.map((post) => post.postID);
@@ -61,7 +57,88 @@ export async function savePostHandler(postID, userID, username) {
 export async function getSavedPostsHandler(req) {
     try {
         await checkUser(req.userData.userID, req.username);
-        return await querySavedPosts(req);
+        const where = {
+            post: { ...getPostFilters(req) }
+        };
+    
+        const select = {
+            post: {
+                select: {
+                    postedBy: {
+                        select: {
+                            user: {
+                                select: {
+                                    profilePicURL: true,
+                                    status: true,
+                                    username: true,
+                                }
+                            },
+                            rating: true,
+                            sellerLevel: {
+                                select: {
+                                    name: true
+                                }
+                            }
+                        }
+                    },
+                    createdAt: true,
+                    _count: {
+                        select: { 
+                            reviews: true
+                        }
+                    },
+                    startingPrice: true,
+                    title: true,
+                    postID: true,
+                    images: {
+                        select: {
+                            url: true
+                        },
+                        orderBy: {
+                            createdAt: 'asc'
+                        }
+                    }
+                }
+            }
+        };
+    
+        const options = {
+            orderBy: {
+                post: sortPosts[req.body.sort]
+            }
+        };
+    
+        const cursor = req.body.cursor ? { 
+            userID_postID: {
+                userID: req.userData.userID,
+                postID: req.body.cursor
+            }
+        } : {};
+    
+        const result = await getPaginatedData(
+            where, 
+            select, 
+            "savedPost", 
+            req.body.limit, 
+            cursor, 
+            "userID_postID", 
+            options
+        );
+    
+        const promises = result.next.map(cur => getAvgRatings(cur.post.postID, undefined).then(x => x));
+        const postRatings = await Promise.all(promises).then(ratings => ratings);
+    
+        const posts = result.next.map((cur, index) => {
+            return {
+                ...cur.post,
+                rating: postRatings[index]._avg.rating
+            }
+        });
+    
+        return {
+            ...result,
+            next: posts
+        }
     }
     catch (err) {
         if (err instanceof DBError) {
@@ -74,91 +151,6 @@ export async function getSavedPostsHandler(req) {
     }
     finally {
         await prisma.$disconnect();
-    }
-}
-
-async function querySavedPosts(req) {
-    const where = {
-        post: { ...getPostFilters(req) }
-    };
-
-    const select = {
-        post: {
-            select: {
-                postedBy: {
-                    select: {
-                        user: {
-                            select: {
-                                profilePicURL: true,
-                                status: true,
-                                username: true,
-                            }
-                        },
-                        rating: true,
-                        sellerLevel: {
-                            select: {
-                                name: true
-                            }
-                        }
-                    }
-                },
-                createdAt: true,
-                _count: {
-                    select: { 
-                        reviews: true
-                    }
-                },
-                startingPrice: true,
-                title: true,
-                postID: true,
-                images: {
-                    select: {
-                        url: true
-                    },
-                    orderBy: {
-                        createdAt: 'asc'
-                    }
-                }
-            }
-        }
-    };
-
-    const options = {
-        orderBy: {
-            post: sortPosts[req.body.sort]
-        }
-    };
-
-    const cursor = req.body.cursor ? { 
-        userID_postID: {
-            userID: req.userData.userID,
-            postID: req.body.cursor
-        }
-    } : {};
-
-    const result = await getPaginatedData(
-        where, 
-        select, 
-        "savedPost", 
-        req.body.limit, 
-        cursor, 
-        "userID_postID", 
-        options
-    );
-
-    const promises = result.next.map(cur => getAvgRatings(cur.post.postID, undefined).then(x => x));
-    const postRatings = await Promise.all(promises).then(ratings => ratings);
-
-    const posts = result.next.map((cur, index) => {
-        return {
-            ...cur.post,
-            rating: postRatings[index]._avg.rating
-        }
-    });
-
-    return {
-        ...result,
-        next: posts
     }
 }
 

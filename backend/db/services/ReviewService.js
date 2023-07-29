@@ -7,9 +7,7 @@ export async function createReviewHandler(req) {
     try {
         await checkUser(req.userData.userID, req.params.username);
         const post = await prisma.post.findUnique({
-            where: {
-                postID: req.body.postID
-            },
+            where: { postID: req.body.postID },
             select: {
                 postedBy: {
                     select: {
