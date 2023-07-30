@@ -1,4 +1,5 @@
-import { UserStatus } from "../enums/UserStatus"
+import { UserStatus } from "../enums/UserStatus";
+import { IMessageFile } from "./IMessageFile";
 
 export interface IMessage {
     from: {
@@ -6,6 +7,7 @@ export interface IMessage {
         profilePicURL: string,
         status: UserStatus
     },
+    files: IMessageFile[]
     messageText: string,
     createdAt: Date,
     messageID: string

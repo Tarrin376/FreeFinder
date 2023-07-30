@@ -13,7 +13,7 @@ function UploadedImage({ file, children, description, error }: FileProps) {
             <div className="overflow-hidden">
                 <div className="flex items-center gap-3 mb-3 overflow-hidden">
                     <div className="w-[27px] h-full">
-                        <FileTypeIcon file={file} />
+                        <FileTypeIcon fileType={file.type} />
                     </div>
                     <p className="whitespace-nowrap text-ellipsis overflow-hidden text-[15px]">
                         {file.name}

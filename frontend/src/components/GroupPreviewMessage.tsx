@@ -11,11 +11,12 @@ import Tags from "./Tags";
 
 interface GroupPreviewMessageProps {
     group: GroupPreview,
+    setAllUnreadMessages: React.Dispatch<React.SetStateAction<number>>,
     selectedGroup: GroupPreview | undefined,
     action: (group: GroupPreview) => void
 }
 
-function GroupPreviewMessage({ group, selectedGroup, action }: GroupPreviewMessageProps) {
+function GroupPreviewMessage({ group, setAllUnreadMessages, selectedGroup, action }: GroupPreviewMessageProps) {
     const userContext = useContext(UserContext);
     const [lastMessage, setLastMessage] = useState<IMessage>(group.lastMessage);
     const [unreadMessages, setUnreadMessages] = useState<number>(0);
@@ -32,6 +33,7 @@ function GroupPreviewMessage({ group, selectedGroup, action }: GroupPreviewMessa
     }, [group.groupID, selectedGroup?.groupID]);
 
     function openGroupChat() {
+        setAllUnreadMessages((cur) => cur - unreadMessages);
         setUnreadMessages(0);
         action(group);
     }
@@ -67,11 +69,13 @@ function GroupPreviewMessage({ group, selectedGroup, action }: GroupPreviewMessa
                     </div>
                     <div className="flex items-center justify-between gap-[5px]">
                         {usersTyping.length > 0 ?
-                        <Typing 
-                            usersTyping={usersTyping}
-                            textStyles="!text-sm mt-[4px]"
-                            dotStyles="w-[4px] h-[4px]"
-                        /> : 
+                        <div className="mt-[4px]">
+                            <Typing 
+                                usersTyping={usersTyping}
+                                textStyles="!text-sm"
+                                dotStyles="w-[4px] h-[4px]"
+                            />
+                        </div> : 
                         <div className="flex justify-between items-center overflow-hidden">
                             <p className="text-ellipsis whitespace-nowrap overflow-hidden flex-grow">
                                 {!lastMessage ? 

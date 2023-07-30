@@ -44,10 +44,11 @@ model MessageGroup {
 }
 
 model GroupMember {
-    group   MessageGroup @relation(fields: [groupID], references: [groupID], onDelete: Cascade)
-    groupID String
-    user    User         @relation(fields: [userID], references: [userID], onDelete: Cascade)
-    userID  String
+    group          MessageGroup @relation(fields: [groupID], references: [groupID], onDelete: Cascade)
+    groupID        String
+    user           User         @relation(fields: [userID], references: [userID], onDelete: Cascade)
+    userID         String
+    unreadMessages Int          @default(0)
 
     @@id([groupID, userID])
 }
@@ -64,9 +65,13 @@ model Message {
 }
 
 model MessageFile {
-    message   Message @relation(fields: [messageID], references: [messageID], onDelete: Cascade)
-    messageID String
-    url       String
+    message      Message @relation(fields: [messageID], references: [messageID], onDelete: Cascade)
+    messageID    String
+    url          String
+    name         String
+    fileType     String
+    fileSize     Int
+    cloudinaryID String  @unique()
 
     @@id([messageID, url])
 }

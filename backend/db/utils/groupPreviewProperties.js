@@ -17,6 +17,14 @@ export const groupPreviewProperties = {
                         status: true
                     }
                 },
+                files: {
+                    select: {
+                        url: true,
+                        name: true,
+                        fileType: true,
+                        fileSize: true
+                    }
+                },
                 messageText: true,
                 createdAt: true,
                 messageID: true

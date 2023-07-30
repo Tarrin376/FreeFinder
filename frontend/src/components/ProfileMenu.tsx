@@ -1,5 +1,5 @@
 import ProfilePicAndStatus from "./ProfilePicAndStatus";
-import { useState, useContext } from 'react';
+import { useState, useContext, useEffect, useCallback } from 'react';
 import { fetchUpdatedUser } from "../utils/fetchUpdatedUser";
 import OutsideClickHandler from "react-outside-click-handler";
 import NotificationIcon from "../assets/notification.png";
@@ -24,6 +24,7 @@ function ProfileMenu({ logout }: ProfileMenuProps) {
     const [sellerProfilePopUp, setSellerProfilePopUp] = useState<boolean>(false);
     const [balancePopUp, setBalancePopUp] = useState<boolean>(false);
     const [messagesPopUp, setMessagesPopUp] = useState<boolean>(false);
+    const [allUnreadMessages, setAllUnreadMessages] = useState<number>(0);
     const userContext = useContext(UserContext);
     const navigate = useNavigate();
 
@@ -72,18 +73,42 @@ function ProfileMenu({ logout }: ProfileMenuProps) {
         setMessagesPopUp(true);
     }
 
+    const addUnreadMessage = useCallback((): void => {
+        if (!messagesPopUp) {
+            setAllUnreadMessages((cur) => cur + 1);
+        }
+    }, [messagesPopUp]);
+
+    useEffect(() => {
+        userContext.socket?.on("receive-message", addUnreadMessage);
+
+        return () => {
+            userContext.socket?.off("receive-message", addUnreadMessage);
+        }
+    }, [userContext.socket, addUnreadMessage]);
+
     return (
         <div className="flex gap-7 items-center z-30">
             <AnimatePresence>
                 {settingsPopUp && <AccountSettings setSettingsPopUp={setSettingsPopUp} />}
                 {sellerProfilePopUp && <ChangeSellerDetails setSellerProfilePopUp={setSellerProfilePopUp} />}
                 {balancePopUp && <AccountBalance setBalancePopUp={setBalancePopUp} />}
-                {messagesPopUp && <Messages setMessagesPopUp={setMessagesPopUp} />}
+                {messagesPopUp && 
+                <Messages 
+                    setMessagesPopUp={setMessagesPopUp}
+                    setAllUnreadMessages={setAllUnreadMessages}
+                />}
             </AnimatePresence>
             <div className="flex gap-4 items-center">
-                <img src={ChatIcon} className="w-[32px] h-[32px] cursor-pointer" alt="chat" onClick={viewMessages} />
                 <div className="relative cursor-pointer">
-                    <img src={NotificationIcon} className="w-[32px] h-[32px]" alt="notifications" />
+                    <img src={ChatIcon} className="w-[37px] h-[37px]" alt="chat" onClick={viewMessages} />
+                    {allUnreadMessages > 0 && 
+                    <span className="absolute top-[0px] right-[-5px] bg-error-text rounded-full px-2 py-[1px] text-xs text-main-white">
+                        {allUnreadMessages}
+                    </span>}
+                </div>
+                <div className="relative cursor-pointer">
+                    <img src={NotificationIcon} className="w-[37px] h-[37px]" alt="notifications" />
                     <span className="absolute top-[2px] right-[3px] flex h-3 w-3">
                         <span className="animate-ping absolute inline-flex h-full w-full rounded-full bg-error-text opacity-75"></span>
                         <span className="relative inline-flex rounded-full h-3 w-3 bg-error-text"></span>

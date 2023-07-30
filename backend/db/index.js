@@ -46,8 +46,8 @@ const io = new SocketIOServer(server, {
 });
 
 io.on("connection", (socket) => {
-    socket.on("send-message", (message, groupID) => {
-        socket.to(groupID).emit("receive-message", message, groupID);
+    socket.on("send-message", (message, socketID, groupID) => {
+        socket.to(socketID).emit("receive-message", message, groupID);
     });
 
     socket.on("join-message-group", (groupID) => {
@@ -68,7 +68,9 @@ io.on("connection", (socket) => {
 
     socket.on("leave-rooms", () => {
         for (const room of socket.rooms) {
-            socket.leave(room);
+            if (room !== socket.id) {
+                socket.leave(room);
+            }
         }
     });
 

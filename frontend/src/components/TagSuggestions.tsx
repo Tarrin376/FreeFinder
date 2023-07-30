@@ -67,7 +67,7 @@ function TagSuggestions({ tag, groupMembers, searchRef, dispatch }: TagSuggestio
                                 word={pair[0]}
                                 substring={tag}
                                 foundAt={parseInt(pair[1])}
-                                styles="hover:px-0"
+                                styles="hover:!px-0"
                             />
                         </div>
                     </div>

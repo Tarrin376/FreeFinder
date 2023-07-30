@@ -128,16 +128,13 @@ function Chat({ group, setAllGroups, setGroupCount, setGroup }: ChatProps) {
                 <div className="flex items-center gap-4 overflow-hidden">
                     <ProfilePicAndStatus
                         profilePicURL=""
-                        size={60}
+                        size={55}
                         username={group.groupName}
                         statusStyles="before:hidden"
                     />
-                    <div className="overflow-hidden">
-                        <p className="text-[18px] text-ellipsis whitespace-nowrap overflow-hidden mb-1">
-                            {group.groupName}
-                        </p>
-                        <button className="change">Change</button>
-                    </div>
+                    <p className="text-[18px] text-ellipsis whitespace-nowrap overflow-hidden mb-1">
+                        {group.groupName}
+                    </p>
                 </div>
                 <div className="flex items-center gap-2 flex-shrink-0">
                     <div className="inline-flex relative" onMouseLeave={() => setToggleGroupMembers(false)}>

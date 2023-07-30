@@ -34,6 +34,8 @@ function Navbar() {
     const navigate = useNavigate();
     const selected = useRef<HTMLLIElement | HTMLDivElement | HTMLParagraphElement>();
 
+    useToggleAwayStatus();
+
     function resetSelectedElement(url: string) {
         if (selected.current) {
             selected.current.classList.remove('selected-nav-element');
@@ -71,8 +73,6 @@ function Navbar() {
     function toggleSidebar(): void {
         setSidebar((cur) => !cur);
     }
-    
-    useToggleAwayStatus();
     
     return (
         <>

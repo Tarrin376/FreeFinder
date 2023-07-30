@@ -203,7 +203,7 @@ function PostView() {
                 </AnimatePresence>
                 <div className="flex gap-16">
                     <div className="flex-grow">
-                        <div className="flex gap-3 items-center mb-4">
+                        <div className="flex gap-3 items-center mb-3">
                             {isOwner &&
                             <p className="change" onClick={updateTitle}>
                                 {state.titleToggle ? "Confirm changes" : "Change"}
@@ -304,7 +304,7 @@ function PostView() {
                             </>}
                         </div>
                         <section className="mt-8 mb-10 w-full">
-                            <div className="flex items-center gap-3 mb-4">
+                            <div className="flex items-center gap-3 mb-3">
                                 <h2 className="text-[1.3rem]">About this service</h2>
                                 {isOwner &&
                                 <p className="change" onClick={updateAbout}>

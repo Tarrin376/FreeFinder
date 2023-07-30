@@ -2,7 +2,7 @@
 interface TypingProps {
     usersTyping: string[],
     textStyles?: string,
-    dotStyles?: string
+    dotStyles?: string,
 }
 
 function Typing({ usersTyping, textStyles, dotStyles }: TypingProps) {

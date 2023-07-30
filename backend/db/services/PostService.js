@@ -12,78 +12,92 @@ import { getPostedBy } from '../utils/getPostedBy.js';
 import { getAvgRatings } from '../utils/getAvgRatings.js';
 import { uploadFile } from '../utils/uploadFile.js';
 
-async function uploadImage(postID, image, url, uuid, addImage) {
-    try {
-        const result = await uploadFile(image, `${url}/${uuid}`);
-        if (addImage) {
-            await prisma.postImage.create({
-                data: {
-                    postID: postID,
-                    url: result.secure_url,
-                    cloudinaryID: uuid
-                }
-            });
-        }
-
-        return {
-            cloudinaryID: uuid,
-            url: result.secure_url
-        }
-    }
-    catch (err) {
-        if (err instanceof DBError) {
-            throw err;
-        } else {
-            throw new DBError("Something went wrong when trying to process this request.", 500);
-        }
-    }
-}
-
 export async function createPostHandler(postData, startingPrice, userID) {
     try {
         const seller = await findSeller(userID);
         if (seller._count.posts === seller.sellerLevel.postLimit) {
-            throw new DBError(`'${seller.sellerLevel.name}' sellers cannot have more than ${seller._count.posts} available 
-            ${seller._count.posts === 1 ? " service" : " services"} at the same time.`, 403);
+            throw new DBError(`
+                '${seller.sellerLevel.name}' sellers cannot have more than ${seller._count.posts} available 
+                ${seller._count.posts === 1 ? " service" : " services"} at the same time.`, 423
+            );
         }
 
-        const res = await prisma.post.create({
-            select: { postID: true },
-            data: {
-                about: postData.about,
-                title: postData.title,
-                postedBy: {
-                    connect: { sellerID: seller.sellerID }
-                },
-                workType: {
-                    connect: { name: postData.workType }
-                },
-                startingPrice: startingPrice,
+        return await prisma.$transaction(async (tx) => {
+            const res = await tx.post.create({
+                select: { postID: true },
+                data: {
+                    about: postData.about,
+                    title: postData.title,
+                    startingPrice: startingPrice,
+                    postedBy: {
+                        connect: { sellerID: seller.sellerID }
+                    },
+                    workType: {
+                        connect: { name: postData.workType }
+                    }
+                }
+            });
+
+            await tx.package.create({
+                data: {
+                    postID: res.postID,
+                    deliveryTime: postData.packages[0].deliveryTime,
+                    revisions: postData.packages[0].revisions,
+                    description: postData.packages[0].description,
+                    features: postData.packages[0].features,
+                    amount: postData.packages[0].amount,
+                    type: postData.packages[0].type,
+                    title: postData.packages[0].title,
+                }
+            });
+    
+            if (postData.packages.length >= 2) {
+                await tx.package.create({
+                    data: {
+                        postID: res.postID,
+                        deliveryTime: postData.packages[1].deliveryTime,
+                        revisions: postData.packages[1].revisions,
+                        description: postData.packages[1].description,
+                        features: postData.packages[1].features,
+                        amount: postData.packages[1].amount,
+                        type: postData.packages[1].type,
+                        title: postData.packages[1].title,
+                    }
+                });
             }
+    
+            if (postData.packages.length === 3) {
+                await tx.package.create({
+                    data: {
+                        postID: res.postID,
+                        deliveryTime: postData.packages[2].deliveryTime,
+                        revisions: postData.packages[2].revisions,
+                        description: postData.packages[2].description,
+                        features: postData.packages[2].features,
+                        amount: postData.packages[2].amount,
+                        type: postData.packages[2].type,
+                        title: postData.packages[2].title,
+                    }
+                });
+            }
+
+            const uuid = uuidv4();
+            const result = await uploadFile(postData.thumbnail, `FreeFinder/PostImages/${res.postID}/${uuid}`);
+
+            await tx.postImage.create({
+                data: {
+                    postID: res.postID,
+                    url: result.secure_url,
+                    cloudinaryID: uuid
+                }
+            });
+            
+            const { _count, ...filtered } = seller;
+            return {
+                postID: res.postID,
+                seller: filtered
+            };
         });
-
-        await createPostPackage(postData.packages[0], res.postID, postData.packages[0].type);
-        if (postData.packages.length >= 2) {
-            await createPostPackage(postData.packages[1], res.postID, postData.packages[1].type);
-        }
-
-        if (postData.packages.length === 3) {
-            await createPostPackage(postData.packages[2], res.postID, postData.packages[2].type);
-        }
-
-        await uploadImage(
-            res.postID, 
-            postData.thumbnail, 
-            `FreeFinder/PostImages/${userID}/${res.postID}`, 
-            uuidv4(), 
-            true
-        );
-        
-        const { _count, ...filtered } = seller;
-        return {
-            postID: res.postID,
-            seller: filtered
-        };
     }
     catch (err) {
         if (err instanceof DBError) {
@@ -103,26 +117,26 @@ export async function deleteImageHandler(req) {
     try {
         const postedBy = await getPostedBy(req.params.id);
         if (req.userData.userID !== postedBy) {
-            throw new DBError("You are not authorized to add an image to this post.", 403);
+            throw new DBError("You are not authorized to add an image to this post.", 423);
         }
 
-        await prisma.$transaction(async (tx) => {
+        return await prisma.$transaction(async (tx) => {
             await tx.postImage.delete({
                 where: { cloudinaryID: req.params.cloudinaryID }
             });
+
+            const updatedPost = await tx.post.findUnique({ 
+                where: { postID: req.params.id },
+                ...postProperties
+            });
     
             await deleteCloudinaryResource(
-                `FreeFinder/PostImages/${req.userData.userID}/${req.params.id}/${req.params.cloudinaryID}`, 
+                `FreeFinder/PostImages/${req.params.id}/${req.params.cloudinaryID}`, 
                 "file"
             );
+            
+            return updatedPost;
         });
-
-        const updatedPost = await prisma.post.findUnique({ 
-            where: { postID: req.params.id },
-            ...postProperties
-        });
-
-        return updatedPost;
     }
     catch (err) {
         if (err instanceof DBError) {
@@ -142,55 +156,33 @@ export async function addImageHandler(req) {
     try {
         const postedBy = await getPostedBy(req.params.id);
         if (req.userData.userID !== postedBy) {
-            throw new DBError("You are not authorized to add an image to this post.", 403);
+            throw new DBError("You are not authorized to add an image to this post.", 423);
         }
 
-        await uploadImage(
-            req.params.id,
-            req.body.image, 
-            `FreeFinder/PostImages/${req.userData.userID}/${req.params.id}`,
-            uuidv4(),
-            true
-        );
+        const uuid = uuidv4();
+        const result = await uploadFile(req.body.image, `FreeFinder/PostImages/${req.params.id}/${uuid}`);
 
-        const updatedPost = await prisma.post.findUnique({ 
-            where: { postID: req.params.id },
-            ...postProperties
+        return await prisma.$transaction(async (tx) => {
+            await tx.postImage.create({
+                data: {
+                    postID: req.params.id,
+                    url: result.secure_url,
+                    cloudinaryID: uuid
+                }
+            });
+    
+            const updatedPost = await tx.post.findUnique({ 
+                where: { postID: req.params.id },
+                ...postProperties
+            });
+    
+            return updatedPost;
         });
-
-        return updatedPost;
     }
     catch (err) {
         if (err instanceof DBError) {
             throw err;
         } else if (err instanceof Prisma.PrismaClientValidationError) {
-            throw new DBError("Missing required fields or fields provided are invalid.", 400);
-        } else {
-            throw new DBError("Something went wrong when trying to process this request.", 500);
-        }
-    }
-    finally {
-        await prisma.$disconnect();
-    }
-}
-
-async function createPostPackage(packageData, postID, type) {
-    try {
-        await prisma.package.create({
-            data: {
-                postID: postID,
-                deliveryTime: packageData.deliveryTime,
-                revisions: packageData.revisions,
-                description: packageData.description,
-                features: packageData.features,
-                amount: packageData.amount,
-                type: type,
-                title: packageData.title,
-            }
-        });
-    }
-    catch (err) {
-        if (err instanceof Prisma.PrismaClientValidationError) {
             throw new DBError("Missing required fields or fields provided are invalid.", 400);
         } else {
             throw new DBError("Something went wrong when trying to process this request.", 500);
@@ -222,81 +214,61 @@ export async function getPostHandler(postID) {
     }
 }
 
-async function updateImage(req) {
-    try {
-        const image = await prisma.postImage.findUnique({ 
-            where: {
-                postID_url: {
-                    postID: req.params.id,
-                    url: req.body.imageURL
-                }
-            },
-            select: {
-                post: {
-                    select: {
-                        postedBy: {
-                            select: {
-                                userID: true
-                            }
-                        }
-                    }
-                },
-                cloudinaryID: true
-            }
-        });
-    
-        if (!image) {
-            throw new DBError("Image not found.", 404);
-        }
-    
-        if (req.userData.userID !== image.post.postedBy.userID) {
-            throw new DBError("You are not authorized to update this image.", 403);
-        }
-        
-        await prisma.$transaction(async (tx) => {
-            const newImageUUID = uuidv4();
-            const newImage = await uploadImage(
-                req.params.id, 
-                req.body.newImage, 
-                `FreeFinder/PostImages/${req.userData.userID}/${req.params.id}`, 
-                newImageUUID,
-                false
-            );
-        
-            await tx.postImage.update({ 
-                where: {
-                    postID_url: {
-                        postID: req.params.id,
-                        url: req.body.imageURL
-                    }
-                },
-                data: {
-                    cloudinaryID: newImageUUID,
-                    url: newImage.url
-                }
-            });
-        
-            await deleteCloudinaryResource(
-                `FreeFinder/PostImages/${req.userData.userID}/${req.params.id}/${image.cloudinaryID}`, 
-                "file"
-            );
-        });
-    }
-    catch (err) {
-        if (err instanceof DBError) {
-            throw err;
-        } else {
-            throw new DBError("Something went wrong when trying to process this request.", 500);
-        }
-    }
-    finally {
-        await prisma.$disconnect();
-    }
-}
-
 export async function updatePostHandler(req) {
     try {
         return await prisma.$transaction(async (tx) => {
+            if (req.body.newImage && req.body.imageURL) {
+                const image = await tx.postImage.findUnique({ 
+                    where: {
+                        postID_url: {
+                            postID: req.params.id,
+                            url: req.body.imageURL
+                        }
+                    },
+                    select: {
+                        post: {
+                            select: {
+                                postedBy: {
+                                    select: {
+                                        userID: true
+                                    }
+                                }
+                            }
+                        },
+                        cloudinaryID: true
+                    }
+                });
+            
+                if (!image) {
+                    throw new DBError("Image not found.", 424);
+                }
+            
+                if (req.userData.userID !== image.post.postedBy.userID) {
+                    throw new DBError("You are not authorized to update this image.", 423);
+                }
+                
+                const uuid = uuidv4();
+                const result = await uploadFile(req.body.newImage, `FreeFinder/PostImages/${req.params.id}/${uuid}`);
+
+                await tx.postImage.update({ 
+                    where: {
+                        postID_url: {
+                            postID: req.params.id,
+                            url: req.body.imageURL
+                        }
+                    },
+                    data: {
+                        cloudinaryID: uuid,
+                        url: result.secure_url
+                    }
+                });
+
+                await deleteCloudinaryResource(
+                    `FreeFinder/PostImages/${req.params.id}/${image.cloudinaryID}`, 
+                    "file"
+                );
+            }
+
             const updatedPost = await tx.post.update({ 
                 where: {
                     postID: req.params.id
@@ -308,10 +280,6 @@ export async function updatePostHandler(req) {
                 ...postProperties
             });
             
-            if (req.body.newImage && req.body.imageURL) {
-                await updateImage(req);
-            }
-
             return updatedPost;
         });
     }
@@ -347,16 +315,16 @@ export async function deletePostHandler(postID, userID) {
         });
         
         if (!user) {
-            throw new DBError("User not found.", 404);
+            throw new DBError("User not found.", 424);
         } else if (!post) {
-            throw new DBError("Post not found.", 404);
+            throw new DBError("Post not found.", 424);
         } else if (post.sellerID !== user.seller.sellerID) {
-            throw new DBError("You do not have authorization to delete this post.", 403);
+            throw new DBError("You do not have authorization to delete this post.", 423);
         } 
         
         await prisma.$transaction(async (tx) => {
             await tx.post.delete({ where: { postID: postID } });
-            await deleteCloudinaryResource(`FreeFinder/PostImages/${userID}/${postID}`, "folder");
+            await deleteCloudinaryResource(`FreeFinder/PostImages/${postID}`, "folder");
         });
     }
     catch (err) {
@@ -364,8 +332,8 @@ export async function deletePostHandler(postID, userID) {
             throw err;
         } else if (err instanceof Prisma.PrismaClientValidationError) {
             throw new DBError("Missing required fields or fields provided are invalid.", 400);
-        } else if (err instanceof Prisma.PrismaClientKnownRequestError && err.code === "P2025") {
-            throw new DBError("Post not found.", 404);
+        } else if (err instanceof Prisma.PrismaClientKnownRequestError && err.code === "P2225") {
+            throw new DBError("Post not found.", 424);
         } else {
             throw new DBError("Something went wrong when trying to process this request.", 500);
         }
@@ -471,7 +439,7 @@ export async function getSellerSummaryHandler(postID) {
         });
 
         if (!sellerSummary) {
-            throw new DBError("Service ID does not exist.", 404);
+            throw new DBError("Service ID does not exist.", 424);
         }
 
         const { userID, ...res } = sellerSummary.postedBy.user;

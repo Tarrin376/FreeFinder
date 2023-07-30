@@ -20,6 +20,7 @@ import { FileData } from "../types/FileData";
 import UploadedFile from "./UploadedFile";
 import { GroupPreview } from "../types/GroupPreview";
 import TagSuggestions from "./TagSuggestions";
+import { FailedUpload } from "../types/FailedUploaded";
 
 interface ChatBoxProps {
     groupID: string,
@@ -30,6 +31,7 @@ export type ChatBoxState = {
     sendingMessage: boolean,
     newMessages: IMessage[],
     uploadedFiles: FileData[],
+    failedUploads: FailedUpload[]
     toggleEmojiPicker: boolean,
     toggleAttachFiles: boolean,
     showTagSuggestions: boolean,
@@ -39,6 +41,7 @@ export type ChatBoxState = {
 const initialState: ChatBoxState = {
     sendingMessage: false,
     newMessages: [],
+    failedUploads: [],
     uploadedFiles: [],
     toggleEmojiPicker: false,
     toggleAttachFiles: false,
@@ -63,7 +66,29 @@ function ChatBox({ groupID, groupMembers }: ChatBoxProps) {
     }, initialState);
 
     async function addMessageFiles(messageID: string): Promise<boolean> {
-        return true;
+        const failed = [];
+
+        for (let i = 0; i < state.uploadedFiles.length; i++) {
+            try {
+                await axios.post<{ message: string }>
+                (`/api/users/${userContext.userData.username}/message-groups/${groupID}/${messageID}`, {
+                    file: state.uploadedFiles[i].base64Str,
+                    name: state.uploadedFiles[i].file.name,
+                    fileType: state.uploadedFiles[i].file.type,
+                    fileSize: state.uploadedFiles[i].file.size
+                });
+            }
+            catch (err: any) {
+                const errorMessage = getAPIErrorMessage(err as AxiosError<{ message: string }>);
+                failed.push({
+                    fileData: state.uploadedFiles[i], 
+                    errorMessage: errorMessage
+                });
+            }
+        }
+
+        dispatch({ failedUploads: failed });
+        return failed.length === 0;
     }
 
     async function sendMessage(e: React.FormEvent<HTMLFormElement>): Promise<void> {
@@ -73,32 +98,45 @@ function ChatBox({ groupID, groupMembers }: ChatBoxProps) {
         }
 
         try {
-            dispatch({ sendingMessage: true });
             const message = searchRef.current.value;
-            
+            dispatch({ sendingMessage: true });
             searchRef.current.value = "";
+            
             addMessage({
                 from: {
                     username: userContext.userData.username,
                     profilePicURL: userContext.userData.profilePicURL,
                     status: userContext.userData.status
                 },
+                files: state.uploadedFiles.map((x) => {
+                    return {
+                        url: "",
+                        name: x.file.name,
+                        fileType: x.file.type,
+                        fileSize: x.file.size
+                    }
+                }),
                 messageText: message,
                 createdAt: new Date(),
                 messageID: ""
             });
 
-            const resp = await axios.post<{ newMessage: IMessage, message: string }>
+            const resp = await axios.post<{ newMessage: IMessage, sockets: string[], message: string }>
             (`/api/users/${userContext.userData.username}/message-groups/${groupID}`, { 
                 message: message 
             });
 
             const addedFiles = await addMessageFiles(resp.data.newMessage.messageID);
             if (addedFiles) {
-                userContext.socket.emit("send-message", resp.data.newMessage, groupID);
-                dispatch({ sendingMessage: false });
-            } else {
-                console.log("error");
+                for (const socket of resp.data.sockets) {
+                    userContext.socket.emit("send-message", resp.data.newMessage, socket, groupID);
+                }
+                
+                console.log(resp.data.newMessage);
+                dispatch({ 
+                    sendingMessage: false, 
+                    newMessages: [...state.newMessages, resp.data.newMessage] 
+                });
             }
         }
         catch (err: any) {
@@ -242,7 +280,7 @@ function ChatBox({ groupID, groupMembers }: ChatBoxProps) {
                         dispatch={dispatch}
                     />}
                 </AnimatePresence>
-                <div className="mb-1">
+                <div className="mb-2">
                     <Typing 
                         usersTyping={usersTyping} 
                     />
@@ -260,7 +298,7 @@ function ChatBox({ groupID, groupMembers }: ChatBoxProps) {
                         <p className="text-side-text-gray text-sm">
                             Your uploaded files will appear here.
                         </p> : 
-                        <div className="flex-grow flex flex-wrap gap-3 overflow-hidden">
+                        <div className="flex-grow flex flex-wrap gap-2 overflow-hidden">
                             {state.uploadedFiles.map((x: FileData, index: number) => {
                                 return (
                                     <UploadedFile 

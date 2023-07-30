@@ -12,6 +12,7 @@ import { getPaginatedData } from '../utils/getPaginatedData.js';
 import { getAvgRatings } from '../utils/getAvgRatings.js';
 import { groupPreviewProperties } from '../utils/groupPreviewProperties.js';
 import { uploadFile } from '../utils/uploadFile.js';
+import { v4 as uuidv4 } from 'uuid';
 
 const MAX_AMOUNT = 500;
 
@@ -252,7 +253,81 @@ export async function deleteUserHandler(req) {
 export async function getUserPostsHandler(req) {
     try {
         await checkUser(req.userData.userID, req.username);
-        return await queryUserPosts(req);
+
+        const postFilters = getPostFilters(req);
+        const where = {
+            ...postFilters,
+            postedBy: {
+                ...postFilters.postedBy,
+                userID: req.userData.userID
+            },
+        };
+
+        const select = { 
+            postedBy: {
+                select: {
+                    user: {
+                        select: {
+                            profilePicURL: true,
+                            status: true,
+                            username: true,
+                        }
+                    },
+                    rating: true,
+                    sellerLevel: {
+                        select: {
+                            name: true
+                        }
+                    }
+                },
+            },
+            createdAt: true,
+            _count: {
+                select: { 
+                    reviews: true
+                }
+            },
+            startingPrice: true,
+            title: true,
+            postID: true,
+            images: {
+                select: {
+                    url: true,
+                },
+                orderBy: {
+                    createdAt: 'asc'
+                }
+            }
+        };
+
+        const options = {
+            orderBy: sortPosts[req.body.sort],
+        }
+
+        const result = await getPaginatedData(
+            where, 
+            select, 
+            "post", 
+            req.body.limit, 
+            { postID: req.body.cursor }, 
+            "postID", 
+            options
+        );
+
+        const promises = result.next.map(post => getAvgRatings(post.postID, undefined).then(x => x));
+        const postRatings = await Promise.all(promises).then(ratings => ratings);
+
+        const posts = result.next.map((post, index) => {
+            return {
+                ...post,
+                rating: postRatings[index]._avg.rating
+            }
+        });
+        
+        return {
+            ...result,
+            next: posts
+        }
     }
     catch (err) {
         if (err instanceof DBError) {
@@ -265,83 +340,6 @@ export async function getUserPostsHandler(req) {
     }
     finally {
         await prisma.$disconnect();
-    }
-}
-
-async function queryUserPosts(req) {
-    const postFilters = getPostFilters(req);
-    const where = {
-        ...postFilters,
-        postedBy: {
-            ...postFilters.postedBy,
-            userID: req.userData.userID
-        },
-    };
-
-    const select = { 
-        postedBy: {
-            select: {
-                user: {
-                    select: {
-                        profilePicURL: true,
-                        status: true,
-                        username: true,
-                    }
-                },
-                rating: true,
-                sellerLevel: {
-                    select: {
-                        name: true
-                    }
-                }
-            },
-        },
-        createdAt: true,
-        _count: {
-            select: { 
-                reviews: true
-            }
-        },
-        startingPrice: true,
-        title: true,
-        postID: true,
-        images: {
-            select: {
-                url: true,
-            },
-            orderBy: {
-                createdAt: 'asc'
-            }
-        }
-    };
-
-    const options = {
-        orderBy: sortPosts[req.body.sort],
-    }
-
-    const result = await getPaginatedData(
-        where, 
-        select, 
-        "post", 
-        req.body.limit, 
-        { postID: req.body.cursor }, 
-        "postID", 
-        options
-    );
-
-    const promises = result.next.map(post => getAvgRatings(post.postID, undefined).then(x => x));
-    const postRatings = await Promise.all(promises).then(ratings => ratings);
-
-    const posts = result.next.map((post, index) => {
-        return {
-            ...post,
-            rating: postRatings[index]._avg.rating
-        }
-    });
-    
-    return {
-        ...result,
-        next: posts
     }
 }
 
@@ -403,52 +401,45 @@ export async function addToBalanceHandler(req) {
 
 export async function getMessageGroupsHandler(req) {
     try {
-        return await queryMessageGroups(req);
+        await checkUser(req.userData.userID, req.username);
+        const where = {
+            userID: req.userData.userID
+        };
+
+        const select = {
+            group: { ...groupPreviewProperties }
+        };
+
+        const cursor = req.body.cursor ? { 
+            groupID_userID: {
+                groupID: req.body.cursor,
+                postID: req.userData.userID
+            }
+        } : {};
+
+        const result = await getPaginatedData(
+            where,
+            select, 
+            "groupMember", 
+            req.body.limit, 
+            cursor, 
+            "groupID_userID", 
+        );
+
+        const groups = result.next.map((x) => {
+            return {
+                ...x.group,
+                lastMessage: x.group.messages.length > 0 ? x.group.messages[0] : null
+            }
+        });
+
+        return {
+            ...result,
+            next: groups
+        }
     }
     finally {
         await prisma.$disconnect();
-    }
-}
-
-async function queryMessageGroups(req) {
-    await checkUser(req.userData.userID, req.username);
-
-    const where = {
-        userID: req.userData.userID
-    };
-
-    const select = {
-        group: {
-            ...groupPreviewProperties
-        }
-    };
-
-    const cursor = req.body.cursor ? { 
-        groupID_userID: {
-            groupID: req.body.cursor,
-            postID: req.userData.userID
-        }
-    } : {};
-
-    const result = await getPaginatedData(
-        where,
-        select, 
-        "groupMember", 
-        req.body.limit, 
-        cursor, 
-        "groupID_userID", 
-    );
-
-    const groups = result.next.map((x) => {
-        return {
-            ...x.group,
-            lastMessage: x.group.messages.length > 0 ? x.group.messages[0] : null
-        }
-    });
-
-    return {
-        ...result,
-        next: groups
     }
 }
 
@@ -532,76 +523,104 @@ export async function createMessageGroupHandler(req) {
 
 export async function getMessagesHandler(req) {
     try {
-        return await queryMessages(req);
+        await checkUser(req.userData.userID, req.username);
+        const where = {
+            groupID: req.params.groupID
+        };
+
+        const options = {
+            orderBy: {
+                createdAt: 'desc'
+            }
+        };
+
+        const select = {
+            from: {
+                select: {
+                    username: true,
+                    profilePicURL: true,
+                    status: true
+                }
+            },
+            files: {
+                select: {
+                    url: true,
+                    name: true,
+                    fileType: true,
+                    fileSize: true
+                }
+            },
+            messageText: true,
+            createdAt: true,
+            messageID: true
+        };
+
+        const result = await getPaginatedData(
+            where, 
+            select, 
+            "message", 
+            req.body.limit, 
+            { messageID: req.body.cursor }, 
+            "messageID", 
+            options
+        );
+
+        return result;
     }
     finally {
         await prisma.$disconnect();
     }
 }
 
-async function queryMessages(req) {
-    await checkUser(req.userData.userID, req.username);
-
-    const where = {
-        groupID: req.params.groupID
-    };
-
-    const options = {
-        orderBy: {
-            createdAt: 'desc'
-        }
-    };
-
-    const select = {
-        from: {
-            select: {
-                username: true,
-                profilePicURL: true,
-                status: true
-            }
-        },
-        messageText: true,
-        createdAt: true,
-        messageID: true
-    };
-
-    const result = await getPaginatedData(
-        where, 
-        select, 
-        "message", 
-        req.body.limit, 
-        { messageID: req.body.cursor }, 
-        "messageID", 
-        options
-    );
-
-    return result;
-}
-
 export async function sendMessageHandler(req) {
     try {
         await checkUser(req.userData.userID, req.username);
-        const newMessage = await prisma.message.create({
-            data: {
-                fromID: req.userData.userID,
-                groupID: req.params.groupID,
-                messageText: req.body.message
-            },
-            select: {
-                from: {
-                    select: {
-                        username: true,
-                        profilePicURL: true,
-                        status: true
-                    }
-                },
-                messageText: true,
-                createdAt: true,
-                messageID: true
-            }
-        });
 
-        return newMessage;
+        return await prisma.$transaction(async (tx) => {
+            const newMessage = await tx.message.create({
+                data: {
+                    fromID: req.userData.userID,
+                    groupID: req.params.groupID,
+                    messageText: req.body.message
+                },
+                select: {
+                    from: {
+                        select: {
+                            username: true,
+                            profilePicURL: true,
+                            status: true
+                        }
+                    },
+                    files: {
+                        select: {
+                            url: true,
+                            name: true,
+                            fileType: true,
+                            fileSize: true
+                        }
+                    },
+                    messageText: true,
+                    createdAt: true,
+                    messageID: true
+                }
+            });
+
+            const members = await tx.groupMember.findMany({
+                where: { groupID: req.params.groupID },
+                select: {
+                    user: {
+                        select: {
+                            socketID: true
+                        }
+                    }
+                }
+            });
+    
+            return {
+                newMessage: newMessage,
+                sockets: members.map((member) => member.user.socketID)
+            };
+        });
     }
     catch (err) {
         if (err instanceof DBError) {
@@ -640,6 +659,9 @@ export async function removeUserFromGroupHandler(req) {
             throw new DBError("Something went wrong when trying to process this request.", 500);
         }
     }
+    finally {
+        await prisma.$disconnect();
+    }
 }
 
 export async function deleteGroupHandler(req) {
@@ -659,7 +681,7 @@ export async function deleteGroupHandler(req) {
         }
 
         await prisma.messageGroup.delete({
-            where: { groupID: req.params.groupID }
+            where: { groupID: group.groupID }
         });
     }
     catch (err) {
@@ -670,6 +692,9 @@ export async function deleteGroupHandler(req) {
         } else {
             throw new DBError("Something went wrong when trying to process this request.", 500);
         }
+    }
+    finally {
+        await prisma.$disconnect();
     }
 }
 
@@ -695,6 +720,9 @@ export async function leaveGroupHandler(req) {
         } else {
             throw new DBError("Something went wrong when trying to process this request.", 500);
         }
+    }
+    finally {
+        await prisma.$disconnect();
     }
 }
 
@@ -737,8 +765,46 @@ export async function updateGroupHandler(req) {
             throw new DBError("Something went wrong when trying to process this request.", 500);
         }
     }
+    finally {
+        await prisma.$disconnect();
+    }
 }
 
 export async function addMessageFileHandler(req) {
+    try {
+        await checkUser(req.userData.userID, req.username);
+        const message = await prisma.message.findUnique({
+            where: { messageID: req.params.messageID }
+        });
 
+        if (!message) {
+            throw new DBError("Message not found.", 404);
+        }
+
+        const uuid = uuidv4();
+        const result = await uploadFile(req.body.file, `FreeFinder/MessageFiles/${req.params.messageID}/${uuid}`, "raw");
+
+        await prisma.messageFile.create({
+            data: {
+                messageID: req.params.messageID,
+                url: result.secure_url,
+                name: req.body.name,
+                fileType: req.body.fileType,
+                fileSize: req.body.fileSize,
+                cloudinaryID: uuid
+            }
+        });
+    }
+    catch (err) {
+        if (err instanceof DBError) {
+            throw err;
+        } else if (err instanceof Prisma.PrismaClientValidationError) {
+            throw new DBError("Missing required fields or fields provided are invalid.", 400);
+        } else {
+            throw new DBError("Something went wrong when trying to process this request.", 500);
+        }
+    }
+    finally {
+        await prisma.$disconnect();
+    }
 }

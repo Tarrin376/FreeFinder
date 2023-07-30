@@ -6,6 +6,9 @@ import { getTime } from "../utils/getTime";
 import MessageSent from "./MessageSent";
 import { GroupPreview } from "../types/GroupPreview";
 import Tags from "./Tags";
+import File from "./File";
+import { IMessageFile } from "../models/IMessageFile";
+import LoadingSvg from "./LoadingSvg";
 
 interface MessageProps {
     message: IMessage,
@@ -40,6 +43,24 @@ function Message({ message, isLastMessage, sendingMessage, groupMembers }: Messa
                             messageText={message.messageText}
                             groupMembers={groupMembers}
                         />
+                        <div className="mt-1 pb-[5px] flex flex-col gap-2">
+                            {message.files.map((file: IMessageFile) => {
+                                return (
+                                    <File fileType={file.fileType} fileName={file.name}>
+                                        {!sendingMessage ?
+                                        <a href={file.url} download={file.name}>
+                                            <button className="main-btn w-fit !h-[30px] text-sm rounded-[6px]">
+                                                Download
+                                            </button>
+                                        </a> : 
+                                        <LoadingSvg 
+                                            size={14} 
+                                            colour="#4E73F8" 
+                                        />}
+                                    </File>
+                                )
+                            })}
+                        </div>
                     </p>
                 </div>
             </div>
