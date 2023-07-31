@@ -3,6 +3,8 @@ import { IUser } from '../models/IUser';
 import axios from "axios";
 import io, { Socket } from "socket.io-client";
 import { UserStatus } from '../enums/UserStatus';
+import ErrorPopUp from '../components/ErrorPopUp';
+import { AnimatePresence } from 'framer-motion';
 
 export const initialState: IUserContext = {
     userData: {
@@ -12,9 +14,7 @@ export const initialState: IUserContext = {
         email: "",
         status: UserStatus.ONLINE,
         userID: "",
-        seller: null,
-        savedPosts: new Set(),
-        savedSellers: new Set()
+        seller: null
     },
     socket: undefined,
     setUserData: (_: IUser) => {}
@@ -30,7 +30,12 @@ export interface IUserContext {
 
 function UserProvider({ children }: { children?: React.ReactNode }) {
     const [userData, setUserData] = useState<IUser>({ ...initialState.userData });
+    const [errorMessage, setErrorMessage] = useState<string>("");
     const [socket, setSocket] = useState<Socket>();
+
+    function raiseFailedConnection(err: Error): void {
+        setErrorMessage(`Failed to establish a new web socket connection: ${err.message}`);
+    }
     
     useEffect(() => {
         try {
@@ -38,26 +43,24 @@ function UserProvider({ children }: { children?: React.ReactNode }) {
                 return;
             }
 
-            const ws = io(`http://localhost:8000`);
-            ws.on('connect', () => {
-                axios.post<{ userData: IUser, message: string }>(`/api/users/jwt-auth`, { socketID: ws.id })
-                .then((resp) => {
-                    setUserData({
-                        ...resp.data.userData, 
-                        savedPosts: new Set(resp.data.userData.savedPosts),
-                        savedSellers: new Set(resp.data.userData.savedSellers)
-                    });
-                })
-                .catch(() => {
+            const ws = io(`http://localhost:8000`, { withCredentials: true });
+            ws.on("connect_error", raiseFailedConnection);
+            
+            ws.on("connect", async () => {
+                try {
+                    const resp = await axios.post<{ userData: IUser, message: string }>(`/api/users/jwt-auth`, { socketID: ws.id });
+                    setUserData(resp.data.userData);
+                }
+                catch (_: any) {
                     // Do nothing if the user's session has expired or is invalid.
-                })
-                .finally(() => {
+                }
+                finally {
                     setSocket(ws);
-                });
+                }
             });
         }
-        catch (err: any) {
-            // Handle connection error.
+        catch (_: any) {
+            setErrorMessage("Something went wrong. Please try again.");
         }
 
         return () => {
@@ -67,6 +70,13 @@ function UserProvider({ children }: { children?: React.ReactNode }) {
 
     return (
         <UserContext.Provider value={{userData, socket, setUserData}}>
+            <AnimatePresence>
+                {errorMessage !== "" &&
+                <ErrorPopUp
+                    errorMessage={errorMessage}
+                    setErrorMessage={setErrorMessage}
+                />}
+            </AnimatePresence>
             {children}
         </UserContext.Provider>
     );

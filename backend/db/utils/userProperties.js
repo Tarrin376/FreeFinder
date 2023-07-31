@@ -1,17 +1,23 @@
-import { sellerProperties } from "./sellerProperties.js"
-
 export const userProperties = {
     seller: {
-        ...sellerProperties,
-    },
-    savedPosts: {
         select: {
-            postID: true
-        }
-    },
-    savedSellers: {
-        select: {
-            sellerID: true
+            description: true,
+            sellerID: true,
+            languages: true,
+            skills: true,
+            sellerXP: true,
+            summary: true,
+            sellerLevel: {
+                select: {
+                    name: true,
+                    nextLevel: {
+                        select: {
+                            xpRequired: true,
+                            name: true,
+                        }
+                    }
+                }
+            }
         }
     },
     username: true,

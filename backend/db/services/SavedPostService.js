@@ -7,24 +7,6 @@ import { getPostFilters } from '../utils/getPostFilters.js';
 import { getPaginatedData } from '../utils/getPaginatedData.js';
 import { getAvgRatings } from '../utils/getAvgRatings.js';
 
-async function getSavedPostIDs(userID) {
-    try {
-        const savedPosts = await prisma.savedPost.findMany({
-            where: { userID: userID },
-            select: { postID: true }
-        });
-    
-        const savedPostIDs = savedPosts.map((post) => post.postID);
-        return savedPostIDs;
-    }
-    catch (err) {
-        throw new DBError("Something went wrong when trying to process this request.", 500);
-    }
-    finally {
-        await prisma.$disconnect();
-    }
-}
-
 export async function savePostHandler(postID, userID, username) {
     try {
         await checkUser(userID, username);
@@ -34,9 +16,6 @@ export async function savePostHandler(postID, userID, username) {
                 postID: postID
             }
         });
-
-        const savedPostIDs = await getSavedPostIDs(userID);
-        return savedPostIDs;
     }
     catch (err) {
         if (err instanceof DBError) {
@@ -165,9 +144,6 @@ export async function deleteSavedPostHandler(postID, userID, username) {
                 }
             }
         });
-
-        const savedPostIDs = await getSavedPostIDs(userID);
-        return savedPostIDs;
     }
     catch (err) {
         if (err instanceof DBError) {

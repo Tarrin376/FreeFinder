@@ -25,18 +25,14 @@ export function useToggleAwayStatus(): void {
                         status: UserStatus.ONLINE 
                     });
                     
-                    userContext.setUserData({
-                        ...setToOnline.data.userData, 
-                        savedPosts: new Set(setToOnline.data.userData.savedPosts),
-                        savedSellers: new Set(setToOnline.data.userData.savedSellers)
-                    });
+                    userContext.setUserData({ ...setToOnline.data.userData });
                 }
 
                 setTimeout(() => {
                     canCheck.current = true;
                 }, 10000);
             }
-            catch (err: any) {
+            catch (_: any) {
                 // Ignore failure setting the user status to online and try again later.
             }
             finally {
@@ -56,14 +52,10 @@ export function useToggleAwayStatus(): void {
                             status: UserStatus.AWAY 
                         });
 
-                        userContext.setUserData({
-                            ...setToAway.data.userData, 
-                            savedPosts: new Set(setToAway.data.userData.savedPosts),
-                            savedSellers: new Set(setToAway.data.userData.savedSellers)
-                        });
+                        userContext.setUserData({ ...setToAway.data.userData });
                     }
                 }
-                catch (err: any) {
+                catch (_: any) {
                     // Ignore failure setting user status to away and try again every 5 seconds.
                 }
             })();

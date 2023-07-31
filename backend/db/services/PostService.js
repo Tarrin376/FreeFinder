@@ -92,10 +92,9 @@ export async function createPostHandler(postData, startingPrice, userID) {
                 }
             });
             
-            const { _count, ...filtered } = seller;
             return {
                 postID: res.postID,
-                seller: filtered
+                seller: seller
             };
         });
     }
@@ -127,12 +126,12 @@ export async function deleteImageHandler(req) {
 
             const updatedPost = await tx.post.findUnique({ 
                 where: { postID: req.params.id },
-                ...postProperties
+                select: { ...postProperties }
             });
     
             await deleteCloudinaryResource(
                 `FreeFinder/PostImages/${req.params.id}/${req.params.cloudinaryID}`, 
-                "file"
+                "image"
             );
             
             return updatedPost;
@@ -173,7 +172,7 @@ export async function addImageHandler(req) {
     
             const updatedPost = await tx.post.findUnique({ 
                 where: { postID: req.params.id },
-                ...postProperties
+                select: { ...postProperties }
             });
     
             return updatedPost;
@@ -197,7 +196,7 @@ export async function getPostHandler(postID) {
     try {
         const postData = await prisma.post.findUnique({
             where: { postID: postID },
-            ...postProperties
+            select: { ...postProperties }
         });
         
         return postData;
@@ -265,19 +264,17 @@ export async function updatePostHandler(req) {
 
                 await deleteCloudinaryResource(
                     `FreeFinder/PostImages/${req.params.id}/${image.cloudinaryID}`, 
-                    "file"
+                    "image"
                 );
             }
 
             const updatedPost = await tx.post.update({ 
-                where: {
-                    postID: req.params.id
-                },
+                where: { postID: req.params.id },
+                select: { ...postProperties },
                 data: {
                     about: req.body.about,
                     title: req.body.title,
-                },
-                ...postProperties
+                }
             });
             
             return updatedPost;
@@ -320,11 +317,11 @@ export async function deletePostHandler(postID, userID) {
             throw new DBError("Post not found.", 424);
         } else if (post.sellerID !== user.seller.sellerID) {
             throw new DBError("You do not have authorization to delete this post.", 423);
-        } 
+        }
         
         await prisma.$transaction(async (tx) => {
             await tx.post.delete({ where: { postID: postID } });
-            await deleteCloudinaryResource(`FreeFinder/PostImages/${postID}`, "folder");
+            await deleteCloudinaryResource(`FreeFinder/PostImages/${postID}`, "image", true);
         });
     }
     catch (err) {

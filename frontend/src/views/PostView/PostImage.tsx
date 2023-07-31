@@ -93,7 +93,7 @@ function PostImage(props: PostImageProps) {
                 <div className="w-full h-[85px] relative" onClick={props.action}>
                     <img 
                         className="rounded-[8px] object-contain cursor-pointer w-full h-full
-                        bg-[#f5f6f8] border border-light-border-gray absolute top-0 left-0"
+                        bg-very-light-gray border border-light-border-gray absolute top-0 left-0"
                         src={props.images[props.index].url} 
                         alt="" 
                         key={props.index}

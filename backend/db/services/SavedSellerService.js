@@ -3,24 +3,6 @@ import { Prisma } from '@prisma/client';
 import { DBError } from "../customErrors/DBError.js";
 import { checkUser } from "../utils/checkUser.js";
 
-async function getSavedSellerIDs(userID) {
-    try {
-        const savedSellers = await prisma.savedSeller.findMany({
-            where: { userID: userID },
-            select: { sellerID: true }
-        });
-
-        const savedSellerIDs = savedSellers.map((seller) => seller.sellerID);
-        return savedSellerIDs;
-    }
-    catch (err) {
-        throw new DBError("Something went wrong when trying to process this request.", 500);
-    }
-    finally {
-        await prisma.$disconnect();
-    }
-}
-
 export async function saveSellerHandler(sellerID, userID, username) {
     try {
         await checkUser(userID, username);
@@ -30,9 +12,6 @@ export async function saveSellerHandler(sellerID, userID, username) {
                 sellerID: sellerID
             }
         });
-
-        const savedSellerIDs = await getSavedSellerIDs(userID);
-        return savedSellerIDs;
     }
     catch (err) {
         if (err instanceof DBError) {
@@ -61,9 +40,6 @@ export async function deleteSavedSellerHandler(sellerID, userID, username) {
                 }
             }
         });
-
-        const savedSellerIDs = await getSavedSellerIDs(userID);
-        return savedSellerIDs;
     }
     catch (err) {
         if (err instanceof DBError) {

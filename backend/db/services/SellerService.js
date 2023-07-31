@@ -1,24 +1,17 @@
 import { prisma } from '../index.js';
 import { Prisma } from '@prisma/client';
 import { DBError } from "../customErrors/DBError.js";
-import { sellerProperties } from '../utils/sellerProperties.js';
 import { sortReviews } from '../utils/sortReviews.js';
 import { getPaginatedData } from '../utils/getPaginatedData.js';
 import { getAvgRatings } from '../utils/getAvgRatings.js';
 import { countReviewRating } from '../utils/countReviewRating.js';
+import { userProperties } from '../utils/userProperties.js';
 
 export async function findSeller(userID) {
     try {
         const seller = await prisma.seller.findUnique({ 
             where: { userID: userID },
-            select: {
-                ...sellerProperties.select,
-                _count: {
-                    select: { 
-                        posts: true 
-                    }
-                }
-            }
+            select: { ...userProperties.seller.select }
         });
 
         if (!seller) {
@@ -50,20 +43,13 @@ async function createSeller(id) {
         }
 
         const seller = await prisma.seller.create({
+            select: { ...userProperties.seller.select },
             data: {
                 userID: id,
                 rating: 0,
                 description: "",
                 summary: "",
                 sellerLevelID: newSeller.id
-            },
-            select: {
-                ...sellerProperties.select,
-                _count: {
-                    select: {
-                        posts: true
-                    }
-                }
             }
         });
 
@@ -98,13 +84,13 @@ export async function updateSellerDetailsHandler(req) {
 
         const updatedDetails = await prisma.seller.update({
             where: { userID: req.userData.userID },
+            select: { ...userProperties.seller.select },
             data: {
                 description: req.body.description,
                 languages: req.body.languages,
                 summary: req.body.summary,
                 skills: req.body.skills
-            },
-            ...sellerProperties,
+            }
         });
 
         return updatedDetails;

@@ -12,8 +12,8 @@ export async function getSavedPosts(req, res) {
 
 export async function savePost(req, res) {
     try {
-        const savedPostIDs = await savePostHandler(req.params.postID, req.userData.userID, req.username);
-        res.status(201).json({ savedPosts: savedPostIDs, message: "success" });
+        await savePostHandler(req.params.postID, req.userData.userID, req.username);
+        res.status(201).json({ message: "success" });
     }
     catch (err) {
         res.status(err.code).json({ message: err.message });
@@ -22,8 +22,8 @@ export async function savePost(req, res) {
 
 export async function deleteSavedPost(req, res) {
     try {
-        const savedPostIDs = await deleteSavedPostHandler(req.params.postID, req.userData.userID, req.username);
-        res.json({ savedPosts: savedPostIDs, message: "success" });
+        await deleteSavedPostHandler(req.params.postID, req.userData.userID, req.username);
+        res.json({ message: "success" });
     }
     catch (err) {
         res.status(err.code).json({ message: err.message });

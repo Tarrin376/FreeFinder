@@ -61,7 +61,7 @@ function Navbar() {
             await axios.delete<{ message: string }>(`/api/users/session`);
             userContext.setUserData(initialState.userData);
         }
-        catch (err: any) {
+        catch (_: any) {
             // Ignore error message and do nothing if session is invalid or expired.
         }
     }

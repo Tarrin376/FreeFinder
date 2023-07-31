@@ -1,44 +1,41 @@
-
 export const groupPreviewProperties = {
-    select: {
-        groupName: true,
-        groupID: true,
-        creatorID: true,
-        messages: {
-            take: 1,
-            orderBy: {
-                createdAt: 'desc'
-            },
-            select: {
-                from: {
-                    select: {
-                        username: true,
-                        profilePicURL: true,
-                        status: true
-                    }
-                },
-                files: {
-                    select: {
-                        url: true,
-                        name: true,
-                        fileType: true,
-                        fileSize: true
-                    }
-                },
-                messageText: true,
-                createdAt: true,
-                messageID: true
-            }
+    groupName: true,
+    groupID: true,
+    creatorID: true,
+    messages: {
+        take: 1,
+        orderBy: {
+            createdAt: 'desc'
         },
-        members: {
-            select: {
-                user: {
-                    select: {
-                        username: true,
-                        profilePicURL: true,
-                        status: true,
-                        userID: true
-                    }
+        select: {
+            from: {
+                select: {
+                    username: true,
+                    profilePicURL: true,
+                    status: true
+                }
+            },
+            files: {
+                select: {
+                    url: true,
+                    name: true,
+                    fileType: true,
+                    fileSize: true
+                }
+            },
+            messageText: true,
+            createdAt: true,
+            messageID: true
+        }
+    },
+    members: {
+        select: {
+            user: {
+                select: {
+                    username: true,
+                    profilePicURL: true,
+                    status: true,
+                    userID: true
                 }
             }
         }

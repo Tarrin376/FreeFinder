@@ -18,31 +18,15 @@ function ChangePassword() {
     const [validCurrentPass, setValidCurrentPass] = useState<boolean>(false);
 
     async function updatePassword(): Promise<string | undefined> {
-        const passwordMatch: boolean = await checkPassword();
-        if (!passwordMatch) {
-            return "The password you provided does not match your current password.";
-        }
-
         try {
             await axios.put<{ message: string }>(`/api/users/${userContext.userData.username}/password`, { 
-                password: newPass 
+                newPass: newPass,
+                currentPass: currentPass
             });
         }
         catch (err: any) {
             const errorMessage = getAPIErrorMessage(err as AxiosError<{ message: string }>)
             return errorMessage;
-        }
-    }
-
-    async function checkPassword(): Promise<boolean> {
-        try {
-            await axios.post<{ message: string }>(`/api/users/${userContext.userData.username}`, { password: currentPass });
-            return true;
-        }
-        catch (err: any) {
-            const errorMessage = getAPIErrorMessage(err as AxiosError<{ message: string }>);
-            setErrorMessage(errorMessage);
-            return false;
         }
     }
 

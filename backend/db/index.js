@@ -12,6 +12,8 @@ import { env } from 'process';
 import cookieParser from 'cookie-parser';
 import pkg from 'cloudinary';
 import { PrismaClient } from '@prisma/client';
+import jwt from 'jsonwebtoken';
+import { DBError } from './customErrors/DBError.js';
 
 export const prisma = new PrismaClient();
 export const cloudinary = pkg.v2;
@@ -40,8 +42,34 @@ router.use('/reviews', reviewRouter);
 router.use('/helpful-reviews', helpfulReviewRouter);
 
 const io = new SocketIOServer(server, {
-    cors: {
-        origin: ["http://localhost:3000"],
+    cors: { 
+        origin: ["http://localhost:3000"], 
+        credentials: true 
+    },
+    cookie: {
+        httpOnly: true,
+        secure: env.NODE_ENV === "production",
+        sameSite: "Lax"
+    }
+});
+
+io.use((socket, next) => {
+    const cookies = socket.handshake.headers.cookie;
+    const jwtToken = cookies && cookies.split(';').find(cookie => cookie.trim().startsWith("access_token="));
+    const accessToken = jwtToken && jwtToken.split('=')[1];
+
+    if (!accessToken) {
+        next();
+        return;
+    }
+
+    try {
+        const { iat, exp, ...data } = jwt.verify(accessToken, env.JWT_SECRET_KEY);
+        socket.userData = data;
+        next();
+    }
+    catch (_) {
+        next(new DBError("Token is invalid or has expired.", 401));
     }
 });
 
@@ -74,8 +102,18 @@ io.on("connection", (socket) => {
         }
     });
 
-    socket.on("disconnect", () => {
-        console.log("disconnected");
+    socket.on("disconnect", async () => {
+        try {
+            await prisma.user.update({
+                where: { userID: socket.userData.userID },
+                data: { 
+                    status: "OFFLINE"
+                }
+            });
+        }
+        catch (_) {
+            // Ignore failure to update user's status and try again the next time they connect.
+        }
     });
 });
 

@@ -38,25 +38,17 @@ function Post({ postInfo, index, canRemove, count, styles }: PostProps) {
 
     const navigate = useNavigate();
 
-    async function savePost(checked: boolean): Promise<void> {
+    async function savePost(saved: boolean): Promise<void> {
         try {
-            let response = null;
             if (errorMessage !== "") {
                 return;
             }
 
-            if (checked) {
-                response = await axios.delete<{ savedPosts: string[], message: string }>
-                (`/api/users/${userContext.userData.username}/saved/posts/${postInfo.postID}`);
+            if (saved) {
+                await axios.delete<{ message: string }>(`/api/users/${userContext.userData.username}/saved/posts/${postInfo.postID}`);
             } else {
-                response = await axios.post<{ savedPosts: string[], message: string }>
-                (`/api/users/${userContext.userData.username}/saved/posts/${postInfo.postID}`);
+                await axios.post<{ message: string }>(`/api/users/${userContext.userData.username}/saved/posts/${postInfo.postID}`);
             }
-
-            userContext.setUserData({
-                ...userContext.userData,
-                savedPosts: new Set(response.data.savedPosts)
-            });
         }
         catch (err: any) {
             const errorMessage = getAPIErrorMessage(err as AxiosError<{ message: string }>);
@@ -114,8 +106,7 @@ function Post({ postInfo, index, canRemove, count, styles }: PostProps) {
             <Save
                 action={canRemove?.unsave ? removePost : savePost}
                 svgSize={24}
-                checked={userContext.userData.savedPosts.has(postInfo.postID)}
-                hoverText={userContext.userData.savedPosts.has(postInfo.postID) ? "Unsave post" : "Save post"}
+                hoverText="post"
                 styles="right-3 top-3 absolute z-10"
             />}
             <Carousel

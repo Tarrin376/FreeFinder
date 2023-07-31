@@ -5,6 +5,7 @@ import StorageIcon from "../assets/storage.png";
 import { FileData } from "../types/FileData";
 import { ChatBoxState } from "./ChatBox";
 import { parseFiles } from "../utils/parseFiles";
+import { checkFileType } from "../utils/checkFileType";
 
 const MAX_FILE_UPLOADS = 3;
 const MAX_FILE_BYTES = 5000000;
@@ -19,11 +20,11 @@ function AttachFiles({ uploadedFiles, dispatch, setErrorMessage }: AttachFilePro
     const fileRef = useRef<HTMLInputElement>(null);
 
     async function handleDrop(files: FileList): Promise<void> {
-        const { failed, allFiles } = await parseFiles(files, uploadedFiles, MAX_FILE_BYTES, MAX_FILE_UPLOADS);
+        const { failed, allFiles } = await parseFiles(files, uploadedFiles, MAX_FILE_BYTES, MAX_FILE_UPLOADS, checkFileType);
 
         if (failed > 0) {
-            setErrorMessage(`Failed to upload ${failed} ${failed === 1 ? "file" : "files"}. Please ensure that each file does not 
-            exceed ${MAX_FILE_BYTES / 1000000}MB in size.`);
+            setErrorMessage(`Failed to upload ${failed} ${failed === 1 ? "file" : "files"}. 
+            Files must use a supported file format and should not exceed ${MAX_FILE_BYTES / 1000000}MB in size.`);
         } else {
             setErrorMessage("");
         }

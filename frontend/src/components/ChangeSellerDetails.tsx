@@ -1,13 +1,14 @@
 import PopUpWrapper from "../wrappers/PopUpWrapper";
 import { useState, useContext } from 'react';
 import { IUserContext, UserContext } from "../providers/UserContext";
-import ErrorMessage from "./ErrorMessage";
+import ErrorPopUp from "./ErrorPopUp";
 import axios, { AxiosError } from "axios";
-import { ISeller } from "../models/ISeller";
 import { getAPIErrorMessage } from "../utils/getAPIErrorMessage";
 import Button from "./Button";
 import SearchLanguages from "./SearchLanguages";
 import Options from "./Options";
+import { IUser } from "../models/IUser";
+import { AnimatePresence } from "framer-motion";
 
 const MAX_DESC_CHARS = 650;
 const MAX_SUMMARY_CHARS = 50;
@@ -32,7 +33,7 @@ function ChangeSellerDetails({ setSellerProfilePopUp }: ChangeSellerDetailsProps
 
     async function updateSellerDetails(): Promise<string | undefined> {
         try {
-            const resp = await axios.put<{ updatedData: ISeller, message: string }>(`/api/sellers/${userContext.userData.seller?.sellerID}`, {
+            const resp = await axios.put<{ updatedData: IUser["seller"], message: string }>(`/api/sellers/${userContext.userData.seller?.sellerID}`, {
                 description: description,
                 languages: selectedLanguages,
                 skills: skills,
@@ -41,7 +42,7 @@ function ChangeSellerDetails({ setSellerProfilePopUp }: ChangeSellerDetailsProps
 
             userContext.setUserData({ 
                 ...userContext.userData, 
-                seller: { ...resp.data.updatedData }
+                seller: resp.data.updatedData
             });
         }
         catch (err: any) {
@@ -67,12 +68,13 @@ function ChangeSellerDetails({ setSellerProfilePopUp }: ChangeSellerDetailsProps
 
     return (
         <PopUpWrapper setIsOpen={setSellerProfilePopUp} title="Seller Profile">
-            {errorMessage !== "" && 
-            <ErrorMessage 
-                message={errorMessage} 
-                title="Unable to update seller profile"
-                setErrorMessage={setErrorMessage}
-            />}
+            <AnimatePresence>
+                {errorMessage !== "" && 
+                <ErrorPopUp 
+                    errorMessage={errorMessage} 
+                    setErrorMessage={setErrorMessage}
+                />}
+            </AnimatePresence>
             <p className="mb-2">
                 Seller summary 
                 <span className="text-side-text-gray">
@@ -114,7 +116,7 @@ function ChangeSellerDetails({ setSellerProfilePopUp }: ChangeSellerDetailsProps
                 onChange={(e) => setSkill(e.target.value)}
             />
             {skill !== "" &&
-            <button className="side-btn w-fit !h-[30px] rounded-[6px] mt-4" onClick={addSkill}>
+            <button className="side-btn w-fit !h-[30px] rounded-[6px] mt-4 text-[15px]" onClick={addSkill}>
                 Add skill
             </button>}
             <Options

@@ -40,8 +40,8 @@ function ProfileMenu({ logout }: ProfileMenuProps) {
     
             userContext.setUserData(response.userData);
         } 
-        catch (err: any) {
-            // Ignore error message and do nothing
+        catch (_: any) {
+            // Ignore error message and try again the next time the user toggles their status.
         } 
         finally {
             setDisabled(false);

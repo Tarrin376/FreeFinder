@@ -12,7 +12,7 @@ function Actions({ children }: ActionsProps) {
     const [toggleActions, setToggleActions] = useState<boolean>(false);
     
     return (
-        <div className="w-[50px] h-[50px] relative">
+        <div className="w-[50px] h-[50px] relative z-10">
             <div className="w-full h-full hover:bg-hover-light-gray flex items-center justify-center rounded-full cursor-pointer" 
             onClick={() => setToggleActions((cur) => !cur)}>
                 <img src={ActionsIcon} className="w-[27px] h-[27px]" alt="" />

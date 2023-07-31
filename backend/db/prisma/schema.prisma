@@ -20,8 +20,6 @@ model User {
     profilePicURL String          @default("")
     email         String          @unique
     seller        Seller?
-    savedPosts    SavedPost[]
-    savedSellers  SavedSeller[]
     reviews       Review[]
     orders        Order[]
     foundHelpful  HelpfulReview[]
@@ -65,24 +63,14 @@ model Message {
 }
 
 model MessageFile {
-    message      Message @relation(fields: [messageID], references: [messageID], onDelete: Cascade)
-    messageID    String
-    url          String
-    name         String
-    fileType     String
-    fileSize     Int
-    cloudinaryID String  @unique()
+    message   Message @relation(fields: [messageID], references: [messageID], onDelete: Cascade)
+    messageID String
+    url       String
+    name      String
+    fileType  String
+    fileSize  Int
 
     @@id([messageID, url])
-}
-
-model SavedSeller {
-    seller   Seller @relation(fields: [sellerID], references: [sellerID], onDelete: Cascade)
-    sellerID String
-    user     User   @relation(fields: [userID], references: [userID], onDelete: Cascade)
-    userID   String
-
-    @@id([userID, sellerID])
 }
 
 model HelpfulReview {
@@ -95,20 +83,19 @@ model HelpfulReview {
 }
 
 model Seller {
-    sellerID      String        @id @default(uuid())
-    user          User          @relation(fields: [userID], references: [userID], onDelete: Cascade)
-    userID        String        @unique
+    sellerID      String      @id @default(uuid())
+    user          User        @relation(fields: [userID], references: [userID], onDelete: Cascade)
+    userID        String      @unique
     rating        Float
     orders        Order[]
     posts         Post[]
     description   String
     summary       String
-    languages     String[]      @default(["english"])
-    skills        String[]      @default([])
-    sellerLevel   SellerLevel   @relation(fields: [sellerLevelID], references: [id])
+    languages     String[]    @default(["english"])
+    skills        String[]    @default([])
+    sellerLevel   SellerLevel @relation(fields: [sellerLevelID], references: [id])
     sellerLevelID String
-    sellerXP      Int           @default(0)
-    savedSellers  SavedSeller[]
+    sellerXP      Int         @default(0)
     reviews       Review[]
 }
 
@@ -123,18 +110,8 @@ model SellerLevel {
     postLimit   Int          @default(0)
 }
 
-model SavedPost {
-    post   Post   @relation(fields: [postID], references: [postID], onDelete: Cascade)
-    postID String
-    user   User   @relation(fields: [userID], references: [userID], onDelete: Cascade)
-    userID String
-
-    @@id([userID, postID])
-}
-
 model Post {
     postID        String         @id @default(uuid())
-    savedPosts    SavedPost[]
     orders        Order[]
     postedBy      Seller         @relation(fields: [sellerID], references: [sellerID], onDelete: Cascade)
     sellerID      String

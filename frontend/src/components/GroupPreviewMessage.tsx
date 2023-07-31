@@ -59,7 +59,7 @@ function GroupPreviewMessage({ group, setAllUnreadMessages, selectedGroup, actio
                 />
                 <div className="overflow-hidden flex-grow">
                     <div className="flex justify-between items-center gap-2">
-                        <span className="text-ellipsis whitespace-nowrap overflow-hidden text-[15px]">
+                        <span className="text-ellipsis whitespace-nowrap overflow-hidden text-[15px] font-bold">
                             {group.groupName}
                         </span>
                         {lastMessage && 
@@ -77,27 +77,26 @@ function GroupPreviewMessage({ group, setAllUnreadMessages, selectedGroup, actio
                             />
                         </div> : 
                         <div className="flex justify-between items-center overflow-hidden">
-                            <p className="text-ellipsis whitespace-nowrap overflow-hidden flex-grow">
+                            <div className="flex-grow overflow-hidden">
                                 {!lastMessage ? 
-                                <span className="text-sm text-side-text-gray">
-                                    Say hello and get collaborating!
-                                </span> : 
+                                <p className="text-sm text-ellipsis whitespace-nowrap overflow-hidden">
+                                    Say hello to everyone!
+                                </p> :
                                 <Tags
                                     isOwnMessage={isOwnMessage}
                                     messageText={`${isOwnMessage ? "You" : lastMessage.from.username}: ${lastMessage.messageText}`}
                                     groupMembers={group.members}
-                                    styles="text-side-text-gray text-sm"
+                                    textStyles="text-sm"
+                                    styles="text-ellipsis whitespace-nowrap overflow-hidden"
                                 />}
-                            </p>
+                            </div>
                         </div>}
                         {unreadMessages > 0 ?
                         <div className="bg-error-text rounded-full px-2 py-[1px] flex items-center justify-center">
                             <span className="text-xs text-main-white">{unreadMessages}</span>
                         </div> : 
                         lastMessage && lastMessage.from.username === userContext.userData.username &&
-                        <MessageSent 
-                            sendingMessage={false} 
-                        />}
+                        <MessageSent sendingMessage={false} />}
                     </div>
                 </div>
             </div>

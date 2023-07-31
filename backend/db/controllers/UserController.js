@@ -12,13 +12,10 @@ import
     searchUsersHandler,
     createMessageGroupHandler,
     getMessageGroupsHandler,
-    getMessagesHandler,
-    sendMessageHandler,
     removeUserFromGroupHandler,
     deleteGroupHandler,
     leaveGroupHandler,
-    updateGroupHandler,
-    addMessageFileHandler
+    updateGroupHandler
 } 
 from '../services/UserService.js';
 import { cookieJwtSign } from '../middleware/cookieJwtSign.js';
@@ -100,16 +97,6 @@ export async function searchUsers(req, res) {
     }
 }
 
-export async function findUser(req, res) {
-    try {
-        await authenticateUserHandler(req.params.usernameOrEmail, req.body.password);
-        res.json({ message: "success" });
-    }
-    catch (err) {
-        res.status(err.code).json({ message: err.message });
-    }
-}
-
 export async function updateUser(req, res) {
     try {
         const updated = await updateUserHandler(req);
@@ -135,6 +122,7 @@ export async function deleteUser(req, res) {
 
 export async function updatePassword(req, res) {
     try {
+        await authenticateUserHandler(req.params.username, req.body.currentPass);
         await updatePasswordHandler(req);
         res.json({ message: "success" });
     }
@@ -193,26 +181,6 @@ export async function createMessageGroup(req, res) {
     }
 }
 
-export async function getMessages(req, res) {
-    try {
-        const result = await getMessagesHandler(req);
-        res.json({ ...result, message: "success" });
-    }
-    catch (err) {
-        res.status(err.code).json({ message: err.message });
-    }
-}
-
-export async function sendMessage(req, res) {
-    try {
-        const { newMessage, sockets } = await sendMessageHandler(req);
-        res.json({ newMessage: newMessage, sockets: sockets, message: "success" });
-    }
-    catch (err) {
-        res.status(err.code).json({ message: err.message });
-    }
-}
-
 export async function removeUserFromGroup(req, res) {
     try {
         await removeUserFromGroupHandler(req);
@@ -247,16 +215,6 @@ export async function updateGroup(req, res) {
     try {
         const { group, sockets } = await updateGroupHandler(req);
         res.json({ group, sockets, message: "success" });
-    }
-    catch (err) {
-        res.status(err.code).json({ message: err.message });
-    }
-}
-
-export async function addMessageFile(req, res) {
-    try {
-        await addMessageFileHandler(req);
-        res.json({ message: "success" });
     }
     catch (err) {
         res.status(err.code).json({ message: err.message });

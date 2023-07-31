@@ -7,11 +7,11 @@ import { IPackage } from '../../models/IPackage';
 import axios, { AxiosError } from "axios";
 import { getAPIErrorMessage } from "../../utils/getAPIErrorMessage";
 import { FailedUpload } from '../../types/FailedUploaded';
-import { ISeller } from '../../models/ISeller';
 import { UserContext } from '../../providers/UserContext';
 import { PackageTypes } from '../../enums/PackageTypes';
 import { Sections } from '../../enums/Sections';
 import { FileData } from '../../types/FileData';
+import { IUser } from '../../models/IUser';
 
 interface CreatePostProps {
     setPostService: React.Dispatch<React.SetStateAction<boolean>>,
@@ -130,7 +130,7 @@ function CreatePost({ setPostService, resetState }: CreatePostProps) {
         const minPrice = post.packages.reduce((acc, cur) => Math.min(cur.amount, acc), Infinity);
 
         try {
-            const resp = await axios.post<{ postID: string, seller: ISeller, message: string }>(`/api/posts`, {
+            const resp = await axios.post<{ postID: string, seller: IUser["seller"], message: string }>(`/api/posts`, {
                 startingPrice: minPrice,
                 post: post
             });

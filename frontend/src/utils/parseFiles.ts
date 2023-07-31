@@ -34,8 +34,10 @@ export async function parseFiles(files: FileList, uploadedFiles: FileData[], max
     }
     
     const allFiles: FileData[] = [...uploadedFiles, ...getUniqueArray<FileData, unknown>(uploaded, (x: FileData) => x.base64Str)];
+    const uniqueFiles: FileData[] = getUniqueArray<FileData, unknown>(allFiles, (x: FileData) => x.base64Str);
+
     return {
         failed: failed,
-        allFiles: allFiles
+        allFiles: uniqueFiles
     }
 }

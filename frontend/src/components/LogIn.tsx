@@ -34,17 +34,12 @@ function LogIn({ setLogIn, setSignUp }: LogInProps) {
 
         try {
             const resp = await axios.post<{ userData: IUser, message: string }>(`/api/users/session`, {
-                usernameOrEmail,
-                password,
+                usernameOrEmail: usernameOrEmail,
+                password: password,
                 socketID: userContext.socket ? userContext.socket.id : undefined
             });
 
-            userContext.setUserData({
-                ...resp.data.userData, 
-                savedPosts: new Set(resp.data.userData.savedPosts),
-                savedSellers: new Set(resp.data.userData.savedSellers)
-            });
-
+            userContext.setUserData({ ...resp.data.userData });
             closeLoginPopUp();
         }
         catch (err: any) {
@@ -64,8 +59,17 @@ function LogIn({ setLogIn, setSignUp }: LogInProps) {
                     setErrorMessage={setErrorMessage}
                 />}
                 <div className="flex gap-3 flex-col mb-8">
-                    <input type="text" placeholder="Your email or username" className="search-bar" onChange={(e) => setUsernameOrEmail(e.target.value)} />
-                    <input type="password" placeholder="Password" className="search-bar" onChange={(e) => setPassword(e.target.value)} />
+                    <input 
+                        type="text" 
+                        placeholder="Your email or username" 
+                        className="search-bar" onChange={(e) => setUsernameOrEmail(e.target.value)} 
+                    />
+                    <input 
+                        type="password" 
+                        placeholder="Password" 
+                        autoComplete="password" 
+                        className="search-bar" onChange={(e) => setPassword(e.target.value)} 
+                    />
                 </div>
                 <Button
                     action={logInAttempt}

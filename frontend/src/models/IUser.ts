@@ -1,4 +1,3 @@
-import { ISeller } from "./ISeller";
 import { UserStatus } from "../enums/UserStatus";
 
 export interface IUser {
@@ -8,7 +7,19 @@ export interface IUser {
     email: string,
     status: UserStatus,
     userID: string,
-    seller: ISeller | null,
-    savedPosts: Set<string>,
-    savedSellers: Set<string>
+    seller: {
+        description: string,
+        sellerID: string,
+        languages: string[],
+        skills: string[],
+        sellerXP: number,
+        summary: string,
+        sellerLevel: {
+            name: string,
+            nextLevel: {
+                xpRequired: number,
+                name: string,
+            }
+        }
+    } | null
 }

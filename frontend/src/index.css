@@ -12,7 +12,7 @@
     .search-bar {
         @apply border border-light-border-gray rounded-[8px] p-3 w-full 
         bg-main-white block placeholder-side-text-gray focus:outline-none focus:outline-1
-        focus:outline-light-gray;
+        focus:outline-light-gray flex-shrink-0;
     }
     .invalid-input {
         @apply focus:outline-2 focus:!outline-error-text focus:border-transparent border-b border-error-text bg-hover-light-gray
@@ -33,7 +33,7 @@
         @apply animate-pulse bg-very-light-gray rounded-[8px];
     }
     .main-btn {
-        @apply bg-main-blue text-main-white hover:bg-main-blue-hover w-full !h-12 loading-btn;
+        @apply bg-main-blue text-main-white hover:bg-main-blue-hover w-full !h-12 loading-btn flex-shrink-0;
     }
     .loading-btn {
         @apply btn-primary flex items-center justify-center gap-2;

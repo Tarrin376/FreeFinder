@@ -21,6 +21,7 @@ import UploadedFile from "./UploadedFile";
 import { GroupPreview } from "../types/GroupPreview";
 import TagSuggestions from "./TagSuggestions";
 import { FailedUpload } from "../types/FailedUploaded";
+import { IMessageFile } from "../models/IMessageFile";
 
 interface ChatBoxProps {
     groupID: string,
@@ -57,7 +58,7 @@ function ChatBox({ groupID, groupMembers }: ChatBoxProps) {
     const pageRef = useRef<HTMLDivElement>(null);
     const cursor = useRef<string>();
 
-    const url = `/api/users/${userContext.userData.username}/message-groups/${groupID}/all`;
+    const url = `/api/users/${userContext.userData.username}/message-groups/${groupID}/messages/all`;
     const messages = usePaginateData<{}, IMessage, PaginationResponse<IMessage>>(pageRef, cursor, url, page, setPage, {}, true);
     const usersTyping = useUsersTyping(groupID);
 
@@ -65,18 +66,24 @@ function ChatBox({ groupID, groupMembers }: ChatBoxProps) {
         return { ...cur, ...payload };
     }, initialState);
 
-    async function addMessageFiles(messageID: string): Promise<boolean> {
-        const failed = [];
+    async function addMessageFiles(messageID: string): Promise<{
+        failed: FailedUpload[],
+        succeeded: IMessageFile[]
+    }> {
+        const failed: FailedUpload[] = [];
+        const succeeded: IMessageFile[] = [];
 
         for (let i = 0; i < state.uploadedFiles.length; i++) {
             try {
-                await axios.post<{ message: string }>
-                (`/api/users/${userContext.userData.username}/message-groups/${groupID}/${messageID}`, {
+                const resp = await axios.post<{ newFile: IMessageFile, message: string }>
+                (`/api/users/${userContext.userData.username}/message-groups/${groupID}/messages/${messageID}/files`, {
                     file: state.uploadedFiles[i].base64Str,
                     name: state.uploadedFiles[i].file.name,
                     fileType: state.uploadedFiles[i].file.type,
                     fileSize: state.uploadedFiles[i].file.size
                 });
+
+                succeeded.push(resp.data.newFile);
             }
             catch (err: any) {
                 const errorMessage = getAPIErrorMessage(err as AxiosError<{ message: string }>);
@@ -88,7 +95,10 @@ function ChatBox({ groupID, groupMembers }: ChatBoxProps) {
         }
 
         dispatch({ failedUploads: failed });
-        return failed.length === 0;
+        return {
+            failed: failed,
+            succeeded: succeeded
+        }
     }
 
     async function sendMessage(e: React.FormEvent<HTMLFormElement>): Promise<void> {
@@ -122,20 +132,25 @@ function ChatBox({ groupID, groupMembers }: ChatBoxProps) {
             });
 
             const resp = await axios.post<{ newMessage: IMessage, sockets: string[], message: string }>
-            (`/api/users/${userContext.userData.username}/message-groups/${groupID}`, { 
+            (`/api/users/${userContext.userData.username}/message-groups/${groupID}/messages`, { 
                 message: message 
             });
 
-            const addedFiles = await addMessageFiles(resp.data.newMessage.messageID);
-            if (addedFiles) {
+            const files = await addMessageFiles(resp.data.newMessage.messageID);
+            if (files.failed.length === 0) {
+                const newMessage = {
+                    ...resp.data.newMessage,
+                    files: files.succeeded
+                };
+
                 for (const socket of resp.data.sockets) {
-                    userContext.socket.emit("send-message", resp.data.newMessage, socket, groupID);
+                    userContext.socket.emit("send-message", newMessage, socket, groupID);
                 }
                 
-                console.log(resp.data.newMessage);
                 dispatch({ 
                     sendingMessage: false, 
-                    newMessages: [...state.newMessages, resp.data.newMessage] 
+                    newMessages: [newMessage, ...state.newMessages],
+                    uploadedFiles: []
                 });
             }
         }
@@ -239,7 +254,7 @@ function ChatBox({ groupID, groupMembers }: ChatBoxProps) {
                     setErrorMessage={setErrorMessage} 
                 />}
             </AnimatePresence>
-            <div className="bg-transparent flex-grow overflow-y-scroll w-full flex flex-col-reverse items-end gap-4 p-4" ref={pageRef}>
+            <div className="bg-transparent flex-grow overflow-y-scroll w-full flex flex-col-reverse items-end gap-6 p-4" ref={pageRef}>
                 {[...state.newMessages, ...messages.data].map((message: IMessage, index: number) => {
                     return (
                         <Message
@@ -291,12 +306,18 @@ function ChatBox({ groupID, groupMembers }: ChatBoxProps) {
                         placeholder="Send a message" 
                         ref={searchRef}
                         onKeyDown={handleKeyDown}
-                        onFocus={() => dispatch({ toggleAttachFiles: false, toggleEmojiPicker: false })}
+                        onFocus={() => dispatch({ 
+                            toggleAttachFiles: false, 
+                            toggleEmojiPicker: false 
+                        })}
                     />
                     <div className="flex w-full justify-between items-end">
                         {state.uploadedFiles.length === 0 ? 
                         <p className="text-side-text-gray text-sm">
-                            Your uploaded files will appear here.
+                            {`View list of supported file formats `}
+                            <span className="text-main-blue text-sm underline cursor-pointer">
+                                here
+                            </span>
                         </p> : 
                         <div className="flex-grow flex flex-wrap gap-2 overflow-hidden">
                             {state.uploadedFiles.map((x: FileData, index: number) => {

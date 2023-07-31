@@ -128,11 +128,11 @@ function Chat({ group, setAllGroups, setGroupCount, setGroup }: ChatProps) {
                 <div className="flex items-center gap-4 overflow-hidden">
                     <ProfilePicAndStatus
                         profilePicURL=""
-                        size={55}
+                        size={50}
                         username={group.groupName}
                         statusStyles="before:hidden"
                     />
-                    <p className="text-[18px] text-ellipsis whitespace-nowrap overflow-hidden mb-1">
+                    <p className="text-[17px] font-bold text-ellipsis whitespace-nowrap overflow-hidden mb-1">
                         {group.groupName}
                     </p>
                 </div>
@@ -196,7 +196,7 @@ function Chat({ group, setAllGroups, setGroupCount, setGroup }: ChatProps) {
                         <Button
                             action={deleteGroup}
                             defaultText="Delete group"
-                            loadingText="Deleting group"
+                            loadingText="Deleting group (this may take a few minutes)"
                             styles="bg-transparent border-none"
                             textStyles="text-error-text whitespace-nowrap"
                             setErrorMessage={setErrorMessage}

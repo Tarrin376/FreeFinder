@@ -12,8 +12,8 @@ export async function getSavedSellers(req, res) {
 
 export async function saveSeller(req, res) {
     try {
-        const savedSellerIDs = await saveSellerHandler(req.params.sellerID, req.userData.userID, req.username);
-        res.status(201).json({ savedSellers: savedSellerIDs, message: "success" });
+        await saveSellerHandler(req.params.sellerID, req.userData.userID, req.username);
+        res.status(201).json({ message: "success" });
     }
     catch (err) {
         res.status(err.code).json({ message: err.message });
@@ -22,8 +22,8 @@ export async function saveSeller(req, res) {
 
 export async function deleteSavedSeller(req, res) {
     try {
-        const savedSellerIDs = await deleteSavedSellerHandler(req.params.sellerID, req.userData.userID, req.username);
-        res.status(200).json({ savedSellers: savedSellerIDs, message: "success" });
+        await deleteSavedSellerHandler(req.params.sellerID, req.userData.userID, req.username);
+        res.status(200).json({ message: "success" });
     }
     catch (err) {
         res.status(err.code).json({ message: err.message });

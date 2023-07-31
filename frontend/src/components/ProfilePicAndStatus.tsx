@@ -25,7 +25,7 @@ function ProfilePicAndStatus(props: ProfilePicAndStatusProps) {
         props.profileStatus === 'AWAY' ? 'before:bg-orange-400' : 'before:bg-side-text-gray'} 
         before:w-[18px] before:h-[18px] before:absolute before:top-[33px] before:left-[0px] 
         before:border-[3px] before:border-main-white before:content[''] 
-        before:rounded-full ${props.statusStyles}`}
+        before:rounded-full bg-very-light-gray rounded-full ${props.statusStyles}`}
         onClick={handleAction}>
             {props.loading ? 
             <div className={`rounded-full loading ${props.imgStyles}`} 

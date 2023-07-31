@@ -6,13 +6,11 @@ import { sortPosts } from '../utils/sortPosts.js';
 import { deleteCloudinaryResource } from '../utils/deleteCloudinaryResource.js';
 import { prisma } from '../index.js';
 import { getPostFilters } from '../utils/getPostFilters.js';
-import { sellerProperties } from '../utils/sellerProperties.js';
 import { userProperties } from '../utils/userProperties.js';
 import { getPaginatedData } from '../utils/getPaginatedData.js';
 import { getAvgRatings } from '../utils/getAvgRatings.js';
 import { groupPreviewProperties } from '../utils/groupPreviewProperties.js';
 import { uploadFile } from '../utils/uploadFile.js';
-import { v4 as uuidv4 } from 'uuid';
 
 const MAX_AMOUNT = 500;
 
@@ -24,22 +22,13 @@ export async function updateProfilePictureHandler(req) {
         if (req.body.profilePic !== "") {
             result = await uploadFile(req.body.profilePic, `FreeFinder/ProfilePictures/${req.userData.userID}`);
         } else {
-            await deleteCloudinaryResource(`FreeFinder/ProfilePictures/${req.userData.userID}`, "file");
+            await deleteCloudinaryResource(`FreeFinder/ProfilePictures/${req.userData.userID}`, "image");
         }
 
         const updated = await prisma.user.update({
             where: { userID: req.userData.userID },
             data: { profilePicURL: result.secure_url || "" },
-            select: {
-                seller: { ...sellerProperties },
-                username: true,
-                country: true,
-                profilePicURL: true,
-                email: true,
-                status: true,
-                userID: true,
-                memberDate: true
-            }
+            select: { ...userProperties }
         });
 
         return updated;
@@ -63,7 +52,7 @@ export async function updateProfilePictureHandler(req) {
 export async function updatePasswordHandler(req) {
     try {
         await checkUser(req.userData.userID, req.username);
-        const hash = await bcrypt.hash(req.body.password, 10);
+        const hash = await bcrypt.hash(req.body.newPass, 10);
 
         await prisma.user.update({
             where: { userID: req.userData.userID },
@@ -164,15 +153,8 @@ export async function authenticateUserHandler(usernameOrEmail, password) {
             throw new DBError("The password you entered is incorrect. Check that you entered it correctly.", 403)
         }
 
-        const {savedPosts, savedSellers, hash, ...filtered} = res;
-        const savedPostIDs = savedPosts.map((post) => post.postID);
-        const savedSellerIDs = savedSellers.map((seller) => seller.sellerID);
-
-        return { 
-            ...filtered, 
-            savedPosts: savedPostIDs, 
-            savedSellers: savedSellerIDs 
-        };
+        const { hash, ...filtered } = res;
+        return filtered;
     }
     catch (err) {
         if (err instanceof DBError) {
@@ -199,15 +181,7 @@ export async function updateUserHandler(req) {
             select: { ...userProperties }
         });
         
-        const { savedPosts, savedSellers, ...filtered } = updated;
-        const savedPostIDs = savedPosts.map((post) => post.postID);
-        const savedSellerIDs = savedSellers.map((seller) => seller.sellerID);
-
-        return { 
-            ...filtered, 
-            savedPosts: savedPostIDs, 
-            savedSellers: savedSellerIDs 
-        };
+        return updated;
     }
     catch (err) {
         if (err instanceof DBError) {
@@ -230,8 +204,8 @@ export async function deleteUserHandler(req) {
         await checkUser(req.userData.userID, req.username);
         await prisma.$transaction(async (tx) => {
             await tx.user.delete({ where: { userID: req.userData.userID } });
-            await deleteCloudinaryResource(`FreeFinder/ProfilePictures/${req.userData.userID}`, "file");
-            await deleteCloudinaryResource(`FreeFinder/PostImages/${req.userData.userID}`, "folder");
+            await deleteCloudinaryResource(`FreeFinder/ProfilePictures/${req.userData.userID}`, "image");
+            await deleteCloudinaryResource(`FreeFinder/PostImages/${req.userData.userID}`, "image", true);
         });
     }
     catch (err) {
@@ -253,8 +227,8 @@ export async function deleteUserHandler(req) {
 export async function getUserPostsHandler(req) {
     try {
         await checkUser(req.userData.userID, req.username);
-
         const postFilters = getPostFilters(req);
+
         const where = {
             ...postFilters,
             postedBy: {
@@ -379,10 +353,10 @@ export async function addToBalanceHandler(req) {
 
         const updated = await prisma.user.update({
             where: { userID: req.userData.userID },
+            select: { balance: true },
             data: {
                 balance: { increment: req.body.amount }
-            },
-            select: { balance: true }
+            }
         });
 
         return updated.balance;
@@ -402,12 +376,12 @@ export async function addToBalanceHandler(req) {
 export async function getMessageGroupsHandler(req) {
     try {
         await checkUser(req.userData.userID, req.username);
-        const where = {
-            userID: req.userData.userID
-        };
+        const where = { userID: req.userData.userID };
 
         const select = {
-            group: { ...groupPreviewProperties }
+            group: { 
+                select: { ...groupPreviewProperties }
+            }
         };
 
         const cursor = req.body.cursor ? { 
@@ -487,12 +461,12 @@ export async function createMessageGroupHandler(req) {
         await checkUser(req.userData.userID, req.username);
         return await prisma.$transaction(async (tx) => {
             const group = await tx.messageGroup.create({
+                select: { ...groupPreviewProperties },
                 data: {
                     groupName: req.body.groupName,
                     postID: req.body.postID,
                     creatorID: req.userData.userID
-                },
-                ...groupPreviewProperties
+                }
             });
 
             const allMembers = await addMembers(req.body.members, group.groupID, tx);
@@ -510,121 +484,6 @@ export async function createMessageGroupHandler(req) {
             throw err;
         } else if (err instanceof Prisma.PrismaClientKnownRequestError && err.code === "P2002") {
             throw new DBError("You cannot create a group for your own service.", 409);
-        } else if (err instanceof Prisma.PrismaClientValidationError) {
-            throw new DBError("Missing required fields or fields provided are invalid.", 400);
-        } else {
-            throw new DBError("Something went wrong when trying to process this request.", 500);
-        }
-    }
-    finally {
-        await prisma.$disconnect();
-    }
-}
-
-export async function getMessagesHandler(req) {
-    try {
-        await checkUser(req.userData.userID, req.username);
-        const where = {
-            groupID: req.params.groupID
-        };
-
-        const options = {
-            orderBy: {
-                createdAt: 'desc'
-            }
-        };
-
-        const select = {
-            from: {
-                select: {
-                    username: true,
-                    profilePicURL: true,
-                    status: true
-                }
-            },
-            files: {
-                select: {
-                    url: true,
-                    name: true,
-                    fileType: true,
-                    fileSize: true
-                }
-            },
-            messageText: true,
-            createdAt: true,
-            messageID: true
-        };
-
-        const result = await getPaginatedData(
-            where, 
-            select, 
-            "message", 
-            req.body.limit, 
-            { messageID: req.body.cursor }, 
-            "messageID", 
-            options
-        );
-
-        return result;
-    }
-    finally {
-        await prisma.$disconnect();
-    }
-}
-
-export async function sendMessageHandler(req) {
-    try {
-        await checkUser(req.userData.userID, req.username);
-
-        return await prisma.$transaction(async (tx) => {
-            const newMessage = await tx.message.create({
-                data: {
-                    fromID: req.userData.userID,
-                    groupID: req.params.groupID,
-                    messageText: req.body.message
-                },
-                select: {
-                    from: {
-                        select: {
-                            username: true,
-                            profilePicURL: true,
-                            status: true
-                        }
-                    },
-                    files: {
-                        select: {
-                            url: true,
-                            name: true,
-                            fileType: true,
-                            fileSize: true
-                        }
-                    },
-                    messageText: true,
-                    createdAt: true,
-                    messageID: true
-                }
-            });
-
-            const members = await tx.groupMember.findMany({
-                where: { groupID: req.params.groupID },
-                select: {
-                    user: {
-                        select: {
-                            socketID: true
-                        }
-                    }
-                }
-            });
-    
-            return {
-                newMessage: newMessage,
-                sockets: members.map((member) => member.user.socketID)
-            };
-        });
-    }
-    catch (err) {
-        if (err instanceof DBError) {
-            throw err;
         } else if (err instanceof Prisma.PrismaClientValidationError) {
             throw new DBError("Missing required fields or fields provided are invalid.", 400);
         } else {
@@ -680,8 +539,24 @@ export async function deleteGroupHandler(req) {
             throw new DBError("You are not the creator of this group.", 403);
         }
 
+        const messages = await prisma.message.findMany({
+            where: { groupID: req.params.groupID },
+            select: {
+                messageID: true,
+                files: {
+                    select: {
+                        url: true
+                    }
+                }
+            }
+        });
+
+        for (const message of messages) {
+            await deleteCloudinaryResource(`FreeFinder/MessageFiles/${message.messageID}`, "raw", true);
+        }
+
         await prisma.messageGroup.delete({
-            where: { groupID: group.groupID }
+            where: { groupID: req.params.groupID }
         });
     }
     catch (err) {
@@ -734,7 +609,7 @@ export async function updateGroupHandler(req) {
             const group = await tx.messageGroup.update({
                 where: { groupID: req.params.groupID },
                 data: { groupName: req.body.groupName },
-                ...groupPreviewProperties
+                select: { ...groupPreviewProperties }
             });
     
             if (req.body.members) {
@@ -759,45 +634,6 @@ export async function updateGroupHandler(req) {
             throw err;
         } else if (err instanceof Prisma.PrismaClientKnownRequestError && err.code === "P2025") {
             throw new DBError("Message group not found.", 404);
-        } else if (err instanceof Prisma.PrismaClientValidationError) {
-            throw new DBError("Missing required fields or fields provided are invalid.", 400);
-        } else {
-            throw new DBError("Something went wrong when trying to process this request.", 500);
-        }
-    }
-    finally {
-        await prisma.$disconnect();
-    }
-}
-
-export async function addMessageFileHandler(req) {
-    try {
-        await checkUser(req.userData.userID, req.username);
-        const message = await prisma.message.findUnique({
-            where: { messageID: req.params.messageID }
-        });
-
-        if (!message) {
-            throw new DBError("Message not found.", 404);
-        }
-
-        const uuid = uuidv4();
-        const result = await uploadFile(req.body.file, `FreeFinder/MessageFiles/${req.params.messageID}/${uuid}`, "raw");
-
-        await prisma.messageFile.create({
-            data: {
-                messageID: req.params.messageID,
-                url: result.secure_url,
-                name: req.body.name,
-                fileType: req.body.fileType,
-                fileSize: req.body.fileSize,
-                cloudinaryID: uuid
-            }
-        });
-    }
-    catch (err) {
-        if (err instanceof DBError) {
-            throw err;
         } else if (err instanceof Prisma.PrismaClientValidationError) {
             throw new DBError("Missing required fields or fields provided are invalid.", 400);
         } else {

@@ -15,11 +15,7 @@ export async function fetchUpdatedUser(data: IUser, username: string, profilePic
 
         return {
             message: resp.data.message,
-            userData: {
-                ...resp.data.userData, 
-                savedPosts: new Set(resp.data.userData.savedPosts),
-                savedSellers: new Set(resp.data.userData.savedSellers)
-            }
+            userData: { ...resp.data.userData }
         }
     }
     catch (err: any) {
@@ -32,11 +28,7 @@ async function updateProfilePic(profilePic: string | unknown, username: string) 
         const resp = await axios.put<{ userData: IUser, message: string }>(`/api/users/${username}/profile-picture`, { profilePic });
         return {
             message: resp.data.message,
-            userData: {
-                ...resp.data.userData, 
-                savedPosts: new Set(resp.data.userData.savedPosts),
-                savedSellers: new Set(resp.data.userData.savedSellers)
-            }
+            userData: { ...resp.data.userData }
         }
     }
     catch (err: any) {
