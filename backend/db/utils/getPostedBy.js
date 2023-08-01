@@ -27,7 +27,7 @@ export async function getPostedBy(id) {
         if (err instanceof Prisma.PrismaClientValidationError) {
             throw new DBError("Missing required fields or fields provided are invalid.", 400);
         } else {
-            throw new DBError("Something went wrong when trying to delete this image. Please try again.", 500);
+            throw new DBError("Something went wrong. Please try again later.", 500);
         }
     }
     finally {

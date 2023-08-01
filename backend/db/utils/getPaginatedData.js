@@ -9,12 +9,8 @@ export async function getPaginatedData(where, select, tableName, limit, cursor, 
             take: take ? take : undefined,
             skip: cursor[cursorColumn] ? 1 : undefined,
             cursor: cursor[cursorColumn] ? cursor : undefined,
-            where: {
-                ...where,
-            },
-            select: {
-                ...select
-            },
+            where: { ...where },
+            select: { ...select },
             ...options
         };
 
@@ -39,10 +35,11 @@ export async function getPaginatedData(where, select, tableName, limit, cursor, 
         };
     }
     catch (err) {
+        console.log(err);
         if (err instanceof Prisma.PrismaClientValidationError) {
             throw new DBError("Missing required fields or fields provided are invalid.", 400);
         } else {
-            throw new DBError("Something went wrong when trying to get reviews of this post. Please try again.", 500);
+            throw new DBError("Something went wrong. Please try again later.", 500);
         }
     }
 }

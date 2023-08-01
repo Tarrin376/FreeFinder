@@ -11,12 +11,11 @@ import Tags from "./Tags";
 
 interface GroupPreviewMessageProps {
     group: GroupPreview,
-    setAllUnreadMessages: React.Dispatch<React.SetStateAction<number>>,
     selectedGroup: GroupPreview | undefined,
     action: (group: GroupPreview) => void
 }
 
-function GroupPreviewMessage({ group, setAllUnreadMessages, selectedGroup, action }: GroupPreviewMessageProps) {
+function GroupPreviewMessage({ group, selectedGroup, action }: GroupPreviewMessageProps) {
     const userContext = useContext(UserContext);
     const [lastMessage, setLastMessage] = useState<IMessage>(group.lastMessage);
     const [unreadMessages, setUnreadMessages] = useState<number>(0);
@@ -33,7 +32,6 @@ function GroupPreviewMessage({ group, setAllUnreadMessages, selectedGroup, actio
     }, [group.groupID, selectedGroup?.groupID]);
 
     function openGroupChat() {
-        setAllUnreadMessages((cur) => cur - unreadMessages);
         setUnreadMessages(0);
         action(group);
     }

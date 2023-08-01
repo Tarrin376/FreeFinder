@@ -8,7 +8,7 @@ import { parseFiles } from "../utils/parseFiles";
 import { checkFileType } from "../utils/checkFileType";
 
 const MAX_FILE_UPLOADS = 3;
-const MAX_FILE_BYTES = 5000000;
+export const MAX_FILE_BYTES = 5000000;
 
 interface AttachFileProps {
     uploadedFiles: FileData[],

@@ -153,6 +153,7 @@ function PostDetails({ jobCategory, setJobCategory, setTypeOfWork, setErrorMessa
                                 whenComplete={() => ignoreUpload(upload)}
                                 loadingSvgSize={24}
                                 loadingSvgColour="#F43C3C"
+                                keepErrorMessage={true}
                             />
                         </UploadedImage>
                     )
@@ -226,6 +227,7 @@ function PostDetails({ jobCategory, setJobCategory, setTypeOfWork, setErrorMessa
                     whenComplete={() => props.setPostService(false)}
                     loadingSvgSize={24}
                     loadingSvgColour="#F43C3C"
+                    keepErrorMessage={true}
                 /> :
                 <Button
                     action={props.createPost}
@@ -237,6 +239,7 @@ function PostDetails({ jobCategory, setJobCategory, setTypeOfWork, setErrorMessa
                     setErrorMessage={setErrorMessage}
                     loadingSvgSize={24}
                     whenComplete={() => props.setCreatedPost(true)}
+                    keepErrorMessage={true}
                 />}
             </div>
         </PopUpWrapper>

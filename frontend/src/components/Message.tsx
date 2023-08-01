@@ -39,7 +39,7 @@ function Message({ message, isLastMessage, sendingMessage, groupMembers }: Messa
                     profileStatus={message.from.status}
                     size={42}
                     username={message.from.username}
-                    statusStyles={`before:top-[27px] before:w-[16px] before:h-[16px]
+                    statusStyles={`before:top-[30px] before:w-[15px] before:h-[15px]
                     ${!isOwnMessage ? "before:left-[28px]" : ""}`}
                 />
             </div>

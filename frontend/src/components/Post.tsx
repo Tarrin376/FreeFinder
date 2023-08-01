@@ -108,6 +108,7 @@ function Post({ postInfo, index, canRemove, count, styles }: PostProps) {
                 svgSize={24}
                 hoverText="post"
                 styles="right-3 top-3 absolute z-10"
+                isSaved={canRemove?.unsave}
             />}
             <Carousel
                 images={postInfo.images}
@@ -132,7 +133,11 @@ function Post({ postInfo, index, canRemove, count, styles }: PostProps) {
                                 {postInfo.postedBy.user.username}
                             </p>
                             <div className="flex items-center justify-end gap-[5px]">
-                                <StarSvg size={15} styles="mb-[2px]" backgroundColour="#292929" />
+                                <StarSvg 
+                                    size={15} 
+                                    styles="mb-[2px]" 
+                                    backgroundColour="#292929" 
+                                />
                                 <p className="text-[15px]">{postInfo.rating ? postInfo.rating.toFixed(1) : 0}</p>
                             </div>
                         </div>

@@ -19,8 +19,8 @@ function PopUpWrapper({ children, setIsOpen, title, styles } : PopUpWrapperProps
             overflow-y-scroll max-h-[95%] scrollbar-hide max-w-[520px] w-[95%] m-auto flex flex-col ${styles}`}
             initial={{ opacity: 0, scale: 0.80 }} animate={{ opacity: 1, scale: 1 }} 
             exit={{ opacity: 0 }} transition={{ type: "spring", duration: 0.4 }}>
-                <div className="flex items-center w-full justify-between gap-[14px] mb-7">
-                    <h1 className="text-[23px]">{title}</h1>
+                <div className="flex items-center w-full justify-between gap-[14px] mb-5">
+                    <h1 className="text-[22px]">{title}</h1>
                     <CloseSvg
                         size={27}
                         colour="#9c9c9c"

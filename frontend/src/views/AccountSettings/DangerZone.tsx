@@ -48,6 +48,7 @@ function DangerZone({ setSettingsPopUp }: { setSettingsPopUp: React.Dispatch<Rea
                 whenComplete={resetUserState}
                 loadingSvgSize={24}
                 loadingSvgColour="#F43C3C"
+                keepErrorMessage={true}
             />
         </>
     );

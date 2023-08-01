@@ -12,14 +12,14 @@ interface AddPeopleProps {
     groupMembers?: GroupPreview["members"],
     addedUsers: FoundUsers,
     setAddedUsers: React.Dispatch<React.SetStateAction<FoundUsers>>,
-    setErrorMessage: React.Dispatch<React.SetStateAction<string>>,
 }
 
 const limit = 2;
 
-function AddPeople({ groupMembers, addedUsers, setAddedUsers, setErrorMessage }: AddPeopleProps) {
+function AddPeople({ groupMembers, addedUsers, setAddedUsers }: AddPeopleProps) {
     const [userSearch, setUserSearch] = useState<string>("");
     const [loading, setLoading] = useState<boolean>(false);
+    const [errorMessage, setErrorMessage] = useState<string>("");
     const foundUsers = useFetchUsers(userSearch, limit, setErrorMessage, setLoading);
     const userContext = useContext(UserContext);
 
@@ -69,6 +69,14 @@ function AddPeople({ groupMembers, addedUsers, setAddedUsers, setErrorMessage }:
             {userSearch.trim() !== "" &&
             <div className="border-b border-x border-light-border-gray rounded-b-[8px] 
             overflow-y-scroll p-4 bg-main-white flex flex-col gap-3">
+                {errorMessage ? 
+                <p className="text-center text-error-text">
+                    {errorMessage}
+                </p> :
+                foundUsers.length === 0 && !loading &&
+                <p className="text-center text-side-text-gray">
+                    No results found
+                </p>}
                 {!loading ? foundUsers.filter((user: FoundUsers[number]) => user.username !== userContext.userData.username)
                 .map((user: FoundUsers[number], index: number) => {
                     const added = addedUsers.find((x) => x.username === user.username) !== undefined;

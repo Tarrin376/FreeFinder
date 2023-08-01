@@ -80,6 +80,7 @@ function LogIn({ setLogIn, setSignUp }: LogInProps) {
                     setErrorMessage={setErrorMessage}
                     loadingSvgSize={28}
                     type="submit"
+                    keepErrorMessage={true}
                 />
             </form>
             <p className="mt-6 text-side-text-gray text-[15px]">Dont yet have an account? 

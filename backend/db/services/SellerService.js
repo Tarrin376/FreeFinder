@@ -11,7 +11,14 @@ export async function findSeller(userID) {
     try {
         const seller = await prisma.seller.findUnique({ 
             where: { userID: userID },
-            select: { ...userProperties.seller.select }
+            select: { 
+                ...userProperties.seller.select,
+                _count: {
+                    select: {
+                        posts: true
+                    }
+                }
+            }
         });
 
         if (!seller) {
@@ -27,7 +34,7 @@ export async function findSeller(userID) {
         } else if (err instanceof Prisma.PrismaClientValidationError) {
             throw new DBError("Missing required fields or fields provided are invalid.", 400);
         } else {
-            throw new DBError("Something went wrong when trying to process this request.", 500);
+            throw new DBError("Something went wrong. Please try again later.", 500);
         }
     }
     finally {
@@ -43,7 +50,14 @@ async function createSeller(id) {
         }
 
         const seller = await prisma.seller.create({
-            select: { ...userProperties.seller.select },
+            select: { 
+                ...userProperties.seller.select,
+                _count: {
+                    select: {
+                        posts: true
+                    }
+                }
+            },
             data: {
                 userID: id,
                 rating: 0,
@@ -63,7 +77,7 @@ async function createSeller(id) {
         } else if (err instanceof Prisma.PrismaClientKnownRequestError && err.code === 'P2002') {
             throw new DBError("You are already a seller.", 409);
         } else {
-            throw new DBError("Something went wrong when trying to process this request.", 500);
+            throw new DBError("Something went wrong. Please try again later.", 500);
         }
     }
     finally {
@@ -103,7 +117,7 @@ export async function updateSellerDetailsHandler(req) {
         } else if (err instanceof Prisma.PrismaClientKnownRequestError && err.code === "P2025") {
             throw new DBError("Seller not found.", 404);
         } else {
-            throw new DBError("Something went wrong when trying to process this request.", 500);
+            throw new DBError("Something went wrong. Please try again later.", 500);
         }
     }
     finally {
@@ -113,7 +127,7 @@ export async function updateSellerDetailsHandler(req) {
 
 export async function getSellerDetailsHandler(sellerID) {
     try {
-        const sellerDetails = await prisma.seller.findMany({
+        const sellerDetails = await prisma.seller.findUnique({
             where: {
                 sellerID: sellerID
             },
@@ -179,18 +193,18 @@ export async function getSellerDetailsHandler(sellerID) {
                 }
             }
         });
-        
-        if (sellerDetails.length === 1) {
-            return sellerDetails[0];
-        } else {
+
+        if (!sellerDetails) {
             throw new DBError("Seller not found.", 404);
+        } else {
+            return sellerDetails;
         }
     }
     catch (err) {
         if (err instanceof DBError) {
             throw err;
         } else {
-            throw new DBError("Something went wrong when trying to process this request.", 500);
+            throw new DBError("Something went wrong. Please try again later.", 500);
         }
     }
     finally {
@@ -207,7 +221,7 @@ export async function getSellersHandler(search, limit, cursor) {
         if (err instanceof Prisma.PrismaClientValidationError) {
             throw new DBError("Missing required fields or fields provided are invalid.", 400);
         } else {
-            throw new DBError("Something went wrong when trying to process this request.", 500);
+            throw new DBError("Something went wrong. Please try again later.", 500);
         }
     }
     finally {
@@ -216,70 +230,41 @@ export async function getSellersHandler(search, limit, cursor) {
 }
 
 async function querySellers(search, limit, cursor) {
-    const query = {
-        take: limit ? limit : undefined,
-        skip: cursor ? 1 : undefined,
-        cursor: cursor ? { sellerID: cursor } : undefined,
-        where: {
-            user: {
-                username: search ? {
-                    contains: search,
-                    mode: 'insensitive'
-                } : undefined
+    const where = {
+        user: {
+            username: search ? {
+                contains: search,
+                mode: 'insensitive'
+            } : undefined
+        }
+    };
+
+    const select = {
+        user: {
+            select: {
+                username: true,
+                profilePicURL: true,
+                country: true,
+                status: true,
             }
         },
-        select: {
-            user: {
-                select: {
-                    username: true,
-                    profilePicURL: true,
-                    country: true,
-                    status: true,
-                }
-            },
-            sellerLevel: {
-                select: {
-                    name: true
-                }
-            },
-            summary: true,
-            sellerID: true
+        sellerLevel: {
+            select: {
+                name: true
+            }
         },
+        summary: true,
+        sellerID: true
+    };
+
+    const options = {
         orderBy: {
             sellerID: 'asc'
         }
     };
 
-    const [sellers, count] = await prisma.$transaction([
-        prisma.seller.findMany(query),
-        prisma.seller.count({
-            where: {
-                user: {
-                    username: search ? {
-                        contains: search,
-                        mode: 'insensitive'
-                    } : undefined
-                }
-            }
-        })
-    ]);
-
-    if (sellers.length === 0) {
-        return { 
-            next: [],
-            cursor: undefined, 
-            last: true,
-            count: count
-        };
-    }
-    
-    const minNum = Math.min(isNaN(limit) ? sellers.length - 1 : limit - 1, sellers.length - 1);
-    return {
-        next: sellers, 
-        cursor: sellers[minNum].sellerID, 
-        last: isNaN(limit) || minNum < limit - 1,
-        count: count
-    };
+    const result = await getPaginatedData(where, select, "seller", limit, { sellerID: cursor }, "sellerID", options);
+    return result;
 }
 
 export async function getReviewsHandler(req) {
@@ -353,7 +338,7 @@ export async function getReviewsHandler(req) {
         } else if (err instanceof Prisma.PrismaClientValidationError) {
             throw new DBError("Missing required fields or fields provided are invalid.", 400);
         } else {
-            throw new DBError("Something went wrong when trying to process this request.", 500);
+            throw new DBError("Something went wrong. Please try again later.", 500);
         }
     }
 }

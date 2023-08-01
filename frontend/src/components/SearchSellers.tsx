@@ -97,19 +97,17 @@ function SearchSellers({ styles, toggleSidebar }: SearchSellersProps) {
                     </div>
                     {searchQuery && !hide &&
                     <div className="border-b border-x border-light-border-gray rounded-b-[8px] 
-                    bg-main-white absolute w-full z-30 p-2 overflow-hidden transition-all duration-200 ease-linear">
+                    bg-main-white absolute w-full z-30 p-4 overflow-hidden transition-all duration-200 ease-linear">
                         {errorMessage ? 
-                        <p className="text-center text-error-text">{errorMessage}</p> :
+                        <p className="text-center text-error-text">
+                            {errorMessage}
+                        </p> :
                         sellers.length === 0 && !loading &&
                         <p className="text-center text-side-text-gray">
                             No results found
                         </p>}
                         {!errorMessage &&
-                        <div className="flex flex-col">
-                            {(loading || sellers.length > 0) &&
-                            <p className="ml-2 mt-2 mb-1 text-side-text-gray">
-                                {`${loading ? "Loading results for" : `${count} ${count === 1 ? "result" : "results"} found for`} '${searchQuery}'`}
-                            </p>}
+                        <div className="flex flex-col gap-4">
                             {!loading ? sellers.map((seller: SellerData, index: number) => {
                                 return (
                                     <Seller

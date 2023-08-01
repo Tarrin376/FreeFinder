@@ -12,11 +12,10 @@ import GroupPreviewMessage from "./GroupPreviewMessage";
 import Chat from "./Chat";
 
 interface MessagesProps {
-    setMessagesPopUp: React.Dispatch<React.SetStateAction<boolean>>,
-    setAllUnreadMessages: React.Dispatch<React.SetStateAction<number>>
+    setMessagesPopUp: React.Dispatch<React.SetStateAction<boolean>>
 }
 
-function Messages({ setMessagesPopUp, setAllUnreadMessages }: MessagesProps) {
+function Messages({ setMessagesPopUp }: MessagesProps) {
     const userContext = useContext(UserContext);
     const [createGroupPopUp, setCreateGroupPopUp] = useState<boolean>(false);
     const [page, setPage] = useState<{ value: number }>({ value: 1 });
@@ -92,12 +91,11 @@ function Messages({ setMessagesPopUp, setAllUnreadMessages }: MessagesProps) {
                             alt="" 
                         />
                     </div>
-                    <div className="overflow-y-scroll scrollbar-hide flex-grow w-full flex flex-col gap-2" ref={pageRef}>
+                    <div className="overflow-y-scroll scrollbar-hide flex-grow w-full flex flex-col gap-3" ref={pageRef}>
                         {allGroups.map((msgGroup: GroupPreview, index: number) => {
                             return (
                                 <GroupPreviewMessage 
                                     group={msgGroup}
-                                    setAllUnreadMessages={setAllUnreadMessages}
                                     selectedGroup={group}
                                     action={updateMessageGroup}
                                     key={index}

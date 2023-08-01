@@ -9,10 +9,12 @@ import { AnimatePresence } from "framer-motion";
 
 interface SaveSellerProps {
     svgSize: number,
-    sellerID: string
+    sellerID: string,
+    isSaved?: boolean,
+    action?: (saved: boolean) => Promise<void>
 }
 
-function SaveSeller({ svgSize, sellerID }: SaveSellerProps) {
+function SaveSeller({ svgSize, sellerID, isSaved, action }: SaveSellerProps) {
     const userContext = useContext(UserContext);
     const [errorMessage, setErrorMessage] = useState<string>("");
 
@@ -40,9 +42,10 @@ function SaveSeller({ svgSize, sellerID }: SaveSellerProps) {
                 />}
             </AnimatePresence>
             <Save
-                action={saveSeller}
+                action={action ?? saveSeller}
                 svgSize={svgSize}
-                hoverText={"seller"}
+                hoverText="seller"
+                isSaved={isSaved}
             />
         </>
     )

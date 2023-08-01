@@ -110,6 +110,7 @@ function ChangePassword() {
                     textStyles="text-main-white"
                     setErrorMessage={setErrorMessage}
                     loadingSvgSize={28}
+                    keepErrorMessage={true}
                 />
             </form>
         </>

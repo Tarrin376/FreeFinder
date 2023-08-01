@@ -199,6 +199,7 @@ function SignUp({ setLogIn, setSignUp, setAccountCreated }: SignUpProps) {
                     textStyles="text-main-white"
                     setErrorMessage={setErrorMessage}
                     loadingSvgSize={28}
+                    keepErrorMessage={true}
                 />
             </form>
             <p className="mt-6 text-side-text-gray text-[15px]">Already have an account? 

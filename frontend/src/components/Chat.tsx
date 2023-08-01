@@ -196,7 +196,7 @@ function Chat({ group, setAllGroups, setGroupCount, setGroup }: ChatProps) {
                         <Button
                             action={deleteGroup}
                             defaultText="Delete group"
-                            loadingText="Deleting group (this may take a few minutes)"
+                            loadingText="Deleting group (this may take a while)"
                             styles="bg-transparent border-none"
                             textStyles="text-error-text whitespace-nowrap"
                             setErrorMessage={setErrorMessage}

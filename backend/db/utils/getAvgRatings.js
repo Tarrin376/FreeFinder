@@ -20,6 +20,6 @@ export async function getAvgRatings(postID, sellerID) {
         return averages;
     }
     catch (err) {
-        throw new DBError("Something went wrong when trying to get the average rating of this post. Please try again.", 500);
+        throw new DBError("Something went wrong. Please try again later.", 500);
     }
 }

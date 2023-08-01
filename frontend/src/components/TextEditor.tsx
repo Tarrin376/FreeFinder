@@ -54,16 +54,18 @@ function TextEditor({ value, setValue, limit }: TextEditorProps) {
     }
 
     return (
-        <ReactQuill
-            theme="snow"
-            value={value}
-            onChange={updateValue}
-            onKeyDown={checkCharacterCount}
-            formats={formats}
-            modules={modules}
-            style={{ backgroundColor: "#fefefe", borderRadius: "8px" }}
-            ref={reactQuillRef}
-        />
+        <div className="search-bar p-0 overflow-hidden">
+            <ReactQuill
+                theme="snow"
+                value={value}
+                onChange={updateValue}
+                onKeyDown={checkCharacterCount}
+                formats={formats}
+                modules={modules}
+                style={{ backgroundColor: "#fefefe", outline: "1px solid gray", borderRadius: "8px" }}
+                ref={reactQuillRef}
+            />
+        </div>
     )
 }
 

@@ -27,6 +27,8 @@ model User {
     sentMessages  Message[]
     messageGroups GroupMember[]
     createdGroups MessageGroup[]
+    savedPosts    SavedPost[]
+    savedSellers  SavedSeller[]
     socketID      String?
 }
 
@@ -83,20 +85,21 @@ model HelpfulReview {
 }
 
 model Seller {
-    sellerID      String      @id @default(uuid())
-    user          User        @relation(fields: [userID], references: [userID], onDelete: Cascade)
-    userID        String      @unique
+    sellerID      String        @id @default(uuid())
+    user          User          @relation(fields: [userID], references: [userID], onDelete: Cascade)
+    userID        String        @unique
     rating        Float
     orders        Order[]
     posts         Post[]
     description   String
     summary       String
-    languages     String[]    @default(["english"])
-    skills        String[]    @default([])
-    sellerLevel   SellerLevel @relation(fields: [sellerLevelID], references: [id])
+    languages     String[]      @default(["english"])
+    skills        String[]      @default([])
+    sellerLevel   SellerLevel   @relation(fields: [sellerLevelID], references: [id])
     sellerLevelID String
-    sellerXP      Int         @default(0)
+    sellerXP      Int           @default(0)
     reviews       Review[]
+    savedSellers  SavedSeller[]
 }
 
 model SellerLevel {
@@ -125,6 +128,7 @@ model Post {
     workType      WorkType       @relation(fields: [workTypeID], references: [id], onDelete: Cascade)
     workTypeID    String
     messageGroups MessageGroup[]
+    savedPosts    SavedPost[]
 }
 
 model JobCategory {
@@ -195,6 +199,24 @@ model Order {
     createdAt   DateTime    @default(now())
     orderAmount Decimal     @db.Money
     status      OrderStatus
+}
+
+model SavedSeller {
+    seller   Seller @relation(fields: [sellerID], references: [sellerID], onDelete: Cascade)
+    sellerID String
+    user     User   @relation(fields: [userID], references: [userID], onDelete: Cascade)
+    userID   String
+
+    @@id([userID, sellerID])
+}
+
+model SavedPost {
+    post   Post   @relation(fields: [postID], references: [postID], onDelete: Cascade)
+    postID String
+    user   User   @relation(fields: [userID], references: [userID], onDelete: Cascade)
+    userID String
+
+    @@id([userID, postID])
 }
 
 enum UserStatus {

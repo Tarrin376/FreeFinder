@@ -5,11 +5,12 @@ interface SaveProps {
     svgSize: number,
     hoverText: string,
     styles?: string,
+    isSaved?: boolean
 }
 
-function Save({ action, svgSize, styles, hoverText }: SaveProps) {
+function Save({ action, svgSize, styles, hoverText, isSaved }: SaveProps) {
     const [loading, setLoading] = useState<boolean>(false);
-    const [saved, setSaved] = useState<boolean>(false);
+    const [saved, setSaved] = useState<boolean>(isSaved ?? false);
 
     async function handleClick(): Promise<void> {
         if (!loading) {

@@ -8,7 +8,7 @@ export async function getMessagesHandler(req) {
     try {
         await checkUser(req.userData.userID, req.username);
         const where = {
-            groupID: req.params.groupID
+            groupID: req.groupID
         };
 
         const options = {
@@ -58,52 +58,35 @@ export async function getMessagesHandler(req) {
 export async function sendMessageHandler(req) {
     try {
         await checkUser(req.userData.userID, req.username);
-
-        return await prisma.$transaction(async (tx) => {
-            const newMessage = await tx.message.create({
-                data: {
-                    fromID: req.userData.userID,
-                    groupID: req.groupID,
-                    messageText: req.body.message
-                },
-                select: {
-                    from: {
-                        select: {
-                            username: true,
-                            profilePicURL: true,
-                            status: true
-                        }
-                    },
-                    files: {
-                        select: {
-                            url: true,
-                            name: true,
-                            fileType: true,
-                            fileSize: true
-                        }
-                    },
-                    messageText: true,
-                    createdAt: true,
-                    messageID: true
-                }
-            });
-
-            const members = await tx.groupMember.findMany({
-                where: { groupID: req.groupID },
-                select: {
-                    user: {
-                        select: {
-                            socketID: true
-                        }
+        const newMessage = await prisma.message.create({
+            data: {
+                fromID: req.userData.userID,
+                groupID: req.groupID,
+                messageText: req.body.message
+            },
+            select: {
+                from: {
+                    select: {
+                        username: true,
+                        profilePicURL: true,
+                        status: true
                     }
-                }
-            });
-    
-            return {
-                newMessage: newMessage,
-                sockets: members.map((member) => member.user.socketID)
-            };
+                },
+                files: {
+                    select: {
+                        url: true,
+                        name: true,
+                        fileType: true,
+                        fileSize: true
+                    }
+                },
+                messageText: true,
+                createdAt: true,
+                messageID: true
+            }
         });
+
+        return newMessage;
     }
     catch (err) {
         if (err instanceof DBError) {
@@ -111,7 +94,7 @@ export async function sendMessageHandler(req) {
         } else if (err instanceof Prisma.PrismaClientValidationError) {
             throw new DBError("Missing required fields or fields provided are invalid.", 400);
         } else {
-            throw new DBError("Something went wrong when trying to process this request.", 500);
+            throw new DBError("Something went wrong. Please try again later.", 500);
         }
     }
     finally {

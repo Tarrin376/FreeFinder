@@ -50,7 +50,7 @@ function Sellers({ search, url, setSellersPopUp, savedSellers, option }: Sellers
                     setErrorMessage={sellers.setErrorMessage}
                 />}
             </AnimatePresence>
-            <div ref={pageRef} className="overflow-y-scroll pr-[8px] max-h-[640px]">
+            <div ref={pageRef} className="overflow-y-scroll pr-[9px] max-h-[640px] flex flex-col gap-4">
                 {sellers.data.map((seller: SellerData, index: number) => {
                     return (
                         <Seller
@@ -76,8 +76,7 @@ function Sellers({ search, url, setSellersPopUp, savedSellers, option }: Sellers
                         />
                     )
                 })}
-                {sellers.loading && 
-                new Array(limit).fill(0).map((_, index: number) => {
+                {sellers.loading && new Array(limit).fill(0).map((_, index: number) => {
                     return (
                         <SellerSkeleton 
                             imgStyles="w-[62px] h-[62px]"

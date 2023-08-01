@@ -96,7 +96,7 @@ function PostView() {
                     return base64Str;
                 }
                 catch (_: any) {
-                    setErrorMessage("Something went wrong. Please try again.");
+                    setErrorMessage("Something went wrong. Please try again later.");
                 }
             } else {
                 setErrorMessage(`Image format is unsupported or image size is over ${MAX_FILE_BYTES / 1000000}MB.`);

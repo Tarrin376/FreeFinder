@@ -40,7 +40,7 @@ function Seller(props: SellerProps) {
     const [hide, setHide] = useState<boolean>(false);
     const windowSize = useWindowSize();
 
-    async function removeSavedSeller(): Promise<string | undefined> {
+    async function removeSavedSeller(saved: boolean): Promise<void> {
         if (!props.canRemove || props.canRemove.deletingSeller) {
             return;
         }
@@ -49,13 +49,14 @@ function Seller(props: SellerProps) {
             props.canRemove.setDeletingSeller(true);
             await axios.delete<{ message: string }>(`/api/users/${userContext.userData.username}/saved/sellers/${props.sellerID}`);
             props.canRemove.count.current -= 1;
-            props.canRemove.setDeletingSeller(false);
             setHide(true);
         }
         catch (err: any) {
             const errorMessage = getAPIErrorMessage(err as AxiosError<{ message: string }>);
+            setErrorMessage(errorMessage);
+        }
+        finally {
             props.canRemove.setDeletingSeller(false);
-            return errorMessage;
         }
     }
     
@@ -64,47 +65,52 @@ function Seller(props: SellerProps) {
     }
 
     return (
-        <div className="flex items-center justify-between gap-[8px]">
-            <div className="flex items-center gap-3 cursor-pointer hover:bg-[#f7f7f7] rounded-[6px]
-            transition-all ease-out duration-100 p-2 flex-grow overflow-hidden" onClick={props.navigateToProfile}>
-                {windowSize > 400 &&
-                <div className="relative">
-                    <ProfilePicAndStatus
-                        profilePicURL={props.profilePicURL}
-                        profileStatus={props.status}
-                        statusStyles={props.statusStyles}
-                        imgStyles={props.imgStyles}
-                        size={props.profilePicSize}
-                        username={props.username}
-                    />
-                </div>}
-                <div className="flex-grow overflow-hidden">
-                    <div className="flex items-center gap-2">
-                        <HighlightedSubstring
-                            word={props.username}
-                            substring={props.searchQuery}
-                            foundAt={props.username.toLowerCase().indexOf(props.searchQuery.toLowerCase())}
-                            styles="hover:!px-0"
+        <div className="flex items-start justify-between gap-[8px]">
+            <div className="flex justify-between items-start w-full pr-9">
+                <div className="flex items-center gap-3 rounded-[6px] transition-all ease-out duration-100 flex-grow overflow-hidden">
+                    {windowSize > 400 &&
+                    <div className="relative">
+                        <ProfilePicAndStatus
+                            profilePicURL={props.profilePicURL}
+                            profileStatus={props.status}
+                            statusStyles={props.statusStyles}
+                            imgStyles={`${props.imgStyles} cursor-pointer`}
+                            size={props.profilePicSize}
+                            username={props.username}
+                            action={props.navigateToProfile}
                         />
-                        <p className="text-[14px] seller-level"
-                        style={sellerLevelTextStyles[props.sellerLevel]}>
-                            {props.sellerLevel}
+                    </div>}
+                    <div className="flex-grow overflow-hidden">
+                        <div className="flex items-center gap-2">
+                            <HighlightedSubstring
+                                word={props.username}
+                                substring={props.searchQuery}
+                                foundAt={props.username.toLowerCase().indexOf(props.searchQuery.toLowerCase())}
+                                styles="hover:!px-0"
+                                action={props.navigateToProfile}
+                            />
+                            <p className="text-[14px] seller-level"
+                            style={sellerLevelTextStyles[props.sellerLevel]}>
+                                {props.sellerLevel}
+                            </p>
+                        </div>
+                        <p className="text-[14px] text-side-text-gray 
+                        whitespace-nowrap text-ellipsis overflow-hidden mt-[2px]">
+                            {props.summary}
+                        </p>
+                        <p className="text-[14px] text-side-text-gray">
+                            {props.country}
                         </p>
                     </div>
-                    <p className="text-[14px] text-side-text-gray 
-                    whitespace-nowrap text-ellipsis overflow-hidden mt-[2px]">
-                        {props.summary}
-                    </p>
-                    <p className="text-[14px] text-side-text-gray">
-                        {props.country}
-                    </p>
                 </div>
+                {props.option && 
+                <SaveSeller 
+                    svgSize={24}
+                    sellerID={props.sellerID}
+                    isSaved={props.option === SellerOptions.REMOVE}
+                    action={removeSavedSeller}
+                />}
             </div>
-            {props.option === SellerOptions.SAVE && 
-            <SaveSeller 
-                svgSize={24}
-                sellerID={props.sellerID}
-            />}
             <AnimatePresence>
                 {errorMessage !== "" &&
                 <ErrorPopUp
@@ -112,18 +118,6 @@ function Seller(props: SellerProps) {
                     setErrorMessage={setErrorMessage}
                 />}
             </AnimatePresence>
-            {props.option === SellerOptions.REMOVE && 
-            <Button
-                action={removeSavedSeller}
-                completedText="Removed"
-                defaultText="Remove"
-                loadingText="Removing"
-                styles="red-btn h-[30px] w-fit rounded-[6px]"
-                textStyles="text-error-text"
-                setErrorMessage={setErrorMessage}
-                loadingSvgSize={24}
-                loadingSvgColour="#F43C3C"
-            />}
         </div>
     )
 }

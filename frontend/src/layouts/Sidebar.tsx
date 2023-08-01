@@ -38,7 +38,7 @@ function Sidebar(props: SidebarProps) {
                             colour="#9c9c9c"
                             action={props.toggleSidebar}
                         />
-                        <h1 className="text-main-blue text-[23px]">
+                        <h1 className="text-main-blue text-[22px]">
                             FreeFinder
                         </h1>
                     </div>
@@ -71,12 +71,12 @@ function Sidebar(props: SidebarProps) {
                                 </div>
                                 {props.savedDropdown &&
                                 <div className="mt-3">
-                                    <p className="p-3 cursor-pointer hover:bg-hover-light-gray rounded-[6px] 
+                                    <p className="p-3 cursor-pointer hover:bg-hover-light-gray rounded-[8px] 
                                     transition-all ease-out duration-100" 
                                     onClick={() => navigateToPage(`/${userContext.userData.username}/saved/posts`)}>
                                         posts
                                     </p>
-                                    <p className="p-3 cursor-pointer hover:bg-hover-light-gray rounded-[6px] 
+                                    <p className="p-3 cursor-pointer hover:bg-hover-light-gray rounded-[8px] 
                                     transition-all ease-out duration-100" onClick={() => {
                                         props.toggleSidebar();
                                         props.setSavedSellersPopUp(true);

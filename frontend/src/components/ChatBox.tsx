@@ -54,6 +54,8 @@ function ChatBox({ groupID, groupMembers }: ChatBoxProps) {
     const userContext = useContext(UserContext);
     const [errorMessage, setErrorMessage] = useState<string>("");
     const [page, setPage] = useState<{ value: number }>({ value: 1 });
+    const [toggleSupportedFormats, setToggleSupportedFormats] = useState<boolean>(false);
+    
     const searchRef = useRef<HTMLInputElement>(null);
     const pageRef = useRef<HTMLDivElement>(null);
     const cursor = useRef<string>();
@@ -131,7 +133,7 @@ function ChatBox({ groupID, groupMembers }: ChatBoxProps) {
                 messageID: ""
             });
 
-            const resp = await axios.post<{ newMessage: IMessage, sockets: string[], message: string }>
+            const resp = await axios.post<{ newMessage: IMessage, message: string }>
             (`/api/users/${userContext.userData.username}/message-groups/${groupID}/messages`, { 
                 message: message 
             });
@@ -143,14 +145,12 @@ function ChatBox({ groupID, groupMembers }: ChatBoxProps) {
                     files: files.succeeded
                 };
 
-                for (const socket of resp.data.sockets) {
-                    userContext.socket.emit("send-message", newMessage, socket, groupID);
-                }
-                
-                dispatch({ 
-                    sendingMessage: false, 
-                    newMessages: [newMessage, ...state.newMessages],
-                    uploadedFiles: []
+                userContext.socket.emit("send-message", newMessage, groupID, () => {
+                    dispatch({ 
+                        sendingMessage: false, 
+                        newMessages: [newMessage, ...state.newMessages],
+                        uploadedFiles: []
+                    });
                 });
             }
         }
@@ -232,7 +232,7 @@ function ChatBox({ groupID, groupMembers }: ChatBoxProps) {
         if (id === groupID && message.from.username !== userContext.userData.username) {
             addMessage(message);
         }
-    }, [groupID, userContext.userData.username, addMessage]);
+    }, [groupID, addMessage, userContext.userData.username]);
 
     useEffect(() => {
         scrollToBottom();
@@ -314,7 +314,7 @@ function ChatBox({ groupID, groupMembers }: ChatBoxProps) {
                     <div className="flex w-full justify-between items-end">
                         {state.uploadedFiles.length === 0 ? 
                         <p className="text-side-text-gray text-sm">
-                            {`View list of supported file formats `}
+                            {`View supported file formats `}
                             <span className="text-main-blue text-sm underline cursor-pointer">
                                 here
                             </span>
@@ -335,21 +335,23 @@ function ChatBox({ groupID, groupMembers }: ChatBoxProps) {
                             <button onClick={toggleEmojiPopUp} type="button">
                                 <img 
                                     src={EmojiIcon} 
-                                    className="[23px] h-[23px] ml-3 cursor-pointer" 
+                                    className="[25px] h-[25px] ml-3 cursor-pointer" 
                                     alt="" 
                                 />
                             </button>
                             <button onClick={toggleAttachFilesPopUp} type="button">
                                 <img 
                                     src={AttachIcon} 
-                                    className="[23px] h-[23px] ml-3 mr-5 cursor-pointer" 
+                                    className="[25px] h-[25px] ml-3 mr-5 cursor-pointer" 
                                     alt="" 
                                 />
                             </button>
-                            <button 
-                                className="w-[23px] h-[23px] cursor-pointer" 
-                                type="submit"
-                                style={{ backgroundImage: `url('${SendIcon}')`, backgroundSize: "contain" }}>
+                            <button type="submit">
+                                <img 
+                                    src={SendIcon} 
+                                    className="[28px] h-[28px] cursor-pointer" 
+                                    alt="" 
+                                />
                             </button>
                         </div>
                     </div>

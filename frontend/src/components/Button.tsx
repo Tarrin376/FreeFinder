@@ -13,7 +13,8 @@ interface ButtonProps {
     completedText?: string,
     whenComplete?: () => void,
     loadingSvgColour?: string,
-    type?: "button" | "submit" | "reset"
+    type?: "button" | "submit" | "reset",
+    keepErrorMessage?: boolean
 }
 
 function Button(props: ButtonProps) {
@@ -32,9 +33,12 @@ function Button(props: ButtonProps) {
             }
         } else {
             props.setErrorMessage(error);
-            setTimeout(() => {
-                props.setErrorMessage("");
-            }, 7000);
+
+            if (!props.keepErrorMessage) {
+                setTimeout(() => {
+                    props.setErrorMessage("");
+                }, 7000);
+            }
 
             setBtnText(props.defaultText);
         }

@@ -60,7 +60,7 @@ function UserProvider({ children }: { children?: React.ReactNode }) {
             });
         }
         catch (_: any) {
-            setErrorMessage("Something went wrong. Please try again.");
+            setErrorMessage("Something went wrong. Please try again later.");
         }
 
         return () => {

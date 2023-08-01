@@ -95,6 +95,7 @@ function CreateGroup({ setCreateGroupPopUp, seller, initialServiceID }: CreateGr
                 setErrorMessage={setErrorMessage}
                 loadingSvgSize={20}
                 loadingSvgColour="#4E73F8"
+                keepErrorMessage={true}
             />}
             <p className="mb-2 mt-4">Group Name</p>
             <input 
@@ -108,7 +109,6 @@ function CreateGroup({ setCreateGroupPopUp, seller, initialServiceID }: CreateGr
             <AddPeople
                 addedUsers={addedUsers}
                 setAddedUsers={setAddedUsers}
-                setErrorMessage={setErrorMessage}
             />
             <Button
                 action={createNewGroup}
@@ -120,6 +120,7 @@ function CreateGroup({ setCreateGroupPopUp, seller, initialServiceID }: CreateGr
                 setErrorMessage={setErrorMessage}
                 loadingSvgSize={28}
                 whenComplete={() => setCreateGroupPopUp(false)}
+                keepErrorMessage={true}
             >
                 <img src={AddIcon} alt="" className="w-[16px] h-[16px]" />
             </Button>

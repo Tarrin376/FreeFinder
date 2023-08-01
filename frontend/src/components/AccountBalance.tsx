@@ -80,6 +80,7 @@ function AccountBalance({ setBalancePopUp }: AccountBalanceProps) {
                 setErrorMessage={setErrorMessage}
                 loadingSvgSize={28}
                 whenComplete={() => setAmount(0)}
+                keepErrorMessage={true}
             />
         </PopUpWrapper>
     )

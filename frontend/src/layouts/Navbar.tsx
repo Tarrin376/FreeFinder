@@ -109,7 +109,7 @@ function Navbar() {
                         action={toggleSidebar}
                     />}
                     {windowSize > 400 && 
-                    <li className="text-main-blue text-[23px] cursor-pointer mr-8" 
+                    <li className="text-main-blue text-[22px] cursor-pointer mr-8" 
                     onClick={() => resetSelectedElement(`/`)}>
                         FreeFinder
                     </li>}

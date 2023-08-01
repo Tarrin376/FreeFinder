@@ -46,7 +46,7 @@ function ChangeProfilePicture({ updatePhoto, loading, dispatch }: ChangeProfileP
                 updatePhoto(base64Str);
             }
             catch (err: any) {
-                setErrorMessage("Something went wrong. Please try again.");
+                setErrorMessage("Something went wrong. Please try again later.");
                 dispatch({ loading: false });
             }
         } else {

@@ -99,12 +99,13 @@ export async function createPostHandler(postData, startingPrice, userID) {
         });
     }
     catch (err) {
+        console.log(err);
         if (err instanceof DBError) {
             throw err;
         } else if (err instanceof Prisma.PrismaClientValidationError) {
             throw new DBError("Missing required fields or fields provided are invalid.", 400);
         } else {
-            throw new DBError("Something went wrong when trying to process this request.", 500);
+            throw new DBError("Something went wrong. Please try again later.", 500);
         }
     }
     finally {
@@ -143,7 +144,7 @@ export async function deleteImageHandler(req) {
         } else if (err instanceof Prisma.PrismaClientValidationError) {
             throw new DBError("Missing required fields or fields provided are invalid.", 400);
         } else {
-            throw new DBError("Something went wrong when trying to process this request.", 500);
+            throw new DBError("Something went wrong. Please try again later.", 500);
         }
     }
     finally {
@@ -184,7 +185,7 @@ export async function addImageHandler(req) {
         } else if (err instanceof Prisma.PrismaClientValidationError) {
             throw new DBError("Missing required fields or fields provided are invalid.", 400);
         } else {
-            throw new DBError("Something went wrong when trying to process this request.", 500);
+            throw new DBError("Something went wrong. Please try again later.", 500);
         }
     }
     finally {
@@ -205,7 +206,7 @@ export async function getPostHandler(postID) {
         if (err instanceof Prisma.PrismaClientValidationError) {
             throw new DBError("Missing required fields or fields provided are invalid.", 400);
         } else {
-            throw new DBError("Something went wrong when trying to process this request.", 500);
+            throw new DBError("Something went wrong. Please try again later.", 500);
         }
     }
     finally {
@@ -286,7 +287,7 @@ export async function updatePostHandler(req) {
         } else if (err instanceof Prisma.PrismaClientValidationError) {
             throw new DBError("Missing required fields or fields provided are invalid.", 400);
         } else {
-            throw new DBError("Something went wrong when trying to process this request.", 500);
+            throw new DBError("Something went wrong. Please try again later.", 500);
         }
     }
     finally {
@@ -332,7 +333,7 @@ export async function deletePostHandler(postID, userID) {
         } else if (err instanceof Prisma.PrismaClientKnownRequestError && err.code === "P2225") {
             throw new DBError("Post not found.", 424);
         } else {
-            throw new DBError("Something went wrong when trying to process this request.", 500);
+            throw new DBError("Something went wrong. Please try again later.", 500);
         }
     }
     finally {
@@ -448,7 +449,7 @@ export async function getSellerSummaryHandler(postID) {
         } else if (err instanceof Prisma.PrismaClientValidationError) {
             throw new DBError("Missing required fields or fields provided are invalid.", 400);
         } else {
-            throw new DBError("Something went wrong when trying to process this request.", 500);
+            throw new DBError("Something went wrong. Please try again later.", 500);
         }
     }
 }

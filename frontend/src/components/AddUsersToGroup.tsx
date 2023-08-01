@@ -54,7 +54,6 @@ function AddUsersToGroup({ groupID, groupMembers, setGroupMembers, setToggleAddU
                 groupMembers={groupMembers}
                 addedUsers={addedUsers}
                 setAddedUsers={setAddedUsers}
-                setErrorMessage={setErrorMessage}
             />
             <Button
                 action={addUsersToGroup}
@@ -66,6 +65,7 @@ function AddUsersToGroup({ groupID, groupMembers, setGroupMembers, setToggleAddU
                 setErrorMessage={setErrorMessage}
                 loadingSvgSize={28}
                 whenComplete={() => setToggleAddUsersPopUp(false)}
+                keepErrorMessage={true}
             >
                 <img src={AddIcon} alt="" className="w-[16px] h-[16px]" />
             </Button>

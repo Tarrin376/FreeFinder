@@ -41,7 +41,7 @@ export async function updateProfilePictureHandler(req) {
         } else if (err instanceof Prisma.PrismaClientKnownRequestError && err.code === 413) {
             throw new DBError("Error updating profile picture: File size exceeds limit.", 413);
         } else {
-            throw new DBError("Something went wrong when trying to process this request.", 500);
+            throw new DBError("Something went wrong. Please try again later.", 500);
         }
     }
     finally {
@@ -67,7 +67,7 @@ export async function updatePasswordHandler(req) {
         } else if (err instanceof Prisma.PrismaClientKnownRequestError && err.code === 'P2025') {
             throw new DBError("User not found.", 404);
         } else {
-            throw new DBError("Something went wrong when trying to process this request.", 500)
+            throw new DBError("Something went wrong. Please try again later.", 500)
         }
     }
     finally {
@@ -93,7 +93,7 @@ export async function registerUserHandler(userData) {
         } else if (err instanceof Prisma.PrismaClientKnownRequestError && err.code === 'P2002') {
             throw new DBError("This username or email address is already taken.", 409)
         } else {
-            throw new DBError("Something went wrong when trying to process this request.", 500)
+            throw new DBError("Something went wrong. Please try again later.", 500)
         }
     }
     finally {
@@ -122,7 +122,7 @@ export async function searchUsersHandler(search, take) {
         return users;
     }
     catch (err) {
-        throw new DBError("Something went wrong when trying to process this request.", 500);
+        throw new DBError("Something went wrong. Please try again later.", 500);
     }
     finally {
         await prisma.$disconnect();
@@ -162,7 +162,7 @@ export async function authenticateUserHandler(usernameOrEmail, password) {
         } else if (err instanceof Prisma.PrismaClientValidationError) {
             throw new DBError("Missing required fields or fields provided are invalid.", 400);
         } else {
-            throw new DBError("Something went wrong when trying to process this request.", 500);
+            throw new DBError("Something went wrong. Please try again later.", 500);
         }
     }
     finally {
@@ -191,7 +191,7 @@ export async function updateUserHandler(req) {
         } if (err instanceof Prisma.PrismaClientKnownRequestError && err.code === 'P2002') {
             throw new DBError("There already exists a user with this username or email address.", 409);
         } else {
-            throw new DBError("Something went wrong when trying to process this request.", 500);
+            throw new DBError("Something went wrong. Please try again later.", 500);
         }
     }
     finally {
@@ -216,7 +216,7 @@ export async function deleteUserHandler(req) {
         } else if (err instanceof Prisma.PrismaClientKnownRequestError && err.code === "P2025") {
             throw new DBError("User not found.", 404);
         } else {
-            throw new DBError("Something went wrong when trying to process this request.", 500);
+            throw new DBError("Something went wrong. Please try again later.", 500);
         }
     }
     finally {
@@ -309,7 +309,7 @@ export async function getUserPostsHandler(req) {
         } else if (err instanceof Prisma.PrismaClientValidationError) {
             throw new DBError("Missing required fields or fields provided are invalid.", 400);
         } else {
-            throw new DBError("Something went wrong when trying to process this request.", 500);
+            throw new DBError("Something went wrong. Please try again later.", 500);
         }
     }
     finally {
@@ -331,7 +331,7 @@ export async function getBalanceHandler(req) {
         if (err instanceof DBError) {
             throw err;
         } else {
-            throw new DBError("Something went wrong when trying to process this request.", 500);
+            throw new DBError("Something went wrong. Please try again later.", 500);
         }
     }
     finally {
@@ -365,7 +365,7 @@ export async function addToBalanceHandler(req) {
         if (err instanceof DBError) {
             throw err;
         } else {
-            throw new DBError("Something went wrong when trying to process this request.", 500);
+            throw new DBError("Something went wrong. Please try again later.", 500);
         }
     }
     finally {
@@ -487,7 +487,7 @@ export async function createMessageGroupHandler(req) {
         } else if (err instanceof Prisma.PrismaClientValidationError) {
             throw new DBError("Missing required fields or fields provided are invalid.", 400);
         } else {
-            throw new DBError("Something went wrong when trying to process this request.", 500);
+            throw new DBError("Something went wrong. Please try again later.", 500);
         }
     }
     finally {
@@ -515,7 +515,7 @@ export async function removeUserFromGroupHandler(req) {
         } else if (err instanceof Prisma.PrismaClientValidationError) {
             throw new DBError("Missing required fields or fields provided are invalid.", 400);
         } else {
-            throw new DBError("Something went wrong when trying to process this request.", 500);
+            throw new DBError("Something went wrong. Please try again later.", 500);
         }
     }
     finally {
@@ -565,7 +565,7 @@ export async function deleteGroupHandler(req) {
         } else if (err instanceof Prisma.PrismaClientValidationError) {
             throw new DBError("Missing required fields or fields provided are invalid.", 400);
         } else {
-            throw new DBError("Something went wrong when trying to process this request.", 500);
+            throw new DBError("Something went wrong. Please try again later.", 500);
         }
     }
     finally {
@@ -593,7 +593,7 @@ export async function leaveGroupHandler(req) {
         } else if (err instanceof Prisma.PrismaClientValidationError) {
             throw new DBError("Missing required fields or fields provided are invalid.", 400);
         } else {
-            throw new DBError("Something went wrong when trying to process this request.", 500);
+            throw new DBError("Something went wrong. Please try again later.", 500);
         }
     }
     finally {
@@ -637,7 +637,7 @@ export async function updateGroupHandler(req) {
         } else if (err instanceof Prisma.PrismaClientValidationError) {
             throw new DBError("Missing required fields or fields provided are invalid.", 400);
         } else {
-            throw new DBError("Something went wrong when trying to process this request.", 500);
+            throw new DBError("Something went wrong. Please try again later.", 500);
         }
     }
     finally {

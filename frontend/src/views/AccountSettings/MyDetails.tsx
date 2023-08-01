@@ -93,6 +93,7 @@ function MyDetails() {
                     textStyles="text-main-white"
                     setErrorMessage={setErrorMessage}
                     loadingSvgSize={28}
+                    keepErrorMessage={true}
                 />
             </div>
         </>
