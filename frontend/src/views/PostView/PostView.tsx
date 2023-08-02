@@ -241,7 +241,10 @@ function PostView() {
                                         {state.postData.postedBy.user.username}
                                     </p>
                                     <div className="flex items-center gap-[5px]">
-                                        <StarSvg size={15} backgroundColour="#292929" />
+                                        <StarSvg 
+                                            size={15} 
+                                            backgroundColour="#18193F" 
+                                        />
                                         <p className="text-[15px] mt-[1px]">
                                             {state.postData.postedBy.rating}
                                         </p>

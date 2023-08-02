@@ -22,6 +22,9 @@ import { GroupPreview } from "../types/GroupPreview";
 import TagSuggestions from "./TagSuggestions";
 import { FailedUpload } from "../types/FailedUploaded";
 import { IMessageFile } from "../models/IMessageFile";
+import SupportedFileFormats from "./SupportedFileFormats";
+import { MatchedMembers } from "../types/MatchedMembers";
+import { useArrowNavigation } from "../hooks/useArrowNavigation";
 
 interface ChatBoxProps {
     groupID: string,
@@ -30,43 +33,51 @@ interface ChatBoxProps {
 
 export type ChatBoxState = {
     sendingMessage: boolean,
-    newMessages: IMessage[],
-    uploadedFiles: FileData[],
-    failedUploads: FailedUpload[]
     toggleEmojiPicker: boolean,
     toggleAttachFiles: boolean,
-    showTagSuggestions: boolean,
-    tag: string
+    toggleTagSuggestions: boolean,
+    tag: string,
+    newMessages: IMessage[],
+    uploadedFiles: FileData[],
+    failedUploads: FailedUpload[],
+    matchedMembers: MatchedMembers
 }
 
 const initialState: ChatBoxState = {
     sendingMessage: false,
+    toggleEmojiPicker: false,
+    toggleAttachFiles: false,
+    toggleTagSuggestions: false,
+    tag: "",
     newMessages: [],
     failedUploads: [],
     uploadedFiles: [],
-    toggleEmojiPicker: false,
-    toggleAttachFiles: false,
-    showTagSuggestions: false,
-    tag: ""
+    matchedMembers: [],
 }
+
+export const tagSuggestionHeight = 273;
 
 function ChatBox({ groupID, groupMembers }: ChatBoxProps) {
     const userContext = useContext(UserContext);
     const [errorMessage, setErrorMessage] = useState<string>("");
     const [page, setPage] = useState<{ value: number }>({ value: 1 });
+
     const [toggleSupportedFormats, setToggleSupportedFormats] = useState<boolean>(false);
     
-    const searchRef = useRef<HTMLInputElement>(null);
+    const inputRef = useRef<HTMLInputElement>(null);
     const pageRef = useRef<HTMLDivElement>(null);
+    const suggestionsRef = useRef<HTMLDivElement>(null);
     const cursor = useRef<string>();
-
-    const url = `/api/users/${userContext.userData.username}/message-groups/${groupID}/messages/all`;
-    const messages = usePaginateData<{}, IMessage, PaginationResponse<IMessage>>(pageRef, cursor, url, page, setPage, {}, true);
-    const usersTyping = useUsersTyping(groupID);
 
     const [state, dispatch] = useReducer((cur: ChatBoxState, payload: Partial<ChatBoxState>) => {
         return { ...cur, ...payload };
     }, initialState);
+
+    const url = `/api/users/${userContext.userData.username}/message-groups/${groupID}/messages/all`;
+
+    const messages = usePaginateData<{}, IMessage, PaginationResponse<IMessage>>(pageRef, cursor, url, page, setPage, {}, true);
+    const selectedIndex = useArrowNavigation<MatchedMembers[number]>(suggestionsRef, inputRef, state.matchedMembers, 53, tagSuggestionHeight);
+    const usersTyping = useUsersTyping(groupID);
 
     async function addMessageFiles(messageID: string): Promise<{
         failed: FailedUpload[],
@@ -105,14 +116,15 @@ function ChatBox({ groupID, groupMembers }: ChatBoxProps) {
 
     async function sendMessage(e: React.FormEvent<HTMLFormElement>): Promise<void> {
         e.preventDefault();
-        if (!searchRef.current || state.sendingMessage || !userContext.socket || searchRef.current.value === "") {
+        if (!inputRef.current || state.sendingMessage || !userContext.socket || 
+            (inputRef.current.value === "" && state.uploadedFiles.length === 0)) {
             return;
         }
 
         try {
-            const message = searchRef.current.value;
+            const message = inputRef.current.value;
             dispatch({ sendingMessage: true });
-            searchRef.current.value = "";
+            inputRef.current.value = "";
             
             addMessage({
                 from: {
@@ -165,21 +177,33 @@ function ChatBox({ groupID, groupMembers }: ChatBoxProps) {
     }, [state.newMessages]);
 
     function handleKeyDown(e: React.KeyboardEvent<HTMLInputElement>): void {
-        userContext.socket?.emit("typing-message", userContext.userData.username, groupID);
-
-        if (e.key === "@") {
-            dispatch({ showTagSuggestions: true });
-            return;
-        } else if (e.key === " ") {
-            dispatch({ showTagSuggestions: false, tag: "" });
-            return;
-        } else if (e.key === "Backspace" && searchRef.current?.value !== "" 
-            && searchRef.current?.value[searchRef.current.value.length - 1] === "@") {
-            dispatch({ showTagSuggestions: false });
+        if ((e.key === "Enter" && !state.toggleTagSuggestions) || e.key === "ArrowLeft" 
+            || e.key === "ArrowRight" || !inputRef.current) {
+            dispatch({ toggleTagSuggestions: false });
             return;
         }
 
-        if (state.showTagSuggestions) {
+        if (e.key.length > 1 && e.key !== "Backspace") {
+            e.preventDefault();
+            return;
+        }
+        
+        const pos = inputRef.current.selectionStart || 0;
+        userContext.socket?.emit("typing-message", userContext.userData.username, groupID);
+
+        if (e.key === "@" && (inputRef.current.value === "" || inputRef.current.value[pos - 1] === " ")) {
+            dispatch({ toggleTagSuggestions: true });
+            return;
+        } else if (e.key === " ") {
+            dispatch({ toggleTagSuggestions: false, tag: "" });
+            return;
+        } else if (e.key === "Backspace" && inputRef.current.value !== "" && inputRef.current.value[pos - 1] === "@"
+            && (inputRef.current.value.length === 1 || inputRef.current.value[pos - 2] !== "@")) {
+            dispatch({ toggleTagSuggestions: false });
+            return;
+        }
+
+        if (state.toggleTagSuggestions) {
             if (e.key === "Backspace") {
                 dispatch({ tag: state.tag.substring(0, state.tag.length - 1) });
             } else {
@@ -189,9 +213,10 @@ function ChatBox({ groupID, groupMembers }: ChatBoxProps) {
     }
 
     function addEmoji(emoji: string): void {
-        if (searchRef.current) {
-            searchRef.current.value += emoji;
-            searchRef.current.focus();
+        if (inputRef.current) {
+            const pos = inputRef.current.selectionStart || 0;
+            inputRef.current.value = inputRef.current.value.substring(0, pos) + emoji + inputRef.current.value.substring(pos);
+            inputRef.current.focus();
             dispatch({ toggleEmojiPicker: false });
         }
     }
@@ -205,7 +230,7 @@ function ChatBox({ groupID, groupMembers }: ChatBoxProps) {
         dispatch({
             toggleEmojiPicker: true,
             toggleAttachFiles: false,
-            showTagSuggestions: false
+            toggleTagSuggestions: false
         });
     }
 
@@ -218,13 +243,13 @@ function ChatBox({ groupID, groupMembers }: ChatBoxProps) {
         dispatch({
             toggleAttachFiles: true,
             toggleEmojiPicker: false,
-            showTagSuggestions: false
+            toggleTagSuggestions: false
         });
     }
 
     const scrollToBottom = useCallback(() => {
-        if (searchRef.current) {
-            searchRef.current.scrollTop = searchRef.current.scrollHeight;
+        if (inputRef.current) {
+            inputRef.current.scrollTop = inputRef.current.scrollHeight;
         }
     }, []);
 
@@ -248,6 +273,7 @@ function ChatBox({ groupID, groupMembers }: ChatBoxProps) {
     return (
         <>
             <AnimatePresence>
+                {toggleSupportedFormats && <SupportedFileFormats setToggleSupportedFormats={setToggleSupportedFormats} />}
                 {errorMessage !== "" &&
                 <ErrorPopUp 
                     errorMessage={errorMessage} 
@@ -287,12 +313,15 @@ function ChatBox({ groupID, groupMembers }: ChatBoxProps) {
                         dispatch={dispatch}
                         setErrorMessage={setErrorMessage}
                     />}
-                    {state.showTagSuggestions &&
+                    {state.toggleTagSuggestions &&
                     <TagSuggestions 
                         groupMembers={groupMembers} 
                         tag={state.tag}
-                        searchRef={searchRef}
+                        inputRef={inputRef}
                         dispatch={dispatch}
+                        matchedMembers={state.matchedMembers}
+                        selectedTagIndex={selectedIndex}
+                        suggestionsRef={suggestionsRef}
                     />}
                 </AnimatePresence>
                 <div className="mb-2">
@@ -304,18 +333,20 @@ function ChatBox({ groupID, groupMembers }: ChatBoxProps) {
                     <input 
                         className="focus:outline-none placeholder-search-text bg-transparent mb-3 w-full"
                         placeholder="Send a message" 
-                        ref={searchRef}
+                        ref={inputRef}
                         onKeyDown={handleKeyDown}
                         onFocus={() => dispatch({ 
                             toggleAttachFiles: false, 
-                            toggleEmojiPicker: false 
+                            toggleEmojiPicker: false,
+                            toggleTagSuggestions: inputRef.current?.value !== undefined && 
+                            inputRef.current.value[inputRef.current.value.length - 1] === "@"
                         })}
                     />
                     <div className="flex w-full justify-between items-end">
                         {state.uploadedFiles.length === 0 ? 
                         <p className="text-side-text-gray text-sm">
                             {`View supported file formats `}
-                            <span className="text-main-blue text-sm underline cursor-pointer">
+                            <span className="text-main-blue text-sm underline cursor-pointer" onClick={() => setToggleSupportedFormats(true)}>
                                 here
                             </span>
                         </p> : 
@@ -332,24 +363,24 @@ function ChatBox({ groupID, groupMembers }: ChatBoxProps) {
                             })}
                         </div>}
                         <div className="flex items-center flex-shrink-0">
-                            <button onClick={toggleEmojiPopUp} type="button">
+                            <button onClick={toggleEmojiPopUp} type="button" className="ml-3">
                                 <img 
                                     src={EmojiIcon} 
-                                    className="[25px] h-[25px] ml-3 cursor-pointer" 
+                                    className="[25px] h-[25px] cursor-pointer" 
                                     alt="" 
                                 />
                             </button>
-                            <button onClick={toggleAttachFilesPopUp} type="button">
+                            <button onClick={toggleAttachFilesPopUp} type="button" className="ml-3 mr-5">
                                 <img 
                                     src={AttachIcon} 
-                                    className="[25px] h-[25px] ml-3 mr-5 cursor-pointer" 
+                                    className="[25px] h-[25px] cursor-pointer" 
                                     alt="" 
                                 />
                             </button>
-                            <button type="submit">
+                            <button type="submit" className="w-fit h-fit">
                                 <img 
                                     src={SendIcon} 
-                                    className="[28px] h-[28px] cursor-pointer" 
+                                    className="[25px] h-[25px] cursor-pointer" 
                                     alt="" 
                                 />
                             </button>

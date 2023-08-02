@@ -1,5 +1,5 @@
 import ProfilePicAndStatus from "./ProfilePicAndStatus";
-import { useState, useContext, useEffect, useCallback } from 'react';
+import { useState, useContext } from 'react';
 import { fetchUpdatedUser } from "../utils/fetchUpdatedUser";
 import OutsideClickHandler from "react-outside-click-handler";
 import NotificationIcon from "../assets/notification.png";
@@ -84,7 +84,7 @@ function ProfileMenu({ logout }: ProfileMenuProps) {
                 <img src={ChatIcon} className="w-[34px] h-[34px] cursor-pointer" alt="chat" onClick={viewMessages} />
                 <div className="relative cursor-pointer">
                     <img src={NotificationIcon} className="w-[34px] h-[34px]" alt="notifications" />
-                    <span className="absolute top-0 right-[-2px] flex h-[12px] w-[12px]">
+                    <span className="absolute top-[2px] right-[3px] flex h-[12px] w-[12px]">
                         <span className="animate-ping absolute inline-flex h-full w-full rounded-full bg-error-text opacity-75"></span>
                         <span className="relative inline-flex rounded-full h-hull w-full bg-error-text"></span>
                     </span>

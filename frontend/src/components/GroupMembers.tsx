@@ -11,14 +11,13 @@ interface GroupMembersProps {
     creatorID: string,
     removeUser: (userID: string) => Promise<string | undefined>,
     setErrorMessage: React.Dispatch<React.SetStateAction<string>>,
-    groupID: string
 }
 
-function GroupMembers({ groupMembers, creatorID, removeUser, setErrorMessage, groupID }: GroupMembersProps) {
+function GroupMembers({ groupMembers, creatorID, removeUser, setErrorMessage }: GroupMembersProps) {
     const userContext = useContext(UserContext);
 
     return (
-        <motion.div className="dropdown flex flex-col gap-3 w-[380px] z-20"
+        <motion.div className="dropdown flex flex-col gap-3 w-[300px] z-20 max-h-[300px] overflow-y-scroll pr-[8px]"
         initial={{ opacity: 0 }} animate={{ opacity: 1 }} exit={{ opacity: 0 }} 
         transition={{ duration: 0.1 }}>
             {groupMembers.map((member: GroupPreview["members"][number], index: number) => {
@@ -32,7 +31,7 @@ function GroupMembers({ groupMembers, creatorID, removeUser, setErrorMessage, gr
                                 username={member.user.username}
                                 size={41}
                             />
-                            <p className="overflow-hidden text-ellipsis whitespace-nowrap">
+                            <p className="overflow-hidden text-ellipsis whitespace-nowrap text-[15px]">
                                 {member.user.username}
                             </p>
                             {member.user.userID === creatorID && 

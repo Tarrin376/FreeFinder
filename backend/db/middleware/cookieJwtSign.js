@@ -7,7 +7,7 @@ export function cookieJwtSign(req, res) {
     return res.cookie("access_token", access_token, {
         httpOnly: true,
         secure: env.NODE_ENV === "production",
-        sameSite: "Lax"
+        sameSite: "Strict"
     }).json({ 
         userData: req.userData, 
         message: "success" 

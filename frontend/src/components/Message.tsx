@@ -6,11 +6,10 @@ import { getTime } from "../utils/getTime";
 import MessageSent from "./MessageSent";
 import { GroupPreview } from "../types/GroupPreview";
 import Tags from "./Tags";
-import File from "./File";
 import { IMessageFile } from "../models/IMessageFile";
-import LoadingSvg from "./LoadingSvg";
 import ErrorPopUp from "./ErrorPopUp";
 import { AnimatePresence } from "framer-motion";
+import MessageFile from "./MessageFile";
 
 interface MessageProps {
     message: IMessage,
@@ -37,10 +36,10 @@ function Message({ message, isLastMessage, sendingMessage, groupMembers }: Messa
                 <ProfilePicAndStatus
                     profilePicURL={message.from.profilePicURL}
                     profileStatus={message.from.status}
-                    size={42}
+                    size={45}
                     username={message.from.username}
-                    statusStyles={`before:top-[30px] before:w-[15px] before:h-[15px]
-                    ${!isOwnMessage ? "before:left-[28px]" : ""}`}
+                    statusStyles={`before:top-[31px] before:w-[17px] before:h-[17px]
+                    ${!isOwnMessage ? "before:left-[30px]" : ""}`}
                 />
             </div>
             <div className={`flex flex-col gap-[5px] ${isOwnMessage ? "items-end" : "items-start"}`}>
@@ -62,18 +61,11 @@ function Message({ message, isLastMessage, sendingMessage, groupMembers }: Messa
                         <div className="mt-2 pb-[5px] flex flex-col gap-2 overflow-hidden">
                             {message.files.map((file: IMessageFile, index: number) => {
                                 return (
-                                    <File fileType={file.fileType} fileName={file.name} key={index}>
-                                        {!sendingMessage || !isLastMessage ?
-                                        <a href={file.url} download={file.name} target="_blank" rel="noreferrer">
-                                            <button className="main-btn w-fit !h-[30px] rounded-[6px] text-sm">
-                                                Download
-                                            </button>
-                                        </a> : 
-                                        <LoadingSvg 
-                                            size={20} 
-                                            colour="#4E73F8" 
-                                        />}
-                                    </File>
+                                    <MessageFile 
+                                        file={file}
+                                        sending={sendingMessage && isLastMessage}
+                                        key={index}
+                                    />
                                 )
                             })}
                         </div>}

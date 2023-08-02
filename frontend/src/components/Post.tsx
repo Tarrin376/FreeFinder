@@ -136,7 +136,7 @@ function Post({ postInfo, index, canRemove, count, styles }: PostProps) {
                                 <StarSvg 
                                     size={15} 
                                     styles="mb-[2px]" 
-                                    backgroundColour="#292929" 
+                                    backgroundColour="#18193F" 
                                 />
                                 <p className="text-[15px]">{postInfo.rating ? postInfo.rating.toFixed(1) : 0}</p>
                             </div>

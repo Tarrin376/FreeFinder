@@ -3,9 +3,12 @@ import axios, { AxiosError } from "axios";
 import { FoundUsers } from "../types/FoundUsers";
 import { getAPIErrorMessage } from "../utils/getAPIErrorMessage";
 
-export function useFetchUsers(userSearch: string, limit: number, setErrorMessage: React.Dispatch<React.SetStateAction<string>>,
-    setLoading: React.Dispatch<React.SetStateAction<boolean>>): FoundUsers {
+export function useFetchUsers(userSearch: string, limit: number, setErrorMessage: React.Dispatch<React.SetStateAction<string>>): {
+    users: FoundUsers,
+    loading: boolean
+} {
     const [users, setUsers] = useState<FoundUsers>([]);
+    const [loading, setLoading] = useState<boolean>(false);
 
     useEffect(() => {
         (async (): Promise<void> => {
@@ -30,5 +33,8 @@ export function useFetchUsers(userSearch: string, limit: number, setErrorMessage
         })();
     }, [userSearch, limit, setErrorMessage, setLoading]);
 
-    return users;
+    return {
+        users: users,
+        loading: loading
+    }
 }

@@ -18,9 +18,8 @@ const limit = 2;
 
 function AddPeople({ groupMembers, addedUsers, setAddedUsers }: AddPeopleProps) {
     const [userSearch, setUserSearch] = useState<string>("");
-    const [loading, setLoading] = useState<boolean>(false);
     const [errorMessage, setErrorMessage] = useState<string>("");
-    const foundUsers = useFetchUsers(userSearch, limit, setErrorMessage, setLoading);
+    const foundUsers = useFetchUsers(userSearch, limit, setErrorMessage);
     const userContext = useContext(UserContext);
 
     function addUser(user: FoundUsers[number]): void {
@@ -30,6 +29,8 @@ function AddPeople({ groupMembers, addedUsers, setAddedUsers }: AddPeopleProps) 
     function removeUser(username: string): void {
         setAddedUsers((cur) => cur.filter((user) => user.username !== username));
     }
+
+    console.log(foundUsers);
 
     return (
         <>
@@ -73,13 +74,13 @@ function AddPeople({ groupMembers, addedUsers, setAddedUsers }: AddPeopleProps) 
                 <p className="text-center text-error-text">
                     {errorMessage}
                 </p> :
-                foundUsers.length === 0 && !loading &&
+                foundUsers.users.length === 0 && !foundUsers.loading &&
                 <p className="text-center text-side-text-gray">
                     No results found
                 </p>}
-                {!loading ? foundUsers.filter((user: FoundUsers[number]) => user.username !== userContext.userData.username)
-                .map((user: FoundUsers[number], index: number) => {
-                    const added = addedUsers.find((x) => x.username === user.username) !== undefined;
+                {!foundUsers.loading ? 
+                foundUsers.users.map((user: FoundUsers[number], index: number) => {
+                    const added = addedUsers.find((x) => x.username === user.username) !== undefined || user.username === userContext.userData.username;
                     const isMember = groupMembers && groupMembers.find((x) => x.user.username === user.username) !== undefined;
 
                     return (

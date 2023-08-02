@@ -217,7 +217,9 @@ function FilterPostsProvider({ children, urlPrefix }: FilterPostsContextProps) {
                             searchHandler={searchHandler} 
                             deliveryTime={deliveryTime} 
                         />
-                        <h3 className="text-side-text-gray mt-4 mb-2 text-[16px]">Seller speaks</h3>
+                        <h3 className="text-side-text-gray mt-4 mb-2 text-[16px]">
+                            Seller speaks
+                        </h3>
                         <SearchLanguages 
                             loading={posts.loading}
                             setSelectedLanguages={setSelectedLanguages} 
@@ -277,8 +279,8 @@ function MainFiltersBar(props: MainFiltersBarProps) {
     return (
         <div className="h-[90px] max-w-[1430px] m-auto flex items-center px-[22.5px]">
             <div className="flex flex-grow items-center border-r border-light-border-gray h-full pr-6">
-                <img src={SearchIcon} alt="" className="w-[17px] h-[17px] cursor-pointer"/>
-                <input 
+                <img src={SearchIcon} alt="" className="w-5 h-5" />
+                <input
                     type="text" 
                     placeholder="Search for post" 
                     className="flex-grow focus:outline-none placeholder-side-text-gray ml-3" 

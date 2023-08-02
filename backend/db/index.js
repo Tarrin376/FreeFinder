@@ -28,7 +28,7 @@ const app = express();
 const server = http.createServer(app);
 const router = express.Router();
 
-app.use(json({ limit: 2500000 }));
+app.use(json({ limit: 5200000 }));
 app.use(cookieParser());
 app.use(express.urlencoded({ extended: false }));
 app.use('/api', router);
@@ -49,7 +49,7 @@ const io = new SocketIOServer(server, {
     cookie: {
         httpOnly: true,
         secure: env.NODE_ENV === "production",
-        sameSite: "Lax"
+        sameSite: "Strict"
     }
 });
 
@@ -92,7 +92,11 @@ io.on("connection", (socket) => {
     });
 
     socket.on("added-to-group", (socketID, group) => {
-        socket.to(socketID).emit("new-group", group);
+        io.sockets.in(socketID).emit("new-group", group);
+    });
+
+    socket.on("update-members", (members, groupID) => {
+        io.sockets.in(groupID).emit("show-updated-members", members, groupID);
     });
 
     socket.on("leave-rooms", () => {
@@ -107,9 +111,7 @@ io.on("connection", (socket) => {
         try {
             await prisma.user.update({
                 where: { userID: socket.userData.userID },
-                data: { 
-                    status: "OFFLINE"
-                }
+                data: { status: "OFFLINE" }
             });
         }
         catch (_) {

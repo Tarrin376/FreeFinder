@@ -99,7 +99,6 @@ function Navbar() {
                     savedDropdown={savedDropdown}
                     windowSize={windowSize}
                 />}
-
             </AnimatePresence>
             <nav className="flex gap-8 items-center px-7 h-[90px] border-b border-b-light-border-gray bg-main-white">
                 <ul className="flex items-center gap-7 list-none flex-grow">
@@ -118,7 +117,9 @@ function Navbar() {
                         <li className="nav-item" onClick={(e) => goToPage(e, 'posts/all')}>Browse all</li>
                         {userContext.userData.seller &&
                         <>
-                            <li className="nav-item">Client orders</li>
+                            <li className="nav-item">
+                                Client orders
+                            </li>
                         </>}
                     </>}
                     {userContext.userData.userID !== "" && windowSize > 1005 &&

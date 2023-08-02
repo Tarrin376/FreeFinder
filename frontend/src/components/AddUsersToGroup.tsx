@@ -13,11 +13,10 @@ import ErrorMessage from "./ErrorMessage";
 interface AddUsersToGroupProps {
     groupID: string,
     groupMembers: GroupPreview["members"],
-    setGroupMembers: React.Dispatch<React.SetStateAction<GroupPreview["members"]>>,
     setToggleAddUsersPopUp: React.Dispatch<React.SetStateAction<boolean>>
 }
 
-function AddUsersToGroup({ groupID, groupMembers, setGroupMembers, setToggleAddUsersPopUp }: AddUsersToGroupProps) {
+function AddUsersToGroup({ groupID, groupMembers, setToggleAddUsersPopUp }: AddUsersToGroupProps) {
     const [addedUsers, setAddedUsers] = useState<FoundUsers>([]);
     const [errorMessage, setErrorMessage] = useState<string>("");
     const userContext = useContext(UserContext);
@@ -26,15 +25,18 @@ function AddUsersToGroup({ groupID, groupMembers, setGroupMembers, setToggleAddU
         try {
             const usernames = addedUsers.map((user) => user.username);
             const resp = await axios.put<{ group: GroupPreview, sockets: string[], message: string }>
-            (`/api/users/${userContext.userData.username}/created-groups/${groupID}`, {
+            (`/api/users/${userContext.userData.username}/message-groups/created/${groupID}`, {
                 members: usernames
             });
+
+            userContext.socket?.emit("update-members", [
+                ...groupMembers, 
+                ...addedUsers.map((user) => { return { user: user } })]
+            , groupID);
             
             for (const socket of resp.data.sockets) {
                 userContext.socket?.emit("added-to-group", socket, resp.data.group);
             }
-            
-            setGroupMembers((cur) => [...cur, ...addedUsers.map((user) => { return { user: user } })]);
         }
         catch (err: any) {
             const errorMessage = getAPIErrorMessage(err as AxiosError<{ message: string }>);

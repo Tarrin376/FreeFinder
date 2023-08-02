@@ -21,7 +21,6 @@ interface SearchSellersProps {
 
 function SearchSellers({ styles, toggleSidebar }: SearchSellersProps) {
     const [sellers, setSellers] = useState<SellerData[]>([]);
-    const [count, setCount] = useState<number>(0);
     const [errorMessage, setErrorMessage] = useState<string>("");
     const [allSellersPopUp, setAllSellersPopUp] = useState<boolean>(false);
     const [hide, setHide] = useState<boolean>(true);
@@ -39,7 +38,6 @@ function SearchSellers({ styles, toggleSidebar }: SearchSellersProps) {
             });
  
             setErrorMessage("");
-            setCount(response.data.count);
             return response.data.next;
         }
         catch (err) {
@@ -120,9 +118,9 @@ function SearchSellers({ styles, toggleSidebar }: SearchSellersProps) {
                                         summary={seller.summary}
                                         country={seller.user.country}
                                         sellerID={seller.sellerID}
-                                        statusStyles="before:left-[39px] before:top-[41px]"
-                                        imgStyles="min-w-[57px] min-h-[57px]"
-                                        profilePicSize={57}
+                                        statusStyles="before:left-[35px] before:top-[36px]"
+                                        imgStyles="min-w-[52px] min-h-[52px]"
+                                        profilePicSize={52}
                                         key={index}
                                     />
                                 )

@@ -14,7 +14,7 @@ export const sellerLevelTextStyles: {
         color: "#804317", 
     },
     "Guru": { 
-        backgroundColor: "#121a31", 
+        backgroundColor: "#18193F", 
         color: "#fefefe", 
     },
 }

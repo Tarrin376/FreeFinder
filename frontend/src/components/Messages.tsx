@@ -49,6 +49,29 @@ function Messages({ setMessagesPopUp }: MessagesProps) {
         setGroupCount((cur) => cur + 1);
     }, [userContext.socket]);
 
+    const updateMembers = useCallback((members: GroupPreview["members"], id: string) => {
+        if (id === group?.groupID) {
+            setGroup((cur) => {
+                if (!cur) return cur;
+                return {
+                    ...cur,
+                    members: members
+                }
+            });
+        }
+
+        setAllGroups((cur) => cur.map((group: GroupPreview) => {
+            if (group.groupID === id) {
+                return {
+                    ...group,
+                    members: members
+                } 
+            } else {
+                return group;
+            }
+        }));
+    }, [group?.groupID]);
+
     useEffect(() => {
         setGroupCount(messageGroups.count.current);
         setAllGroups(messageGroups.data);
@@ -62,12 +85,19 @@ function Messages({ setMessagesPopUp }: MessagesProps) {
 
     useEffect(() => {
         userContext.socket?.on("new-group", showNewGroup);
+        userContext.socket?.on("show-updated-members", updateMembers);
 
         return () => {
-            userContext.socket?.emit("leave-rooms");
             userContext.socket?.off("new-group", showNewGroup);
+            userContext.socket?.off("show-updated-members", updateMembers);
         }
-    }, [userContext.socket, showNewGroup]);
+    }, [userContext.socket, showNewGroup, updateMembers]);
+
+    useEffect(() => {
+        return () => {
+            userContext.socket?.emit("leave-rooms");
+        }
+    }, [userContext.socket]);
 
     return (
         <PopUpWrapper setIsOpen={setMessagesPopUp} title="Messages" styles="!max-w-[900px] h-[900px]">

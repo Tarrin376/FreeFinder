@@ -73,11 +73,11 @@ function SignUp({ setLogIn, setSignUp, setAccountCreated }: SignUpProps) {
 
     function checkEmail(e: React.ChangeEvent<HTMLInputElement>, isFirst: boolean): void {
         const email = e.target.value;
-        const errorMessage = email.match(emailPattern) !== null ? "" : "Please use a valid email address";
+        const errorMessage = email.match(emailPattern) !== null ? "" : "Please use a valid email address.";
 
         if (!isFirst) {
             dispatch({
-                emailSecondErrorMessage: errorMessage !== "" ? errorMessage : email !== state.emailFirst ? "Email address does not match" : "",
+                emailSecondErrorMessage: errorMessage !== "" ? errorMessage : email !== state.emailFirst ? "Email address does not match." : "",
                 emailSecond: email
             });
             
@@ -87,29 +87,29 @@ function SignUp({ setLogIn, setSignUp, setAccountCreated }: SignUpProps) {
         dispatch({
             emailFirstErrorMessage: errorMessage, 
             emailFirst: email, 
-            emailSecondErrorMessage: state.emailSecond === email ? "" : "Email address does not match"
+            emailSecondErrorMessage: state.emailSecond === email ? "" : "Email address does not match."
         });
     }
 
     function checkUsername(e: React.ChangeEvent<HTMLInputElement>): void {
         const username = e.target.value;
-        let usernameErrorMessage = "";
-
-        if (username.length === 0) {
-            dispatch({ username: username });
-            return;
-        }
         
         if (username[0].toLowerCase() === username[0].toUpperCase()) {
-            usernameErrorMessage = "Username must have a leading alphabetical character";
+            dispatch({
+                usernameErrorMessage: "Username must have a leading alphabetical character.",
+                username: username
+            });
         } else if (username.split(" ").length > 1) {
-            usernameErrorMessage = "Username must not contain any empty spaces";
+            dispatch({
+                usernameErrorMessage: "Username must not contain any empty spaces.",
+                username: username
+            });
+        } else {
+            dispatch({
+                usernameErrorMessage: "",
+                username: username
+            });
         }
-
-        dispatch({
-            usernameErrorMessage: usernameErrorMessage,
-            username: username
-        });
     }
 
     function checkPassword(e: React.ChangeEvent<HTMLInputElement>): void {

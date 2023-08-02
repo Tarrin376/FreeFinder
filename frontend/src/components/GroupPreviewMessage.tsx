@@ -46,7 +46,7 @@ function GroupPreviewMessage({ group, selectedGroup, action }: GroupPreviewMessa
 
     return (
         <div className={`w-full flex items-center justify-between p-2 ${group.groupID === selectedGroup?.groupID ? 
-        "bg-[#f7f7f7]" : "hover:bg-[#f7f7f7]"} rounded-[6px] cursor-pointer transition-all ease-out duration-100 
+        "bg-hover-light-gray" : "hover:bg-hover-light-gray"} rounded-[6px] cursor-pointer transition-all ease-out duration-100 
         overflow-hidden flex-shrink-0`} onClick={openGroupChat}>
             <div className="flex items-center gap-3 overflow-hidden w-full">
                 <ProfilePicAndStatus
@@ -82,7 +82,10 @@ function GroupPreviewMessage({ group, selectedGroup, action }: GroupPreviewMessa
                                 </p> :
                                 <Tags
                                     isOwnMessage={isOwnMessage}
-                                    messageText={`${isOwnMessage ? "You" : lastMessage.from.username}: ${lastMessage.messageText}`}
+                                    messageText={`${isOwnMessage ? "You" : 
+                                    lastMessage.from.username}: ${lastMessage.messageText !== "" ? lastMessage.messageText : 
+                                    `<Attached ${lastMessage.files.length} ${lastMessage.files.length === 1 ? "file" : 
+                                    "files"}>`}`}
                                     groupMembers={group.members}
                                     textStyles="text-sm"
                                     styles="text-ellipsis whitespace-nowrap overflow-hidden"
@@ -90,7 +93,7 @@ function GroupPreviewMessage({ group, selectedGroup, action }: GroupPreviewMessa
                             </div>
                         </div>}
                         {unreadMessages > 0 ?
-                        <div className="bg-error-text rounded-full px-2 py-[1px] flex items-center justify-center">
+                        <div className="bg-error-text rounded-full w-fit px-2 h-[20px] flex items-center justify-center">
                             <span className="text-xs text-main-white">{unreadMessages}</span>
                         </div> : 
                         lastMessage && lastMessage.from.username === userContext.userData.username &&

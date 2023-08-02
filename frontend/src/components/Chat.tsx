@@ -32,7 +32,7 @@ function Chat({ group, setAllGroups, setGroupCount, setGroup }: ChatProps) {
 
     async function removeUser(userID: string): Promise<string | undefined> {
         try {
-            await axios.delete<{ message: string }>(`/api/users/${userContext.userData.username}/created-groups/${group.groupID}/${userID}`);
+            await axios.delete<{ message: string }>(`/api/users/${userContext.userData.username}/message-groups/created/${group.groupID}/${userID}`);
             userContext.socket?.emit("leave-room", userID, group.groupID);
 
             if (groupMembers.length - 1 === visibleMembers) {
@@ -53,7 +53,7 @@ function Chat({ group, setAllGroups, setGroupCount, setGroup }: ChatProps) {
 
     async function deleteGroup(): Promise<string | undefined> {
         try {
-            await axios.delete<{ message: string }>(`/api/users/${userContext.userData.username}/created-groups/${group.groupID}`);
+            await axios.delete<{ message: string }>(`/api/users/${userContext.userData.username}/message-groups/created/${group.groupID}`);
             updateUserLeftRoom(userContext.userData.userID, group.groupID);
         }
         catch (err: any) {
@@ -108,6 +108,10 @@ function Chat({ group, setAllGroups, setGroupCount, setGroup }: ChatProps) {
         }
     }, [userContext.socket, updateUserLeftRoom]);
 
+    useEffect(() => {
+        setGroupMembers(group.members);
+    }, [group.members]);
+
     return (
         <div className="flex flex-col flex-grow">
             <AnimatePresence>
@@ -120,7 +124,6 @@ function Chat({ group, setAllGroups, setGroupCount, setGroup }: ChatProps) {
                 <AddUsersToGroup
                     groupID={group.groupID}
                     groupMembers={groupMembers}
-                    setGroupMembers={setGroupMembers}
                     setToggleAddUsersPopUp={setToggleAddUsersPopUp}
                 />}
             </AnimatePresence>
@@ -180,7 +183,6 @@ function Chat({ group, setAllGroups, setGroupCount, setGroup }: ChatProps) {
                                 creatorID={group.creatorID}
                                 removeUser={removeUser}
                                 setErrorMessage={setErrorMessage}
-                                groupID={group.groupID}
                             />}
                         </AnimatePresence>
                     </div>

@@ -121,11 +121,11 @@
         border: 3px solid #f7f7f7;
     }
     ::selection {
-        background: #292929;
+        background: #18193F;
         color: #fdfdfd;
     }
     ::-moz-selection {
-        background: #292929;
+        background: #18193F;
         color: #fdfdfd;
     }
 }

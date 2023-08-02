@@ -27,9 +27,9 @@ module.exports = {
             'nav-search-gray': '#cdcdcd',
             'very-light-gray': '#eeeff3',
             'very-light-gray-hover': '#f2f3f6',
-            'main-black': '#292929',
+            'main-black': '#18193F',
             'side-text-gray': '#8d8c91', // #9c9c9c old
-            'main-black-hover': '#323232',
+            'main-black-hover': '#1e1f4f',
             'main-white-hover': '#fbfbfb',
             'error-red': '#fde4e4',
             'error-red-hover': '#fcdcdc',
