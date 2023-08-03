@@ -17,7 +17,7 @@ function GroupMembers({ groupMembers, creatorID, removeUser, setErrorMessage }: 
     const userContext = useContext(UserContext);
 
     return (
-        <motion.div className="dropdown flex flex-col gap-3 w-[300px] z-20 max-h-[300px] overflow-y-scroll pr-[8px]"
+        <motion.div className="dropdown flex flex-col gap-3 w-[350px] z-20 max-h-[350px] overflow-y-scroll pr-[8px]"
         initial={{ opacity: 0 }} animate={{ opacity: 1 }} exit={{ opacity: 0 }} 
         transition={{ duration: 0.1 }}>
             {groupMembers.map((member: GroupPreview["members"][number], index: number) => {
@@ -26,8 +26,6 @@ function GroupMembers({ groupMembers, creatorID, removeUser, setErrorMessage }: 
                         <div className="flex items-center gap-3 overflow-hidden">
                             <ProfilePicAndStatus
                                 profilePicURL={member.user.profilePicURL}
-                                profileStatus={member.user.status}
-                                statusStyles="before:hidden"
                                 username={member.user.username}
                                 size={41}
                             />

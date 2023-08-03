@@ -30,8 +30,6 @@ function AddPeople({ groupMembers, addedUsers, setAddedUsers }: AddPeopleProps) 
         setAddedUsers((cur) => cur.filter((user) => user.username !== username));
     }
 
-    console.log(foundUsers);
-
     return (
         <>
             <p className="mb-2">Add People</p>
@@ -42,14 +40,12 @@ function AddPeople({ groupMembers, addedUsers, setAddedUsers }: AddPeopleProps) 
                         <div className="w-fit h-fit relative" key={index}>
                             <ProfilePicAndStatus
                                 profilePicURL={user.profilePicURL}
-                                profileStatus={user.status}
-                                statusStyles="before:hidden"
                                 username={user.username}
                                 size={48}
                             />
                             {index > 0 &&
                             <div className="bg-error-text text-main-white rounded-full w-[18px] h-[18px] border-2 border-main-white
-                            absolute top-[33px] left-[30px] flex items-center justify-center cursor-pointer"
+                            absolute top-[33px] left-[32px] flex items-center justify-center cursor-pointer"
                             onClick={() => removeUser(user.username)}>
                                 <CloseSvg 
                                     size={12}
@@ -88,8 +84,6 @@ function AddPeople({ groupMembers, addedUsers, setAddedUsers }: AddPeopleProps) 
                             <div className="flex items-center gap-3 overflow-hidden">
                                 <ProfilePicAndStatus
                                     profilePicURL={user.profilePicURL}
-                                    profileStatus={user.status}
-                                    statusStyles="before:hidden"
                                     username={user.username}
                                     size={41}
                                 />

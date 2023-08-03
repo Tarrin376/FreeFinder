@@ -8,9 +8,11 @@ interface FileProps {
 }
 
 function File({ fileType, fileName, children, styles }: FileProps) {
+    const defaultStyles = `flex justify-between items-center gap-4 border border-light-border-gray 
+    bg-main-white rounded-[8px] p-[9px] pl-[10px] transition-all ease-in-out duration-200`;
+
     return (
-        <div className={`flex justify-between items-center gap-4 border border-light-border-gray 
-        bg-main-white rounded-[8px] p-[9px] pl-[10px] transition-all ease-in-out duration-200 ${styles}`}>
+        <div className={`${defaultStyles} ${styles}`}>
             <div className="flex items-center gap-[9px]">
                 <div className="w-[20px] h-full flex-shrink-0">
                     <FileTypeIcon fileType={fileType} />

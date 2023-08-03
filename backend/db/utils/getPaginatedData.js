@@ -35,7 +35,6 @@ export async function getPaginatedData(where, select, tableName, limit, cursor, 
         };
     }
     catch (err) {
-        console.log(err);
         if (err instanceof Prisma.PrismaClientValidationError) {
             throw new DBError("Missing required fields or fields provided are invalid.", 400);
         } else {

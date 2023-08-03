@@ -7,17 +7,14 @@ import axios, { AxiosError } from "axios";
 import { UserContext } from "../providers/UserContext";
 import { useContext, useState } from "react";
 import { getAPIErrorMessage } from "../utils/getAPIErrorMessage";
-import Button from "./Button";
 import { useWindowSize } from "../hooks/useWindowSize";
 import ErrorPopUp from "./ErrorPopUp";
 import { AnimatePresence } from "framer-motion";
-import { UserStatus } from "../enums/UserStatus";
 
 interface SellerProps {
     navigateToProfile: () => void,
     profilePicURL: string,
     profilePicSize: number,
-    status: UserStatus,
     username: string,
     searchQuery: string,
     sellerLevel: string,
@@ -28,9 +25,7 @@ interface SellerProps {
         count: React.MutableRefObject<number>,
         deletingSeller: boolean,
         setDeletingSeller: React.Dispatch<React.SetStateAction<boolean>>
-    }
-    imgStyles?: string,
-    statusStyles?: string,
+    },
     option?: SellerOptions
 }
 
@@ -40,7 +35,7 @@ function Seller(props: SellerProps) {
     const [hide, setHide] = useState<boolean>(false);
     const windowSize = useWindowSize();
 
-    async function removeSavedSeller(saved: boolean): Promise<void> {
+    async function removeSavedSeller(_: boolean): Promise<void> {
         if (!props.canRemove || props.canRemove.deletingSeller) {
             return;
         }
@@ -72,9 +67,7 @@ function Seller(props: SellerProps) {
                     <div className="relative">
                         <ProfilePicAndStatus
                             profilePicURL={props.profilePicURL}
-                            profileStatus={props.status}
-                            statusStyles={props.statusStyles}
-                            imgStyles={`${props.imgStyles} cursor-pointer`}
+                            imgStyles="cursor-pointer"
                             size={props.profilePicSize}
                             username={props.username}
                             action={props.navigateToProfile}

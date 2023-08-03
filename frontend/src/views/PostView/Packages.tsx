@@ -9,17 +9,20 @@ import CreateGroup from "../../components/CreateGroup";
 import { FoundUsers } from "../../types/FoundUsers";
 import { UserContext } from "../../providers/UserContext";
 import { AnimatePresence } from "framer-motion";
+import RequestOrder from "../../components/RequestOrder";
 
 interface PackagesProps {
     packages: IPackage[],
     seller: FoundUsers[number],
+    workType: string,
     postID: string
 }
 
-function Packages({ packages, seller, postID }: PackagesProps) {
-    const [curPkg, setCurPkg] = useState<IPackage>();
-    const [createGroupPopUp, setCreateGroupPopUp] = useState<boolean>(false);
+function Packages({ packages, seller, workType, postID }: PackagesProps) {
     const userContext = useContext(UserContext);
+    const [createGroupPopUp, setCreateGroupPopUp] = useState<boolean>(false);
+    const [requestOrderPopUp, setRequestOrderPopUp] = useState<boolean>(false);
+    const [curPkg, setCurPkg] = useState<IPackage>();
     
     useEffect(() => {
         const basicPkg = packages.find((x) => x.type === PackageTypes.BASIC);
@@ -53,6 +56,14 @@ function Packages({ packages, seller, postID }: PackagesProps) {
                     initialServiceID={postID}
                     seller={seller}
                 />}
+                {requestOrderPopUp && curPkg &&
+                <RequestOrder
+                    curPkg={curPkg}
+                    postID={postID}
+                    seller={seller}
+                    workType={workType}
+                    setRequestOrderPopUp={setRequestOrderPopUp}
+                />}
             </AnimatePresence>
             {curPkg &&
             <>
@@ -72,7 +83,7 @@ function Packages({ packages, seller, postID }: PackagesProps) {
                 <div className="p-6 h-[calc(100%-50px)] flex flex-col justify-between">
                     <div className="flex-grow overflow-y-scroll pr-[8px]">
                         <div className="flex justify-between items-center mt-[-6px]">
-                            <h3 className="text-[22px]">
+                            <h3 className="text-[20px]">
                                 {`${capitalizeWord(curPkg.type)} package`}
                             </h3>
                             {isMostPopular(curPkg.type) && 
@@ -80,7 +91,7 @@ function Packages({ packages, seller, postID }: PackagesProps) {
                                 Popular
                             </p>}
                         </div>
-                        <p className="text-[35px]">
+                        <p className="text-[33px]">
                             £{curPkg.amount}
                         </p>
                         <p className="text-side-text-gray mb-4 pb-4 border-b border-light-border-gray font-bold">
@@ -113,14 +124,14 @@ function Packages({ packages, seller, postID }: PackagesProps) {
                         </ul>
                     </div>
                     {userContext.userData.username !== "" &&
-                    <>
+                    <div className="flex-shrink-0">
                         <button className="side-btn w-full !h-12 mt-6" onClick={() => setCreateGroupPopUp(true)}>
                         Message seller
                         </button>
-                        <button className={`main-btn ${userContext.userData.username !== "" ? "mt-3" : "mt-6"}`}>
+                        <button className="main-btn mt-3" onClick={() => setRequestOrderPopUp(true)}>
                             Request an order
                         </button>
-                    </>}
+                    </div>}
                 </div>
             </>}
         </div>

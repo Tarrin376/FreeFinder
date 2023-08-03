@@ -9,17 +9,19 @@ interface ErrorMessageProps {
 }
 
 function ErrorMessage({ message, title, styles, setErrorMessage }: ErrorMessageProps) {
+    const defaultStyles = `border-nav-search-gray border rounded-[11px] p-3 mb-6 flex items-center gap-3`;
+
     function closeErrorMessage(): void {
         setErrorMessage("");
     }
 
     return (
-        <div className={`border-nav-search-gray border rounded-[11px] p-3 mb-6 flex items-center gap-3 ${styles}`}>
+        <div className={`${defaultStyles} ${styles}`}>
             <img src={ErrorIcon} className="w-11 h-11" alt="" />
             <div className="flex items-center justify-between gap-3 flex-grow">
                 <div>
                     <p className="mb-[2px]">{title}</p>
-                    <p className="text-side-text-gray leading-5 mb-[2px]">{message}</p>
+                    <p className="text-side-text-gray leading-5">{message}</p>
                 </div>
                 <div className="min-w-[24px]">
                     <CloseSvg

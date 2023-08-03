@@ -23,13 +23,14 @@ model User {
     reviews       Review[]
     orders        Order[]
     foundHelpful  HelpfulReview[]
-    balance       Int             @default(0)
+    balance       Decimal         @default(0) @db.Decimal(12, 2)
     sentMessages  Message[]
     messageGroups GroupMember[]
     createdGroups MessageGroup[]
     savedPosts    SavedPost[]
     savedSellers  SavedSeller[]
     socketID      String?
+    orderRequests OrderRequest[]
 }
 
 model MessageGroup {
@@ -41,6 +42,8 @@ model MessageGroup {
     postID    String
     creator   User          @relation(fields: [creatorID], references: [userID], onDelete: Cascade)
     creatorID String
+
+    @@unique([postID, creatorID])
 }
 
 model GroupMember {
@@ -54,14 +57,26 @@ model GroupMember {
 }
 
 model Message {
-    messageID   String        @id @default(uuid())
-    from        User          @relation(fields: [fromID], references: [userID], onDelete: Cascade)
-    fromID      String
-    group       MessageGroup  @relation(fields: [groupID], references: [groupID], onDelete: Cascade)
-    groupID     String
-    messageText String
-    createdAt   DateTime      @default(now())
-    files       MessageFile[]
+    messageID    String        @id @default(uuid())
+    from         User          @relation(fields: [fromID], references: [userID], onDelete: Cascade)
+    fromID       String
+    group        MessageGroup  @relation(fields: [groupID], references: [groupID], onDelete: Cascade)
+    groupID      String
+    messageText  String
+    createdAt    DateTime      @default(now())
+    files        MessageFile[]
+    orderRequest OrderRequest?
+}
+
+model OrderRequest {
+    message   Message @relation(fields: [messageID], references: [messageID], onDelete: Cascade)
+    messageID String  @unique
+    user      User    @relation(fields: [userID], references: [userID], onDelete: Cascade)
+    userID    String
+    package   Package @relation(fields: [packageID], references: [packageID], onDelete: Cascade)
+    packageID String
+
+    @@id([userID, packageID])
 }
 
 model MessageFile {
@@ -121,7 +136,7 @@ model Post {
     about         String
     createdAt     DateTime       @default(now())
     title         String
-    startingPrice Decimal        @db.Money
+    startingPrice Decimal        @db.Decimal(12, 2)
     reviews       Review[]
     packages      Package[]
     images        PostImage[]    @relation("Images")
@@ -156,18 +171,20 @@ model PostImage {
 }
 
 model Package {
-    post         Post        @relation(fields: [postID], references: [postID], onDelete: Cascade)
-    postID       String
-    deliveryTime Int
-    revisions    String
-    description  String
-    type         PackageType
-    features     String[]
-    amount       Decimal     @db.Money
-    numOrders    Int         @default(0)
-    title        String
+    packageID     String         @id @default(uuid())
+    post          Post           @relation(fields: [postID], references: [postID], onDelete: Cascade)
+    postID        String
+    deliveryTime  Int
+    revisions     String
+    description   String
+    type          PackageType
+    features      String[]
+    amount        Decimal        @db.Decimal(12, 2)
+    numOrders     Int            @default(0)
+    title         String
+    orderRequests OrderRequest[]
 
-    @@id([postID, type])
+    @@unique([postID, type])
 }
 
 model Review {
@@ -197,7 +214,7 @@ model Order {
     post        Post        @relation(fields: [postID], references: [postID])
     postID      String
     createdAt   DateTime    @default(now())
-    orderAmount Decimal     @db.Money
+    orderAmount Decimal     @db.Decimal(12, 2)
     status      OrderStatus
 }
 

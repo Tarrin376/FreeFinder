@@ -23,7 +23,6 @@ postRouter.post('/:id', cookieJwtAuth, addImage);
 postRouter.delete('/:id', cookieJwtAuth, deletePost);
 
 postRouter.get('/:id/seller-summary', cookieJwtAuth, getSellerSummary);
-
 postRouter.delete('/:id/:cloudinaryID', cookieJwtAuth, deleteImage);
 
 export default postRouter;

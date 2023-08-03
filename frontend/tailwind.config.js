@@ -41,7 +41,8 @@ module.exports = {
             'highlight-hover': '#e1e7ff',
             'very-light-pink': '#f7dfff',
             'pink': '#bf01ff',
-            'hover-light-gray': '#f7f7f7'
+            'hover-light-gray': '#f7f7f7',
+            'light-bg-gray': '#f5f6f8'
         },
         dropShadow: {
             'search-bar': '0px 0px 1px #DDDDDD',

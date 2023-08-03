@@ -162,7 +162,7 @@ function Package(props: PackageProps) {
             />
             <h3 className="mb-1">{`Features that come with your ${props.title.toLowerCase()}`}</h3>
             <p className="text-side-text-gray mb-3">Features added:
-                <span className={props.pkgState.features.length === MAX_FEATURES ? 'text-error-text' : 'text-[#36BF54]'}>
+                <span className={props.pkgState.features.length === MAX_FEATURES ? 'text-error-text' : 'text-light-green'}>
                     {` ${props.pkgState.features.length} / ${MAX_FEATURES}`}
                 </span>
             </p>

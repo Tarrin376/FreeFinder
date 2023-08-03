@@ -59,8 +59,8 @@ function SearchLanguages({ loading, selectedLanguages, setSelectedLanguages, sea
             <Options 
                 options={selectedLanguages} 
                 removeOption={removeLanguage}
-                styles="mt-4"
-                bgColour="bg-highlight"
+                wrapperStyles="mt-4"
+                styles="bg-highlight"
                 textColour="#4E73F8"
             />}
         </div>

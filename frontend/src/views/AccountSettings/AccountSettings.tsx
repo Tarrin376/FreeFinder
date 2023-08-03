@@ -93,8 +93,6 @@ function AccountSettings({ setSettingsPopUp }: SettingsProps) {
                 <div className="relative w-fit h-fit">
                     <ProfilePicAndStatus 
                         profilePicURL={userContext.userData.profilePicURL} 
-                        profileStatus={userContext.userData.status} 
-                        statusStyles="before:hidden"
                         username={userContext.userData.username}
                         setErrorMessage={setErrorMessage} 
                         loading={state.loading} 

@@ -25,8 +25,11 @@ import { IMessageFile } from "../models/IMessageFile";
 import SupportedFileFormats from "./SupportedFileFormats";
 import { MatchedMembers } from "../types/MatchedMembers";
 import { useArrowNavigation } from "../hooks/useArrowNavigation";
+import { FoundUsers } from "../types/FoundUsers";
 
 interface ChatBoxProps {
+    seller: FoundUsers[number],
+    workType: string,
     groupID: string,
     groupMembers: GroupPreview["members"]
 }
@@ -57,7 +60,7 @@ const initialState: ChatBoxState = {
 
 export const tagSuggestionHeight = 273;
 
-function ChatBox({ groupID, groupMembers }: ChatBoxProps) {
+function ChatBox({ seller, workType, groupID, groupMembers }: ChatBoxProps) {
     const userContext = useContext(UserContext);
     const [errorMessage, setErrorMessage] = useState<string>("");
     const [page, setPage] = useState<{ value: number }>({ value: 1 });
@@ -142,7 +145,8 @@ function ChatBox({ groupID, groupMembers }: ChatBoxProps) {
                 }),
                 messageText: message,
                 createdAt: new Date(),
-                messageID: ""
+                messageID: "",
+                groupID: ""
             });
 
             const resp = await axios.post<{ newMessage: IMessage, message: string }>
@@ -289,6 +293,8 @@ function ChatBox({ groupID, groupMembers }: ChatBoxProps) {
                             isLastMessage={index === 0}
                             sendingMessage={state.sendingMessage}
                             groupMembers={groupMembers}
+                            seller={seller}
+                            workType={workType}
                         />
                     )
                 })}

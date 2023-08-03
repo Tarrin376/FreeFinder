@@ -131,9 +131,8 @@ function Chat({ group, setAllGroups, setGroupCount, setGroup }: ChatProps) {
                 <div className="flex items-center gap-4 overflow-hidden">
                     <ProfilePicAndStatus
                         profilePicURL=""
-                        size={50}
+                        size={47}
                         username={group.groupName}
-                        statusStyles="before:hidden"
                     />
                     <p className="text-[17px] font-bold text-ellipsis whitespace-nowrap overflow-hidden mb-1">
                         {group.groupName}
@@ -146,9 +145,8 @@ function Chat({ group, setAllGroups, setGroupCount, setGroup }: ChatProps) {
                                 <div className="w-fit h-fit relative ml-[-12px] outline outline-[3px] outline-main-white rounded-full" key={index}>
                                     <ProfilePicAndStatus
                                         profilePicURL={member.user.profilePicURL}
-                                        size={45}
+                                        size={47}
                                         username={member.user.username}
-                                        statusStyles="before:hidden"
                                         key={index}
                                     />
                                     {member.user.username !== userContext.userData.username && userContext.userData.userID === group.creatorID &&
@@ -169,7 +167,7 @@ function Chat({ group, setAllGroups, setGroupCount, setGroup }: ChatProps) {
                             )
                         })}
                         {groupMembers.length > visibleMembers &&
-                        <div className="w-[45px] h-[45px] rounded-full outline outline-[3px] outline-main-white 
+                        <div className="w-[47px] h-[47px] rounded-full outline outline-[3px] outline-main-white 
                         bg-very-light-gray flex items-center justify-center ml-[-13px] cursor-pointer z-10" 
                         onMouseEnter={() => setToggleGroupMembers(true)}>
                             <p className="text-[18px] text-side-text-gray">
@@ -219,7 +217,9 @@ function Chat({ group, setAllGroups, setGroupCount, setGroup }: ChatProps) {
                 </div>
             </div>
             <ChatBox 
-                groupID={group.groupID} 
+                seller={group.seller}
+                workType={group.workType}
+                groupID={group.groupID}
                 groupMembers={groupMembers}
             />
         </div>

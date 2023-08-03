@@ -111,20 +111,24 @@ function SearchSellers({ styles, toggleSidebar }: SearchSellersProps) {
                                     <Seller
                                         navigateToProfile={() => navigateToProfile(seller.sellerID)}
                                         profilePicURL={seller.user.profilePicURL}
-                                        status={seller.user.status}
                                         username={seller.user.username}
                                         searchQuery={searchQuery}
                                         sellerLevel={seller.sellerLevel.name}
                                         summary={seller.summary}
                                         country={seller.user.country}
                                         sellerID={seller.sellerID}
-                                        statusStyles="before:left-[35px] before:top-[36px]"
-                                        imgStyles="min-w-[52px] min-h-[52px]"
                                         profilePicSize={52}
                                         key={index}
                                     />
                                 )
-                            }) : new Array(queryLimit).fill(0).map((_, index: number) => <SellerSkeleton key={index} />)}
+                            }) : new Array(queryLimit).fill(0).map((_, index: number) => {
+                                return (
+                                    <SellerSkeleton 
+                                        size={52} 
+                                        key={index} 
+                                    />
+                                )
+                            })}
                         </div>}
                         {sellers.length === queryLimit &&
                         <button className="m-auto block side-btn h-[35px] mt-[10px] mb-[10px]" 

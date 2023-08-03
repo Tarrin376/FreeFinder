@@ -122,9 +122,9 @@ function ChangeSellerDetails({ setSellerProfilePopUp }: ChangeSellerDetailsProps
             <Options
                 options={skills}
                 removeOption={removeSkill}
-                bgColour="bg-very-light-pink"
+                styles="bg-very-light-pink"
                 textColour="#bf01ff"
-                styles="mt-4"
+                wrapperStyles="mt-4"
             />
             <Button
                 action={updateSellerDetails}

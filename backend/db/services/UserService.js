@@ -9,10 +9,9 @@ import { getPostFilters } from '../utils/getPostFilters.js';
 import { userProperties } from '../utils/userProperties.js';
 import { getPaginatedData } from '../utils/getPaginatedData.js';
 import { getAvgRatings } from '../utils/getAvgRatings.js';
-import { groupPreviewProperties } from '../utils/groupPreviewProperties.js';
 import { uploadFile } from '../utils/uploadFile.js';
 
-const MAX_AMOUNT = 500;
+const MAX_DEPOSIT = 500;
 
 export async function updateProfilePictureHandler(req) {
     try {
@@ -347,8 +346,8 @@ export async function addToBalanceHandler(req) {
             throw new DBError("Invalid amount or no amount provided.", 400);
         }
 
-        if (req.body.amount > MAX_AMOUNT || req.body.amount < 1) {
-            throw new DBError(`Amount must be between 1 and ${MAX_AMOUNT}.`, 400);
+        if (req.body.amount > MAX_DEPOSIT || req.body.amount < 1) {
+            throw new DBError(`Amount must be between 1 and ${MAX_DEPOSIT}.`, 400);
         }
 
         const updated = await prisma.user.update({
@@ -366,50 +365,6 @@ export async function addToBalanceHandler(req) {
             throw err;
         } else {
             throw new DBError("Something went wrong. Please try again later.", 500);
-        }
-    }
-    finally {
-        await prisma.$disconnect();
-    }
-}
-
-export async function getMessageGroupsHandler(req) {
-    try {
-        await checkUser(req.userData.userID, req.username);
-        const where = { userID: req.userData.userID };
-
-        const select = {
-            group: { 
-                select: { ...groupPreviewProperties }
-            }
-        };
-
-        const cursor = req.body.cursor ? { 
-            groupID_userID: {
-                groupID: req.body.cursor,
-                postID: req.userData.userID
-            }
-        } : {};
-
-        const result = await getPaginatedData(
-            where,
-            select, 
-            "groupMember", 
-            req.body.limit, 
-            cursor, 
-            "groupID_userID", 
-        );
-
-        const groups = result.next.map((x) => {
-            return {
-                ...x.group,
-                lastMessage: x.group.messages.length > 0 ? x.group.messages[0] : null
-            }
-        });
-
-        return {
-            ...result,
-            next: groups
         }
     }
     finally {

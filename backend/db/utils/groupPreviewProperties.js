@@ -39,5 +39,26 @@ export const groupPreviewProperties = {
                 }
             }
         }
+    },
+    post: {
+        select: {
+            postedBy: {
+                select: {
+                    user: {
+                        select: {
+                            username: true,
+                            profilePicURL: true,
+                            status: true,
+                            userID: true
+                        }
+                    }
+                }
+            },
+            workType: {
+                select: {
+                    name: true
+                }
+            }
+        }
     }
 };

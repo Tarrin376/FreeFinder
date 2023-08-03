@@ -121,8 +121,8 @@ function PostDetails({ jobCategory, setJobCategory, setTypeOfWork, setErrorMessa
             <ErrorMessage 
                 message={props.errorMessage} 
                 title="Failed to complete action."
-                styles="!mb-6"
                 setErrorMessage={setErrorMessage}
+                styles="mb-6"
             />}
             {jobCategories.errorMessage !== "" &&
             <ErrorPopUp

@@ -56,7 +56,6 @@ function Sellers({ search, url, setSellersPopUp, savedSellers, option }: Sellers
                         <Seller
                             navigateToProfile={() => navigateToProfile(seller.sellerID)}
                             profilePicURL={seller.user.profilePicURL}
-                            status={seller.user.status}
                             username={seller.user.username}
                             searchQuery={search}
                             sellerLevel={seller.sellerLevel.name}
@@ -68,8 +67,6 @@ function Sellers({ search, url, setSellersPopUp, savedSellers, option }: Sellers
                                 deletingSeller: deletingSeller,
                                 setDeletingSeller: setDeletingSeller
                             } : undefined}
-                            statusStyles="before:left-[42px] before:top-[45px]"
-                            imgStyles="min-w-[62px] min-h-[62px]"
                             profilePicSize={62}
                             key={index}
                             option={option}
@@ -79,7 +76,7 @@ function Sellers({ search, url, setSellersPopUp, savedSellers, option }: Sellers
                 {sellers.loading && new Array(limit).fill(0).map((_, index: number) => {
                     return (
                         <SellerSkeleton 
-                            imgStyles="w-[62px] h-[62px]"
+                            size={62}
                             key={index}
                         />
                     )

@@ -66,7 +66,7 @@ function Button(props: ButtonProps) {
     }, [props.defaultText])
   
     return (
-        <button className={`${props.styles} ${btnText !== props.defaultText ? "pointer-events-none" : ""}`} 
+        <button className={`${btnText !== props.defaultText ? "pointer-events-none" : ""} ${props.styles}`} 
         ref={btnRef} onClick={handleAction} type={props.type ?? "button"}>
             <div className="flex items-center justify-center gap-[10px]">
                 {btnText === props.loadingText ? 

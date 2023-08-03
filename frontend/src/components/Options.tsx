@@ -3,12 +3,14 @@ import CloseSvg from "./CloseSvg";
 interface OptionsProps {
     options: string[],
     removeOption?: (option: string) => void,
-    styles?: string,
-    bgColour: string,
+    wrapperStyles?: string,
+    styles: string,
     textColour: string
 }
 
-function Options({ options, removeOption, styles, bgColour, textColour }: OptionsProps) {
+function Options({ options, removeOption, wrapperStyles, styles, textColour }: OptionsProps) {
+    const defaultStyles = `flex items-center gap-3 flex-wrap`;
+
     function remove(option: string) {
         if (removeOption) {
             removeOption(option);
@@ -16,10 +18,10 @@ function Options({ options, removeOption, styles, bgColour, textColour }: Option
     }
 
     return (
-        <div className={`flex items-center gap-3 flex-wrap ${styles}`}>
+        <div className={`${defaultStyles} ${wrapperStyles}`}>
             {options.map((cur: string, index: number) => {
                 return (
-                    <div className={`option ${removeOption ? "cursor-pointer" : ""} ${bgColour}`} 
+                    <div className={`option ${removeOption ? "cursor-pointer" : ""} ${styles}`} 
                     onClick={() => remove(cur)} key={index}>
                         <p className="text-[14px]" style={{ color: textColour }}>{cur}</p>
                         {removeOption && 

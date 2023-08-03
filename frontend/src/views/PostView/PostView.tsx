@@ -26,6 +26,7 @@ import Reviews from "../../components/Reviews";
 import CreateReview from "../../components/CreateReview";
 import { scrollIntoView } from "../../utils/scrollIntoView";
 import StarSvg from "../../components/StarSvg";
+import KeyPair from "../../components/KeyPair";
 
 export type PostViewState = {
     about: string,
@@ -229,10 +230,10 @@ function PostView() {
                                 <ProfilePicAndStatus 
                                     profilePicURL={state.postData.postedBy.user.profilePicURL} 
                                     profileStatus={state.postData.postedBy.user.status}
-                                    statusStyles="before:left-[33px] before:top-[34px] cursor-pointer"
                                     action={navigateToProfile}
                                     username={state.postData.postedBy.user.username}
                                     size={50}
+                                    statusRight={true}
                                 />
                             </div>
                             <div>
@@ -259,12 +260,11 @@ function PostView() {
                             </div>
                         </div>
                         <div className="flex items-center gap-3 mb-4">
-                            <p>
-                                Service ID:
-                                <span className="text-main-blue">
-                                    {` ${state.postData.postID}`}
-                                </span>
-                            </p>
+                            <KeyPair
+                                itemKey="Service ID"
+                                itemValue={state.postData.postID}
+                                textSize={16}
+                            />
                             <button className="side-btn w-fit !h-[30px] text-[15px] rounded-[6px]" onClick={copyServiceID}>
                                 copy
                             </button>
@@ -347,10 +347,11 @@ function PostView() {
                             reviewsRef={reviewsRef}
                         />
                     </div>
-                    <div className="relative min-w-[390px]">
+                    <div className="relative w-[390px] flex-shrink-0">
                         <Packages 
                             packages={state.postData.packages}
                             postID={state.postData.postID}
+                            workType={state.postData.workType.name}
                             seller={{
                                 username: state.postData.postedBy.user.username,
                                 status: state.postData.postedBy.user.status,

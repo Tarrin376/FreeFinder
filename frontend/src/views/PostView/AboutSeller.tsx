@@ -37,12 +37,11 @@ function AboutSeller(props: AboutSellerProps) {
                 <div className="flex items-center gap-5 overflow-hidden">
                     <ProfilePicAndStatus 
                         profilePicURL={props.profilePicURL} 
-                        profileStatus={props.status}
-                        statusStyles="before:hidden"
                         imgStyles="cursor-pointer"
                         username={props.username}
                         action={navigateToProfile}
                         size={65}
+                        statusRight={true}
                     />
                     <div className="overflow-hidden">
                         <div className="flex items-center gap-2">
@@ -75,8 +74,8 @@ function AboutSeller(props: AboutSellerProps) {
             <p>{`${props.username} speaks`}</p>
             <Options 
                 options={props.languages} 
-                styles="mt-2"
-                bgColour="bg-highlight"
+                wrapperStyles="mt-2"
+                styles="bg-highlight"
                 textColour="#4E73F8"
             />
             {props.skills.length > 0 &&
@@ -84,8 +83,8 @@ function AboutSeller(props: AboutSellerProps) {
                 <p className="mt-3">{`${props.username}${props.username[props.username.length - 1] === 's' ? "'" : "'s"} skills`}</p>
                 <Options 
                     options={props.skills} 
-                    styles="mt-2"
-                    bgColour="bg-very-light-pink"
+                    wrapperStyles="mt-2"
+                    styles="bg-very-light-pink"
                     textColour="#bf01ff"
                 />
             </>}

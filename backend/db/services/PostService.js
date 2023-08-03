@@ -99,7 +99,6 @@ export async function createPostHandler(postData, startingPrice, userID) {
         });
     }
     catch (err) {
-        console.log(err);
         if (err instanceof DBError) {
             throw err;
         } else if (err instanceof Prisma.PrismaClientValidationError) {
@@ -200,7 +199,15 @@ export async function getPostHandler(postID) {
             select: { ...postProperties }
         });
         
-        return postData;
+        return {
+            ...postData,
+            packages: postData.packages.map((pkg) => {
+                return {
+                    ...pkg,
+                    amount: parseInt(pkg.amount)
+                }
+            })
+        };
     }
     catch (err) {
         if (err instanceof Prisma.PrismaClientValidationError) {

@@ -2,7 +2,7 @@ import { Router } from 'express';
 import savedPostRouter from './SavedPostRouter.js';
 import savedSellerRouter from './SavedSellerRouter.js';
 import messageGroupRouter from './MessageGroupRouter.js';
-import messageRouter from './MessageRouter.js';
+import orderRequestRouter from './OrderRequestRouter.js';
 import { cookieJwtAuth } from '../middleware/cookieJwtAuth.js';
 import 
 { 
@@ -30,6 +30,7 @@ userRouter.param('username', (req, _, next, value) => {
 userRouter.use('/:username/saved/posts', savedPostRouter);
 userRouter.use('/:username/saved/sellers', savedSellerRouter);
 userRouter.use('/:username/message-groups', messageGroupRouter);
+userRouter.use('/:username/order-requests', orderRequestRouter);
 
 userRouter.post('/:username/posts', cookieJwtAuth, getUserPosts);
 

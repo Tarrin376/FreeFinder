@@ -50,8 +50,6 @@ function SellerProfileView() {
                                 <div className="relative">
                                     <ProfilePicAndStatus
                                         profilePicURL={sellerDetails.user.profilePicURL}
-                                        profileStatus={sellerDetails.user.status}
-                                        statusStyles="before:left-[43px] before:top-[47px] before:w-[21px] before:h-[21px]"
                                         username={sellerDetails.user.username}
                                         size={65}
                                     />
@@ -96,8 +94,8 @@ function SellerProfileView() {
                         <p>{`${sellerDetails.user.username} speaks`}</p>
                         <Options 
                             options={sellerDetails.languages} 
-                            styles="mt-2"
-                            bgColour="bg-highlight"
+                            wrapperStyles="mt-2"
+                            styles="bg-highlight"
                             textColour="#4E73F8"
                         />
                         {sellerDetails.skills.length > 0 &&
@@ -108,8 +106,8 @@ function SellerProfileView() {
                             </p>
                             <Options
                                 options={sellerDetails.skills} 
-                                styles="mt-2"
-                                bgColour="bg-very-light-pink"
+                                wrapperStyles="mt-2"
+                                styles="bg-very-light-pink"
                                 textColour="#bf01ff"
                             />
                         </>}

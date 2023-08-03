@@ -53,7 +53,6 @@ function GroupPreviewMessage({ group, selectedGroup, action }: GroupPreviewMessa
                     profilePicURL=""
                     size={45}
                     username={group.groupName}
-                    statusStyles="before:hidden"
                 />
                 <div className="overflow-hidden flex-grow">
                     <div className="flex justify-between items-center gap-2">

@@ -6,14 +6,20 @@ interface ProfilePicAndStatusProps {
     size: number,
     username: string,
     profileStatus?: UserStatus,
-    statusStyles?: string,
     imgStyles?: string,
     setErrorMessage?: React.Dispatch<React.SetStateAction<string>>,
     loading?: boolean,
     action?: () => void,
+    statusRight?: boolean
 }
 
 function ProfilePicAndStatus(props: ProfilePicAndStatusProps) {
+    const statusColour = props.profileStatus === UserStatus.ONLINE ? 'bg-green-500' : 
+    props.profileStatus === 'AWAY' ? 'bg-orange-400' : 'bg-side-text-gray';
+
+    const defaultStatusStyles = `w-[16px] h-[16px] absolute rounded-full b
+    g-light-green border-2 border-main-white ${statusColour}`;
+
     function handleAction(): void {
         if (props.action) {
             props.action();
@@ -21,12 +27,14 @@ function ProfilePicAndStatus(props: ProfilePicAndStatusProps) {
     }
 
     return (
-        <div className={props.loading ? '' : `${props.profileStatus === UserStatus.ONLINE ? 'before:bg-green-500' : 
-        props.profileStatus === 'AWAY' ? 'before:bg-orange-400' : 'before:bg-side-text-gray'} 
-        before:w-[18px] before:h-[18px] before:absolute before:top-[33px] before:left-[0px] 
-        before:border-[3px] before:border-main-white before:content[''] 
-        before:rounded-full bg-very-light-gray rounded-full ${props.statusStyles}`}
-        onClick={handleAction}>
+        <div className="w-fit h-fit relative" onClick={handleAction}>
+            {props.profileStatus &&
+            <div className={defaultStatusStyles}
+            style={{ 
+                top: `${props.size * 0.70}px`, 
+                left: props.statusRight ? `${props.size * 0.70}px` : `0px` 
+            }}>
+            </div>}
             {props.loading ? 
             <div className={`rounded-full loading ${props.imgStyles}`} 
             style={{ width: `${props.size}px`, height: `${props.size}px` }}>

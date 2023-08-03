@@ -1,12 +1,16 @@
 
 interface SellerSkeletonProps {
-    imgStyles?: string
+    imgStyles?: string,
+    size: number
 }
 
-function SellerSkeleton({ imgStyles }: SellerSkeletonProps) {
+function SellerSkeleton({ imgStyles, size }: SellerSkeletonProps) {
+    const defaultStyles = `w-[57px] h-[57px] loading rounded-full`;
+    
     return (
         <div className="flex items-center gap-3 cursor-pointer p-2 rounded-[6px]">
-            <div className={`w-[57px] h-[57px] loading rounded-full ${imgStyles}`}></div>
+            <div className={`${defaultStyles} ${imgStyles}`} style={{ width: `${size}px`, height: `${size}px` }}>
+            </div>
             <div className="flex-grow">
                 <div className="h-[13px] loading w-[92%]">
                 </div>

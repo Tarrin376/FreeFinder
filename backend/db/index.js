@@ -76,7 +76,7 @@ io.use((socket, next) => {
 io.on("connection", (socket) => {
     socket.on("send-message", (message, groupID, cb) => {
         io.sockets.in(groupID).emit("receive-message", message, groupID);
-        cb();
+        if (cb) cb();
     });
 
     socket.on("join-message-group", (groupID) => {

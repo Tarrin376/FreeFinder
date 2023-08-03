@@ -7,20 +7,26 @@ interface AccountOptionsProps {
 }
 
 function AccountOptions({ setLogIn, setSignUp, action, styles, btnStyles }: AccountOptionsProps) {
+    const defaultStyles = `flex items-center gap-4`;
+
+    function handleLogIn() {
+        if (action) action();
+        setLogIn(true);
+    }
+
+    function handleSignUp() {
+        if (action) action();
+        setSignUp(true);
+    }
+
     return (
-        <div className={`flex items-center gap-4 ${styles}`}>
+        <div className={`${defaultStyles} ${styles}`}>
             <button className={`btn-primary bg-very-light-gray hover:bg-very-light-gray-hover flex-grow ${btnStyles}`} 
-            onClick={() => {
-                if (action) action();
-                setLogIn(true);
-            }}>
+            onClick={handleLogIn}>
                 Log In
             </button>
             <button className={`btn-primary bg-main-black text-main-white hover:bg-main-black-hover flex-grow ${btnStyles}`}
-            onClick={() => {
-                if (action) action();
-                setSignUp(true);
-            }}>
+            onClick={handleSignUp}>
                 Sign Up
             </button>
         </div>

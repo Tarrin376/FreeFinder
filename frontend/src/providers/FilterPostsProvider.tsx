@@ -1,4 +1,3 @@
-import SearchIcon from '../assets/search.png';
 import Price from '../components/Price';
 import { useRef, createContext, useState, useContext, useEffect } from 'react';
 import { MAX_PRICE, MAX_DELIVERY_DAYS } from '../views/CreatePost/Package';
@@ -6,66 +5,25 @@ import { usePaginateData } from '../hooks/usePaginateData';
 import { IPost } from '../models/IPost';
 import { sortPosts } from '../utils/sortPosts';
 import { useLocation } from 'react-router-dom';
-import SortBy from '../components/SortBy';
 import CountriesDropdown from '../components/CountriesDropdown';
 import CreatePost from '../views/CreatePost/CreatePost';
 import AddIcon from '../assets/add.png';
 import SearchLanguages from '../components/SearchLanguages';
-import { deliveryTimes } from '../utils/deliveryTimes';
-import { allSellerLevels } from '../utils/allSellerLevels';
 import { UserContext } from './UserContext';
-import { sellerLevelTextStyles } from '../utils/sellerLevelTextStyles';
 import SellerExperience from '../components/SellerExperience';
 import { FilterPosts } from '../types/FilterPosts';
 import { AnimatePresence } from "framer-motion";
 import ErrorPopUp from '../components/ErrorPopUp';
-import { allExtraFilters } from '../utils/allExtraFilters';
-import { useFetchJobCategories } from '../hooks/useFetchJobCategories';
-import { getMatchedResults } from '../utils/getMatchedResults';
-import { IWorkType } from '../models/IWorkType';
-import MatchedResults from '../components/MatchedResults';
-import Options from '../components/Options';
 import { PaginationResponse } from '../types/PaginateResponse';
+import MainFiltersBar from '../components/MainFiltersBar';
+import SellerLevels from '../components/SellerLevels';
+import DeliveryTimes from '../components/DeliveryTimes';
+import TypeOfWork from '../components/TypeOfWork';
+import ExtraFilters from '../components/ExtraFilters';
 
-interface FilterPostsContextProps {
+interface FilterPostsProviderProps {
     children?: React.ReactNode,
     urlPrefix: string
-}
-
-interface SellerLevelsProps {
-    loading: boolean,
-    sellerLevels: string[],
-    setSellerLevels: React.Dispatch<React.SetStateAction<string[]>>
-}
-
-interface DeliveryTimesProps {
-    loading: boolean,
-    searchHandler: () => void,
-    deliveryTime: React.MutableRefObject<number>,
-}
-
-interface MainFiltersBarProps {
-    searchRef: React.RefObject<HTMLInputElement>,
-    min: number,
-    max: number,
-    setMin: React.Dispatch<React.SetStateAction<number>>,
-    setMax: React.Dispatch<React.SetStateAction<number>>,
-    country: string,
-    setCountry: React.Dispatch<React.SetStateAction<string>>,
-    sort: React.MutableRefObject<string>,
-    loading: boolean,
-    searchHandler: () => void
-}
-
-interface ExtraFiltersProps {
-    loading: boolean,
-    extraFilters: string[],
-    setExtraFilters: React.Dispatch<React.SetStateAction<string[]>>
-}
-
-interface TypeOfWorkProps {
-    selectedWork: string[],
-    setSelectedWork: React.Dispatch<React.SetStateAction<string[]>>
 }
 
 type PostArgs = {
@@ -83,7 +41,7 @@ type PostArgs = {
 
 export const FilterPostsContext = createContext<FilterPosts | undefined>(undefined);
 
-function FilterPostsProvider({ children, urlPrefix }: FilterPostsContextProps) {
+function FilterPostsProvider({ children, urlPrefix }: FilterPostsProviderProps) {
     const postFilters = JSON.parse(sessionStorage.getItem("post_filters") ?? "{}");
 
     const cursor = useRef<string>();
@@ -170,7 +128,7 @@ function FilterPostsProvider({ children, urlPrefix }: FilterPostsContextProps) {
             </AnimatePresence>
             <div className="flex">
                 <div className="h-[calc(100vh-90px)] w-[360px] bg-main-white border-r border-light-border-gray p-[22.5px]">
-                    <button onClick={openPostService} className={`main-btn flex items-center justify-center gap-[10px] mb-[50.5px] 
+                    <button onClick={openPostService} className={`main-btn flex items-center justify-center gap-[10px] mb-[50px] 
                     ${userContext.userData.username === "" ? "invalid-button" : ""}`}>
                         <img src={AddIcon} alt="" className="w-[16px] h-[16px]" />
                         Create new post
@@ -186,8 +144,7 @@ function FilterPostsProvider({ children, urlPrefix }: FilterPostsContextProps) {
                         />
                     </>}
                     <h2 className="text-[20px] mb-[22px]">Filters</h2>
-                    <div className="overflow-y-scroll pr-[8px]" style={{ maxHeight: userContext.userData.seller ? 
-                    "calc(100vh - 456px)" : "calc(100% - 148px)" }}>
+                    <div className="overflow-y-scroll pr-[8px]" style={{ maxHeight: userContext.userData.seller ? "calc(100vh - 483px)" : "calc(100% - 175px)" }}>
                         <div className="flex items-center gap-3 pb-5 mb-5 min-[1683px]:hidden border-b border-light-border-gray">
                             <Price
                                 value={min} 
@@ -270,215 +227,6 @@ function FilterPostsProvider({ children, urlPrefix }: FilterPostsContextProps) {
                         </FilterPostsContext.Provider>
                     </div>
                 </div>
-            </div>
-        </>
-    )
-}
-
-function MainFiltersBar(props: MainFiltersBarProps) {
-    return (
-        <div className="h-[90px] max-w-[1430px] m-auto flex items-center px-[22.5px]">
-            <div className="flex flex-grow items-center border-r border-light-border-gray h-full pr-6">
-                <img src={SearchIcon} alt="" className="w-5 h-5" />
-                <input
-                    type="text" 
-                    placeholder="Search for post" 
-                    className="flex-grow focus:outline-none placeholder-side-text-gray ml-3" 
-                    ref={props.searchRef}
-                />
-            </div>
-            <div className="h-full border-r border-light-border-gray px-[12.75px] flex items-center gap-3 max-[1682px]:hidden">
-                <Price 
-                    value={props.min} 
-                    maxValue={MAX_PRICE}
-                    title="min price" 
-                    setValue={props.setMin}
-                />
-                <div>-</div>
-                <Price 
-                    value={props.max} 
-                    maxValue={MAX_PRICE}
-                    title="max price" 
-                    setValue={props.setMax}
-                />
-            </div>
-            <div className="h-full border-r border-light-border-gray px-[12.75px] flex items-center max-[1308px]:hidden">
-                <CountriesDropdown 
-                    country={props.country}
-                    setCountry={props.setCountry}
-                    styles="w-[240px]"
-                    title="Seller lives in"
-                    anyLocation={true}
-                />
-            </div>
-            <div className="h-full border-r border-light-border-gray pl-[12.75px] pr-[10px] flex items-center">
-                <SortBy sortBy={props.sort} />
-            </div>
-            <div className="pl-[22.5px]">
-                <button className={`btn-primary text-main-white bg-main-blue w-[160px] h-[48px] hover:bg-main-blue-hover
-                ${props.loading ? "invalid-button" : ""}`}
-                onClick={props.searchHandler}>
-                    Search
-                </button>
-            </div>
-        </div>
-    )
-}
-
-function SellerLevels({ loading, setSellerLevels, sellerLevels }: SellerLevelsProps) {
-    function updateSellerLevels(sellerLevel: string): void {
-        setSellerLevels((cur) => {
-            if (cur.includes(sellerLevel)) return cur.filter((level: string) => level !== sellerLevel);
-            else return [...cur, sellerLevel];
-        });
-    }
-
-    return (
-        <div className="border-b border-light-border-gray pb-6 mt-4">
-            <h3 className="text-side-text-gray mb-2 text-[16px]">Seller level</h3>
-            <div className="flex flex-col gap-3">
-                {allSellerLevels.map((sellerLevel: string, index: number) => {
-                    return (
-                        <div className="flex items-center gap-3" key={index}>
-                            <input 
-                                type="checkbox" 
-                                name="seller-level" 
-                                className={`w-[15px] h-[15px] mt-[1px] ${loading ? "invalid-button" : ""}`} 
-                                id={sellerLevel}
-                                defaultChecked={sellerLevels.includes(sellerLevel)}
-                                onClick={() => updateSellerLevels(sellerLevel)}
-                            />
-                            <label htmlFor={sellerLevel} className="text-[15px] seller-level" style={sellerLevelTextStyles[sellerLevel]}>
-                                {sellerLevel}
-                            </label>
-                        </div>
-                    )
-                })}
-            </div>
-        </div>
-    )
-}
-
-function DeliveryTimes({ loading, searchHandler, deliveryTime }: DeliveryTimesProps) {
-    function updateDeliveryTime(newDeliveryTime: number): void {
-        deliveryTime.current = newDeliveryTime;
-        searchHandler();
-    }
-
-    return (
-        <div className="border-b border-light-border-gray pb-5">
-            <h3 className="text-side-text-gray mb-2 text-[16px]">Delivery time</h3>
-            <div className="flex flex-col gap-2">
-                {Object.keys(deliveryTimes).map((cur: string, index: number) => {
-                    return (
-                        <div className="flex items-center gap-3" key={index}>
-                            <input 
-                                type="radio" 
-                                name="delivery-time" 
-                                className={`w-[15px] h-[15px] mt-[1px] ${loading ? "invalid-button" : ""}`}
-                                id={cur}
-                                defaultChecked={deliveryTimes[cur] === deliveryTime.current}
-                                onChange={() => updateDeliveryTime(deliveryTimes[cur])}
-                            />
-                            <label htmlFor={cur} className="text-[15px]">
-                                {cur}
-                            </label>
-                        </div>
-                    )
-                })}
-            </div>
-        </div>
-    )
-}
-
-function TypeOfWork({ selectedWork, setSelectedWork }: TypeOfWorkProps) {
-    const jobCategories = useFetchJobCategories();
-    const [matchedWork, setMatchedWork] = useState<string[][]>([]);
-    const [searchQuery, setSearchQuery] = useState<string>("");
-
-    function searchHandler(value: string) {
-        const allWork = [];
-
-        for (let category of jobCategories.categories) {
-            const workTypes = category.workTypes.map((workType: IWorkType) => workType.name);
-            for (let workType of workTypes) {
-                allWork.push(workType);
-            }
-        }
-
-        const matched = getMatchedResults(allWork, value);
-        setMatchedWork(matched);
-        setSearchQuery(value);
-    }
-
-    function addWork(workType: string) {
-        setSelectedWork((selected: string[]) => [
-            ...selected.filter((cur: string) => cur !== workType), 
-            workType
-        ]);
-    }
-
-    function removeWork(workType: string) {
-        setSelectedWork((selected: string[]) => selected.filter((cur: string) => cur !== workType));
-    }
-
-    return (
-        <div className="border-b border-light-border-gray pb-6 mt-4">
-            <h3 className="mb-2 text-side-text-gray">Type of freelance work</h3>
-            <input 
-                type="text" 
-                className={`search-bar h-10 ${matchedWork.length > 0 ? "!rounded-b-none" : ""} focus:!outline-none`}
-                placeholder="Search for work"
-                onChange={(e) => searchHandler(e.target.value)}
-                value={searchQuery}
-            />
-            {matchedWork.length > 0 &&
-            <MatchedResults
-                search={searchQuery}
-                matchedResults={matchedWork}
-                action={addWork}
-            />}
-            {selectedWork.length > 0 &&
-            <Options 
-                options={selectedWork} 
-                removeOption={removeWork}
-                styles="mt-4"
-                bgColour="bg-very-light-pink"
-                textColour="#bf01ff"
-            />}
-        </div>
-    )
-}
-
-function ExtraFilters({ loading, extraFilters, setExtraFilters }: ExtraFiltersProps) {
-    function toggleFilter(filter: string) {
-        setExtraFilters((cur: string[]) => {
-            if (cur.includes(filter)) return cur.filter((x) => x !== filter);
-            else return [...cur, filter];
-        });
-    }
-
-    return (
-        <>
-            <h3 className="text-side-text-gray mt-4 mb-2 text-[16px]">Extra</h3>
-            <div className="flex flex-col gap-2">
-                {allExtraFilters.map((filter: string, index: number) => {
-                    return (
-                        <div className="flex items-center gap-3" key={index}>
-                            <input 
-                                type="checkbox" 
-                                name="seller-level" 
-                                className={`w-[15px] h-[15px] mt-[1px] ${loading ? "invalid-button" : ""}`}
-                                id={filter}
-                                onChange={() => toggleFilter(filter)}
-                                defaultChecked={extraFilters.includes(filter)}
-                            />
-                            <label htmlFor={filter} className="text-[15px]">
-                                {filter}
-                            </label>
-                        </div>
-                    )
-                })}
             </div>
         </>
     )

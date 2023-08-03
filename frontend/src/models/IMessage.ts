@@ -1,5 +1,6 @@
 import { UserStatus } from "../enums/UserStatus";
 import { IMessageFile } from "./IMessageFile";
+import { IPackage } from "./IPackage";
 
 export interface IMessage {
     from: {
@@ -10,5 +11,9 @@ export interface IMessage {
     files: IMessageFile[]
     messageText: string,
     createdAt: Date,
-    messageID: string
+    messageID: string,
+    groupID: string,
+    orderRequest?: {
+        package: IPackage
+    }
 }

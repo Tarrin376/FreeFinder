@@ -10,8 +10,10 @@ interface PostScrollInfoProps {
 }
 
 function PaginationScrollInfo({ data, page, styles }: PostScrollInfoProps) {
+    const defaultStyles = `w-full`;
+
     return (
-        <div className={`${styles} w-full`}>
+        <div className={`${defaultStyles} ${styles}`}>
             {!data.loading && page % MOD === 0 && !data.reachedBottom &&
             <button className="m-auto block side-btn w-fit" onClick={data.goToNextPage}>
                 Show more results

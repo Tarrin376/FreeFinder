@@ -3,6 +3,7 @@ import { prisma } from '../index.js';
 import { DBError } from '../customErrors/DBError.js';
 import { getPaginatedData } from '../utils/getPaginatedData.js';
 import { checkUser } from '../utils/checkUser.js';
+import { messageProperties } from '../utils/messageProperties.js';
 
 export async function getMessagesHandler(req) {
     try {
@@ -17,27 +18,7 @@ export async function getMessagesHandler(req) {
             }
         };
 
-        const select = {
-            from: {
-                select: {
-                    username: true,
-                    profilePicURL: true,
-                    status: true
-                }
-            },
-            files: {
-                select: {
-                    url: true,
-                    name: true,
-                    fileType: true,
-                    fileSize: true,
-                }
-            },
-            messageText: true,
-            createdAt: true,
-            messageID: true
-        };
-
+        const select = messageProperties;
         const result = await getPaginatedData(
             where, 
             select, 
@@ -49,6 +30,13 @@ export async function getMessagesHandler(req) {
         );
 
         return result;
+    }
+    catch (err) {
+        if (err instanceof DBError) {
+            throw err;
+        } else {
+            throw new DBError("Something went wrong. Please try again later.", 500);
+        }
     }
     finally {
         await prisma.$disconnect();
@@ -65,24 +53,7 @@ export async function sendMessageHandler(req) {
                 messageText: req.body.message
             },
             select: {
-                from: {
-                    select: {
-                        username: true,
-                        profilePicURL: true,
-                        status: true
-                    }
-                },
-                files: {
-                    select: {
-                        url: true,
-                        name: true,
-                        fileType: true,
-                        fileSize: true
-                    }
-                },
-                messageText: true,
-                createdAt: true,
-                messageID: true
+                ...messageProperties
             }
         });
 

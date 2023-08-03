@@ -159,8 +159,10 @@ function Reviews({ url, reviewsRef }: ReviewsProps) {
 }
 
 function RatingAverage({ title, average, styles }: RatingAverageProps) {
+    const defaultStyles = `flex items-center justify-between`;
+
     return (
-        <div className={`flex items-center justify-between ${styles}`}>
+        <div className={`${defaultStyles} ${styles}`}>
             <p className="text-side-text-gray text-sm">{title}</p>
             <div className="flex items-center gap-2">
                 <StarSvg

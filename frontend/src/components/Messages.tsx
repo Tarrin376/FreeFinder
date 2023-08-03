@@ -123,6 +123,7 @@ function Messages({ setMessagesPopUp }: MessagesProps) {
                     </div>
                     <div className="overflow-y-scroll scrollbar-hide flex-grow w-full flex flex-col gap-3" ref={pageRef}>
                         {allGroups.map((msgGroup: GroupPreview, index: number) => {
+                            console.log(msgGroup);
                             return (
                                 <GroupPreviewMessage 
                                     group={msgGroup}

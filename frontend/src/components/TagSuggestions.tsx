@@ -92,8 +92,6 @@ function TagSuggestions({ tag, groupMembers, inputRef, dispatch, matchedMembers,
                         <div className="flex items-center gap-3 overflow-hidden">
                             <ProfilePicAndStatus
                                 profilePicURL={member.user.profilePicURL}
-                                profileStatus={member.user.status}
-                                statusStyles="before:hidden"
                                 username={member.user.username}
                                 size={37}
                             />

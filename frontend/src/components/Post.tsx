@@ -37,6 +37,7 @@ function Post({ postInfo, index, canRemove, count, styles }: PostProps) {
     const userContext = useContext(UserContext);
 
     const navigate = useNavigate();
+    const defaultStyles = `bg-transparent w-[320px] relative`;
 
     async function savePost(saved: boolean): Promise<void> {
         try {
@@ -93,7 +94,7 @@ function Post({ postInfo, index, canRemove, count, styles }: PostProps) {
     }
 
     return (
-        <motion.div className={`bg-transparent w-[320px] relative ${styles}`} 
+        <motion.div className={`${defaultStyles} ${styles}`} 
         initial={{ opacity: 0 }} animate={{ opacity: 1 }} exit={{ opacity: 0 }} 
         transition={{ delay: 0.05 * (index % limit), duration: 0.2 }}>
             <p className={`absolute rounded-t-[12px] z-20 px-7 py-[11px] w-[100%] 
@@ -121,10 +122,10 @@ function Post({ postInfo, index, canRemove, count, styles }: PostProps) {
                     <ProfilePicAndStatus 
                         profilePicURL={postInfo.postedBy.user.profilePicURL} 
                         profileStatus={postInfo.postedBy.user.status}
-                        statusStyles="before:left-[30px] cursor-pointer"
                         action={navigateToProfile}
                         username={postInfo.postedBy.user.username}
                         size={48}
+                        statusRight={true}
                     />
                     <div className="flex-grow overflow-hidden">
                         <div className="flex justify-between gap-3">

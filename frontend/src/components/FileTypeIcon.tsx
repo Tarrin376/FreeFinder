@@ -13,7 +13,7 @@ function FileTypeIcon({ fileType }: FileTypeIconProps) {
             foldColor="#4E73F8"
             glyphColor="#4E73F8"
             labelColor="#4E73F8"
-            color="#ebebeb"
+            color="#ebebec"
         />
     )
 }
