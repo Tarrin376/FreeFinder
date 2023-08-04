@@ -35,6 +35,7 @@ module.exports = {
             'error-red-hover': '#fcdcdc',
             'error-text': '#F43C3C',
             'light-green': '#30ab4b',
+            'light-green-hover': '#33b44f',
             'light-border-gray': '#e2e2e2',
             'disabled-gray': '#E0E0E0',
             'highlight': '#e6ebff',

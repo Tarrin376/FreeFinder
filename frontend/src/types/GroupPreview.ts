@@ -8,6 +8,7 @@ export type GroupPreview = {
     creatorID: string,
     lastMessage: IMessage,
     workType: string,
+    postID: string,
     seller: FoundUsers[number],
     members: Array<{
         user: {

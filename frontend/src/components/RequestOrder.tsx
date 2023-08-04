@@ -34,7 +34,7 @@ function RequestOrder({ curPkg, postID, seller, workType, setRequestOrderPopUp }
         try {
             const resp = await axios.post<{ newMessage: IMessage, message: string }>
             (`/api/users/${userContext.userData.username}/order-requests/${postID}/${curPkg.type}`);
-            userContext.socket?.emit("send-message", resp.data.newMessage, resp.data.newMessage.groupID);
+            userContext.socket?.emit("send-message", resp.data.newMessage, resp.data.newMessage.groupID, userContext.userData.username, false);
         }
         catch (err: any) {
             const errorMessage = getAPIErrorMessage(err as AxiosError<{ message: string }>);
@@ -57,19 +57,21 @@ function RequestOrder({ curPkg, postID, seller, workType, setRequestOrderPopUp }
                 textSize={16}
             />
             <PackageOverview 
-                curPkg={curPkg}
+                type={curPkg.type}
+                revisions={curPkg.revisions}
                 seller={seller}
                 workType={workType}
+                wrapperStyles="mb-5"
             />
+            <h2 className="mb-3">Summary</h2>
             <OrderSummary
                 subtotal={curPkg.amount}
                 deliveryTime={curPkg.deliveryTime}
             />
             <CheckBox
                 labelName="terms"
-                text="I understand that the transaction amount will be held by FreeFinder until the order request has expired (4 days) or 
-                is accepted by the seller. I agree to let FreeFinder complete the transaction if the order request is accepted. If the delivery
-                window is exceeded, I am permitted to cancel the order with or without notifying the seller."
+                text={`I understand that the transaction amount will be held by FreeFinder until the order request has expired (4 days) or
+                is accepted by the seller. If the delivery window is exceeded, I am permitted to cancel the order with or without notifying the seller.`}
                 styles="mt-5"
                 setChecked={setChecked}
             />

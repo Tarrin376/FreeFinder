@@ -1,0 +1,1 @@
+export type NavElement = HTMLLIElement | HTMLDivElement | HTMLParagraphElement;

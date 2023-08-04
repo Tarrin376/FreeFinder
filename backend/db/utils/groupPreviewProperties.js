@@ -42,6 +42,7 @@ export const groupPreviewProperties = {
     },
     post: {
         select: {
+            postID: true,
             postedBy: {
                 select: {
                     user: {

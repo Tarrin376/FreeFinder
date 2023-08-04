@@ -11,7 +11,7 @@ import ChangeSellerDetails from "./ChangeSellerDetails";
 import { AnimatePresence } from "framer-motion";
 import AccountBalance from "./AccountBalance";
 import ChatIcon from "../assets/chat.png";
-import Messages from "./Messages";
+import MessagePreviews from "./MessagePreviews";
 
 interface ProfileMenuProps {
     logout: () => Promise<void>
@@ -78,7 +78,7 @@ function ProfileMenu({ logout }: ProfileMenuProps) {
                 {settingsPopUp && <AccountSettings setSettingsPopUp={setSettingsPopUp} />}
                 {sellerProfilePopUp && <ChangeSellerDetails setSellerProfilePopUp={setSellerProfilePopUp} />}
                 {balancePopUp && <AccountBalance setBalancePopUp={setBalancePopUp} />}
-                {messagesPopUp && <Messages setMessagesPopUp={setMessagesPopUp} />}
+                {messagesPopUp && <MessagePreviews setMessagesPopUp={setMessagesPopUp} />}
             </AnimatePresence>
             <div className="flex gap-4 items-center">
                 <img src={ChatIcon} className="w-[34px] h-[34px] cursor-pointer" alt="chat" onClick={viewMessages} />

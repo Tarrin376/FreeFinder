@@ -2,15 +2,15 @@ import SummaryItem from "./SummaryItem";
 
 interface OrderSummaryProps {
     subtotal: number,
-    deliveryTime: number
+    deliveryTime: number,
+    styles?: string
 }
 
 const serviceFeePercentage = 0.05;
 
-function OrderSummary({ subtotal, deliveryTime }: OrderSummaryProps) {
+function OrderSummary({ subtotal, deliveryTime, styles }: OrderSummaryProps) {
     return (
-        <div>
-            <h2 className="mt-5 mb-3">Summary</h2>
+        <div className={styles}>
             <SummaryItem
                 label="Subtotal"
                 value={`£${subtotal.toFixed(2)}`}
@@ -19,17 +19,16 @@ function OrderSummary({ subtotal, deliveryTime }: OrderSummaryProps) {
             <SummaryItem
                 label={`Service fee (${serviceFeePercentage * 100}%)`}
                 value={`£${(subtotal * serviceFeePercentage).toFixed(2)}`}
-                styles="pb-5 border-b border-light-border-gray"
+                styles="pb-4 border-b border-light-border-gray"
             />
             <SummaryItem
                 label="Total"
                 value={`£${(subtotal + (subtotal * serviceFeePercentage)).toFixed(2)}`}
-                styles="pt-5 font-bold mb-2"
+                styles="pt-4 font-bold mb-2"
             />
             <SummaryItem
                 label="Delivery time"
                 value={`${deliveryTime} ${deliveryTime === 1 ? "day" : "days"}`}
-                styles="mb-2"
             />
         </div>
     )

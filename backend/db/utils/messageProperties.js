@@ -16,16 +16,15 @@ export const messageProperties = {
     },
     orderRequest: {
         select: {
+            status: true,
+            id: true,
+            actionTaken: true,
             package: {
                 select: {
                     revisions: true,
-                    features: true,
                     deliveryTime: true,
-                    description: true,
                     amount: true,
-                    numOrders: true,
                     type: true,
-                    title: true
                 }
             }
         }

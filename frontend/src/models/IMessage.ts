@@ -1,6 +1,6 @@
 import { UserStatus } from "../enums/UserStatus";
 import { IMessageFile } from "./IMessageFile";
-import { IPackage } from "./IPackage";
+import { OrderRequestStatus } from "../enums/OrderRequestStatus";
 
 export interface IMessage {
     from: {
@@ -14,6 +14,14 @@ export interface IMessage {
     messageID: string,
     groupID: string,
     orderRequest?: {
-        package: IPackage
+        status: OrderRequestStatus,
+        id: string,
+        actionTaken: Date,
+        package: {
+            revisions: string,
+            deliveryTime: number,
+            amount: number,
+            type: string,
+        }
     }
 }

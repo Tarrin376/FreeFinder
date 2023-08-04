@@ -8,14 +8,10 @@ import { messageProperties } from '../utils/messageProperties.js';
 export async function getMessagesHandler(req) {
     try {
         await checkUser(req.userData.userID, req.username);
-        const where = {
-            groupID: req.groupID
-        };
+        const where = { groupID: req.groupID };
 
         const options = {
-            orderBy: {
-                createdAt: 'desc'
-            }
+            orderBy: { createdAt: 'desc' }
         };
 
         const select = messageProperties;
@@ -29,7 +25,16 @@ export async function getMessagesHandler(req) {
             options
         );
 
-        return result;
+        return {
+            ...result,
+            next: result.next.map(message => {
+                if (message.orderRequest) {
+                    message.orderRequest.package.amount = parseInt(message.orderRequest.package.amount);
+                }
+
+                return message;
+            })
+        }
     }
     catch (err) {
         if (err instanceof DBError) {

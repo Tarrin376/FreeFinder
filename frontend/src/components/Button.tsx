@@ -21,7 +21,7 @@ function Button(props: ButtonProps) {
     const btnRef = useRef<HTMLButtonElement>(null);
     const [btnText, setBtnText] = useState(props.defaultText);
   
-    const handleAction = async (e: React.MouseEvent<HTMLButtonElement>) => {
+    async function handleAction(e: React.MouseEvent<HTMLButtonElement>) {
         e.preventDefault();
         setBtnText(props.loadingText);
         const error = await props.action();
@@ -59,11 +59,11 @@ function Button(props: ButtonProps) {
                 }
             }
         }, 1500);
-    }, [btnText, props])
+    }, [btnText, props]);
   
     useEffect(() => {
         setBtnText(props.defaultText);
-    }, [props.defaultText])
+    }, [props.defaultText]);
   
     return (
         <button className={`${btnText !== props.defaultText ? "pointer-events-none" : ""} ${props.styles}`} 

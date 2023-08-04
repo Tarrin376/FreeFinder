@@ -19,10 +19,11 @@ interface MessageProps {
     sendingMessage: boolean,
     groupMembers: GroupPreview["members"],
     seller: FoundUsers[number],
-    workType: string
+    workType: string,
+    groupID: string
 }
 
-function Message({ message, isLastMessage, sendingMessage, groupMembers, seller, workType }: MessageProps) {
+function Message({ message, isLastMessage, sendingMessage, groupMembers, seller, workType, groupID }: MessageProps) {
     const userContext = useContext(UserContext);
     const isOwnMessage = message.from.username === userContext.userData.username;
     const [errorMessage, setErrorMessage] = useState<string>("");
@@ -52,14 +53,15 @@ function Message({ message, isLastMessage, sendingMessage, groupMembers, seller,
                 </div>
                 <div className="flex gap-[5px] items-end w-full">
                     {isOwnMessage && <MessageSent sendingMessage={sendingMessage && isLastMessage} />}
-                    <div className={`rounded-[13px] p-2 px-4 w-full ${isOwnMessage ? "rounded-tr-none bg-highlight self-end" : 
-                    "bg-very-light-gray rounded-tl-none"} ${message.orderRequest ? "!bg-main-blue" : ""}`}>
+                    <div className={`rounded-[13px] p-2 px-4 ${isOwnMessage ? "rounded-tr-none bg-highlight self-end" : 
+                    "bg-very-light-gray rounded-tl-none"} ${message.orderRequest ? "!bg-main-blue w-full" : "w-fit"}`}>
                         {message.orderRequest ?
                         <OrderRequest 
                             message={message} 
-                            isOwnMessage={isOwnMessage}
                             seller={seller}
                             workType={workType}
+                            groupID={groupID}
+                            key={message.messageID}
                         /> : 
                         <>
                             <Tags

@@ -13,6 +13,7 @@ import Actions from "./Actions";
 import Button from "./Button";
 import AddUserIcon from "../assets/AddGroup.png";
 import AddUsersToGroup from "./AddUsersToGroup";
+import ServiceID from "./ServiceID";
 
 interface ChatProps {
     group: GroupPreview,
@@ -127,16 +128,18 @@ function Chat({ group, setAllGroups, setGroupCount, setGroup }: ChatProps) {
                     setToggleAddUsersPopUp={setToggleAddUsersPopUp}
                 />}
             </AnimatePresence>
-            <div className="border-b border-light-border-gray bg-transparent pl-4 pb-4 w-full flex items-center justify-between flex-shrink-0 gap-5">
+            <div className="bg-transparent pl-4 w-full flex items-center justify-between flex-shrink-0 gap-5">
                 <div className="flex items-center gap-4 overflow-hidden">
                     <ProfilePicAndStatus
                         profilePicURL=""
                         size={47}
                         username={group.groupName}
                     />
-                    <p className="text-[17px] font-bold text-ellipsis whitespace-nowrap overflow-hidden mb-1">
-                        {group.groupName}
-                    </p>
+                    <div>
+                        <p className="text-[17px] font-bold text-ellipsis whitespace-nowrap overflow-hidden mb-1">
+                            {group.groupName}
+                        </p>
+                    </div>
                 </div>
                 <div className="flex items-center gap-2 flex-shrink-0">
                     <div className="inline-flex relative" onMouseLeave={() => setToggleGroupMembers(false)}>
@@ -215,6 +218,13 @@ function Chat({ group, setAllGroups, setGroupCount, setGroup }: ChatProps) {
                         />}
                     </Actions>
                 </div>
+            </div>
+            <div className="p-4 pr-0 bg-transparent border-b border-light-border-gray">
+                <ServiceID
+                    postID={group.postID}
+                    textSize={14}
+                    styles="w-full"
+                />
             </div>
             <ChatBox 
                 seller={group.seller}

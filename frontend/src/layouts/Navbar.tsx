@@ -8,8 +8,6 @@ import ProfileMenu from '../components/ProfileMenu';
 import { useNavigate } from 'react-router-dom';
 import SearchSellers from '../components/SearchSellers';
 import { useToggleAwayStatus } from '../hooks/useToggleAwayStatus';
-import DropdownIcon from "../assets/dropdown.png";
-import OutsideClickHandler from 'react-outside-click-handler';
 import Sellers from '../components/Sellers';
 import { AnimatePresence } from "framer-motion";
 import { SellerOptions } from '../enums/SellerOptions';
@@ -20,6 +18,8 @@ import AccountOptions from '../components/AccountOptions';
 import { initialState } from '../providers/UserContext';
 import axios from "axios";
 import OnlineStatus from '../components/OnlineStatus';
+import NavDropdown from '../components/NavDropdown';
+import { NavElement } from '../types/NavElement';
 
 function Navbar() {
     const [signUp, setSignUp] = useState<boolean>(false);
@@ -32,7 +32,7 @@ function Navbar() {
     const windowSize = useWindowSize();
 
     const navigate = useNavigate();
-    const selected = useRef<HTMLLIElement | HTMLDivElement | HTMLParagraphElement>();
+    const selected = useRef<NavElement>();
 
     useToggleAwayStatus();
 
@@ -45,7 +45,7 @@ function Navbar() {
         navigate(url);
     }
 
-    function goToPage(e: React.MouseEvent<HTMLLIElement | HTMLDivElement | HTMLParagraphElement>, url: string) {
+    function goToPage(e: React.MouseEvent<NavElement>, url: string) {
         const target = e.currentTarget;
         if (selected.current) {
             selected.current.classList.remove('selected-nav-element');
@@ -114,7 +114,9 @@ function Navbar() {
                     </li>}
                     {windowSize > 681 && 
                     <>
-                        <li className="nav-item" onClick={(e) => goToPage(e, 'posts/all')}>Browse all</li>
+                        <li className="nav-item" onClick={(e) => goToPage(e, 'posts/all')}>
+                            Browse all
+                        </li>
                         {userContext.userData.seller &&
                         <>
                             <li className="nav-item">
@@ -124,32 +126,20 @@ function Navbar() {
                     </>}
                     {userContext.userData.userID !== "" && windowSize > 1005 &&
                     <>
-                        <li className="nav-item">My orders</li>
-                        <li className="cursor-pointer relative" onClick={toggleSavedDropdown}>
-                            <div className="flex items-center gap-3">
-                                <span>Saved</span>
-                                <img 
-                                    src={DropdownIcon} 
-                                    className={`w-[15px] h-[15px] transition-all duration-200 
-                                    ease-linear ${savedDropdown ? "rotate-180" : ""}`} 
-                                    alt="" 
-                                />
-                            </div>
-                            {savedDropdown &&
-                            <OutsideClickHandler onOutsideClick={toggleSavedDropdown}>
-                                <div className="absolute bg-main-white top-[30px] left-0 flex flex-col rounded-[6px] 
-                                border border-light-border-gray shadow-profile-page-container overflow-hidden w-[120px] z-30">
-                                    <p className="cursor-pointer hover:bg-main-white-hover profile-menu-element pt-[6px] pb-[6px] link" 
-                                    onClick={(e) => goToPage(e, `/${userContext.userData.username}/saved/posts`)}>
-                                        services
-                                    </p>
-                                    <p className="cursor-pointer hover:bg-main-white-hover profile-menu-element pt-[6px] pb-[6px] link" 
-                                    onClick={() => setSavedSellersPopUp(true)}>
-                                        sellers
-                                    </p>
-                                </div>
-                            </OutsideClickHandler>}
-                        </li>
+                        <NavDropdown
+                            title="Orders"
+                            items={[
+                                ["My orders", (e) => goToPage(e as React.MouseEvent<NavElement>, `/${userContext.userData.username}/saved/posts`)],
+                                ["Order requests", () => setSavedSellersPopUp(true)]
+                            ]}
+                        />
+                        <NavDropdown
+                            title="Saved"
+                            items={[
+                                ["Services", (e) => goToPage(e as React.MouseEvent<NavElement>, `/${userContext.userData.username}/saved/posts`)],
+                                ["Sellers", () => setSavedSellersPopUp(true)]
+                            ]}
+                        />
                         <li className="nav-item" onClick={(e) => goToPage(e, `${userContext.userData.username}/posts`)}>
                             My services
                         </li>

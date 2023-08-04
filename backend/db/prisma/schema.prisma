@@ -69,14 +69,15 @@ model Message {
 }
 
 model OrderRequest {
-    message   Message @relation(fields: [messageID], references: [messageID], onDelete: Cascade)
-    messageID String  @unique
-    user      User    @relation(fields: [userID], references: [userID], onDelete: Cascade)
-    userID    String
-    package   Package @relation(fields: [packageID], references: [packageID], onDelete: Cascade)
-    packageID String
-
-    @@id([userID, packageID])
+    id          String             @id @default(uuid())
+    message     Message            @relation(fields: [messageID], references: [messageID], onDelete: Cascade)
+    messageID   String             @unique
+    user        User               @relation(fields: [userID], references: [userID], onDelete: Cascade)
+    userID      String
+    package     Package            @relation(fields: [packageID], references: [packageID], onDelete: Cascade)
+    packageID   String
+    status      OrderRequestStatus
+    actionTaken DateTime           @default(now())
 }
 
 model MessageFile {
@@ -252,4 +253,11 @@ enum PackageType {
     BASIC
     STANDARD
     SUPERIOR
+}
+
+enum OrderRequestStatus {
+    PENDING
+    DECLINED
+    CANCELLED
+    ACCEPTED
 }

@@ -3,6 +3,7 @@ export function formatGroup(group) {
         ...group,
         lastMessage: group.messages.length > 0 ? group.messages[0] : null,
         workType: group.post.workType.name,
+        postID: group.post.postID,
         seller: {
             profilePicURL: group.post.postedBy.user.profilePicURL,
             username: group.post.postedBy.user.username,

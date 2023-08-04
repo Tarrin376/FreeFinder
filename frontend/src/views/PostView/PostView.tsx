@@ -27,6 +27,7 @@ import CreateReview from "../../components/CreateReview";
 import { scrollIntoView } from "../../utils/scrollIntoView";
 import StarSvg from "../../components/StarSvg";
 import KeyPair from "../../components/KeyPair";
+import ServiceID from "../../components/ServiceID";
 
 export type PostViewState = {
     about: string,
@@ -138,12 +139,6 @@ function PostView() {
     function triggerFileUpload(): void {
         if (addImageFileRef.current) {
             addImageFileRef.current.click();
-        }
-    }
-
-    function copyServiceID() {
-        if (state.postData) {
-            navigator.clipboard.writeText(state.postData.postID);
         }
     }
 
@@ -259,16 +254,11 @@ function PostView() {
                                 </p>
                             </div>
                         </div>
-                        <div className="flex items-center gap-3 mb-4">
-                            <KeyPair
-                                itemKey="Service ID"
-                                itemValue={state.postData.postID}
-                                textSize={16}
-                            />
-                            <button className="side-btn w-fit !h-[30px] text-[15px] rounded-[6px]" onClick={copyServiceID}>
-                                copy
-                            </button>
-                        </div>
+                        <ServiceID
+                            postID={state.postData.postID}
+                            textSize={15}
+                            styles="mb-4"
+                        />
                         <Carousel
                             images={state.postData.images}
                             btnSize={50}

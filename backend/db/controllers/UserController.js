@@ -128,7 +128,7 @@ export async function updatePassword(req, res) {
 export async function getUserPosts(req, res) {
     try {
         const response = await getUserPostsHandler(req);
-        res.json({...response, message: "success" });
+        res.json({ ...response, message: "success" });
     }
     catch (err) {
         res.status(err.code).json({ message: err.message });

@@ -1,7 +1,6 @@
 import { usePaginateData } from "../hooks/usePaginateData";
 import { IMessage } from "../models/IMessage";
 import { useState, useRef, useContext, useEffect, useCallback, useReducer } from "react";
-import Message from "./Message";
 import { UserContext } from "../providers/UserContext";
 import { getAPIErrorMessage } from "../utils/getAPIErrorMessage";
 import axios, { AxiosError } from "axios";
@@ -26,6 +25,7 @@ import SupportedFileFormats from "./SupportedFileFormats";
 import { MatchedMembers } from "../types/MatchedMembers";
 import { useArrowNavigation } from "../hooks/useArrowNavigation";
 import { FoundUsers } from "../types/FoundUsers";
+import Messages from "./Messages";
 
 interface ChatBoxProps {
     seller: FoundUsers[number],
@@ -147,7 +147,7 @@ function ChatBox({ seller, workType, groupID, groupMembers }: ChatBoxProps) {
                 createdAt: new Date(),
                 messageID: "",
                 groupID: ""
-            });
+            }, false);
 
             const resp = await axios.post<{ newMessage: IMessage, message: string }>
             (`/api/users/${userContext.userData.username}/message-groups/${groupID}/messages`, { 
@@ -161,7 +161,7 @@ function ChatBox({ seller, workType, groupID, groupMembers }: ChatBoxProps) {
                     files: files.succeeded
                 };
 
-                userContext.socket.emit("send-message", newMessage, groupID, () => {
+                userContext.socket.emit("send-message", newMessage, groupID, userContext.userData.username, false, () => {
                     dispatch({ 
                         sendingMessage: false, 
                         newMessages: [newMessage, ...state.newMessages],
@@ -176,8 +176,18 @@ function ChatBox({ seller, workType, groupID, groupMembers }: ChatBoxProps) {
         }
     }
 
-    const addMessage = useCallback((message: IMessage): void => {
-        dispatch({ newMessages: [message, ...state.newMessages] });
+    const addMessage = useCallback((message: IMessage, updateMessage: boolean): void => {
+        if (updateMessage) {
+            dispatch({ newMessages: state.newMessages.map(x => {
+                if (x.messageID !== message.messageID) return x;
+                else return message;
+            }) });
+        } else {
+            dispatch({ newMessages: [
+                message, 
+                ...state.newMessages
+            ] });
+        }
     }, [state.newMessages]);
 
     function handleKeyDown(e: React.KeyboardEvent<HTMLInputElement>): void {
@@ -257,9 +267,9 @@ function ChatBox({ seller, workType, groupID, groupMembers }: ChatBoxProps) {
         }
     }, []);
 
-    const showMessage = useCallback((message: IMessage, id: string) => {
-        if (id === groupID && message.from.username !== userContext.userData.username) {
-            addMessage(message);
+    const showMessage = useCallback((message: IMessage, id: string, from: string, updateMessage: boolean) => {
+        if (id === groupID && from !== userContext.userData.username) {
+            addMessage(message, updateMessage);
         }
     }, [groupID, addMessage, userContext.userData.username]);
 
@@ -274,6 +284,10 @@ function ChatBox({ seller, workType, groupID, groupMembers }: ChatBoxProps) {
         }
     }, [userContext.socket, showMessage]);
 
+    useEffect(() => {
+        dispatch({ newMessages: messages.data })
+    }, [messages.data]);
+
     return (
         <>
             <AnimatePresence>
@@ -284,21 +298,15 @@ function ChatBox({ seller, workType, groupID, groupMembers }: ChatBoxProps) {
                     setErrorMessage={setErrorMessage} 
                 />}
             </AnimatePresence>
-            <div className="bg-transparent flex-grow overflow-y-scroll w-full flex flex-col-reverse items-end gap-6 p-4" ref={pageRef}>
-                {[...state.newMessages, ...messages.data].map((message: IMessage, index: number) => {
-                    return (
-                        <Message
-                            message={message}
-                            key={index}
-                            isLastMessage={index === 0}
-                            sendingMessage={state.sendingMessage}
-                            groupMembers={groupMembers}
-                            seller={seller}
-                            workType={workType}
-                        />
-                    )
-                })}
-            </div>
+            <Messages
+                messages={state.newMessages}
+                sendingMessage={state.sendingMessage}
+                groupMembers={groupMembers}
+                seller={seller}
+                workType={workType}
+                groupID={groupID}
+                pageRef={pageRef}
+            />
             <div className="pl-3 pt-3 flex-shrink-0 relative">
                 <AnimatePresence>
                     {state.toggleEmojiPicker ?
@@ -307,7 +315,6 @@ function ChatBox({ seller, workType, groupID, groupMembers }: ChatBoxProps) {
                         <EmojiPicker 
                             onEmojiClick={(data, _) => addEmoji(data.emoji)} 
                             lazyLoadEmojis={true}
-                            emojiStyle={EmojiStyle.GOOGLE}
                             searchDisabled={true}
                             height={300}
                             width={300}
