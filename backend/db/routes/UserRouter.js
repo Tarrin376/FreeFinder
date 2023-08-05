@@ -17,7 +17,8 @@ import
     getUserPosts,
     getBalance,
     addToBalance,
-    searchUsers
+    searchUsers,
+    createOrder
 } from '../controllers/UserController.js';
 
 const userRouter = Router();
@@ -33,6 +34,8 @@ userRouter.use('/:username/message-groups', messageGroupRouter);
 userRouter.use('/:username/order-requests', orderRequestRouter);
 
 userRouter.post('/:username/posts', cookieJwtAuth, getUserPosts);
+
+userRouter.post('/:username/orders', cookieJwtAuth, createOrder);
 
 userRouter.post('/', registerUser);
 userRouter.get('/', searchUsers);

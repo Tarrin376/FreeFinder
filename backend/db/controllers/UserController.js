@@ -9,7 +9,8 @@ import
     getUserPostsHandler,
     getBalanceHandler,
     addToBalanceHandler,
-    searchUsersHandler
+    searchUsersHandler,
+    createOrderHandler
 } 
 from '../services/UserService.js';
 import { cookieJwtSign } from '../middleware/cookieJwtSign.js';
@@ -149,6 +150,16 @@ export async function addToBalance(req, res) {
     try {
         const balance = await addToBalanceHandler(req);
         res.json({ balance: balance, message: "success" });
+    }
+    catch (err) {
+        res.status(err.code).json({ message: err.message });
+    }
+}
+
+export async function createOrder(req, res) {
+    try {
+        await createOrderHandler(req);
+        res.json({ message: "success" });
     }
     catch (err) {
         res.status(err.code).json({ message: err.message });

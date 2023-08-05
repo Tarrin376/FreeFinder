@@ -4,6 +4,9 @@ import { checkUser } from '../utils/checkUser.js';
 import { prisma } from '../index.js';
 import { messageProperties } from '../utils/messageProperties.js';
 
+const VALID_DURATION = 4;
+const SERVICE_FEE = 0.05;
+
 async function checkMessageGroup(postID, userID) {
     const messageGroup = await prisma.messageGroup.findUnique({
         where: {
@@ -24,8 +27,8 @@ async function checkMessageGroup(postID, userID) {
     return messageGroup.groupID;
 }
 
-async function checkPackage(postID, type) {
-    const packageType = await prisma.package.findUnique({
+async function checkPackage(postID, type, sellerID) {
+    const pkg = await prisma.package.findUnique({
         where: {
             postID_type: {
                 postID: postID,
@@ -33,15 +36,28 @@ async function checkPackage(postID, type) {
             }
         },
         select: {
-            packageID: true
+            packageID: true,
+            amount: true,
+            post: {
+                select: {
+                    sellerID: true
+                }
+            }
         }
     });
 
-    if (!packageType) {
+    if (!pkg) {
         throw new DBError("Service or package does not exist.", 404);
     }
 
-    return packageType.packageID;
+    if (pkg.post.sellerID !== sellerID) {
+        throw new DBError("This seller does not own this service.", 400);
+    }
+
+    return {
+        packageID: pkg.packageID,
+        subTotal: parseFloat(pkg.amount)
+    }
 }
 
 async function checkOrderRequests(packageID, userID) {
@@ -60,11 +76,27 @@ async function checkOrderRequests(packageID, userID) {
 
 export async function sendOrderRequestHandler(req) {
     try {
-        await checkUser(req.userData.userID, req.username);
-        const groupID = await checkMessageGroup(req.params.postID, req.userData.userID);
-        const packageID = await checkPackage(req.params.postID, req.params.packageType);
-        await checkOrderRequests(packageID, req.userData.userID);
+        const seller = await prisma.seller.findUnique({
+            where: { userID: req.params.seller },
+            select: { sellerID: true }
+        });
 
+        if (!seller) {
+            throw new DBError("Seller does not exist.", 400);
+        }
+
+        const user = await checkUser(req.userData.userID, req.username);
+        const groupID = await checkMessageGroup(req.params.postID, req.userData.userID);
+        const { packageID, subTotal } = await checkPackage(req.params.postID, req.params.packageType, seller.sellerID);
+
+        const userBalance = parseFloat(user.balance);
+        const total = subTotal + subTotal * SERVICE_FEE;
+
+        if (total > userBalance) {
+            throw new DBError(`You are £${(total - userBalance).toFixed(2)} short! Please top up your balance to make this order request.`, 400);
+        }
+
+        await checkOrderRequests(packageID, req.userData.userID);
         return await prisma.$transaction(async (tx) => {
             const message = await tx.message.create({
                 select: { ...messageProperties },
@@ -74,18 +106,34 @@ export async function sendOrderRequestHandler(req) {
                     messageText: `${req.username} has requested an order.`
                 }
             });
-    
+            
+            const date = new Date();
+            const expiryDate = new Date(date.setDate(date.getDate() + VALID_DURATION));
+
             const orderRequest = await tx.orderRequest.create({
                 select: { ...messageProperties.orderRequest.select },
                 data: {
                     messageID: message.messageID,
                     userID: req.userData.userID,
+                    sellerID: seller.sellerID,
                     packageID: packageID,
-                    status: "PENDING"
+                    status: "PENDING",
+                    expires: expiryDate,
+                    subTotal: subTotal,
+                    total: total
                 }
             });
 
-            orderRequest.package.amount = parseInt(orderRequest.package.amount);
+            await tx.user.update({
+                where: { userID: req.userData.userID },
+                data: {
+                    balance: { decrement: total }
+                }
+            });
+
+            orderRequest.subTotal = parseFloat(orderRequest.subTotal);
+            orderRequest.total = parseFloat(orderRequest.total);
+
             return {
                 ...message,
                 orderRequest: orderRequest
@@ -108,14 +156,29 @@ export async function sendOrderRequestHandler(req) {
 
 export async function updateOrderRequestStatusHandler(req) {
     try {
+        await checkUser(req.userData.userID, req.username);
         const orderRequest = await prisma.orderRequest.findUnique({
-            where: { id: req.params.id }
+            where: { id: req.params.id },
+            select: { 
+                userID: true,
+                messageID: true,
+                status: true,
+                seller: {
+                    select: {
+                        userID: true
+                    }
+                }
+            }
         });
 
-        if (!orderRequest) {
+        if (req.userData.userID !== orderRequest.userID && req.userData.userID !== orderRequest.seller.userID) {
+            throw new DBError("You are not authorized to update this order request.", 403);
+        } else if (!orderRequest) {
             throw new DBError("Order request not found.", 404);
         } else if (orderRequest.status !== "PENDING") {
             throw new DBError("Action has already been taken on this order request.", 409);
+        } else if (req.body.status === "PENDING") {
+            return;
         }
 
         const message = await prisma.message.findUnique({
@@ -123,26 +186,39 @@ export async function updateOrderRequestStatusHandler(req) {
             select: { ...messageProperties }
         });
 
-        const updatedOrderRequest = await prisma.orderRequest.update({
-            select: { ...messageProperties.orderRequest.select },
-            where: { id: req.params.id },
-            data: { 
-                status: req.body.status,
-                actionTaken: new Date()
-            },
-        });
+        return await prisma.$transaction(async (tx) => {
+            const updatedOrderRequest = await tx.orderRequest.update({
+                select: { ...messageProperties.orderRequest.select },
+                where: { id: req.params.id },
+                data: { 
+                    status: req.body.status,
+                    actionTaken: new Date()
+                },
+            });
 
-        updatedOrderRequest.package.amount = parseInt(updatedOrderRequest.package.amount);
-        return {
-            ...message,
-            orderRequest: updatedOrderRequest
-        }
+            if (req.body.status !== "ACCEPTED") {
+                await tx.user.update({
+                    where: { userID: orderRequest.userID },
+                    data: {
+                        balance: { increment: updatedOrderRequest.total }
+                    }
+                });
+            }
+    
+            updatedOrderRequest.subTotal = parseFloat(updatedOrderRequest.subTotal);
+            updatedOrderRequest.total = parseFloat(updatedOrderRequest.total);
+
+            return {
+                ...message,
+                orderRequest: updatedOrderRequest
+            }
+        });
     }
     catch (err) {
         if (err instanceof DBError) {
             throw err;
-        } else if (err instanceof Prisma.PrismaClientKnownRequestError && err.code === "P2025") {
-            throw new DBError("Order request not found.", 404);
+        } else if (err instanceof Prisma.PrismaClientKnownRequestError) {
+            throw new DBError("Missing required fields or fields provided are invalid.", 400);
         } else if (err instanceof Prisma.PrismaClientValidationError) {
             throw new DBError("Missing required fields or fields provided are invalid.", 400);
         } else {

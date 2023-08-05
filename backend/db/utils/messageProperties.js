@@ -19,12 +19,14 @@ export const messageProperties = {
             status: true,
             id: true,
             actionTaken: true,
+            expires: true,
+            subTotal: true,
+            total: true,
             package: {
                 select: {
                     revisions: true,
                     deliveryTime: true,
-                    amount: true,
-                    type: true,
+                    type: true
                 }
             }
         }

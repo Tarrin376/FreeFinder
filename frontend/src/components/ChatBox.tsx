@@ -12,7 +12,7 @@ import Typing from "./Typing";
 import { useUsersTyping } from "../hooks/useUsersTyping";
 import AttachIcon from "../assets/attach.png";
 import EmojiIcon from "../assets/emoji.png";
-import EmojiPicker, { EmojiStyle } from "emoji-picker-react";
+import EmojiPicker from "emoji-picker-react";
 import { motion } from "framer-motion";
 import AttachFiles from "./AttachFiles";
 import { FileData } from "../types/FileData";

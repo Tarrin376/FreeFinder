@@ -91,9 +91,14 @@ function Packages({ packages, seller, workType, postID }: PackagesProps) {
                                 Popular
                             </p>}
                         </div>
-                        <p className="text-[33px]">
-                            £{curPkg.amount}
-                        </p>
+                        <div>
+                            <span className="text-[33px] mr-2">
+                                £{curPkg.amount}
+                            </span>
+                            <span className="text-sm text-side-text-gray">
+                                (Excludes service fee)
+                            </span>
+                        </div>
                         <p className="text-side-text-gray mb-4 pb-4 border-b border-light-border-gray font-bold">
                             {curPkg.title}
                         </p>

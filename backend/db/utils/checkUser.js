@@ -11,6 +11,6 @@ export function checkUser(userID, username) {
         
         if (!user) reject(new DBError("User not found.", 404));
         else if (userID !== user.userID) reject(new DBError("You are not authorized to perform this action.", 403));
-        else resolve();
+        else resolve(user);
     });
 }

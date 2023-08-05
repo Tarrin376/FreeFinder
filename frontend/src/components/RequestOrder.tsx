@@ -12,6 +12,7 @@ import KeyPair from "./KeyPair";
 import { FoundUsers } from "../types/FoundUsers";
 import OrderSummary from "./OrderSummary";
 import CheckBox from "./CheckBox";
+import { SERVICE_FEE } from "./OrderSummary";
 
 interface RequestOrderProps {
     curPkg: IPackage,
@@ -33,8 +34,15 @@ function RequestOrder({ curPkg, postID, seller, workType, setRequestOrderPopUp }
 
         try {
             const resp = await axios.post<{ newMessage: IMessage, message: string }>
-            (`/api/users/${userContext.userData.username}/order-requests/${postID}/${curPkg.type}`);
-            userContext.socket?.emit("send-message", resp.data.newMessage, resp.data.newMessage.groupID, userContext.userData.username, false);
+            (`/api/users/${userContext.userData.username}/order-requests/${seller.userID}/${postID}/${curPkg.type}`);
+
+            userContext.socket?.emit(
+                "send-message", 
+                resp.data.newMessage, 
+                resp.data.newMessage.groupID, 
+                userContext.userData.username, 
+                false
+            );
         }
         catch (err: any) {
             const errorMessage = getAPIErrorMessage(err as AxiosError<{ message: string }>);
@@ -65,13 +73,15 @@ function RequestOrder({ curPkg, postID, seller, workType, setRequestOrderPopUp }
             />
             <h2 className="mb-3">Summary</h2>
             <OrderSummary
-                subtotal={curPkg.amount}
+                subTotal={curPkg.amount}
+                total={curPkg.amount + curPkg.amount * SERVICE_FEE}
                 deliveryTime={curPkg.deliveryTime}
             />
             <CheckBox
                 labelName="terms"
-                text={`I understand that the transaction amount will be held by FreeFinder until the order request has expired (4 days) or
-                is accepted by the seller. If the delivery window is exceeded, I am permitted to cancel the order with or without notifying the seller.`}
+                text={`I understand that the transaction amount will be held by FreeFinder until the order request 
+                has expired (4 days) or is accepted by the seller. If the delivery window is exceeded, I am permitted 
+                to cancel the order with or without notifying the seller.`}
                 styles="mt-5"
                 setChecked={setChecked}
             />

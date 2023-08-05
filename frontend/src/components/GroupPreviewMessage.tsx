@@ -56,7 +56,7 @@ function GroupPreviewMessage({ group, selectedGroup, action }: GroupPreviewMessa
                 />
                 <div className="overflow-hidden flex-grow">
                     <div className="flex justify-between items-center gap-2">
-                        <span className="text-ellipsis whitespace-nowrap overflow-hidden text-[15px] font-bold">
+                        <span className="text-ellipsis whitespace-nowrap overflow-hidden text-[15px]">
                             {group.groupName}
                         </span>
                         {lastMessage && 
@@ -86,7 +86,7 @@ function GroupPreviewMessage({ group, selectedGroup, action }: GroupPreviewMessa
                                     `<Attached ${lastMessage.files.length} ${lastMessage.files.length === 1 ? "file" : 
                                     "files"}>`}`}
                                     groupMembers={group.members}
-                                    textStyles="text-sm"
+                                    textStyles="text-sm text-side-text-gray"
                                     styles="text-ellipsis whitespace-nowrap overflow-hidden"
                                 />}
                             </div>

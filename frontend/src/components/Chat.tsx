@@ -22,7 +22,7 @@ interface ChatProps {
     setGroup: React.Dispatch<React.SetStateAction<GroupPreview | undefined>>
 }
 
-const visibleMembers = 2;
+const VISIBLE_MEMBERS = 2;
 
 function Chat({ group, setAllGroups, setGroupCount, setGroup }: ChatProps) {
     const [toggleGroupMembers, setToggleGroupMembers] = useState<boolean>(false);
@@ -36,7 +36,7 @@ function Chat({ group, setAllGroups, setGroupCount, setGroup }: ChatProps) {
             await axios.delete<{ message: string }>(`/api/users/${userContext.userData.username}/message-groups/created/${group.groupID}/${userID}`);
             userContext.socket?.emit("leave-room", userID, group.groupID);
 
-            if (groupMembers.length - 1 === visibleMembers) {
+            if (groupMembers.length - 1 === VISIBLE_MEMBERS) {
                 setToggleGroupMembers(false);
             }
 
@@ -143,7 +143,7 @@ function Chat({ group, setAllGroups, setGroupCount, setGroup }: ChatProps) {
                 </div>
                 <div className="flex items-center gap-2 flex-shrink-0">
                     <div className="inline-flex relative" onMouseLeave={() => setToggleGroupMembers(false)}>
-                        {groupMembers.slice(0, visibleMembers).map((member, index) => {
+                        {groupMembers.slice(0, VISIBLE_MEMBERS).map((member, index) => {
                             return (
                                 <div className="w-fit h-fit relative ml-[-12px] outline outline-[3px] outline-main-white rounded-full" key={index}>
                                     <ProfilePicAndStatus
@@ -169,12 +169,12 @@ function Chat({ group, setAllGroups, setGroupCount, setGroup }: ChatProps) {
                                 </div>
                             )
                         })}
-                        {groupMembers.length > visibleMembers &&
+                        {groupMembers.length > VISIBLE_MEMBERS &&
                         <div className="w-[47px] h-[47px] rounded-full outline outline-[3px] outline-main-white 
                         bg-very-light-gray flex items-center justify-center ml-[-13px] cursor-pointer z-10" 
                         onMouseEnter={() => setToggleGroupMembers(true)}>
                             <p className="text-[18px] text-side-text-gray">
-                                {`+${groupMembers.length - visibleMembers}`}
+                                {`+${groupMembers.length - VISIBLE_MEMBERS}`}
                             </p>
                         </div>}
                         <AnimatePresence>

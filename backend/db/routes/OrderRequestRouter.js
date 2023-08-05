@@ -4,7 +4,7 @@ import { sendOrderRequest, updateOrderRequestStatus } from '../controllers/Order
 
 const orderRequestRouter = Router();
 
-orderRequestRouter.post('/:postID/:packageType', cookieJwtAuth, sendOrderRequest);
+orderRequestRouter.post('/:seller/:postID/:packageType', cookieJwtAuth, sendOrderRequest);
 orderRequestRouter.put('/:id', cookieJwtAuth, updateOrderRequestStatus);
 
 export default orderRequestRouter;

@@ -12,52 +12,59 @@ import { OrderRequestStatus } from "../enums/OrderRequestStatus";
 import ErrorPopUp from "./ErrorPopUp";
 import { AnimatePresence } from "framer-motion";
 import { parseDate } from "../utils/parseDate";
+import { useCountdown } from "../hooks/useCountdown";
 
 interface OrderRequestProps {
     message: IMessage,
     seller: FoundUsers[number],
     workType: string,
-    groupID: string
+    groupID: string,
 }
 
 function OrderRequest({ message, seller, workType, groupID }: OrderRequestProps) {
     const [errorMessage, setErrorMessage] = useState<string>("");
     const [status, setStatus] = useState<OrderRequestStatus>(message.orderRequest!.status);
     const [loading, setLoading] = useState<boolean>(false);
-    const userContext = useContext(UserContext);
 
-    async function updateOrderStatus(status: OrderRequestStatus, update: boolean): Promise<string | undefined> {
+    const userContext = useContext(UserContext);
+    const timeRemaining = useCountdown(new Date(message.orderRequest!.expires));
+
+    async function updateOrderStatus(status: OrderRequestStatus): Promise<string | undefined> {
         try {
+            setLoading(true);
             const resp = await axios.put<{ updatedMessage: IMessage, message: string }>
             (`/api/users/${userContext.userData.username}/order-requests/${message.orderRequest!.id}`, {
                 status: status
             });
 
             userContext.socket?.emit("send-message", resp.data.updatedMessage, groupID, userContext.userData.username, true);
-            if (update) {
-                setStatus(status);
-            }
+            setStatus(status);
         }
         catch (err: any) {
             const errorMessage = getAPIErrorMessage(err as AxiosError<{ message: string }>);
             return errorMessage;
         }
         finally {
-            if (update) {
-                setLoading(false);
-            }
+            setLoading(false);
         }
     }
 
     async function acceptOrderRequest(): Promise<string | undefined> {
-        setLoading(true);
-        const error = await updateOrderStatus(OrderRequestStatus.ACCEPTED, false);
+        try {
+            setLoading(true);
+            await axios.post<{ message: string }>(`/api/users/${userContext.userData.username}/orders`, { 
+                orderRequestID: message.orderRequest!.id
+            });
 
-        if (error) {
-            return error;
+            setStatus(OrderRequestStatus.ACCEPTED);
         }
-
-        setStatus(OrderRequestStatus.ACCEPTED);
+        catch (err: any) {
+            const errorMessage = getAPIErrorMessage(err as AxiosError<{ message: string }>);
+            return errorMessage;
+        }
+        finally {
+            setLoading(false);
+        }
     }
 
     function getStatusText() {
@@ -95,15 +102,16 @@ function OrderRequest({ message, seller, workType, groupID }: OrderRequestProps)
                 styles="mb-4"
             >
                 <OrderSummary 
-                    subtotal={message.orderRequest!.package!.amount} 
+                    subTotal={message.orderRequest!.subTotal} 
+                    total={message.orderRequest!.total}
                     deliveryTime={message.orderRequest!.package!.deliveryTime} 
                     styles="mt-4 pb-4 border-b border-light-border-gray"
                 />
                 {status === OrderRequestStatus.PENDING &&
                 <p className="text-[15px] mt-5">
-                    Request expires in:
+                    Expires:
                     <span className="text-error-text text-[15px]">
-                        {` 3 hours`}
+                        {` ${timeRemaining}`}
                     </span>
                 </p>}
                 <p className={`text-[15px] ${status === OrderRequestStatus.PENDING ? "mt-[2px]" : "mt-5"}`}>
@@ -124,7 +132,7 @@ function OrderRequest({ message, seller, workType, groupID }: OrderRequestProps)
                         loadingSvgSize={20}
                     />
                     <Button
-                        action={() => updateOrderStatus(OrderRequestStatus.DECLINED, true)}
+                        action={() => updateOrderStatus(OrderRequestStatus.DECLINED)}
                         defaultText="Decline"
                         loadingText="Declining request"
                         styles={`red-btn min-w-[110px] ${loading ? "pointer-events-none" : ""}`}
@@ -136,7 +144,7 @@ function OrderRequest({ message, seller, workType, groupID }: OrderRequestProps)
                 </div> :
                 message.from.username === userContext.userData.username && status === OrderRequestStatus.PENDING &&
                 <Button
-                    action={() => updateOrderStatus(OrderRequestStatus.CANCELLED, true)}
+                    action={() => updateOrderStatus(OrderRequestStatus.CANCELLED)}
                     defaultText="Cancel request"
                     loadingText="Cancelling request"
                     styles="red-btn mt-5"

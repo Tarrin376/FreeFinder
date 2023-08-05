@@ -29,7 +29,8 @@ export async function getMessagesHandler(req) {
             ...result,
             next: result.next.map(message => {
                 if (message.orderRequest) {
-                    message.orderRequest.package.amount = parseInt(message.orderRequest.package.amount);
+                    message.orderRequest.subTotal = parseFloat(message.orderRequest.subTotal);
+                    message.orderRequest.total = parseFloat(message.orderRequest.total);
                 }
 
                 return message;

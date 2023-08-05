@@ -74,10 +74,15 @@ model OrderRequest {
     messageID   String             @unique
     user        User               @relation(fields: [userID], references: [userID], onDelete: Cascade)
     userID      String
+    seller      Seller             @relation(fields: [sellerID], references: [sellerID], onDelete: Cascade)
+    sellerID    String
     package     Package            @relation(fields: [packageID], references: [packageID], onDelete: Cascade)
     packageID   String
     status      OrderRequestStatus
     actionTaken DateTime           @default(now())
+    expires     DateTime
+    subTotal    Decimal            @db.Decimal(12, 2)
+    total       Decimal            @db.Decimal(12, 2)
 }
 
 model MessageFile {
@@ -101,21 +106,22 @@ model HelpfulReview {
 }
 
 model Seller {
-    sellerID      String        @id @default(uuid())
-    user          User          @relation(fields: [userID], references: [userID], onDelete: Cascade)
-    userID        String        @unique
+    sellerID      String         @id @default(uuid())
+    user          User           @relation(fields: [userID], references: [userID], onDelete: Cascade)
+    userID        String         @unique
     rating        Float
     orders        Order[]
     posts         Post[]
     description   String
     summary       String
-    languages     String[]      @default(["english"])
-    skills        String[]      @default([])
-    sellerLevel   SellerLevel   @relation(fields: [sellerLevelID], references: [id])
+    languages     String[]       @default(["english"])
+    skills        String[]       @default([])
+    sellerLevel   SellerLevel    @relation(fields: [sellerLevelID], references: [id])
     sellerLevelID String
-    sellerXP      Int           @default(0)
+    sellerXP      Int            @default(0)
     reviews       Review[]
     savedSellers  SavedSeller[]
+    orderRequests OrderRequest[]
 }
 
 model SellerLevel {
@@ -131,7 +137,6 @@ model SellerLevel {
 
 model Post {
     postID        String         @id @default(uuid())
-    orders        Order[]
     postedBy      Seller         @relation(fields: [sellerID], references: [sellerID], onDelete: Cascade)
     sellerID      String
     about         String
@@ -184,6 +189,7 @@ model Package {
     numOrders     Int            @default(0)
     title         String
     orderRequests OrderRequest[]
+    orders        Order[]
 
     @@unique([postID, type])
 }
@@ -207,16 +213,17 @@ model Review {
 }
 
 model Order {
-    orderID     String      @id @default(uuid())
-    customer    User        @relation(fields: [customerID], references: [userID])
-    customerID  String
-    seller      Seller      @relation(fields: [sellerID], references: [sellerID])
-    sellerID    String
-    post        Post        @relation(fields: [postID], references: [postID])
-    postID      String
-    createdAt   DateTime    @default(now())
-    orderAmount Decimal     @db.Decimal(12, 2)
-    status      OrderStatus
+    orderID   String      @id @default(uuid())
+    client    User        @relation(fields: [clientID], references: [userID])
+    clientID  String
+    seller    Seller      @relation(fields: [sellerID], references: [sellerID])
+    sellerID  String
+    package   Package     @relation(fields: [packageID], references: [packageID], onDelete: Cascade)
+    packageID String
+    createdAt DateTime    @default(now())
+    status    OrderStatus
+    subTotal  Decimal     @db.Decimal(12, 2)
+    total     Decimal     @db.Decimal(12, 2)
 }
 
 model SavedSeller {
