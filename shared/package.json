@@ -1,0 +1,7 @@
+{
+    "name": "@freefinder/shared",
+    "version": "1.0.7",
+    "description": "Shared constants package",
+    "private": false,
+    "type": "module"
+}

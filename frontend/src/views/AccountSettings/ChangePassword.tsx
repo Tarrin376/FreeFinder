@@ -4,7 +4,7 @@ import axios, { AxiosError } from "axios";
 import { getAPIErrorMessage } from "../../utils/getAPIErrorMessage";
 import Button from "../../components/Button";
 import { UserContext } from '../../providers/UserContext';
-import { MIN_PASS_LENGTH } from '../../components/SignUp';
+import { MIN_PASS_LENGTH, MAX_PASS_LENGTH } from "@freefinder/shared/dist/constants";
 
 function ChangePassword() {
     const [currentPass, setCurrentPass] = useState<string>("");
@@ -34,11 +34,10 @@ function ChangePassword() {
         return validCurrentPass && validNewPass && validConfirmNewPass && newPass === confirmNewPass;
     }
 
-    function updatePass(pass: string, setValid: React.Dispatch<React.SetStateAction<boolean>>,
-        setPass: React.Dispatch<React.SetStateAction<string>>): void {
-            
+    function updatePass(pass: string, setValid: React.Dispatch<React.SetStateAction<boolean>>, 
+    setPass: React.Dispatch<React.SetStateAction<string>>): void {
         setPass(pass);
-        if (pass.length >= MIN_PASS_LENGTH) {
+        if (pass.length >= MIN_PASS_LENGTH && pass.length <= MAX_PASS_LENGTH) {
             setValid(true);
         } else {
             setValid(false);
@@ -69,7 +68,7 @@ function ChangePassword() {
                     />
                     {!validCurrentPass && currentPass !== "" &&
                     <p className="text-box-error-message">
-                        {`Password must be at least ${MIN_PASS_LENGTH} characters long`}
+                        {`Password must be between ${MIN_PASS_LENGTH} and ${MAX_PASS_LENGTH} characters long.`}
                     </p>}
                 </div>
                 <div>
@@ -83,7 +82,7 @@ function ChangePassword() {
                     />
                     {!validNewPass && newPass !== "" &&
                     <p className="text-box-error-message">
-                        {`Password must be at least ${MIN_PASS_LENGTH} characters long`}
+                        {`Password must be between ${MIN_PASS_LENGTH} and ${MAX_PASS_LENGTH} characters long.`}
                     </p>}
                 </div>
                 <div>
@@ -97,8 +96,9 @@ function ChangePassword() {
                         autoComplete="new-password"
                     />
                     <p className="text-box-error-message">
-                        {!validConfirmNewPass && confirmNewPass !== "" ? `Password must be at least ${MIN_PASS_LENGTH} characters long` : 
-                        confirmNewPass !== newPass ? "Passwords do not match" : ""}
+                        {!validConfirmNewPass && confirmNewPass !== "" ? 
+                        `Password must be between ${MIN_PASS_LENGTH} and ${MAX_PASS_LENGTH} characters long.` : 
+                        confirmNewPass !== newPass ? "Passwords do not match." : ""}
                     </p>
                 </div>
                 <Button

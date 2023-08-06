@@ -18,7 +18,7 @@ export async function createPostHandler(postData, startingPrice, userID) {
         if (seller._count.posts === seller.sellerLevel.postLimit) {
             throw new DBError(`
                 '${seller.sellerLevel.name}' sellers cannot have more than ${seller._count.posts} available 
-                ${seller._count.posts === 1 ? " service" : " services"} at the same time.`, 423
+                ${seller._count.posts === 1 ? " service" : " services"} at the same time.`, 400
             );
         }
 
@@ -116,7 +116,7 @@ export async function deleteImageHandler(req) {
     try {
         const postedBy = await getPostedBy(req.params.id);
         if (req.userData.userID !== postedBy) {
-            throw new DBError("You are not authorized to add an image to this post.", 423);
+            throw new DBError("You are not authorized to delete this image.", 403);
         }
 
         return await prisma.$transaction(async (tx) => {
@@ -134,10 +134,19 @@ export async function deleteImageHandler(req) {
                 "image"
             );
             
-            return updatedPost;
+            return {
+                ...updatedPost,
+                packages: updatedPost.packages.map((pkg) => {
+                    return {
+                        ...pkg,
+                        amount: parseInt(pkg.amount)
+                    }
+                })
+            };
         });
     }
     catch (err) {
+        console.log(err);
         if (err instanceof DBError) {
             throw err;
         } else if (err instanceof Prisma.PrismaClientValidationError) {
@@ -155,7 +164,7 @@ export async function addImageHandler(req) {
     try {
         const postedBy = await getPostedBy(req.params.id);
         if (req.userData.userID !== postedBy) {
-            throw new DBError("You are not authorized to add an image to this post.", 423);
+            throw new DBError("You are not authorized to add an image to this post.", 403);
         }
 
         const uuid = uuidv4();
@@ -175,7 +184,15 @@ export async function addImageHandler(req) {
                 select: { ...postProperties }
             });
     
-            return updatedPost;
+            return {
+                ...updatedPost,
+                packages: updatedPost.packages.map((pkg) => {
+                    return {
+                        ...pkg,
+                        amount: parseInt(pkg.amount)
+                    }
+                })
+            };
         });
     }
     catch (err) {
@@ -251,7 +268,7 @@ export async function updatePostHandler(req) {
                 }
             
                 if (req.userData.userID !== image.post.postedBy.userID) {
-                    throw new DBError("You are not authorized to update this image.", 423);
+                    throw new DBError("You are not authorized to update this image.", 403);
                 }
                 
                 const uuid = uuidv4();
@@ -285,7 +302,15 @@ export async function updatePostHandler(req) {
                 }
             });
             
-            return updatedPost;
+            return {
+                ...updatedPost,
+                packages: updatedPost.packages.map((pkg) => {
+                    return {
+                        ...pkg,
+                        amount: parseInt(pkg.amount)
+                    }
+                })
+            };
         });
     }
     catch (err) {
@@ -324,7 +349,7 @@ export async function deletePostHandler(postID, userID) {
         } else if (!post) {
             throw new DBError("Post not found.", 424);
         } else if (post.sellerID !== user.seller.sellerID) {
-            throw new DBError("You do not have authorization to delete this post.", 423);
+            throw new DBError("You do not have authorization to delete this post.", 403);
         }
         
         await prisma.$transaction(async (tx) => {

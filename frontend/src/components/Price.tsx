@@ -1,4 +1,3 @@
-
 interface PriceProps {
     value: number,
     maxValue?: number,

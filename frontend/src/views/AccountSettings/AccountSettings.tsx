@@ -29,7 +29,7 @@ export type AccountSettingsState = {
     profileDropdown: boolean
 }
 
-const initialState: AccountSettingsState = {
+const INITIAL_STATE: AccountSettingsState = {
     option: Options.details,
     loading: false,
     profileDropdown: false
@@ -43,7 +43,7 @@ function AccountSettings({ setSettingsPopUp }: SettingsProps) {
 
     const [state, dispatch] = useReducer((state: AccountSettingsState, payload: Partial<AccountSettingsState>) => {
         return { ...state, ...payload };
-    }, initialState);
+    }, INITIAL_STATE);
 
     function updateOption(next: Options): void {
         dispatch({ option: next });

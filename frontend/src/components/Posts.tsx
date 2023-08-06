@@ -8,14 +8,10 @@ import { FilterPostsContext } from '../providers/FilterPostsProvider';
 import PageWrapper from '../wrappers/PageWrapper';
 import PaginationScrollInfo from './PaginationScrollInfo';
 import { limit } from '../hooks/usePaginateData';
+import { CanRemovePost } from '../types/CanRemovePost';
 
 interface PostsProps {
-    canRemove?: {
-        deletingPost: boolean,
-        setDeletingPost: React.Dispatch<React.SetStateAction<boolean>>,
-        removeURL: string,
-        unsave?: boolean
-    },
+    canRemove?: CanRemovePost,
     noResultsFoundTitle: string,
     title?: string
 }

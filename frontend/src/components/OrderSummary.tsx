@@ -1,4 +1,5 @@
 import SummaryItem from "./SummaryItem";
+import { SERVICE_FEE } from "@freefinder/shared/dist/constants";
 
 interface OrderSummaryProps {
     subTotal: number,
@@ -6,8 +7,6 @@ interface OrderSummaryProps {
     deliveryTime: number,
     styles?: string
 }
-
-export const SERVICE_FEE = 0.05;
 
 function OrderSummary({ subTotal, total, deliveryTime, styles }: OrderSummaryProps) {
     return (

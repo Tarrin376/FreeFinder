@@ -10,8 +10,7 @@ import { userProperties } from '../utils/userProperties.js';
 import { getPaginatedData } from '../utils/getPaginatedData.js';
 import { getAvgRatings } from '../utils/getAvgRatings.js';
 import { uploadFile } from '../utils/uploadFile.js';
-
-const MAX_DEPOSIT = 500;
+import { MAX_DEPOSIT, MIN_PASS_LENGTH, MAX_PASS_LENGTH } from '@freefinder/shared/dist/constants.js';
 
 export async function updateProfilePictureHandler(req) {
     try {
@@ -51,8 +50,12 @@ export async function updateProfilePictureHandler(req) {
 export async function updatePasswordHandler(req) {
     try {
         await checkUser(req.userData.userID, req.username);
-        const hash = await bcrypt.hash(req.body.newPass, 10);
 
+        if (!req.body.newPass || req.body.newPass < MIN_PASS_LENGTH || req.body.newPass > MAX_PASS_LENGTH) {
+            throw new DBError(`Password must be between ${MIN_PASS_LENGTH} and ${MAX_PASS_LENGTH} characters long.`, 400);
+        }
+
+        const hash = await bcrypt.hash(req.body.newPass, 10);
         await prisma.user.update({
             where: { userID: req.userData.userID },
             data: { hash: hash }
@@ -76,6 +79,10 @@ export async function updatePasswordHandler(req) {
 
 export async function registerUserHandler(userData) {
     try {
+        if (!userData.password || userData.password < MIN_PASS_LENGTH || userData.password > MAX_PASS_LENGTH) {
+            throw new DBError(`Password must be between ${MIN_PASS_LENGTH} and ${MAX_PASS_LENGTH} characters long.`, 400);
+        }
+
         await prisma.user.create({
             data: {
                 username: userData.username,

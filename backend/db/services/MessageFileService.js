@@ -3,16 +3,22 @@ import { prisma } from '../index.js';
 import { DBError } from '../customErrors/DBError.js';
 import { checkUser } from '../utils/checkUser.js';
 import { cloudinary } from '../index.js';
+import { MAX_MESSAGE_FILE_BYTES, MAX_MESSAGE_FILE_UPLOADS } from '@freefinder/shared/dist/constants.js';
 
 export async function addMessageFileHandler(req) {
     try {
         await checkUser(req.userData.userID, req.username);
         const message = await prisma.message.findUnique({
-            where: { messageID: req.messageID }
+            where: { messageID: req.messageID },
+            include: { files: true }
         });
 
         if (!message) {
             throw new DBError("Message not found.", 404);
+        } else if (req.body.fileSize > MAX_MESSAGE_FILE_BYTES) {
+            throw new DBError(`File should not exceed ${MAX_MESSAGE_FILE_BYTES / 1000000}MB in size.`, 400);
+        } else if (message.files.length === MAX_MESSAGE_FILE_UPLOADS) {
+            throw new DBError(`You cannot send more than ${MAX_MESSAGE_FILE_UPLOADS} files in one message.`, 400);
         }
 
         const fileExtension = req.body.name.split('.').pop().toLowerCase();

@@ -15,7 +15,7 @@ import { useWindowSize } from '../hooks/useWindowSize';
 import HamburgerMenu from '../components/HamburgerMenu';
 import Sidebar from './Sidebar';
 import AccountOptions from '../components/AccountOptions';
-import { initialState } from '../providers/UserContext';
+import { INITIAL_STATE } from '../providers/UserContext';
 import axios from "axios";
 import OnlineStatus from '../components/OnlineStatus';
 import NavDropdown from '../components/NavDropdown';
@@ -59,7 +59,7 @@ function Navbar() {
     async function logout(): Promise<void> {
         try {
             await axios.delete<{ message: string }>(`/api/users/session`);
-            userContext.setUserData(initialState.userData);
+            userContext.setUserData(INITIAL_STATE.userData);
         }
         catch (_: any) {
             // Ignore error message and do nothing if session is invalid or expired.

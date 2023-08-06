@@ -24,27 +24,27 @@ interface RatingAverageProps {
     styles?: string
 }
 
-const initialRatingAverages = {
+const INITIAL_RATING_AVERAGES = {
     rating: 0,
     serviceAsDescribed: 0,
     sellerCommunication: 0,
     serviceDelivery: 0
 }
 
-const initialStars: StarCounts = [0, 0, 0, 0, 0];
-const queryLimit = 3;
+const INITIAL_STARS: StarCounts = [0, 0, 0, 0, 0];
+const QUERY_LIMIT = 3;
 
 function Reviews({ url, reviewsRef }: ReviewsProps) {
     const [reviews, setReviews] = useState<ReviewsResponse<IReview>>();
-    const [averages, setAverages] = useState<RatingAverages>(initialRatingAverages);
-    const [starCounts, setStarCounts] = useState<StarCounts>(initialStars);
+    const [averages, setAverages] = useState<RatingAverages>(INITIAL_RATING_AVERAGES);
+    const [starCounts, setStarCounts] = useState<StarCounts>(INITIAL_STARS);
     const [allReviewsPopUp, setAllReviewsPopUp] = useState<boolean>(false);
     const [errorMessage, setErrorMessage] = useState<string>("");
 
     useEffect(() => {
         (async (): Promise<void> => {
             try {
-                const resp = await axios.post<ReviewsResponse<IReview>>(url, { limit: queryLimit });
+                const resp = await axios.post<ReviewsResponse<IReview>>(url, { limit: QUERY_LIMIT });
                 if (resp.data.averages) setAverages(resp.data.averages);
                 if (resp.data.starCounts) setStarCounts(resp.data.starCounts);
                 setReviews(resp.data);
@@ -89,7 +89,7 @@ function Reviews({ url, reviewsRef }: ReviewsProps) {
             </AnimatePresence>
             <div className="flex items-center gap-2 h-[52px] mb-3">
                 <h2 className="text-[1.3rem]">Ratings and reviews</h2>
-                {reviews.count > queryLimit &&
+                {reviews.count > QUERY_LIMIT &&
                 <div className="w-[52px] h-full flex items-center justify-center 
                 hover:bg-hover-light-gray rounded-full cursor-pointer" onClick={() => setAllReviewsPopUp(true)}>
                     <img src={RightArrowIcon} alt="" className="w-[26px] h-[26px]" />
@@ -149,7 +149,7 @@ function Reviews({ url, reviewsRef }: ReviewsProps) {
                     )
                 })}
             </div>
-            {reviews.count > queryLimit &&
+            {reviews.count > QUERY_LIMIT &&
             <button className="mt-7 btn-primary text-main-blue bg-highlight hover:bg-highlight-hover"
             onClick={() => setAllReviewsPopUp(true)}>
                 See all reviews

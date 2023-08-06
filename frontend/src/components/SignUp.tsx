@@ -5,6 +5,7 @@ import axios, { AxiosError } from "axios";
 import { getAPIErrorMessage } from "../utils/getAPIErrorMessage";
 import Button from "./Button";
 import CountriesDropdown from "./CountriesDropdown";
+import { MIN_PASS_LENGTH, MAX_PASS_LENGTH } from "@freefinder/shared/dist/constants";
 
 interface SignUpProps {
     setLogIn: React.Dispatch<React.SetStateAction<boolean>>,
@@ -12,8 +13,7 @@ interface SignUpProps {
     setAccountCreated: React.Dispatch<React.SetStateAction<boolean>>
 }
 
-export const emailPattern: RegExp = new RegExp("[a-z0-9]+@[a-zA-Z]+[.][a-z]+$");
-export const MIN_PASS_LENGTH = 8;
+export const EMAIL_PATTERN: RegExp = new RegExp("[a-z0-9]+@[a-zA-Z]+[.][a-z]+$");
 
 type SignUpState = {
     emailFirst: string,
@@ -27,7 +27,7 @@ type SignUpState = {
     passwordErrorMessage: string,
 }
 
-const initialState: SignUpState = {
+const INITIAL_STATE: SignUpState = {
     emailFirst: "",
     emailSecond: "",
     username: "",
@@ -45,7 +45,7 @@ function SignUp({ setLogIn, setSignUp, setAccountCreated }: SignUpProps) {
 
     const [state, dispatch] = useReducer((cur: SignUpState, payload: Partial<SignUpState>) => {
         return { ...cur, ...payload };
-    }, initialState);
+    }, INITIAL_STATE);
 
     async function createAccount(): Promise<string | undefined> {
         try {
@@ -73,7 +73,7 @@ function SignUp({ setLogIn, setSignUp, setAccountCreated }: SignUpProps) {
 
     function checkEmail(e: React.ChangeEvent<HTMLInputElement>, isFirst: boolean): void {
         const email = e.target.value;
-        const errorMessage = email.match(emailPattern) !== null ? "" : "Please use a valid email address.";
+        const errorMessage = email.match(EMAIL_PATTERN) !== null ? "" : "Please use a valid email address.";
 
         if (!isFirst) {
             dispatch({
@@ -114,12 +114,17 @@ function SignUp({ setLogIn, setSignUp, setAccountCreated }: SignUpProps) {
 
     function checkPassword(e: React.ChangeEvent<HTMLInputElement>): void {
         const password = e.target.value;
-        const errorMessage = password.length >= MIN_PASS_LENGTH ? "" : `Password must be at least ${MIN_PASS_LENGTH} characters long.`;
-
-        dispatch({
-            passwordErrorMessage: errorMessage,
-            password: password
-        });
+        if (password.length < MIN_PASS_LENGTH || password.length > MAX_PASS_LENGTH) {
+            dispatch({
+                passwordErrorMessage: `Password must be between ${MIN_PASS_LENGTH} and ${MAX_PASS_LENGTH} characters long.`,
+                password: password
+            });
+        } else {
+            dispatch({
+                passwordErrorMessage: errorMessage,
+                password: password
+            });
+        }
     }
 
     function isValidForm(): boolean {

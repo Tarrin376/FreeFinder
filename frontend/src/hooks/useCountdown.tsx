@@ -10,11 +10,12 @@ export function useCountdown(endDate: Date) {
             return `Expired`;
         }
 
-        const days = (Math.floor(ms / 1000 / 60 / 60 / 24)).toString().padStart(2, '0');
-        const hours = (Math.floor((ms / 1000 / 60 / 60)) % 24).toString().padStart(2, '0');
-        const minutes = (Math.floor((ms / 1000 / 60) % 60)).toString().padStart(2, '0');
-        const seconds = (Math.floor((ms / 1000) % 60)).toString().padStart(2, '0');
-        return `${days} days ${hours} hrs ${minutes} mins ${seconds} seconds`;
+        const days = Math.floor(ms / 1000 / 60 / 60 / 24);
+        const hours = Math.floor((ms / 1000 / 60 / 60) % 24);
+        const minutes = Math.floor((ms / 1000 / 60) % 60);
+        const seconds = Math.floor((ms / 1000) % 60);
+        return `${days} ${days === 1 ? "day" : "days"} ${hours} ${hours === 1 ? "hour" : "hours"} 
+        ${minutes} ${minutes === 1 ? "min" : "mins"} ${seconds} ${seconds === 1 ? "second" : "seconds"}`;
     }, [endDate]);
 
     useEffect(() => {

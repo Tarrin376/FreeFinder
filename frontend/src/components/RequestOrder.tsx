@@ -12,7 +12,7 @@ import KeyPair from "./KeyPair";
 import { FoundUsers } from "../types/FoundUsers";
 import OrderSummary from "./OrderSummary";
 import CheckBox from "./CheckBox";
-import { SERVICE_FEE } from "./OrderSummary";
+import { SERVICE_FEE, VALID_DURATION_DAYS } from "@freefinder/shared/dist/constants";
 
 interface RequestOrderProps {
     curPkg: IPackage,
@@ -80,7 +80,7 @@ function RequestOrder({ curPkg, postID, seller, workType, setRequestOrderPopUp }
             <CheckBox
                 labelName="terms"
                 text={`I understand that the transaction amount will be held by FreeFinder until the order request 
-                has expired (4 days) or is accepted by the seller. If the delivery window is exceeded, I am permitted 
+                has expired (${VALID_DURATION_DAYS} days) or is accepted by the seller. If the delivery window is exceeded, I am permitted 
                 to cancel the order with or without notifying the seller.`}
                 styles="mt-5"
                 setChecked={setChecked}

@@ -1,6 +1,6 @@
 import { useState, useContext } from 'react';
 import ErrorMessage from "../../components/ErrorMessage";
-import { initialState } from "../../providers/UserContext";
+import { INITIAL_STATE } from "../../providers/UserContext";
 import axios, { AxiosError } from "axios";
 import { getAPIErrorMessage } from "../../utils/getAPIErrorMessage";
 import Button from "../../components/Button";
@@ -12,7 +12,7 @@ function DangerZone({ setSettingsPopUp }: { setSettingsPopUp: React.Dispatch<Rea
 
     const resetUserState = () => {
         setSettingsPopUp(false);
-        userContext.setUserData(initialState.userData);
+        userContext.setUserData(INITIAL_STATE.userData);
     }
 
     async function deleteAccount(): Promise<string | undefined> {

@@ -46,7 +46,7 @@ export type ChatBoxState = {
     matchedMembers: MatchedMembers
 }
 
-const initialState: ChatBoxState = {
+const INITIAL_STATE: ChatBoxState = {
     sendingMessage: false,
     toggleEmojiPicker: false,
     toggleAttachFiles: false,
@@ -58,7 +58,7 @@ const initialState: ChatBoxState = {
     matchedMembers: [],
 }
 
-export const tagSuggestionHeight = 273;
+export const TAG_SUGGESTIONS_HEIGHT = 273;
 
 function ChatBox({ seller, workType, groupID, groupMembers }: ChatBoxProps) {
     const userContext = useContext(UserContext);
@@ -74,12 +74,12 @@ function ChatBox({ seller, workType, groupID, groupMembers }: ChatBoxProps) {
 
     const [state, dispatch] = useReducer((cur: ChatBoxState, payload: Partial<ChatBoxState>) => {
         return { ...cur, ...payload };
-    }, initialState);
+    }, INITIAL_STATE);
 
     const url = `/api/users/${userContext.userData.username}/message-groups/${groupID}/messages/all`;
 
     const messages = usePaginateData<{}, IMessage, PaginationResponse<IMessage>>(pageRef, cursor, url, page, setPage, {}, true);
-    const selectedIndex = useArrowNavigation<MatchedMembers[number]>(suggestionsRef, inputRef, state.matchedMembers, 53, tagSuggestionHeight);
+    const selectedIndex = useArrowNavigation<MatchedMembers[number]>(suggestionsRef, inputRef, state.matchedMembers, 53, TAG_SUGGESTIONS_HEIGHT);
     const usersTyping = useUsersTyping(groupID);
 
     async function addMessageFiles(messageID: string): Promise<{

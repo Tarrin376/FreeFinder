@@ -5,7 +5,7 @@ import ProfilePicAndStatus from "./ProfilePicAndStatus";
 import HighlightedSubstring from "./HighlightedSubstring";
 import { ChatBoxState } from "./ChatBox";
 import { MatchedMembers } from "../types/MatchedMembers";
-import { tagSuggestionHeight } from "./ChatBox";
+import { TAG_SUGGESTIONS_HEIGHT } from "./ChatBox";
 
 interface TagSuggestionsProps {
     tag: string,
@@ -84,7 +84,7 @@ function TagSuggestions({ tag, groupMembers, inputRef, dispatch, matchedMembers,
 
     return (
         <div className="absolute bg-main-white bottom-[calc(100%-30px)] left-3 z-20 shadow-pop-up rounded-[8px] w-[300px] p-1
-        overflow-y-scroll flex flex-col" ref={suggestionsRef} style={{ maxHeight: `${tagSuggestionHeight}px` }}>
+        overflow-y-scroll flex flex-col" ref={suggestionsRef} style={{ maxHeight: `${TAG_SUGGESTIONS_HEIGHT}px` }}>
             {matchedMembers.map((member: MatchedMembers[number], index: number) => {
                 return (
                     <div className={`flex justify-between items-center gap-[8px] hover:bg-hover-light-gray rounded-[6px] p-2 cursor-pointer

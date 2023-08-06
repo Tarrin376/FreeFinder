@@ -38,8 +38,8 @@ interface PostDetailsProps {
     typeOfWork: string
 }
 
-export const aboutLimit = 1150;
-export const titleLimit = 100;
+export const ABOUT_SERVICE_LIMIT = 1150;
+export const SERVICE_TITLE_LIMIT = 100;
 
 function PostDetails({ jobCategory, setJobCategory, setTypeOfWork, setErrorMessage, ...props }: PostDetailsProps) {
     const [showFailedUploads, setShowFailedUploads] = useState<boolean>(false);
@@ -201,7 +201,7 @@ function PostDetails({ jobCategory, setJobCategory, setTypeOfWork, setErrorMessa
                 type="text" 
                 className="search-bar mb-4" 
                 value={props.title} 
-                maxLength={titleLimit} 
+                maxLength={SERVICE_TITLE_LIMIT} 
                 placeholder="Enter title" 
                 onChange={(e) => props.setTitle(e.target.value)} 
             />
@@ -209,7 +209,7 @@ function PostDetails({ jobCategory, setJobCategory, setTypeOfWork, setErrorMessa
             <TextEditor
                 value={props.about}
                 setValue={props.setAbout}
-                limit={aboutLimit}
+                limit={ABOUT_SERVICE_LIMIT}
             />
             <div className="flex justify-end gap-3 mt-8">
                 <button className="side-btn w-[110px]" onClick={() => props.setSection(Sections.BasicPackage)}>

@@ -14,12 +14,12 @@ interface AddPeopleProps {
     setAddedUsers: React.Dispatch<React.SetStateAction<FoundUsers>>,
 }
 
-const limit = 2;
+const LIMIT = 2;
 
 function AddPeople({ groupMembers, addedUsers, setAddedUsers }: AddPeopleProps) {
     const [userSearch, setUserSearch] = useState<string>("");
     const [errorMessage, setErrorMessage] = useState<string>("");
-    const foundUsers = useFetchUsers(userSearch, limit, setErrorMessage);
+    const foundUsers = useFetchUsers(userSearch, LIMIT, setErrorMessage);
     const userContext = useContext(UserContext);
 
     function addUser(user: FoundUsers[number]): void {
@@ -101,7 +101,7 @@ function AddPeople({ groupMembers, addedUsers, setAddedUsers }: AddPeopleProps) 
                             </button>
                         </div>
                     )
-                }) : new Array(limit).fill(0).map((_, index: number) => <UserSkeleton key={index} />)}
+                }) : new Array(LIMIT).fill(0).map((_, index: number) => <UserSkeleton key={index} />)}
             </div>}
         </>
     )

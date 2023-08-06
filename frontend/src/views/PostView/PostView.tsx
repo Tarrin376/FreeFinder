@@ -13,7 +13,7 @@ import parse from "html-react-parser";
 import { useNavigate } from "react-router-dom";
 import { UserContext } from "../../providers/UserContext";
 import TextEditor from "../../components/TextEditor";
-import { aboutLimit, titleLimit } from "../CreatePost/PostDetails";
+import { ABOUT_SERVICE_LIMIT, SERVICE_TITLE_LIMIT } from "../CreatePost/PostDetails";
 import PostImage from "./PostImage";
 import ErrorPopUp from "../../components/ErrorPopUp";
 import { AnimatePresence } from "framer-motion";
@@ -26,7 +26,6 @@ import Reviews from "../../components/Reviews";
 import CreateReview from "../../components/CreateReview";
 import { scrollIntoView } from "../../utils/scrollIntoView";
 import StarSvg from "../../components/StarSvg";
-import KeyPair from "../../components/KeyPair";
 import ServiceID from "../../components/ServiceID";
 
 export type PostViewState = {
@@ -40,7 +39,7 @@ export type PostViewState = {
     removingImage: number
 }
 
-const initialState = {
+const INITIAL_STATE = {
     about: "",
     title: "",
     aboutToggle: false,
@@ -61,7 +60,7 @@ function PostView() {
 
     const [state, dispatch] = useReducer((cur: PostViewState, payload: Partial<PostViewState>) => {
         return { ...cur, ...payload };
-    }, initialState);
+    }, INITIAL_STATE);
 
     const isOwner = state.postData?.postedBy.user.username === userContext.userData.username;
 
@@ -214,7 +213,7 @@ function PostView() {
                             type="text" 
                             className="w-full text-[1.3rem] search-bar mt-2 mb-6 focus:outline-none"
                             value={state.title}
-                            maxLength={titleLimit}
+                            maxLength={SERVICE_TITLE_LIMIT}
                             onChange={(e) => dispatch({ title: e.target.value })}
                         /> :
                         <h1 className="text-[1.7rem] mb-3">
@@ -312,7 +311,7 @@ function PostView() {
                             <TextEditor
                                 value={state.about}
                                 setValue={(value: string) => dispatch({ about: value })}
-                                limit={aboutLimit}
+                                limit={ABOUT_SERVICE_LIMIT}
                             /> : 
                             <>
                                 {parse(state.postData.about)}

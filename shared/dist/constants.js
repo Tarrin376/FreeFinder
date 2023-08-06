@@ -1,0 +1,11 @@
+export const SERVICE_FEE = 0.05;
+export const VALID_DURATION_DAYS = 4;
+export const MAX_DEPOSIT = 500;
+export const MAX_MESSAGE_FILE_BYTES = 5000000;
+export const MAX_MESSAGE_FILE_UPLOADS = 3;
+export const MAX_SELLER_DESC_CHARS = 650;
+export const MAX_SELLER_SUMMARY_CHARS = 50;
+export const MAX_SELLER_SKILLS = 15;
+export const MAX_REVIEW_CHARS = 650;
+export const MIN_PASS_LENGTH = 8;
+export const MAX_PASS_LENGTH = 256;

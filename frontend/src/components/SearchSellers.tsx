@@ -12,7 +12,7 @@ import SellerSkeleton from "../skeletons/SellerSkeleton";
 import { AnimatePresence } from "framer-motion";
 import { SellerOptions } from "../enums/SellerOptions";
 
-const queryLimit = 6;
+const QUERY_LIMIT = 6;
 
 interface SearchSellersProps {
     styles?: string,
@@ -33,10 +33,7 @@ function SearchSellers({ styles, toggleSidebar }: SearchSellersProps) {
     async function getMatchedSellers(query: string): Promise<SellerData[] | undefined> {
         try {
             setLoading(true);
-            const response = await axios.post<PaginationResponse<SellerData>>(`/api/sellers?search=${query}`, { 
-                limit: queryLimit 
-            });
- 
+            const response = await axios.post<PaginationResponse<SellerData>>(`/api/sellers?search=${query}`, { limit: QUERY_LIMIT });
             setErrorMessage("");
             return response.data.next;
         }
@@ -121,7 +118,7 @@ function SearchSellers({ styles, toggleSidebar }: SearchSellersProps) {
                                         key={index}
                                     />
                                 )
-                            }) : new Array(queryLimit).fill(0).map((_, index: number) => {
+                            }) : new Array(QUERY_LIMIT).fill(0).map((_, index: number) => {
                                 return (
                                     <SellerSkeleton 
                                         size={52} 
@@ -130,7 +127,7 @@ function SearchSellers({ styles, toggleSidebar }: SearchSellersProps) {
                                 )
                             })}
                         </div>}
-                        {sellers.length === queryLimit &&
+                        {sellers.length === QUERY_LIMIT &&
                         <button className="m-auto block side-btn h-[35px] mt-[10px] mb-[10px]" 
                         onClick={() => {
                             setHide(true);

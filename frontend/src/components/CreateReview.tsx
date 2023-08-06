@@ -6,13 +6,12 @@ import { getAPIErrorMessage } from "../utils/getAPIErrorMessage";
 import { AnimatePresence } from "framer-motion";
 import Button from "./Button";
 import Rating from "./Rating";
+import { MAX_REVIEW_CHARS } from "@freefinder/shared/dist/constants";
 
 interface CreateReviewProps {
     postID: string,
     sellerID: string
 }
-
-const MAX_REVIEW_CHARS = 650;
 
 function CreateReview({ postID, sellerID }: CreateReviewProps) {
     const [serviceAsDescribed, setServiceAsDescribed] = useState<number>(1);

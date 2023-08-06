@@ -9,10 +9,7 @@ import SearchLanguages from "./SearchLanguages";
 import Options from "./Options";
 import { IUser } from "../models/IUser";
 import { AnimatePresence } from "framer-motion";
-
-const MAX_DESC_CHARS = 650;
-const MAX_SUMMARY_CHARS = 50;
-const MAX_NUMBER_OF_SKILLS = 15;
+import { MAX_SELLER_DESC_CHARS, MAX_SELLER_SUMMARY_CHARS, MAX_SELLER_SKILLS } from "@freefinder/shared/dist/constants";
 
 interface ChangeSellerDetailsProps {
     setSellerProfilePopUp: React.Dispatch<React.SetStateAction<boolean>>,
@@ -52,8 +49,8 @@ function ChangeSellerDetails({ setSellerProfilePopUp }: ChangeSellerDetailsProps
     }
 
     function addSkill(): void {
-        if (skills.length === MAX_NUMBER_OF_SKILLS) {
-            setErrorMessage(`You cannot have more than ${MAX_NUMBER_OF_SKILLS} skills on your profile.`);
+        if (skills.length === MAX_SELLER_SKILLS) {
+            setErrorMessage(`You cannot have more than ${MAX_SELLER_SKILLS} skills on your profile.`);
             return;
         }
 
@@ -78,7 +75,7 @@ function ChangeSellerDetails({ setSellerProfilePopUp }: ChangeSellerDetailsProps
             <p className="mb-2">
                 Seller summary 
                 <span className="text-side-text-gray">
-                    {` (Max ${MAX_SUMMARY_CHARS} characters)`}
+                    {` (Max ${MAX_SELLER_SUMMARY_CHARS} characters)`}
                 </span>
             </p>
             <input 
@@ -86,19 +83,19 @@ function ChangeSellerDetails({ setSellerProfilePopUp }: ChangeSellerDetailsProps
                 placeholder="Summarize your work"
                 onChange={(e) => setSummary(e.target.value)}
                 value={summary}
-                maxLength={MAX_SUMMARY_CHARS}
+                maxLength={MAX_SELLER_SUMMARY_CHARS}
             />
             <p className="mb-2">
                 Seller description 
                 <span className="text-side-text-gray">
-                    {` (Max ${MAX_DESC_CHARS} characters)`}
+                    {` (Max ${MAX_SELLER_DESC_CHARS} characters)`}
                 </span>
             </p>
             <textarea
                 rows={7} 
                 className="search-bar mb-4" 
                 value={description}
-                maxLength={MAX_DESC_CHARS} 
+                maxLength={MAX_SELLER_DESC_CHARS} 
                 onChange={(e) => setDescription(e.target.value)}
                 placeholder="Describe what services you provide and what you can offer"
             />

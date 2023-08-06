@@ -6,7 +6,7 @@ import { UserStatus } from '../enums/UserStatus';
 import ErrorPopUp from '../components/ErrorPopUp';
 import { AnimatePresence } from 'framer-motion';
 
-export const initialState: IUserContext = {
+export const INITIAL_STATE: IUserContext = {
     userData: {
         username: "",
         country: "",
@@ -20,7 +20,7 @@ export const initialState: IUserContext = {
     setUserData: (_: IUser) => {}
 }
 
-export const UserContext = createContext<IUserContext>(initialState);
+export const UserContext = createContext<IUserContext>(INITIAL_STATE);
 
 export interface IUserContext {
     userData: IUser,
@@ -29,7 +29,7 @@ export interface IUserContext {
 }
 
 function UserProvider({ children }: { children?: React.ReactNode }) {
-    const [userData, setUserData] = useState<IUser>({ ...initialState.userData });
+    const [userData, setUserData] = useState<IUser>({ ...INITIAL_STATE.userData });
     const [errorMessage, setErrorMessage] = useState<string>("");
     const [socket, setSocket] = useState<Socket>();
 

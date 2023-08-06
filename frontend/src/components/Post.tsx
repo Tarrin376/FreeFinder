@@ -14,18 +14,12 @@ import { motion } from 'framer-motion';
 import { limit } from '../hooks/usePaginateData';
 import Save from './Save';
 import StarSvg from './StarSvg';
-
-type CanRemovePost = {
-    deletingPost: boolean,
-    setDeletingPost: React.Dispatch<React.SetStateAction<boolean>>,
-    removeURL: string,
-    unsave?: boolean
-}
+import { CanRemovePost } from '../types/CanRemovePost';
 
 interface PostProps {
     postInfo: IPost,
     index: number,
-    canRemove?: CanRemovePost
+    canRemove?: CanRemovePost,
     count?: React.MutableRefObject<number>,
     styles?: string
 }

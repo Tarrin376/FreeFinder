@@ -6,12 +6,11 @@ import { UserContext } from "../providers/UserContext";
 import ErrorMessage from "./ErrorMessage";
 import { getAPIErrorMessage } from "../utils/getAPIErrorMessage";
 import Button from "./Button";
+import { MAX_DEPOSIT } from "@freefinder/shared/dist/constants";
 
 interface AccountBalanceProps {
     setBalancePopUp: React.Dispatch<React.SetStateAction<boolean>>
 }
-
-const MAX_AMOUNT = 500;
 
 function AccountBalance({ setBalancePopUp }: AccountBalanceProps) {
     const [balance, setBalance] = useState<number>();
@@ -65,7 +64,7 @@ function AccountBalance({ setBalancePopUp }: AccountBalanceProps) {
                 </div>
                 <Price 
                     value={amount} 
-                    maxValue={MAX_AMOUNT}
+                    maxValue={MAX_DEPOSIT}
                     title="Amount (max £500)" 
                     setValue={setAmount}
                 />

@@ -6,6 +6,7 @@ import { getPaginatedData } from '../utils/getPaginatedData.js';
 import { getAvgRatings } from '../utils/getAvgRatings.js';
 import { countReviewRating } from '../utils/countReviewRating.js';
 import { userProperties } from '../utils/userProperties.js';
+import { MAX_SELLER_DESC_CHARS, MAX_SELLER_SUMMARY_CHARS, MAX_SELLER_SKILLS } from "@freefinder/shared/dist/constants.js";
 
 export async function findSeller(userID) {
     try {
@@ -94,6 +95,12 @@ export async function updateSellerDetailsHandler(req) {
 
         if (req.userData.userID !== user.userID) {
             throw new DBError("You are not authorized to perform this action.", 403);
+        } else if (req.body.description && req.body.description.length > MAX_SELLER_DESC_CHARS) {
+            throw new DBError(`Seller description should not exceed ${MAX_SELLER_DESC_CHARS} characters.`, 400);
+        } else if (req.body.summary && req.body.summary.length > MAX_SELLER_SUMMARY_CHARS) {
+            throw new DBError(`Seller summary should not exceed ${MAX_SELLER_SUMMARY_CHARS} characters.`, 400);
+        } else if (req.body.skills && req.body.skills.length > MAX_SELLER_SKILLS) {
+            throw new DBError(`You cannot have more than ${MAX_SELLER_SKILLS} skills on your profile.`, 400);
         }
 
         const updatedDetails = await prisma.seller.update({

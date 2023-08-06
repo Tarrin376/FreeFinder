@@ -3,9 +3,7 @@ import { DBError } from '../customErrors/DBError.js';
 import { checkUser } from '../utils/checkUser.js';
 import { prisma } from '../index.js';
 import { messageProperties } from '../utils/messageProperties.js';
-
-const VALID_DURATION = 4;
-const SERVICE_FEE = 0.05;
+import { SERVICE_FEE, VALID_DURATION_DAYS } from '@freefinder/shared/dist/constants.js';
 
 async function checkMessageGroup(postID, userID) {
     const messageGroup = await prisma.messageGroup.findUnique({
@@ -108,7 +106,7 @@ export async function sendOrderRequestHandler(req) {
             });
             
             const date = new Date();
-            const expiryDate = new Date(date.setDate(date.getDate() + VALID_DURATION));
+            const expiryDate = new Date(date.setDate(date.getDate() + VALID_DURATION_DAYS));
 
             const orderRequest = await tx.orderRequest.create({
                 select: { ...messageProperties.orderRequest.select },

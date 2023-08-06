@@ -8,14 +8,14 @@ interface TextEditorProps {
     limit: number
 }
 
-const formats = [
+const FORMATS = [
     "header", "height", "bold", "italic",
     "underline", "strike", "blockquote",
     "list", "color", "bullet", "indent",
     "image", "align", "size",
 ];
 
-const modules = {
+const MODULES = {
     toolbar: [
         ["bold", "italic", "underline", "strike", "blockquote"],
         [
@@ -60,8 +60,8 @@ function TextEditor({ value, setValue, limit }: TextEditorProps) {
                 value={value}
                 onChange={updateValue}
                 onKeyDown={checkCharacterCount}
-                formats={formats}
-                modules={modules}
+                formats={FORMATS}
+                modules={MODULES}
                 style={{ backgroundColor: "#fefefe", outline: "1px solid gray", borderRadius: "8px" }}
                 ref={reactQuillRef}
             />

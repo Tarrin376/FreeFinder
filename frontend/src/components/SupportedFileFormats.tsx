@@ -6,7 +6,7 @@ interface SupportedFileFormatsProps {
     setToggleSupportedFormats: React.Dispatch<React.SetStateAction<boolean>>
 }
 
-export const supportedFormats = [
+export const SUPPORTED_FORMATS = [
     'image',
     'video',
     'audio',
@@ -26,7 +26,7 @@ function SupportedFileFormats({ setToggleSupportedFormats }: SupportedFileFormat
     return (
         <PopUpWrapper title="Supported file formats" setIsOpen={setToggleSupportedFormats} styles="!max-w-[500px]">
             <div className="overflow-y-scroll max-h-[400px] flex flex-col gap-4 pr-[8px] mt-3">
-                {supportedFormats.map((format: string, index: number) => {
+                {SUPPORTED_FORMATS.map((format: string, index: number) => {
                     return (
                         <div key={index} className="flex items-center justify-between gap-3">
                             <div className="flex items-center gap-3">

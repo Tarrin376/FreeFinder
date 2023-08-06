@@ -10,6 +10,7 @@ import { getAPIErrorMessage } from "../utils/getAPIErrorMessage";
 import { useWindowSize } from "../hooks/useWindowSize";
 import ErrorPopUp from "./ErrorPopUp";
 import { AnimatePresence } from "framer-motion";
+import { CanRemoveSeller } from "../types/CanRemoveSeller";
 
 interface SellerProps {
     navigateToProfile: () => void,
@@ -21,11 +22,7 @@ interface SellerProps {
     summary: string,
     country: string,
     sellerID: string,
-    canRemove?: {
-        count: React.MutableRefObject<number>,
-        deletingSeller: boolean,
-        setDeletingSeller: React.Dispatch<React.SetStateAction<boolean>>
-    },
+    canRemove?: CanRemoveSeller,
     option?: SellerOptions
 }
 

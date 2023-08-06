@@ -6,9 +6,7 @@ import { FileData } from "../types/FileData";
 import { ChatBoxState } from "./ChatBox";
 import { parseFiles } from "../utils/parseFiles";
 import { checkFileType } from "../utils/checkFileType";
-
-const MAX_FILE_UPLOADS = 3;
-export const MAX_FILE_BYTES = 5000000;
+import { MAX_MESSAGE_FILE_BYTES, MAX_MESSAGE_FILE_UPLOADS } from "@freefinder/shared/dist/constants";
 
 interface AttachFileProps {
     uploadedFiles: FileData[],
@@ -20,11 +18,11 @@ function AttachFiles({ uploadedFiles, dispatch, setErrorMessage }: AttachFilePro
     const fileRef = useRef<HTMLInputElement>(null);
 
     async function handleDrop(files: FileList): Promise<void> {
-        const { failed, allFiles } = await parseFiles(files, uploadedFiles, MAX_FILE_BYTES, MAX_FILE_UPLOADS, checkFileType);
+        const { failed, allFiles } = await parseFiles(files, uploadedFiles, MAX_MESSAGE_FILE_BYTES, MAX_MESSAGE_FILE_UPLOADS, checkFileType);
 
         if (failed > 0) {
             setErrorMessage(`Failed to upload ${failed} ${failed === 1 ? "file" : "files"}. 
-            Files must use a supported file format and should not exceed ${MAX_FILE_BYTES / 1000000}MB in size.`);
+            Files must use a supported file format and should not exceed ${MAX_MESSAGE_FILE_BYTES / 1000000}MB in size.`);
         } else {
             setErrorMessage("");
         }
@@ -57,8 +55,8 @@ function AttachFiles({ uploadedFiles, dispatch, setErrorMessage }: AttachFilePro
             <div className="flex items-center justify-between gap-5">
                 <input type="file" className="hidden" ref={fileRef} onChange={uploadFile} />
                 <p className="text-side-text-gray text-sm">Files uploaded:
-                    <span className={`${uploadedFiles.length === MAX_FILE_UPLOADS ? 'text-error-text' : 'text-light-green'} text-sm`}>
-                        {` ${uploadedFiles.length} / ${MAX_FILE_UPLOADS}`}
+                    <span className={`${uploadedFiles.length === MAX_MESSAGE_FILE_UPLOADS ? 'text-error-text' : 'text-light-green'} text-sm`}>
+                        {` ${uploadedFiles.length} / ${MAX_MESSAGE_FILE_UPLOADS}`}
                     </span>
                 </p>
                 <button className="main-btn w-fit !h-[33px] text-[15px]" onClick={triggerFileUpload}>

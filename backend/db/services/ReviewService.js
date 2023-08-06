@@ -2,6 +2,7 @@ import { prisma } from '../index.js';
 import { Prisma } from '@prisma/client';
 import { DBError } from "../customErrors/DBError.js";
 import { checkUser } from '../utils/checkUser.js';
+import { MAX_REVIEW_CHARS } from '@freefinder/shared/dist/constants.js';
 
 export async function createReviewHandler(req) {
     try {
@@ -19,6 +20,8 @@ export async function createReviewHandler(req) {
         
         if (post.postedBy.userID === req.userData.userID) {
             throw new DBError("You cannot write a review for your own service.", 403);
+        } else if (req.body.review && req.body.review.length > MAX_REVIEW_CHARS) {
+            throw new DBError(`Review should not exceed ${MAX_REVIEW_CHARS} characters.`, 400)
         }
 
         const serviceAsDescribed = parseInt(req.body.serviceAsDescribed);

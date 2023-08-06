@@ -46,7 +46,7 @@ export type ReducerAction = {
     payload: Partial<PackageState>
 };
 
-const initialPkgState: PackageState = {
+const INITIAL_PACKAGE_STATE: PackageState = {
     revisions: "1",
     features: [],
     deliveryTime: 0,
@@ -55,16 +55,10 @@ const initialPkgState: PackageState = {
     title: "",
 }
 
-const initialState: CreatePostState = {
-    basic: {
-        ...initialPkgState
-    },
-    standard: {
-        ...initialPkgState
-    },
-    superior: {
-        ...initialPkgState
-    }
+const INITIAL_STATE: CreatePostState = {
+    basic: { ...INITIAL_PACKAGE_STATE },
+    standard: { ...INITIAL_PACKAGE_STATE },
+    superior: { ...INITIAL_PACKAGE_STATE }
 }
 
 function reducer(state: CreatePostState, action: ReducerAction): CreatePostState {
@@ -95,7 +89,7 @@ function CreatePost({ setPostService, resetState }: CreatePostProps) {
     const [jobCategory, setJobCategory] = useState<string>("");
     const [typeOfWork, setTypeOfWork] = useState<string>("");
     
-    const [state, dispatch] = useReducer(reducer, initialState);
+    const [state, dispatch] = useReducer(reducer, INITIAL_STATE);
 
     function constructPackage(pkg: PackageState, type: ReducerAction["type"]): IPackage {
         return {
