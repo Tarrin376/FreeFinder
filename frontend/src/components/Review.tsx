@@ -74,7 +74,8 @@ function Review({ reviewInfo, hideActions }: ReviewProps) {
                         profilePicURL={reviewInfo.reviewer.profilePicURL}
                         profileStatus={reviewInfo.reviewer.status}
                         username={reviewInfo.reviewer.username}
-                        size={43}
+                        size={45}
+                        statusRight={true}
                     />
                     <p>{reviewInfo.reviewer.username}</p>
                 </div>

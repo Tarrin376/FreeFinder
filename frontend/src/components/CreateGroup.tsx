@@ -25,8 +25,7 @@ function CreateGroup({ setCreateGroupPopUp, seller, initialServiceID }: CreateGr
     const userContext = useContext(UserContext);
 
     function updateServiceID(e: React.ChangeEvent<HTMLInputElement>): void {
-        const id = e.target.value;
-        setServiceID(id);
+        setServiceID(e.target.value);
         setFindSellerBtn(true);
     }
 

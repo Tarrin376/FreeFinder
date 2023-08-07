@@ -10,42 +10,7 @@ import { userProperties } from '../utils/userProperties.js';
 import { getPaginatedData } from '../utils/getPaginatedData.js';
 import { getAvgRatings } from '../utils/getAvgRatings.js';
 import { uploadFile } from '../utils/uploadFile.js';
-import { MAX_DEPOSIT, MIN_PASS_LENGTH, MAX_PASS_LENGTH } from '@freefinder/shared/dist/constants.js';
-
-export async function updateProfilePictureHandler(req) {
-    try {
-        await checkUser(req.userData.userID, req.username);
-        let result = "";
-
-        if (req.body.profilePic !== "") {
-            result = await uploadFile(req.body.profilePic, `FreeFinder/ProfilePictures/${req.userData.userID}`);
-        } else {
-            await deleteCloudinaryResource(`FreeFinder/ProfilePictures/${req.userData.userID}`, "image");
-        }
-
-        const updated = await prisma.user.update({
-            where: { userID: req.userData.userID },
-            data: { profilePicURL: result.secure_url || "" },
-            select: { ...userProperties }
-        });
-
-        return updated;
-    }
-    catch (err) {
-        if (err instanceof DBError) {
-            throw err;
-        } else if (err instanceof Prisma.PrismaClientValidationError) {
-            throw new DBError("Missing required fields or fields provided are invalid.", 400);
-        } else if (err instanceof Prisma.PrismaClientKnownRequestError && err.code === 413) {
-            throw new DBError("Error updating profile picture: File size exceeds limit.", 413);
-        } else {
-            throw new DBError("Something went wrong. Please try again later.", 500);
-        }
-    }
-    finally {
-        await prisma.$disconnect();
-    }
-}
+import { MAX_DEPOSIT, MIN_PASS_LENGTH, MAX_PASS_LENGTH, EMAIL_REGEX, MAX_PROFILE_PIC_BYTES } from '@freefinder/shared/dist/constants.js';
 
 export async function updatePasswordHandler(req) {
     try {
@@ -81,6 +46,8 @@ export async function registerUserHandler(userData) {
     try {
         if (!userData.password || userData.password < MIN_PASS_LENGTH || userData.password > MAX_PASS_LENGTH) {
             throw new DBError(`Password must be between ${MIN_PASS_LENGTH} and ${MAX_PASS_LENGTH} characters long.`, 400);
+        } else if (!userData.email || userData.email.match(EMAIL_REGEX) === null) {
+            throw new DBError("Email address must be provided and valid.", 400);
         }
 
         await prisma.user.create({
@@ -179,12 +146,25 @@ export async function authenticateUserHandler(usernameOrEmail, password) {
 export async function updateUserHandler(req) {
     try {
         await checkUser(req.userData.userID, req.username);
-        const { seller, ...res } = req.body;
+        let result = undefined;
+        
+        if (req.body.profilePic === "") {
+            await deleteCloudinaryResource(`FreeFinder/ProfilePictures/${req.userData.userID}`, "image");
+            result = "";
+        } else if (req.body.profilePic) {
+            result = await uploadFile(req.body.profilePic, `FreeFinder/ProfilePictures/${req.userData.userID}`, MAX_PROFILE_PIC_BYTES, "image");
+        }
 
         const updated = await prisma.user.update({
+            select: { ...userProperties },
             where: { userID: req.userData.userID },
-            data: { ...res },
-            select: { ...userProperties }
+            data: { 
+                profilePicURL: result ? result.secure_url : result,
+                username: req.body.username,
+                country: req.body.country,
+                status: req.body.status,
+                email: req.body.email
+            }
         });
         
         return updated;
@@ -194,7 +174,7 @@ export async function updateUserHandler(req) {
             throw err;
         } else if (err instanceof Prisma.PrismaClientValidationError) {
             throw new DBError("Missing required fields or fields provided are invalid.", 400);
-        } if (err instanceof Prisma.PrismaClientKnownRequestError && err.code === 'P2002') {
+        } else if (err instanceof Prisma.PrismaClientKnownRequestError && err.code === 'P2002') {
             throw new DBError("There already exists a user with this username or email address.", 409);
         } else {
             throw new DBError("Something went wrong. Please try again later.", 500);
@@ -350,9 +330,7 @@ export async function addToBalanceHandler(req) {
         await checkUser(req.userData.userID, req.username);
         if (!req.body.amount || !`${req.body.amount}`.match(new RegExp(`[0-9]+$`))) {
             throw new DBError("Invalid amount or no amount provided.", 400);
-        }
-
-        if (req.body.amount > MAX_DEPOSIT || req.body.amount < 1) {
+        } else if (req.body.amount > MAX_DEPOSIT || req.body.amount < 1) {
             throw new DBError(`Amount must be between 1 and ${MAX_DEPOSIT}.`, 400);
         }
 

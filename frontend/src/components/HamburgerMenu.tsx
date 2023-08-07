@@ -1,4 +1,3 @@
-
 interface HamburgerMenuProps {
     size: number,
     action: () => void

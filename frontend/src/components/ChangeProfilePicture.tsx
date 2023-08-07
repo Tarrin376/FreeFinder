@@ -1,6 +1,5 @@
 import OutsideClickHandler from "react-outside-click-handler";
 import EditIcon from "../assets/edit.png";
-import { MAX_PROFILE_PIC_BYTES } from "../views/AccountSettings/AccountSettings";
 import { useRef, useState, useContext } from "react";
 import { parseFileBase64 } from "../utils/parseFileBase64";
 import { checkImageType } from "../utils/checkImageType";
@@ -8,14 +7,17 @@ import { UserContext } from "../providers/UserContext";
 import ErrorPopUp from "./ErrorPopUp";
 import { AnimatePresence } from "framer-motion";
 import { AccountSettingsState } from "../views/AccountSettings/AccountSettings";
+import { MAX_PROFILE_PIC_BYTES } from "@freefinder/shared/dist/constants";
+import { fetchUpdatedUser } from "src/utils/fetchUpdatedUser";
+import { getAPIErrorMessage } from "src/utils/getAPIErrorMessage";
+import { AxiosError } from "axios";
 
 interface ChangeProfilePictureProps {
-    updatePhoto: (profile: string | unknown) => Promise<void>,
     loading: boolean,
     dispatch: React.Dispatch<Partial<AccountSettingsState>>
 }
 
-function ChangeProfilePicture({ updatePhoto, loading, dispatch }: ChangeProfilePictureProps) {
+function ChangeProfilePicture({ loading, dispatch }: ChangeProfilePictureProps) {
     const inputFileRef = useRef<HTMLInputElement>(null);
     const [errorMessage, setErrorMessage] = useState<string>("");
     const [profileDropdown, setProfileDropdown] = useState<boolean>(false);
@@ -27,10 +29,29 @@ function ChangeProfilePicture({ updatePhoto, loading, dispatch }: ChangeProfileP
         }
 
         dispatch({ loading: true });
-        updatePhoto("");
+        updateProfilePic("");
     }
 
-    async function uploadPhoto(e: React.ChangeEvent<HTMLInputElement>): Promise<void> {
+    async function updateProfilePic(profilePic: string | unknown): Promise<void> {
+        if (!setErrorMessage || loading) {
+            return;
+        }
+
+        try {
+            const response = await fetchUpdatedUser({ ...userContext.userData }, userContext.userData.username, profilePic);
+            userContext.setUserData(response.userData);
+            setErrorMessage("");
+        }
+        catch (err: any) {
+            const errorMessage = getAPIErrorMessage(err as AxiosError<{ message: string }>);
+            setErrorMessage(errorMessage);
+        }
+        finally {
+            dispatch({ loading: false });
+        }
+    }
+
+    async function uploadProfilePic(e: React.ChangeEvent<HTMLInputElement>): Promise<void> {
         const files = e.target.files;
         if (!files || loading || !setErrorMessage) {
             return;
@@ -43,7 +64,7 @@ function ChangeProfilePicture({ updatePhoto, loading, dispatch }: ChangeProfileP
         if (valid) {
             try {
                 const base64Str = await parseFileBase64(profilePic);
-                updatePhoto(base64Str);
+                updateProfilePic(base64Str);
             }
             catch (err: any) {
                 setErrorMessage("Something went wrong. Please try again later.");
@@ -94,7 +115,7 @@ function ChangeProfilePicture({ updatePhoto, loading, dispatch }: ChangeProfileP
                         type='file' 
                         ref={inputFileRef} 
                         className="hidden"
-                        onChange={uploadPhoto} 
+                        onChange={uploadProfilePic} 
                     />
                 </div>
             </OutsideClickHandler>}

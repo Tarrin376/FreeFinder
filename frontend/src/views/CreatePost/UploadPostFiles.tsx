@@ -10,9 +10,9 @@ import { getUniqueArray } from "../../utils/getUniqueArray";
 import { checkImageType } from "../../utils/checkImageType";
 import { FileData } from "../../types/FileData";
 import { parseFiles } from "../../utils/parseFiles";
+import { MAX_FILE_BYTES } from "@freefinder/shared/dist/constants";
 
-export const MAX_FILE_UPLOADS = 20;
-export const MAX_FILE_BYTES = 2000000;
+export const MAX_POST_FILE_UPLOADS = 20;
 
 interface UploadPostFilesProps {
     setPostService: React.Dispatch<React.SetStateAction<boolean>>,
@@ -28,7 +28,7 @@ function UploadPostFiles({ setPostService, setSection, uploadedImages, setUpload
     const [errorMessage, setErrorMessage] = useState<string>("");
 
     async function handleDrop(files: FileList): Promise<void> {
-        const { failed, allFiles } = await parseFiles(files, uploadedImages, MAX_FILE_BYTES, MAX_FILE_UPLOADS, checkImageType);
+        const { failed, allFiles } = await parseFiles(files, uploadedImages, MAX_FILE_BYTES, MAX_POST_FILE_UPLOADS, checkImageType);
 
         if (failed > 0) {
             setErrorMessage(`Failed to upload ${failed} ${failed === 1 ? "file" : "files"}. Please check that the file formats are 
@@ -71,8 +71,8 @@ function UploadPostFiles({ setPostService, setSection, uploadedImages, setUpload
                 <p className="text-side-text-gray">{`Maximum size: ${MAX_FILE_BYTES / 1000000}MB`}</p>
             </div>
             <p className="text-side-text-gray mt-3 mb-4">Files uploaded:
-                <span className={uploadedImages.length === MAX_FILE_UPLOADS ? 'text-error-text' : 'text-light-green'}>
-                    {` ${uploadedImages.length} / ${MAX_FILE_UPLOADS}`}
+                <span className={uploadedImages.length === MAX_POST_FILE_UPLOADS ? 'text-error-text' : 'text-light-green'}>
+                    {` ${uploadedImages.length} / ${MAX_POST_FILE_UPLOADS}`}
                 </span>
             </p>
             {errorMessage !== "" && 

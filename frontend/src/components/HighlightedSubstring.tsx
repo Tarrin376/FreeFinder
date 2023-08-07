@@ -1,4 +1,3 @@
-
 interface HighlightedSubstringProps {
     styles?: string,
     action?: (word: string) => void,

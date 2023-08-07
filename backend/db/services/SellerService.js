@@ -265,9 +265,7 @@ async function querySellers(search, limit, cursor) {
     };
 
     const options = {
-        orderBy: {
-            sellerID: 'asc'
-        }
+        orderBy: { sellerID: 'asc' }
     };
 
     const result = await getPaginatedData(where, select, "seller", limit, { sellerID: cursor }, "sellerID", options);
@@ -335,9 +333,7 @@ export async function getReviewsHandler(req) {
             } 
         }
 
-        return { 
-            ...result, 
-        } 
+        return result;
     }
     catch (err) {
         if (err instanceof DBError) {

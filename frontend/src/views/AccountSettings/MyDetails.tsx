@@ -1,6 +1,6 @@
 import { useState, useContext } from 'react';
 import ErrorMessage from "../../components/ErrorMessage";
-import { EMAIL_PATTERN } from "../../components/SignUp";
+import { EMAIL_REGEX } from '@freefinder/shared/dist/constants';
 import { fetchUpdatedUser } from "../../utils/fetchUpdatedUser";
 import { getAPIErrorMessage } from "../../utils/getAPIErrorMessage";
 import { AxiosError } from "axios";
@@ -18,13 +18,7 @@ function MyDetails() {
     function emailChangeHandler(input: string, setValid: React.Dispatch<React.SetStateAction<boolean>>,
         setEmail: React.Dispatch<React.SetStateAction<string>>): void {
 
-        const validEmail: boolean = input.match(EMAIL_PATTERN) !== null;
-        if (validEmail) {
-            setValid(true);
-        } else {
-            setValid(false);
-        }
-        
+        setValid(input.match(EMAIL_REGEX) !== null);
         setEmail(input);
     }
 

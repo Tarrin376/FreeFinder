@@ -2,8 +2,7 @@ import
 { 
     registerUserHandler, 
     authenticateUserHandler, 
-    updateUserHandler, 
-    updateProfilePictureHandler, 
+    updateUserHandler,
     deleteUserHandler,
     updatePasswordHandler,
     getUserPostsHandler,
@@ -56,19 +55,6 @@ export async function deleteUserSession(req, res) {
     }
     catch (err) {
         res.status(500).json({ message: err.message });
-    }
-}
-
-export async function updateProfilePicture(req, res) {
-    try {
-        const updated = await updateProfilePictureHandler(req);
-        req.userData = updated;
-
-        const sign = await cookieJwtSign(req, res);
-        return sign;
-    }
-    catch (err) {
-        res.status(err.code).json({ message: err.message });
     }
 }
 

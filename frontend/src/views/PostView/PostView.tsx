@@ -18,15 +18,15 @@ import PostImage from "./PostImage";
 import ErrorPopUp from "../../components/ErrorPopUp";
 import { AnimatePresence } from "framer-motion";
 import { checkImageType } from "../../utils/checkImageType";
-import { MAX_FILE_BYTES } from "../CreatePost/UploadPostFiles";
 import { parseFileBase64 } from "../../utils/parseFileBase64";
-import { MAX_FILE_UPLOADS } from "../CreatePost/UploadPostFiles";
+import { MAX_POST_FILE_UPLOADS } from "../CreatePost/UploadPostFiles";
 import LoadingSvg from "../../components/LoadingSvg";
 import Reviews from "../../components/Reviews";
 import CreateReview from "../../components/CreateReview";
 import { scrollIntoView } from "../../utils/scrollIntoView";
 import StarSvg from "../../components/StarSvg";
 import ServiceID from "../../components/ServiceID";
+import { MAX_FILE_BYTES } from "@freefinder/shared/dist/constants";
 
 export type PostViewState = {
     about: string,
@@ -281,7 +281,7 @@ function PostView() {
                                     />
                                 )
                             })}
-                            {isOwner && state.postData.images.length < MAX_FILE_UPLOADS &&
+                            {isOwner && state.postData.images.length < MAX_POST_FILE_UPLOADS &&
                             <>
                                 <input type='file' ref={addImageFileRef} className="hidden" onChange={addImage} />
                                 <div className={`inline-block absolute w-[140px] ${state.postData.images.length > 0 ? "ml-3" : ""}

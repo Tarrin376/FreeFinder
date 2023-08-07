@@ -3,7 +3,7 @@ import { prisma } from '../index.js';
 import { DBError } from '../customErrors/DBError.js';
 import { checkUser } from '../utils/checkUser.js';
 import { cloudinary } from '../index.js';
-import { MAX_MESSAGE_FILE_BYTES, MAX_MESSAGE_FILE_UPLOADS } from '@freefinder/shared/dist/constants.js';
+import { MAX_FILE_BYTES, MAX_MESSAGE_FILE_UPLOADS } from '@freefinder/shared/dist/constants.js';
 
 export async function addMessageFileHandler(req) {
     try {
@@ -15,9 +15,7 @@ export async function addMessageFileHandler(req) {
 
         if (!message) {
             throw new DBError("Message not found.", 404);
-        } else if (req.body.fileSize > MAX_MESSAGE_FILE_BYTES) {
-            throw new DBError(`File should not exceed ${MAX_MESSAGE_FILE_BYTES / 1000000}MB in size.`, 400);
-        } else if (message.files.length === MAX_MESSAGE_FILE_UPLOADS) {
+        }  else if (message.files.length === MAX_MESSAGE_FILE_UPLOADS) {
             throw new DBError(`You cannot send more than ${MAX_MESSAGE_FILE_UPLOADS} files in one message.`, 400);
         }
 
@@ -26,7 +24,8 @@ export async function addMessageFileHandler(req) {
             folder: `FreeFinder/MessageFiles/${req.messageID}`,
             tags: [fileExtension],
             resource_type: "raw",
-            public_id: req.body.name
+            public_id: req.body.name,
+            max_bytes: MAX_FILE_BYTES
         });
 
         const newFile = await prisma.messageFile.create({

@@ -7,9 +7,6 @@ import UserProfile from "./UserProfile";
 import ChangePassword from "./ChangePassword";
 import DangerZone from "./DangerZone";
 import { UserContext } from "../../providers/UserContext";
-import { fetchUpdatedUser } from "../../utils/fetchUpdatedUser";
-import { getAPIErrorMessage } from "../../utils/getAPIErrorMessage";
-import { AxiosError } from "axios";
 import ChangeProfilePicture from "../../components/ChangeProfilePicture";
 
 interface SettingsProps {
@@ -34,8 +31,6 @@ const INITIAL_STATE: AccountSettingsState = {
     loading: false,
     profileDropdown: false
 }
-
-export const MAX_PROFILE_PIC_BYTES = 1000000;
 
 function AccountSettings({ setSettingsPopUp }: SettingsProps) {
     const [errorMessage, setErrorMessage] = useState<string>("");
@@ -62,25 +57,6 @@ function AccountSettings({ setSettingsPopUp }: SettingsProps) {
         }
     }
 
-    async function updatePhoto(profile: string | unknown): Promise<void> {
-        if (!setErrorMessage || state.loading) {
-            return;
-        }
-
-        try {
-            const response = await fetchUpdatedUser({ ...userContext.userData }, userContext.userData.username, profile);
-            userContext.setUserData(response.userData);
-            setErrorMessage("");
-        }
-        catch (err: any) {
-            const errorMessage = getAPIErrorMessage(err as AxiosError<{ message: string }>);
-            setErrorMessage(errorMessage);
-        }
-        finally {
-            dispatch({ loading: false });
-        }
-    }
-
     return (
         <PopUpWrapper setIsOpen={setSettingsPopUp} title="Account Settings">
             {errorMessage !== "" && 
@@ -100,27 +76,49 @@ function AccountSettings({ setSettingsPopUp }: SettingsProps) {
                     />
                     {!state.loading &&
                     <ChangeProfilePicture
-                        updatePhoto={updatePhoto}
                         loading={state.loading}
                         dispatch={dispatch}
                     />}
                 </div>
                 <div>
-                    <p>Username: <span className="text-main-blue">{userContext.userData.username}</span></p>
-                    <p>Country: <span className="text-main-blue">{userContext.userData.country}</span></p>
-                    <p>Email: <span className="text-main-blue">{userContext.userData.email}</span></p>
+                    <p>
+                        Username: 
+                        <span className="text-main-blue">
+                            {` ${userContext.userData.username}`}
+                        </span>
+                    </p>
+                    <p>
+                        Country:
+                        <span className="text-main-blue">
+                            {` ${userContext.userData.country}`}
+                        </span>
+                    </p>
+                    <p>
+                        Email:
+                        <span className="text-main-blue">
+                            {` ${userContext.userData.email}`}
+                        </span>
+                    </p>
                 </div>
             </div>
-            <div className="mt-9 mb-5">
+            <div className="mt-5 mb-5">
                 <ul className="border-b border-b-nav-search-gray flex justify-between mt-5 list-none">
                     <li className={state.option === Options.details ? "settings-selection" : "settings-unselected"}
-                    onClick={() => updateOption(Options.details)}>My details</li>
+                    onClick={() => updateOption(Options.details)}>
+                        My details
+                    </li>
                     <li className={state.option === Options.profile ? "settings-selection" : "settings-unselected"}
-                    onClick={() => updateOption(Options.profile)}>Profile</li>
+                    onClick={() => updateOption(Options.profile)}>
+                        Profile
+                    </li>
                     <li className={state.option === Options.password ? "settings-selection" : "settings-unselected"}
-                    onClick={() => updateOption(Options.password)}>Password</li>
+                    onClick={() => updateOption(Options.password)}>
+                        Password
+                    </li>
                     <li className={state.option === Options.dangerZone ? "settings-selection" : "settings-unselected"}
-                    onClick={() => updateOption(Options.dangerZone)}>Danger Zone</li>
+                    onClick={() => updateOption(Options.dangerZone)}>
+                        Danger Zone
+                    </li>
                 </ul>
             </div>
             {getOption()}

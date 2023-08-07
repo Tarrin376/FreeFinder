@@ -5,15 +5,14 @@ import axios, { AxiosError } from "axios";
 import { getAPIErrorMessage } from "../utils/getAPIErrorMessage";
 import Button from "./Button";
 import CountriesDropdown from "./CountriesDropdown";
-import { MIN_PASS_LENGTH, MAX_PASS_LENGTH } from "@freefinder/shared/dist/constants";
+import { EMAIL_REGEX } from "@freefinder/shared/dist/constants";
+import Validator from "@freefinder/shared/dist/validator";
 
 interface SignUpProps {
     setLogIn: React.Dispatch<React.SetStateAction<boolean>>,
     setSignUp: React.Dispatch<React.SetStateAction<boolean>>,
     setAccountCreated: React.Dispatch<React.SetStateAction<boolean>>
 }
-
-export const EMAIL_PATTERN: RegExp = new RegExp("[a-z0-9]+@[a-zA-Z]+[.][a-z]+$");
 
 type SignUpState = {
     emailFirst: string,
@@ -73,58 +72,40 @@ function SignUp({ setLogIn, setSignUp, setAccountCreated }: SignUpProps) {
 
     function checkEmail(e: React.ChangeEvent<HTMLInputElement>, isFirst: boolean): void {
         const email = e.target.value;
-        const errorMessage = email.match(EMAIL_PATTERN) !== null ? "" : "Please use a valid email address.";
+        const errorMessage = email.match(EMAIL_REGEX) !== null ? "" : "Please use a valid email address.";
 
         if (!isFirst) {
             dispatch({
                 emailSecondErrorMessage: errorMessage !== "" ? errorMessage : email !== state.emailFirst ? "Email address does not match." : "",
                 emailSecond: email
             });
-            
-            return;
-        }
-
-        dispatch({
-            emailFirstErrorMessage: errorMessage, 
-            emailFirst: email, 
-            emailSecondErrorMessage: state.emailSecond === email ? "" : "Email address does not match."
-        });
-    }
-
-    function checkUsername(e: React.ChangeEvent<HTMLInputElement>): void {
-        const username = e.target.value;
-        
-        if (username[0].toLowerCase() === username[0].toUpperCase()) {
-            dispatch({
-                usernameErrorMessage: "Username must have a leading alphabetical character.",
-                username: username
-            });
-        } else if (username.split(" ").length > 1) {
-            dispatch({
-                usernameErrorMessage: "Username must not contain any empty spaces.",
-                username: username
-            });
         } else {
             dispatch({
-                usernameErrorMessage: "",
-                username: username
+                emailFirstErrorMessage: errorMessage, 
+                emailFirst: email, 
+                emailSecondErrorMessage: state.emailSecond === email ? "" : "Email address does not match."
             });
         }
+    }
+
+    function validateUsername(e: React.ChangeEvent<HTMLInputElement>): void {
+        const username = e.target.value;
+        const error = Validator.validateUsername(username);
+
+        dispatch({
+            usernameErrorMessage: error,
+            username: username
+        });
     }
 
     function checkPassword(e: React.ChangeEvent<HTMLInputElement>): void {
         const password = e.target.value;
-        if (password.length < MIN_PASS_LENGTH || password.length > MAX_PASS_LENGTH) {
-            dispatch({
-                passwordErrorMessage: `Password must be between ${MIN_PASS_LENGTH} and ${MAX_PASS_LENGTH} characters long.`,
-                password: password
-            });
-        } else {
-            dispatch({
-                passwordErrorMessage: errorMessage,
-                password: password
-            });
-        }
+        const error = Validator.validatePassword(password);
+        
+        dispatch({
+            passwordErrorMessage: error,
+            password: password
+        });
     }
 
     function isValidForm(): boolean {
@@ -172,7 +153,7 @@ function SignUp({ setLogIn, setSignUp, setAccountCreated }: SignUpProps) {
                         type="text" 
                         placeholder="Create a username" 
                         className="search-bar mt-3" 
-                        onChange={(e) => checkUsername(e)} 
+                        onChange={(e) => validateUsername(e)} 
                     />
                     {state.usernameErrorMessage !== "" && state.username !== "" && 
                     <p className="text-box-error-message">

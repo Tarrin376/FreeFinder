@@ -7,8 +7,7 @@ import { cookieJwtAuth } from '../middleware/cookieJwtAuth.js';
 import 
 { 
     registerUser,
-    updateUser, 
-    updateProfilePicture, 
+    updateUser,
     deleteUser,
     updatePassword,
     authenticateUser,
@@ -47,7 +46,6 @@ userRouter.post('/jwt-auth', cookieJwtAuth, jwtAuthenticateUser);
 userRouter.put('/:username', cookieJwtAuth, updateUser);
 userRouter.delete('/:username', cookieJwtAuth, deleteUser);
 
-userRouter.put('/:username/profile-picture', cookieJwtAuth, updateProfilePicture);
 userRouter.put('/:username/password', cookieJwtAuth, updatePassword);
 userRouter.get('/:username/balance', cookieJwtAuth, getBalance);
 userRouter.put('/:username/balance', cookieJwtAuth, addToBalance);

@@ -1,4 +1,3 @@
-
 interface StarSvgProps {
     backgroundColour: string,
     size: number,

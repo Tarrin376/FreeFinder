@@ -6,12 +6,14 @@ import { getAPIErrorMessage } from "../../utils/getAPIErrorMessage";
 import { AxiosError } from "axios";
 import Button from "../../components/Button";
 import { UserContext } from '../../providers/UserContext';
+import Validator from "@freefinder/shared/dist/validator";
 
 function UserProfile() {
     const userContext = useContext(UserContext);
     const [username, setUsername] = useState<string>(userContext.userData.username);
     const [errorMessage, setErrorMessage] = useState<string>("");
     const [country, setCountry] = useState<string>(userContext.userData.country);
+    const validUsername = Validator.validateUsername(username);
     
     async function updateProfile(): Promise<string | undefined> {
         try {
@@ -27,13 +29,6 @@ function UserProfile() {
             const errorMessage = getAPIErrorMessage(err as AxiosError<{ message: string }>);
             return errorMessage;
         }
-    }
-
-    function checkUsername(): string {
-        if (username === "") return "Username cannot be empty.";
-        else if (username[0].toLowerCase() === username[0].toUpperCase()) return "Username must have a leading alphabetical character.";
-        else if (username.split(" ").length > 1) return "Username must not contain any empty spaces."
-        else return "";
     }
 
     return (
@@ -54,12 +49,12 @@ function UserProfile() {
                     <input 
                         type="text" 
                         name="change-username" 
-                        className={`search-bar ${checkUsername() !== "" && "invalid-input"}`} 
+                        className={`search-bar ${validUsername !== "" && "invalid-input"}`} 
                         value={username} onChange={(e) => setUsername(e.target.value)} 
                         maxLength={20}
                     />
                     <p className="text-box-error-message">
-                        {checkUsername()}
+                        {validUsername}
                     </p>
                 </div>
                 <div>
@@ -75,7 +70,7 @@ function UserProfile() {
                     completedText="Profile updated successfully"
                     defaultText="Update profile"
                     loadingText="Checking details"
-                    styles={checkUsername() !== "" ? "invalid-button main-btn mt-3" : "mt-3 main-btn"}
+                    styles={validUsername !== "" ? "invalid-button main-btn mt-3" : "mt-3 main-btn"}
                     textStyles="text-main-white"
                     setErrorMessage={setErrorMessage}
                     loadingSvgSize={28}

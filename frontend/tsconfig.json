@@ -1,5 +1,9 @@
 {
   "compilerOptions": {
+    "baseUrl": ".",
+    "paths": {
+        "@freefinder/shared/dist/*": ["../shared/dist/*"],
+    },
     "target": "es5",
     "lib": [
       "dom",

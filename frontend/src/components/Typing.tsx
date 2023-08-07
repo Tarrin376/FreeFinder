@@ -1,4 +1,3 @@
-
 interface TypingProps {
     usersTyping: string[],
     textStyles?: string,

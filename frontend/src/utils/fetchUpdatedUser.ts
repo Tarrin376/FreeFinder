@@ -1,37 +1,14 @@
 import { IUser } from "../models/IUser";
 import axios from "axios";
 
-export async function fetchUpdatedUser(data: IUser, username: string, profilePic?: string | unknown): Promise<{ message: string, userData: IUser }> {
-    if (profilePic !== undefined) {
-        const response = await updateProfilePic(profilePic, username);
-        data = response.userData;
-    }
-    
-    try {
-        const resp = await axios.put<{ userData: IUser, message: string }>(`/api/users/${username}`, {
-            ...data,
-            profilePicURL: profilePic === "" ? profilePic : data.profilePicURL
-        });
+export async function fetchUpdatedUser(data: IUser, username: string, profilePic?: string | unknown): Promise<{ 
+    message: string, 
+    userData: IUser 
+}> {
+    const resp = await axios.put<{ userData: IUser, message: string }>(`/api/users/${username}`, {
+        ...data,
+        profilePic: profilePic
+    });
 
-        return {
-            message: resp.data.message,
-            userData: { ...resp.data.userData }
-        }
-    }
-    catch (err: any) {
-        throw err;
-    }
-}
-
-async function updateProfilePic(profilePic: string | unknown, username: string) : Promise<{ message: string, userData: IUser }> {
-    try {
-        const resp = await axios.put<{ userData: IUser, message: string }>(`/api/users/${username}/profile-picture`, { profilePic });
-        return {
-            message: resp.data.message,
-            userData: { ...resp.data.userData }
-        }
-    }
-    catch (err: any) {
-        throw err;
-    }
+    return resp.data;
 }

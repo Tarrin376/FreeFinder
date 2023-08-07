@@ -11,6 +11,7 @@ import { getPaginatedData } from '../utils/getPaginatedData.js';
 import { getPostedBy } from '../utils/getPostedBy.js';
 import { getAvgRatings } from '../utils/getAvgRatings.js';
 import { uploadFile } from '../utils/uploadFile.js';
+import { MAX_FILE_BYTES } from '@freefinder/shared/dist/constants.js';
 
 export async function createPostHandler(postData, startingPrice, userID) {
     try {
@@ -82,7 +83,7 @@ export async function createPostHandler(postData, startingPrice, userID) {
             }
 
             const uuid = uuidv4();
-            const result = await uploadFile(postData.thumbnail, `FreeFinder/PostImages/${res.postID}/${uuid}`);
+            const result = await uploadFile(postData.thumbnail, `FreeFinder/PostImages/${res.postID}/${uuid}`, MAX_FILE_BYTES, "image");
 
             await tx.postImage.create({
                 data: {
@@ -146,7 +147,6 @@ export async function deleteImageHandler(req) {
         });
     }
     catch (err) {
-        console.log(err);
         if (err instanceof DBError) {
             throw err;
         } else if (err instanceof Prisma.PrismaClientValidationError) {
@@ -168,7 +168,7 @@ export async function addImageHandler(req) {
         }
 
         const uuid = uuidv4();
-        const result = await uploadFile(req.body.image, `FreeFinder/PostImages/${req.params.id}/${uuid}`);
+        const result = await uploadFile(req.body.image, `FreeFinder/PostImages/${req.params.id}/${uuid}`, MAX_FILE_BYTES, "image");
 
         return await prisma.$transaction(async (tx) => {
             await tx.postImage.create({
@@ -264,7 +264,7 @@ export async function updatePostHandler(req) {
                 });
             
                 if (!image) {
-                    throw new DBError("Image not found.", 424);
+                    throw new DBError("Image not found.", 404);
                 }
             
                 if (req.userData.userID !== image.post.postedBy.userID) {
@@ -272,7 +272,7 @@ export async function updatePostHandler(req) {
                 }
                 
                 const uuid = uuidv4();
-                const result = await uploadFile(req.body.newImage, `FreeFinder/PostImages/${req.params.id}/${uuid}`);
+                const result = await uploadFile(req.body.newImage, `FreeFinder/PostImages/${req.params.id}/${uuid}`, MAX_FILE_BYTES, "image");
 
                 await tx.postImage.update({ 
                     where: {
@@ -345,9 +345,9 @@ export async function deletePostHandler(postID, userID) {
         });
         
         if (!user) {
-            throw new DBError("User not found.", 424);
+            throw new DBError("User not found.", 404);
         } else if (!post) {
-            throw new DBError("Post not found.", 424);
+            throw new DBError("Post not found.", 404);
         } else if (post.sellerID !== user.seller.sellerID) {
             throw new DBError("You do not have authorization to delete this post.", 403);
         }
@@ -363,7 +363,7 @@ export async function deletePostHandler(postID, userID) {
         } else if (err instanceof Prisma.PrismaClientValidationError) {
             throw new DBError("Missing required fields or fields provided are invalid.", 400);
         } else if (err instanceof Prisma.PrismaClientKnownRequestError && err.code === "P2225") {
-            throw new DBError("Post not found.", 424);
+            throw new DBError("Post not found.", 404);
         } else {
             throw new DBError("Something went wrong. Please try again later.", 500);
         }
@@ -469,7 +469,7 @@ export async function getSellerSummaryHandler(postID) {
         });
 
         if (!sellerSummary) {
-            throw new DBError("Service ID does not exist.", 424);
+            throw new DBError("Service ID does not exist.", 404);
         }
 
         const { userID, ...res } = sellerSummary.postedBy.user;
