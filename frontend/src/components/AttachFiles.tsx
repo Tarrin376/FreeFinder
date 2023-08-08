@@ -3,18 +3,17 @@ import { useRef } from "react";
 import DragAndDrop from "./DragAndDrop";
 import StorageIcon from "../assets/storage.png";
 import { FileData } from "../types/FileData";
-import { ChatBoxState } from "./ChatBox";
 import { parseFiles } from "../utils/parseFiles";
 import { checkFileType } from "../utils/checkFileType";
 import { MAX_FILE_BYTES, MAX_MESSAGE_FILE_UPLOADS } from "@freefinder/shared/dist/constants";
 
 interface AttachFileProps {
     uploadedFiles: FileData[],
-    dispatch: React.Dispatch<Partial<ChatBoxState>>
+    updateUploadedFiles: (files: FileData[]) => void,
     setErrorMessage: React.Dispatch<React.SetStateAction<string>>
 }
 
-function AttachFiles({ uploadedFiles, dispatch, setErrorMessage }: AttachFileProps) {
+function AttachFiles({ uploadedFiles, updateUploadedFiles, setErrorMessage }: AttachFileProps) {
     const fileRef = useRef<HTMLInputElement>(null);
 
     async function handleDrop(files: FileList): Promise<void> {
@@ -27,7 +26,7 @@ function AttachFiles({ uploadedFiles, dispatch, setErrorMessage }: AttachFilePro
             setErrorMessage("");
         }
 
-        dispatch({ uploadedFiles: allFiles });
+        updateUploadedFiles(allFiles);
     }
 
     function triggerFileUpload(): void {

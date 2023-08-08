@@ -1,0 +1,1 @@
+export type SearchOption = "Work type" | "Service ID";

@@ -11,4 +11,11 @@ export declare const MIN_PASS_LENGTH = 8;
 export declare const MAX_PASS_LENGTH = 256;
 export declare const EMAIL_REGEX: RegExp;
 export declare const MAX_PROFILE_PIC_BYTES = 1000000;
+export declare const MAX_SERVICE_PRICE = 2500;
+export declare const MAX_SERVICE_DELIVERY_DAYS = 60;
+export declare const MAX_SERVICE_FEATURES = 10;
+export declare const ABOUT_SERVICE_LIMIT = 1150;
+export declare const SERVICE_TITLE_LIMIT = 100;
+export declare const REVISIONS: string[];
+export declare const MAX_SERVICE_IMAGE_UPLOADS = 20;
 //# sourceMappingURL=constants.d.ts.map

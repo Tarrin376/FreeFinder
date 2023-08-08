@@ -1,7 +1,7 @@
 import { cloudinary } from "../index.js";
 import { DBError } from "../customErrors/DBError.js";
 import { deleteCloudinaryResource } from "./deleteCloudinaryResource.js";
-import axios, { AxiosError } from "axios";
+import axios from "axios";
 
 export async function uploadFile(newFile, url, max_bytes, type) {
     try {
@@ -20,8 +20,6 @@ export async function uploadFile(newFile, url, max_bytes, type) {
         } else if (err.error) {
             if (err.error.http_code === 404) return await uploader(newFile, url, max_bytes, type);
             else throw new DBError(err.error.message, err.error.http_code || 500);
-        } else if (err instanceof AxiosError) {
-            throw new DBError("Something went wrong. Please try again later.", 500);
         } else {
             throw new DBError("Something went wrong. Please try again later.", 500);
         }

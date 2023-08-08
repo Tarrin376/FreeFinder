@@ -16,18 +16,14 @@ import { getMatchedResults } from "../../utils/getMatchedResults";
 import { IWorkType } from "../../models/IWorkType";
 import { useFetchJobCategories } from "../../hooks/useFetchJobCategories";
 import ErrorPopUp from "../../components/ErrorPopUp";
+import { ABOUT_SERVICE_LIMIT, SERVICE_TITLE_LIMIT } from "@freefinder/shared/dist/constants";
+import { CreatePostReducerAction } from "./CreatePost";
 
 interface PostDetailsProps {
+    dispatch: React.Dispatch<CreatePostReducerAction>,
     setPostService: React.Dispatch<React.SetStateAction<boolean>>,
-    setSection: React.Dispatch<React.SetStateAction<Sections>>,
-    setAbout: React.Dispatch<React.SetStateAction<string>>,
-    setTitle: React.Dispatch<React.SetStateAction<string>>, 
     createPost: () => Promise<string | undefined>,
     setErrorMessage: React.Dispatch<React.SetStateAction<string>>,
-    setFailedUploads: React.Dispatch<React.SetStateAction<FailedUpload[]>>,
-    setCreatedPost: React.Dispatch<React.SetStateAction<boolean>>,
-    setJobCategory: React.Dispatch<React.SetStateAction<string>>,
-    setTypeOfWork: React.Dispatch<React.SetStateAction<string>>,
     about: string,
     title: string,
     errorMessage: string,
@@ -35,13 +31,10 @@ interface PostDetailsProps {
     postID: string,
     createdPost: boolean,
     jobCategory: string,
-    typeOfWork: string
+    workType: string
 }
 
-export const ABOUT_SERVICE_LIMIT = 1150;
-export const SERVICE_TITLE_LIMIT = 100;
-
-function PostDetails({ jobCategory, setJobCategory, setTypeOfWork, setErrorMessage, ...props }: PostDetailsProps) {
+function PostDetails({ dispatch, jobCategory, setErrorMessage, ...props }: PostDetailsProps) {
     const [showFailedUploads, setShowFailedUploads] = useState<boolean>(false);
     const [matchedWork, setMatchedWork] = useState<string[][]>([]);
     const [hideMatched, setHideMatched] = useState<boolean>(false);
@@ -54,9 +47,8 @@ function PostDetails({ jobCategory, setJobCategory, setTypeOfWork, setErrorMessa
         }
 
         return (
-            props.title.trim().length > 0 && 
-            props.about.trim().length > 0 && 
-            category.workTypes.find((x) => x.name === props.typeOfWork) !== undefined
+            props.title.trim().length > 0 && props.about.trim().length > 0 && 
+            category.workTypes.find((x) => x.name === props.workType) !== undefined
         );
     }
 
@@ -65,7 +57,12 @@ function PostDetails({ jobCategory, setJobCategory, setTypeOfWork, setErrorMessa
     }
 
     function searchHandler(search: string): void {
-        setTypeOfWork(search);
+        dispatch({
+            payload: {
+                workType: search
+            }
+        });
+
         if (search.trim() === "") {
             setMatchedWork([]);
             return;
@@ -93,8 +90,13 @@ function PostDetails({ jobCategory, setJobCategory, setTypeOfWork, setErrorMessa
     }
 
     function ignoreUpload(upload: FailedUpload): void {
-        if (props.failedUploads.length === 1) setErrorMessage("");
-        props.setFailedUploads((cur) => cur.filter((x: FailedUpload) => x.fileData.base64Str !== upload.fileData.base64Str));
+        if (props.failedUploads.length === 1) {
+            setErrorMessage("");
+        }
+
+        dispatch({
+            payload: { failedUploads: props.failedUploads.filter((x: FailedUpload) => x.fileData.base64Str !== upload.fileData.base64Str) }
+        });
     }
 
     async function deletePost(): Promise<string | undefined> {
@@ -108,12 +110,16 @@ function PostDetails({ jobCategory, setJobCategory, setTypeOfWork, setErrorMessa
     }
 
     useEffect(() => {
-        setTypeOfWork("");
-    }, [jobCategory, setTypeOfWork]);
+        dispatch({
+            payload: { workType: "" }
+        });
+    }, [jobCategory, dispatch]);
 
     useEffect(() => {
-        setJobCategory(jobCategories.categories.length === 0 ? "" : jobCategories.categories[0].name)
-    }, [jobCategories.categories, setJobCategory]);
+        dispatch({
+            payload: { jobCategory: jobCategories.categories.length === 0 ? "" : jobCategories.categories[0].name }
+        });
+    }, [jobCategories.categories, dispatch]);
 
     return (
         <PopUpWrapper setIsOpen={props.setPostService} title="Enter post details">
@@ -163,7 +169,9 @@ function PostDetails({ jobCategory, setJobCategory, setTypeOfWork, setErrorMessa
             <div className="search-bar mb-4">
                 <select className={`w-full cursor-pointer rounded-[8px] focus:outline-none 
                 ${jobCategories.categories.length === 0 ? "loading" : ""}`} 
-                value={jobCategory} onChange={(e) => setJobCategory(e.target.value)}>
+                value={jobCategory} onChange={(e) => dispatch({
+                    payload: { jobCategory: e.target.value }
+                })}>
                     {jobCategories.categories.map((category: IJobCategory, index: number) => {
                         return (
                             <option key={index} value={category.name}>
@@ -180,16 +188,19 @@ function PostDetails({ jobCategory, setJobCategory, setTypeOfWork, setErrorMessa
                         type="text" 
                         className={`search-bar ${matchedWork.length > 0 && !hideMatched ? "!rounded-b-none" : ""} focus:!outline-none`}
                         placeholder="Search for your type of work" 
-                        value={props.typeOfWork}
+                        value={props.workType}
                         onChange={(e) => searchHandler(e.target.value)}
                         onFocus={() => setHideMatched(false)}
                     />
                     {matchedWork.length > 0 && !hideMatched &&
                     <MatchedResults 
-                        search={props.typeOfWork}
+                        search={props.workType}
                         matchedResults={matchedWork}
                         action={(value: string) => {
-                            setTypeOfWork(value);
+                            dispatch({
+                                payload: { workType: value }
+                            });
+
                             setHideMatched(true);
                             searchHandler(value);
                         }}
@@ -203,16 +214,22 @@ function PostDetails({ jobCategory, setJobCategory, setTypeOfWork, setErrorMessa
                 value={props.title} 
                 maxLength={SERVICE_TITLE_LIMIT} 
                 placeholder="Enter title" 
-                onChange={(e) => props.setTitle(e.target.value)} 
+                onChange={(e) => dispatch({
+                    payload: { title: e.target.value }
+                })} 
             />
             <h3 className="mb-2">Write about section</h3>
             <TextEditor
                 value={props.about}
-                setValue={props.setAbout}
                 limit={ABOUT_SERVICE_LIMIT}
+                setValue={(value) => dispatch({
+                    payload: { about: value }
+                })}
             />
             <div className="flex justify-end gap-3 mt-8">
-                <button className="side-btn w-[110px]" onClick={() => props.setSection(Sections.BasicPackage)}>
+                <button className="side-btn w-[110px]" onClick={() => dispatch({ 
+                    payload: { section: Sections.BasicPackage }
+                })}>
                     Back
                 </button>
                 {props.createdPost ?
@@ -238,8 +255,10 @@ function PostDetails({ jobCategory, setJobCategory, setTypeOfWork, setErrorMessa
                     textStyles="text-main-white"
                     setErrorMessage={setErrorMessage}
                     loadingSvgSize={24}
-                    whenComplete={() => props.setCreatedPost(true)}
                     keepErrorMessage={true}
+                    whenComplete={() => dispatch({
+                        payload: { createdPost: true }
+                    })}
                 />}
             </div>
         </PopUpWrapper>

@@ -1,6 +1,6 @@
 import Price from '../components/Price';
-import { useRef, createContext, useState, useContext, useEffect } from 'react';
-import { MAX_PRICE, MAX_DELIVERY_DAYS } from '../views/CreatePost/Package';
+import { useRef, createContext, useState, useContext, useEffect, cloneElement, useReducer } from 'react';
+import { MAX_SERVICE_PRICE, MAX_SERVICE_DELIVERY_DAYS } from '@freefinder/shared/dist/constants';
 import { usePaginateData } from '../hooks/usePaginateData';
 import { IPost } from '../models/IPost';
 import { sortPosts } from '../utils/sortPosts';
@@ -20,49 +20,56 @@ import SellerLevels from '../components/SellerLevels';
 import DeliveryTimes from '../components/DeliveryTimes';
 import TypeOfWork from '../components/TypeOfWork';
 import ExtraFilters from '../components/ExtraFilters';
+import { SearchOption } from 'src/types/SearchOptions';
+import { PostArgs } from 'src/types/PostArgs';
+import { sortPostsOption } from 'src/types/sortPostsOption';
 
 interface FilterPostsProviderProps {
-    children?: React.ReactNode,
+    children: React.ReactElement,
     urlPrefix: string
 }
 
-type PostArgs = {
-    search: string | undefined,
-    sort: string,
+export type FilterPostsProviderState = {
     min: number,
     max: number,
-    country: string | undefined,
-    languages: string[],
-    deliveryTime: number,
+    sort: sortPostsOption,
+    search: string,
+    selectedLanguages: string[],
     sellerLevels: string[],
     extraFilters: string[],
-    selectedWork: string[]
+    selectedWork: string[],
+    searchOption: SearchOption,
+    country: string
 }
 
 export const FilterPostsContext = createContext<FilterPosts | undefined>(undefined);
 
 function FilterPostsProvider({ children, urlPrefix }: FilterPostsProviderProps) {
-    const postFilters = JSON.parse(sessionStorage.getItem("post_filters") ?? "{}");
-
-    const cursor = useRef<string>();
-    const [min, setMin] = useState<number>(postFilters.min ?? 0);
-    const [max, setMax] = useState<number>(postFilters.max ?? MAX_PRICE);
-    const sort = useRef<string>(postFilters.sort ?? "most recent");
-    const deliveryTime = useRef<number>(postFilters.deliveryTime ?? MAX_DELIVERY_DAYS);
-    const searchRef = useRef<HTMLInputElement>(null);
+    const postFilters = useRef<PostArgs>(JSON.parse(sessionStorage.getItem("post_filters") ?? "{}"));
+    const deliveryTime = useRef<number>(postFilters.current.deliveryTime ?? MAX_SERVICE_DELIVERY_DAYS);
     const pageRef = useRef<HTMLDivElement>(null);
+    const cursor = useRef<string>();
 
     const [page, setPage] = useState<{ value: number }>({ value: 1 });
     const [postService, setPostService] = useState<boolean>(false);
 
-    const [selectedLanguages, setSelectedLanguages] = useState<string[]>(postFilters.languages ?? []);
-    const [sellerLevels, setSellerLevels] = useState<string[]>(postFilters.sellerLevels ?? []);
-    const [extraFilters, setExtraFilters] = useState<string[]>(postFilters.extraFilters ?? []);
-    const [selectedWork, setSelectedWork] = useState<string[]>(postFilters.selectedWork ?? []);
-    const [country, setCountry] = useState<string>(postFilters.country ?? "Any country");
     const userContext = useContext(UserContext);
-
     const location = useLocation();
+
+    const [state, dispatch] = useReducer((cur: FilterPostsProviderState, payload: Partial<FilterPostsProviderState>) => {
+        return { ...cur, ...payload };
+    }, {
+        min: postFilters.current.min ?? 0,
+        max: postFilters.current.max ?? MAX_SERVICE_PRICE,
+        sort: postFilters.current.sort as sortPostsOption ?? "most recent",
+        search: postFilters.current.search ?? "",
+        selectedLanguages: postFilters.current.languages ?? [],
+        sellerLevels: postFilters.current.sellerLevels ?? [],
+        extraFilters: postFilters.current.extraFilters ?? [],
+        selectedWork: postFilters.current.selectedWork ?? [],
+        searchOption: postFilters.current.searchOption ?? "Work type",
+        country: "Any country"
+    });
 
     const posts = usePaginateData<PostArgs, IPost, PaginationResponse<IPost>>(
         pageRef, 
@@ -71,16 +78,17 @@ function FilterPostsProvider({ children, urlPrefix }: FilterPostsProviderProps) 
         page,
         setPage,
         {
-            search: searchRef.current?.value,
-            sort: sortPosts[sort.current],
-            min: min,
-            max: max,
-            country: country === "Any country" ? undefined : country,
-            languages: selectedLanguages,
+            search: state.search,
+            sort: sortPosts[state.sort],
+            min: state.min,
+            max: state.max,
+            country: state.country === "Any country" ? undefined : state.country,
+            languages: state.selectedLanguages,
             deliveryTime: deliveryTime.current,
-            sellerLevels: sellerLevels,
-            extraFilters: extraFilters,
-            selectedWork: selectedWork
+            sellerLevels: state.sellerLevels,
+            extraFilters: state.extraFilters,
+            selectedWork: state.selectedWork,
+            searchOption: state.searchOption
         }
     );
     
@@ -93,16 +101,17 @@ function FilterPostsProvider({ children, urlPrefix }: FilterPostsProviderProps) 
 
     function searchHandler(): void {
         sessionStorage.setItem("post_filters", JSON.stringify({
-            search: searchRef.current?.value,
-            sort: sort.current,
-            min: min,
-            max: max,
-            country: country,
-            languages: selectedLanguages,
+            search: state.search,
+            sort: state.sort,
+            min: state.min,
+            max: state.max,
+            country: state.country,
+            languages: state.selectedLanguages,
             deliveryTime: deliveryTime.current,
-            sellerLevels: sellerLevels,
-            extraFilters: extraFilters,
-            selectedWork: selectedWork
+            sellerLevels: state.sellerLevels,
+            extraFilters: state.extraFilters,
+            selectedWork: state.selectedWork,
+            searchOption: state.searchOption
         }));
         
         posts.resetState();
@@ -110,13 +119,13 @@ function FilterPostsProvider({ children, urlPrefix }: FilterPostsProviderProps) 
 
     useEffect(() => {
         searchHandler();
-    }, [selectedLanguages, selectedWork, sellerLevels, extraFilters])
+    }, [state.selectedLanguages, state.selectedWork, state.sellerLevels, state.extraFilters]);
 
     return (
         <>
             <AnimatePresence>
                 {postService && 
-                    <CreatePost 
+                <CreatePost 
                     setPostService={setPostService} 
                     resetState={posts.resetState} 
                 />}
@@ -147,24 +156,24 @@ function FilterPostsProvider({ children, urlPrefix }: FilterPostsProviderProps) 
                     <div className="overflow-y-scroll pr-[8px]" style={{ maxHeight: userContext.userData.seller ? "calc(100vh - 483px)" : "calc(100% - 175px)" }}>
                         <div className="flex items-center gap-3 pb-5 mb-5 min-[1683px]:hidden border-b border-light-border-gray">
                             <Price
-                                value={min} 
-                                maxValue={MAX_PRICE}
+                                value={state.min} 
+                                maxValue={MAX_SERVICE_PRICE}
                                 title="min price" 
-                                setValue={setMin}
+                                updateValue={(cur: number) => dispatch({ min: cur })}
                             />
                             <div>-</div>
                             <Price 
-                                value={max} 
-                                maxValue={MAX_PRICE}
+                                value={state.max} 
+                                maxValue={MAX_SERVICE_PRICE}
                                 title="max price" 
-                                setValue={setMax}
+                                updateValue={(cur: number) => dispatch({ max: cur })}
                             />
                         </div>
-                        <div className="border-b border-light-border-gray pb-5 mb-5 min-[1309px]:hidden">
+                        <div className="border-b border-light-border-gray pb-5 mb-5">
                             <CountriesDropdown 
-                                country={country}
-                                setCountry={setCountry}
-                                styles="w-full"
+                                country={state.country}
+                                updateCountry={(country: string) => dispatch({ country: country })}
+                                styles="w-full text-[15px]"
                                 title="Seller lives in"
                                 anyLocation={true}
                             />
@@ -174,56 +183,54 @@ function FilterPostsProvider({ children, urlPrefix }: FilterPostsProviderProps) 
                             searchHandler={searchHandler} 
                             deliveryTime={deliveryTime} 
                         />
-                        <h3 className="text-side-text-gray mt-4 mb-2 text-[16px]">
+                        <h3 className="text-side-text-gray mt-5 mb-2 text-[16px]">
                             Seller speaks
                         </h3>
                         <SearchLanguages 
                             loading={posts.loading}
-                            setSelectedLanguages={setSelectedLanguages} 
-                            selectedLanguages={selectedLanguages}
+                            updateLanguages={(languages: string[]) => dispatch({ selectedLanguages: languages })}
+                            selectedLanguages={state.selectedLanguages}
                             searchBarStyles="h-10"
-                            styles="border-b border-light-border-gray pb-6"
+                            styles="border-b border-light-border-gray pb-5"
                         />
                         <SellerLevels 
                             loading={posts.loading}
-                            sellerLevels={sellerLevels}
-                            setSellerLevels={setSellerLevels} 
+                            sellerLevels={state.sellerLevels}
+                            updateSellerLevels={(sellerLevels: string[]) => dispatch({ sellerLevels: sellerLevels })} 
                         />
                         <TypeOfWork 
-                            selectedWork={selectedWork}
-                            setSelectedWork={setSelectedWork}
+                            selectedWork={state.selectedWork}
+                            updateSelectedWork={(selectedWork: string[]) => dispatch({ selectedWork: selectedWork })}
                         />
                         <ExtraFilters 
                             loading={posts.loading}
-                            extraFilters={extraFilters}
-                            setExtraFilters={setExtraFilters}
+                            extraFilters={state.extraFilters}
+                            updateExtraFilters={(extraFilters: string[]) => dispatch({ extraFilters: extraFilters })}
                         />
                     </div>
                 </div>
                 <div className="flex-grow">
                     <div className="border-b border-b-light-border-gray bg-white pr-[14px]">
                         <MainFiltersBar
-                            searchRef={searchRef}
-                            min={min}
-                            setMin={setMin}
-                            max={max}
-                            setMax={setMax}
-                            country={country}
-                            setCountry={setCountry}
-                            sort={sort}
+                            dispatch={dispatch}
+                            state={state}
                             loading={posts.loading}
                             searchHandler={searchHandler}
                         />
                     </div>
                     <div className="h-[calc(100vh-180px)] overflow-y-scroll" ref={pageRef}>
                         <FilterPostsContext.Provider value={{ 
-                            setPage, search: searchRef.current?.value, 
+                            setPage, search: state.search, 
                             endpoint: `/api${urlPrefix}${location.pathname}`,
                             cursor, 
                             posts, 
                             page
                         }}>
-                            {children}
+                            {cloneElement(children, { 
+                                posts: posts.data, 
+                                loading: posts?.loading,
+                                count: posts?.count
+                            })}
                         </FilterPostsContext.Provider>
                     </div>
                 </div>

@@ -66,7 +66,7 @@ function AccountBalance({ setBalancePopUp }: AccountBalanceProps) {
                     value={amount} 
                     maxValue={MAX_DEPOSIT}
                     title="Amount (max £500)" 
-                    setValue={setAmount}
+                    updateValue={(cur) => setAmount(cur)}
                 />
             </div>
             <Button

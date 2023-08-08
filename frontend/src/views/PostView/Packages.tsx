@@ -96,7 +96,7 @@ function Packages({ packages, seller, workType, postID }: PackagesProps) {
                                 £{curPkg.amount.toFixed(2)}
                             </span>
                             <span className="text-sm text-side-text-gray">
-                                (Excludes service fee)
+                                (exc. service fee)
                             </span>
                         </div>
                         <p className="text-side-text-gray mb-4 pb-4 border-b border-light-border-gray font-bold">

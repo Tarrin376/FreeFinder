@@ -77,7 +77,7 @@ function AccountSettings({ setSettingsPopUp }: SettingsProps) {
                     {!state.loading &&
                     <ChangeProfilePicture
                         loading={state.loading}
-                        dispatch={dispatch}
+                        updateLoading={(loading) => dispatch({ loading: loading })}
                     />}
                 </div>
                 <div>

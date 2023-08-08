@@ -5,14 +5,14 @@ import { getMatchedResults } from "../utils/getMatchedResults";
 import MatchedResults from "./MatchedResults";
 
 interface SearchLanguagesProps {
+    updateLanguages: (languages: string[]) => void
     loading?: boolean,
     selectedLanguages: string[],
-    setSelectedLanguages: React.Dispatch<React.SetStateAction<string[]>>,
     searchBarStyles?: string,
     styles?: string,
 }
 
-function SearchLanguages({ loading, selectedLanguages, setSelectedLanguages, searchBarStyles, styles }: SearchLanguagesProps) {
+function SearchLanguages({ updateLanguages, loading, selectedLanguages, searchBarStyles, styles }: SearchLanguagesProps) {
     const [language, setLanguage] = useState<string>("");
     const [matchedLanguages, setMatchedLanguages] = useState<string[][]>([]);
     const allLanguages = useFetchLanguages();
@@ -26,8 +26,8 @@ function SearchLanguages({ loading, selectedLanguages, setSelectedLanguages, sea
 
     function addLanguage(language: string): void {
         if (!loading) {
-            setSelectedLanguages((selected: string[]) => [
-                ...selected.filter((curLang: string) => curLang !== language), 
+            updateLanguages([
+                ...selectedLanguages.filter((curLang: string) => curLang !== language), 
                 language
             ]);
         }
@@ -35,7 +35,7 @@ function SearchLanguages({ loading, selectedLanguages, setSelectedLanguages, sea
 
     function removeLanguage(language: string): void {
         if (!loading) {
-            setSelectedLanguages((selected: string[]) => selected.filter((curLang: string) => curLang !== language));
+            updateLanguages(selectedLanguages.filter((curLang: string) => curLang !== language));
         }
     }
 
@@ -59,7 +59,7 @@ function SearchLanguages({ loading, selectedLanguages, setSelectedLanguages, sea
             <Options 
                 options={selectedLanguages} 
                 removeOption={removeLanguage}
-                wrapperStyles="mt-4"
+                wrapperStyles="mt-5"
                 styles="bg-highlight"
                 textColour="#4E73F8"
             />}

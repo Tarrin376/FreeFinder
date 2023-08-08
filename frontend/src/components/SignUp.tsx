@@ -171,7 +171,7 @@ function SignUp({ setLogIn, setSignUp, setAccountCreated }: SignUpProps) {
                     </p>}
                     <CountriesDropdown 
                         country={country}
-                        setCountry={setCountry}
+                        updateCountry={setCountry}
                         title="Country"
                         styles="mt-3"
                     />

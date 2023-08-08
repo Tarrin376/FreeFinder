@@ -1,26 +1,25 @@
 import { sortPosts } from '../utils/sortPosts';
+import NavDropdown from './NavDropdown';
+import { sortPostsOption } from 'src/types/sortPostsOption';
 
 interface SortByProps {
-    sortBy: React.MutableRefObject<string>,
+    sort: sortPostsOption,
+    updateSort: (nextSort: sortPostsOption) => void
 }
 
-function SortBy({ sortBy }: SortByProps) {
-    function sort(value: string): void {
-        sortBy.current = value;
-    }
-
+function SortBy({ sort, updateSort }: SortByProps) {
     return (
-        <div className="flex items-center gap-4 w-fit">
-            <select className="bg-main-white rounded-[8px] cursor-pointer focus:outline-none" 
-            onChange={(e) => sort(e.target.value)} defaultValue={sortBy.current}>
-                {Object.keys(sortPosts).map((param) => {
-                    return (
-                        <option key={param}>
-                            {param}
-                        </option>
-                    );
-                })}
-            </select>
+        <div className="relative z-30 h-full">
+            <NavDropdown 
+                styles="absolute top-1/2 translate-y-[-50%] left-1/2 translate-x-[-50%] w-fit"
+                title={sort}
+                items={Object.keys(sortPosts).map((param) => {
+                    return [param, () => updateSort(param as sortPostsOption)]
+                })} 
+            />
+            <div className="collapse px-[12px]">
+                {Object.keys(sortPosts).reduce((acc, cur) => cur.length > acc.length ? cur : acc, "")}
+            </div>
         </div>
     );
 }

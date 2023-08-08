@@ -61,7 +61,7 @@ function UserProfile() {
                     <p className="mb-2">Country</p>
                     <CountriesDropdown 
                         country={country}
-                        setCountry={setCountry} 
+                        updateCountry={setCountry} 
                         title="Country"
                     />
                 </div>

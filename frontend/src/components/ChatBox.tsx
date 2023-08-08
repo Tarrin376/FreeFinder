@@ -323,7 +323,7 @@ function ChatBox({ seller, workType, groupID, groupMembers }: ChatBoxProps) {
                     state.toggleAttachFiles &&
                     <AttachFiles 
                         uploadedFiles={state.uploadedFiles}
-                        dispatch={dispatch}
+                        updateUploadedFiles={(files) => dispatch({ uploadedFiles: files })}
                         setErrorMessage={setErrorMessage}
                     />}
                     {state.toggleTagSuggestions &&
@@ -367,10 +367,11 @@ function ChatBox({ seller, workType, groupID, groupMembers }: ChatBoxProps) {
                             {state.uploadedFiles.map((x: FileData, index: number) => {
                                 return (
                                     <UploadedFile 
-                                        fileData={x} 
                                         key={index}
-                                        dispatch={dispatch}
-                                        uploadedFiles={state.uploadedFiles}
+                                        fileData={x} 
+                                        removeFile={(file) => dispatch({ 
+                                            uploadedFiles: state.uploadedFiles.filter((x: FileData) => x !== file) 
+                                        })}
                                     />
                                 );
                             })}

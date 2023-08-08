@@ -13,20 +13,19 @@ import parse from "html-react-parser";
 import { useNavigate } from "react-router-dom";
 import { UserContext } from "../../providers/UserContext";
 import TextEditor from "../../components/TextEditor";
-import { ABOUT_SERVICE_LIMIT, SERVICE_TITLE_LIMIT } from "../CreatePost/PostDetails";
+import { ABOUT_SERVICE_LIMIT, SERVICE_TITLE_LIMIT } from "@freefinder/shared/dist/constants";
 import PostImage from "./PostImage";
 import ErrorPopUp from "../../components/ErrorPopUp";
 import { AnimatePresence } from "framer-motion";
 import { checkImageType } from "../../utils/checkImageType";
 import { parseFileBase64 } from "../../utils/parseFileBase64";
-import { MAX_POST_FILE_UPLOADS } from "../CreatePost/UploadPostFiles";
 import LoadingSvg from "../../components/LoadingSvg";
 import Reviews from "../../components/Reviews";
 import CreateReview from "../../components/CreateReview";
 import { scrollIntoView } from "../../utils/scrollIntoView";
 import StarSvg from "../../components/StarSvg";
 import ServiceID from "../../components/ServiceID";
-import { MAX_FILE_BYTES } from "@freefinder/shared/dist/constants";
+import { MAX_FILE_BYTES, MAX_SERVICE_IMAGE_UPLOADS } from "@freefinder/shared/dist/constants";
 
 export type PostViewState = {
     about: string,
@@ -56,6 +55,7 @@ function PostView() {
     const userContext = useContext(UserContext);
     const addImageFileRef = useRef<HTMLInputElement>(null);
     const reviewsRef = useRef<HTMLDivElement>(null);
+    const imagesRef = useRef<HTMLDivElement>(null);
     const [errorMessage, setErrorMessage] = useState<string>("");
 
     const [state, dispatch] = useReducer((cur: PostViewState, payload: Partial<PostViewState>) => {
@@ -111,16 +111,22 @@ function PostView() {
 
     async function addImage(): Promise<void> {
         try {
+            if (!imagesRef.current) {
+                return;
+            }
+
             dispatch({ addingImage: true });
             const image = await getImage(addImageFileRef);
+            
             if (image === undefined || !state.postData) {
                 return;
             }
 
-            const resp = await axios.post<{ updatedPost: PostPage, message: string }>(`/api${location.pathname}`, {
+            const resp = await axios.post<{ updatedPost: PostPage, message: string }>
+            (`/api${location.pathname}`, {
                 image: image,
             });
-
+            
             dispatch({
                 postData: resp.data.updatedPost,
                 index: state.postData.images.length
@@ -176,6 +182,12 @@ function PostView() {
         })();
     }, [location.pathname]);
 
+    useEffect(() => {
+        if (!state.addingImage && imagesRef.current) {
+            imagesRef.current.scrollLeft = imagesRef.current.scrollWidth; 
+        }
+    }, [state.addingImage]);
+
     if (!state.postData) {
         return (
             <p>loading</p>
@@ -197,7 +209,7 @@ function PostView() {
                     />}
                 </AnimatePresence>
                 <div className="flex gap-16">
-                    <div className="flex-grow">
+                    <div className="flex-grow overflow-hidden">
                         <div className="flex gap-3 items-center mb-3">
                             {isOwner &&
                             <p className="change" onClick={updateTitle}>
@@ -266,7 +278,7 @@ function PostView() {
                             imageStyles="object-contain object-center"
                             startIndex={state.index}
                         />
-                        <div className="mt-5 whitespace-nowrap overflow-x-scroll relative pb-5">
+                        <div className="mt-5 whitespace-nowrap overflow-x-scroll relative pb-5" ref={imagesRef}>
                             {state.postData.images.map((_, index: number) => {
                                 return (
                                     <PostImage
@@ -281,7 +293,7 @@ function PostView() {
                                     />
                                 )
                             })}
-                            {isOwner && state.postData.images.length < MAX_POST_FILE_UPLOADS &&
+                            {isOwner && state.postData.images.length < MAX_SERVICE_IMAGE_UPLOADS &&
                             <>
                                 <input type='file' ref={addImageFileRef} className="hidden" onChange={addImage} />
                                 <div className={`inline-block absolute w-[140px] ${state.postData.images.length > 0 ? "ml-3" : ""}

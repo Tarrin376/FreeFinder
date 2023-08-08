@@ -101,7 +101,7 @@ function ChangeSellerDetails({ setSellerProfilePopUp }: ChangeSellerDetailsProps
             />
             <p className="mb-2">Languages you speak</p>
             <SearchLanguages 
-                setSelectedLanguages={setSelectedLanguages} 
+                updateLanguages={setSelectedLanguages}
                 selectedLanguages={selectedLanguages} 
             />
             <p className="mb-2 mt-4">Your skills</p>

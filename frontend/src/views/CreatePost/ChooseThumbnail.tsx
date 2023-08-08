@@ -1,18 +1,20 @@
 import PopUpWrapper from "../../wrappers/PopUpWrapper";
 import { Sections } from "../../enums/Sections";
 import { FileData } from "../../types/FileData";
+import { CreatePostReducerAction } from "./CreatePost";
 
 interface ChooseThumbnailProps {
-    setSection: React.Dispatch<React.SetStateAction<Sections>>,
+    dispatch: React.Dispatch<CreatePostReducerAction>,
     setPostService: React.Dispatch<React.SetStateAction<boolean>>,
     uploadedImages: FileData[],
-    thumbnail: FileData | undefined,
-    setThumbnail: React.Dispatch<React.SetStateAction<FileData | undefined>>
+    thumbnail: FileData | undefined
 }
 
-function ChooseThumbnail({ setSection, setPostService, uploadedImages, thumbnail, setThumbnail }: ChooseThumbnailProps) {
+function ChooseThumbnail({ dispatch, setPostService, uploadedImages, thumbnail }: ChooseThumbnailProps) {
     function changeThumbnail(newThumbnail: FileData) {
-        setThumbnail(newThumbnail);
+        dispatch({
+            payload: { thumbnail: newThumbnail }
+        });
     }
 
     return (
@@ -39,12 +41,12 @@ function ChooseThumbnail({ setSection, setPostService, uploadedImages, thumbnail
                 <span className="text-main-blue">{` ${thumbnail.file.name}`}</span>
             </p>}
             <div className="flex gap-3 justify-end">
-                <button className="side-btn w-[110px]" onClick={() => setSection(Sections.UploadFiles)}>
+                <button className="side-btn w-[110px]" onClick={() => dispatch({ payload: { section: Sections.UploadFiles } })}>
                     Back
                 </button>
                 <button className={`btn-primary bg-main-blue hover:bg-main-blue-hover text-main-white w-[110px] px-3
                 ${!thumbnail ? "pointer-events-none invalid-button" : ""}`}
-                onClick={() => setSection(Sections.BasicPackage)}>
+                onClick={() => dispatch({ payload: { section: Sections.BasicPackage } })}>
                     Next
                 </button>
             </div>

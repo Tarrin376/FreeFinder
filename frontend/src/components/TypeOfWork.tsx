@@ -6,10 +6,10 @@ import Options from "./Options";
 
 interface TypeOfWorkProps {
     selectedWork: string[],
-    setSelectedWork: React.Dispatch<React.SetStateAction<string[]>>
+    updateSelectedWork: (selectedWork: string[]) => void
 }
 
-function TypeOfWork({ selectedWork, setSelectedWork }: TypeOfWorkProps) {
+function TypeOfWork({ selectedWork, updateSelectedWork }: TypeOfWorkProps) {
     const jobCategories = useFetchJobCategories();
     const [matchedWork, setMatchedWork] = useState<string[][]>([]);
     const [searchQuery, setSearchQuery] = useState<string>("");
@@ -30,18 +30,18 @@ function TypeOfWork({ selectedWork, setSelectedWork }: TypeOfWorkProps) {
     }
 
     function addWork(workType: string) {
-        setSelectedWork((selected: string[]) => [
-            ...selected.filter((cur: string) => cur !== workType), 
+        updateSelectedWork([
+            ...selectedWork.filter((cur: string) => cur !== workType), 
             workType
         ]);
     }
 
     function removeWork(workType: string) {
-        setSelectedWork((selected: string[]) => selected.filter((cur: string) => cur !== workType));
+        updateSelectedWork(selectedWork.filter((cur: string) => cur !== workType));
     }
 
     return (
-        <div className="border-b border-light-border-gray pb-6 mt-4">
+        <div className="border-b border-light-border-gray pb-5 mt-5">
             <h3 className="mb-2 text-side-text-gray">Type of freelance work</h3>
             <input 
                 type="text" 

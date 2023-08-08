@@ -78,3 +78,28 @@ export async function leaveMessageGroupHandler(req) {
         await prisma.$disconnect();
     }
 }
+
+export async function clearUnreadMessagesHandler(req) {
+    try {
+        await checkUser(req.userData.userID, req.username);
+        await prisma.groupMember.update({
+            data: { unreadMessages: 0 },
+            where: {
+                groupID_userID: {
+                    groupID: req.params.groupID,
+                    userID: req.userData.userID
+                }
+            }
+        });
+    }
+    catch (err) {
+        if (err instanceof Prisma.PrismaClientKnownRequestError && err.code === "P2025") {
+            throw new DBError("You are not in this message group or it does not exist.", 404);
+        } else {
+            throw new DBError("Something went wrong. Please try again later.", 500);
+        }
+    }
+    finally {
+        await prisma.$disconnect();
+    }
+}

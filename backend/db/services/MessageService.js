@@ -52,18 +52,46 @@ export async function getMessagesHandler(req) {
 export async function sendMessageHandler(req) {
     try {
         await checkUser(req.userData.userID, req.username);
-        const newMessage = await prisma.message.create({
-            data: {
-                fromID: req.userData.userID,
-                groupID: req.groupID,
-                messageText: req.body.message
-            },
-            select: {
-                ...messageProperties
-            }
-        });
 
-        return newMessage;
+        return await prisma.$transaction(async (tx) => {
+            const newMessage = await prisma.message.create({
+                data: {
+                    fromID: req.userData.userID,
+                    groupID: req.groupID,
+                    messageText: req.body.message
+                },
+                select: {
+                    ...messageProperties
+                }
+            });
+    
+            await prisma.groupMember.updateMany({
+                where: { groupID: req.groupID },
+                data: {
+                    unreadMessages: {
+                        increment: 1
+                    }
+                }
+            });
+    
+            const members = await prisma.groupMember.findMany({
+                where: { groupID: req.groupID },
+                select: { userID: true }
+            });
+    
+            for (const member of members) {
+                await prisma.user.update({
+                    where: { userID: member.userID },
+                    data: {
+                        unreadMessages: {
+                            increment: 1
+                        }
+                    }
+                });
+            }
+    
+            return newMessage;
+        });
     }
     catch (err) {
         if (err instanceof DBError) {

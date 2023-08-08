@@ -6,7 +6,6 @@ import { checkImageType } from "../utils/checkImageType";
 import { UserContext } from "../providers/UserContext";
 import ErrorPopUp from "./ErrorPopUp";
 import { AnimatePresence } from "framer-motion";
-import { AccountSettingsState } from "../views/AccountSettings/AccountSettings";
 import { MAX_PROFILE_PIC_BYTES } from "@freefinder/shared/dist/constants";
 import { fetchUpdatedUser } from "src/utils/fetchUpdatedUser";
 import { getAPIErrorMessage } from "src/utils/getAPIErrorMessage";
@@ -14,10 +13,10 @@ import { AxiosError } from "axios";
 
 interface ChangeProfilePictureProps {
     loading: boolean,
-    dispatch: React.Dispatch<Partial<AccountSettingsState>>
+    updateLoading: (loading: boolean) => void
 }
 
-function ChangeProfilePicture({ loading, dispatch }: ChangeProfilePictureProps) {
+function ChangeProfilePicture({ loading, updateLoading }: ChangeProfilePictureProps) {
     const inputFileRef = useRef<HTMLInputElement>(null);
     const [errorMessage, setErrorMessage] = useState<string>("");
     const [profileDropdown, setProfileDropdown] = useState<boolean>(false);
@@ -28,7 +27,7 @@ function ChangeProfilePicture({ loading, dispatch }: ChangeProfilePictureProps) 
             return;
         }
 
-        dispatch({ loading: true });
+        updateLoading(true);
         updateProfilePic("");
     }
 
@@ -47,7 +46,7 @@ function ChangeProfilePicture({ loading, dispatch }: ChangeProfilePictureProps) 
             setErrorMessage(errorMessage);
         }
         finally {
-            dispatch({ loading: false });
+            updateLoading(false);
         }
     }
 
@@ -57,7 +56,7 @@ function ChangeProfilePicture({ loading, dispatch }: ChangeProfilePictureProps) 
             return;
         }
 
-        dispatch({ loading: true });
+        updateLoading(true);
         const profilePic = files[0];
         const valid = checkImageType(profilePic, MAX_PROFILE_PIC_BYTES);
 
@@ -68,12 +67,12 @@ function ChangeProfilePicture({ loading, dispatch }: ChangeProfilePictureProps) 
             }
             catch (err: any) {
                 setErrorMessage("Something went wrong. Please try again later.");
-                dispatch({ loading: false });
+                updateLoading(false);
             }
         } else {
             setErrorMessage(`Failed to upload profile picture. Please check that the file format is
             supported and the image does not exceed ${MAX_PROFILE_PIC_BYTES / 1000000}MB in size.`);
-            dispatch({ loading: false });
+            updateLoading(false);
         }
     }
 

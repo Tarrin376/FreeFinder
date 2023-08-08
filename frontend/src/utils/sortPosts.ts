@@ -1,6 +1,7 @@
+import { sortPostsOption } from "src/types/sortPostsOption"
 
 export const sortPosts: {
-    [key: string]: string
+    [key in sortPostsOption]: string
 } = {
     "most recent": "recent",
     "rating": "rating",

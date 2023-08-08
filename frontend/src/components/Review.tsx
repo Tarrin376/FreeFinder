@@ -106,12 +106,12 @@ function Review({ reviewInfo, hideActions }: ReviewProps) {
             <div className="flex items-center gap-4 mt-3">
                 <p className="text-side-text-gray text-sm">Did you find this review helpful?</p>
                 <div className="flex items-center gap-3">
-                    <button className={`side-btn w-fit !h-[29px] ${helpfulCount > reviewInfo._count.foundHelpful ? 
+                    <button className={`side-btn w-fit text-[15px] !h-[29px] ${helpfulCount > reviewInfo._count.foundHelpful ? 
                     "bg-highlight hover:!bg-highlight-hover" : ""}`} 
                     onClick={markAsHelpful}>
                         Yes
                     </button>
-                    <button className={`side-btn w-fit !h-[29px] ${helpfulCount === reviewInfo._count.foundHelpful && toggled ?
+                    <button className={`side-btn w-fit text-[15px] !h-[29px] ${helpfulCount === reviewInfo._count.foundHelpful && toggled ?
                     "bg-highlight hover:!bg-highlight-hover" : ""}`} 
                     onClick={markAsUnhelpful}>
                         No

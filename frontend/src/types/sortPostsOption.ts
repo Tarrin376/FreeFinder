@@ -1,0 +1,1 @@
+export type sortPostsOption = "most recent" | "rating" | "lowest price" | "highest price";

@@ -1,4 +1,10 @@
 export function getPostFilters(req) {
+    if (req.body.searchOption === "Service ID") {
+        return {
+            postID: req.body.search ? req.body.search : undefined
+        }
+    }
+
     return {
         packages: {
             some: {

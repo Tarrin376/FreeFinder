@@ -11,11 +11,46 @@ import { getPaginatedData } from '../utils/getPaginatedData.js';
 import { getPostedBy } from '../utils/getPostedBy.js';
 import { getAvgRatings } from '../utils/getAvgRatings.js';
 import { uploadFile } from '../utils/uploadFile.js';
-import { MAX_FILE_BYTES } from '@freefinder/shared/dist/constants.js';
+import { 
+    MAX_FILE_BYTES, 
+    MAX_SERVICE_FEATURES, 
+    MAX_SERVICE_PRICE, 
+    MAX_SERVICE_DELIVERY_DAYS, 
+    REVISIONS,
+    SERVICE_TITLE_LIMIT,
+    ABOUT_SERVICE_LIMIT,
+    MAX_SERVICE_IMAGE_UPLOADS
+} from '@freefinder/shared/dist/constants.js';
+import Validator from '@freefinder/shared/dist/validator.js';
 
-export async function createPostHandler(postData, startingPrice, userID) {
+async function checkPackages(packages) {
     try {
-        const seller = await findSeller(userID);
+        for (const pkg of packages) {
+            if (!Validator.isInteger(pkg.deliveryTime.toString(), MAX_SERVICE_DELIVERY_DAYS) || pkg.deliveryTime <= 0) {
+                throw new DBError(`Package delivery time must be a number between 1 and ${MAX_SERVICE_DELIVERY_DAYS}.`, 400);
+            } else if (!Validator.isInteger(pkg.amount.toString(), MAX_SERVICE_PRICE) || pkg.amount <= 0) {
+                throw new DBError(`Package amount must be a number between 1 and ${MAX_SERVICE_PRICE}.`, 400);
+            } else if (pkg.features.length > MAX_SERVICE_FEATURES) {
+                throw new DBError(`You cannot have more than ${MAX_SERVICE_FEATURES} features in one package.`, 400);
+            } else if (!REVISIONS.includes(pkg.revisions)) {
+                throw new DBError(`Package revisions must be one of these values: (${REVISIONS.join(", ")}).`, 400);
+            }
+        }
+    }
+    catch (err) {
+        if (err instanceof DBError) {
+            throw err;
+        } else {
+            throw new DBError("Missing required fields or fields provided are invalid.", 400);
+        }
+    }
+}
+
+export async function createPostHandler(req) {
+    try {
+        await checkPackages(req.body.packages);
+        const seller = await findSeller(req.userData.userID);
+
         if (seller._count.posts === seller.sellerLevel.postLimit) {
             throw new DBError(`
                 '${seller.sellerLevel.name}' sellers cannot have more than ${seller._count.posts} available 
@@ -23,67 +58,74 @@ export async function createPostHandler(postData, startingPrice, userID) {
             );
         }
 
+        if (!req.body.title || req.body.title.length > SERVICE_TITLE_LIMIT) {
+            throw new DBError(`Title must be between 1 and ${SERVICE_TITLE_LIMIT} characters long.`, 400);
+        } else if (!req.body.about || req.body.about.length > ABOUT_SERVICE_LIMIT) {
+            throw new DBError(`About section must be between 1 and ${ABOUT_SERVICE_LIMIT} characters long.`, 400);
+        }
+
+        const startingPrice = req.body.packages.reduce((acc, cur) => Math.min(cur.amount, acc), Infinity);
         return await prisma.$transaction(async (tx) => {
             const res = await tx.post.create({
                 select: { postID: true },
                 data: {
-                    about: postData.about,
-                    title: postData.title,
+                    about: req.body.about,
+                    title: req.body.title,
                     startingPrice: startingPrice,
                     postedBy: {
                         connect: { sellerID: seller.sellerID }
                     },
                     workType: {
-                        connect: { name: postData.workType }
+                        connect: { name: req.body.workType }
                     }
                 }
             });
-
+            
             await tx.package.create({
                 data: {
                     postID: res.postID,
-                    deliveryTime: postData.packages[0].deliveryTime,
-                    revisions: postData.packages[0].revisions,
-                    description: postData.packages[0].description,
-                    features: postData.packages[0].features,
-                    amount: postData.packages[0].amount,
-                    type: postData.packages[0].type,
-                    title: postData.packages[0].title,
+                    deliveryTime: req.body.packages[0].deliveryTime,
+                    revisions: req.body.packages[0].revisions,
+                    description: req.body.packages[0].description,
+                    features: req.body.packages[0].features,
+                    amount: req.body.packages[0].amount,
+                    type: req.body.packages[0].type,
+                    title: req.body.packages[0].title,
                 }
             });
     
-            if (postData.packages.length >= 2) {
+            if (req.body.packages.length >= 2) {
                 await tx.package.create({
                     data: {
                         postID: res.postID,
-                        deliveryTime: postData.packages[1].deliveryTime,
-                        revisions: postData.packages[1].revisions,
-                        description: postData.packages[1].description,
-                        features: postData.packages[1].features,
-                        amount: postData.packages[1].amount,
-                        type: postData.packages[1].type,
-                        title: postData.packages[1].title,
+                        deliveryTime: req.body.packages[1].deliveryTime,
+                        revisions: req.body.packages[1].revisions,
+                        description: req.body.packages[1].description,
+                        features: req.body.packages[1].features,
+                        amount: req.body.packages[1].amount,
+                        type: req.body.packages[1].type,
+                        title: req.body.packages[1].title,
                     }
                 });
             }
     
-            if (postData.packages.length === 3) {
+            if (req.body.packages.length === 3) {
                 await tx.package.create({
                     data: {
                         postID: res.postID,
-                        deliveryTime: postData.packages[2].deliveryTime,
-                        revisions: postData.packages[2].revisions,
-                        description: postData.packages[2].description,
-                        features: postData.packages[2].features,
-                        amount: postData.packages[2].amount,
-                        type: postData.packages[2].type,
-                        title: postData.packages[2].title,
+                        deliveryTime: req.body.packages[2].deliveryTime,
+                        revisions: req.body.packages[2].revisions,
+                        description: req.body.packages[2].description,
+                        features: req.body.packages[2].features,
+                        amount: req.body.packages[2].amount,
+                        type: req.body.packages[2].type,
+                        title: req.body.packages[2].title,
                     }
                 });
             }
 
             const uuid = uuidv4();
-            const result = await uploadFile(postData.thumbnail, `FreeFinder/PostImages/${res.postID}/${uuid}`, MAX_FILE_BYTES, "image");
+            const result = await uploadFile(req.body.thumbnail, `FreeFinder/PostImages/${res.postID}/${uuid}`, MAX_FILE_BYTES, "image");
 
             await tx.postImage.create({
                 data: {
@@ -97,6 +139,9 @@ export async function createPostHandler(postData, startingPrice, userID) {
                 postID: res.postID,
                 seller: seller
             };
+        }, {
+            maxWait: 5000,
+            timeout: 20000
         });
     }
     catch (err) {
@@ -104,6 +149,8 @@ export async function createPostHandler(postData, startingPrice, userID) {
             throw err;
         } else if (err instanceof Prisma.PrismaClientValidationError) {
             throw new DBError("Missing required fields or fields provided are invalid.", 400);
+        } else if (err instanceof Prisma.PrismaClientKnownRequestError && err.code === "P2025") {
+            throw new DBError("Work type not found.", 404);
         } else {
             throw new DBError("Something went wrong. Please try again later.", 500);
         }
@@ -115,8 +162,16 @@ export async function createPostHandler(postData, startingPrice, userID) {
 
 export async function deleteImageHandler(req) {
     try {
-        const postedBy = await getPostedBy(req.params.id);
-        if (req.userData.userID !== postedBy) {
+        const post = await prisma.post.findUnique({ 
+            where: { postID: req.params.id },
+            select: {
+                postedBy: {
+                    select: { userID: true }
+                }
+            }
+        });
+
+        if (req.userData.userID !== post.postedBy.userID) {
             throw new DBError("You are not authorized to delete this image.", 403);
         }
 
@@ -162,9 +217,22 @@ export async function deleteImageHandler(req) {
 
 export async function addImageHandler(req) {
     try {
-        const postedBy = await getPostedBy(req.params.id);
-        if (req.userData.userID !== postedBy) {
-            throw new DBError("You are not authorized to add an image to this post.", 403);
+        const post = await prisma.post.findUnique({ 
+            where: { postID: req.params.id },
+            select: {
+                postedBy: {
+                    select: { userID: true }
+                },
+                _count: {
+                    select: { images: true }
+                }
+            }
+        });
+        
+        if (req.userData.userID !== post.postedBy.userID) {
+            throw new DBError("You are not authorized to add this image.", 403);
+        } else if (post._count.images === MAX_SERVICE_IMAGE_UPLOADS) {
+            throw new DBError(`You cannot have more than ${MAX_SERVICE_IMAGE_UPLOADS} images for one service.`, 400);
         }
 
         const uuid = uuidv4();
@@ -483,5 +551,8 @@ export async function getSellerSummaryHandler(postID) {
         } else {
             throw new DBError("Something went wrong. Please try again later.", 500);
         }
+    }
+    finally {
+        await prisma.$disconnect();
     }
 }

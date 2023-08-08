@@ -375,6 +375,11 @@ export async function createOrderHandler(req) {
                     select: {
                         userID: true
                     }
+                },
+                package: {
+                    select: {
+                        deliveryTime: true
+                    }
                 }
             }
         });
@@ -386,6 +391,9 @@ export async function createOrderHandler(req) {
         } else if (orderRequest.status !== "PENDING") {
             throw new DBError("Action has already been taken on this order request.", 409);
         }
+
+        const date = new Date();
+        const deliveryEndDate = new Date(date.setDate(date.getDate() + orderRequest.package.deliveryTime));
 
         await prisma.$transaction([
             prisma.orderRequest.update({
@@ -399,7 +407,8 @@ export async function createOrderHandler(req) {
                     status: "PENDING",
                     total: orderRequest.total,
                     subTotal: orderRequest.subTotal,
-                    packageID: orderRequest.packageID
+                    packageID: orderRequest.packageID,
+                    deliveryEndDate: deliveryEndDate
                 }
             })
         ]);

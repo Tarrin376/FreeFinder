@@ -2,16 +2,16 @@ interface PriceProps {
     value: number,
     maxValue?: number,
     title: string,
-    setValue: React.Dispatch<React.SetStateAction<number>>,
+    updateValue: (cur: number) => void
 }
 
-function Price({ value, maxValue, title, setValue }: PriceProps) {
-    const updateValue = (e: React.ChangeEvent<HTMLInputElement>) => {
+function Price({ value, maxValue, title, updateValue }: PriceProps) {
+    const update = (e: React.ChangeEvent<HTMLInputElement>) => {
         const nextValue = e.target.value;
         if (nextValue.match(new RegExp(`[0-9]+$`)) && (!maxValue || parseInt(nextValue) <= maxValue)) {
-            setValue(parseInt(nextValue));
+            updateValue(parseInt(nextValue));
         } else if (nextValue === "") {
-            setValue(0);
+            updateValue(0);
         }
     }
 
@@ -24,7 +24,7 @@ function Price({ value, maxValue, title, setValue }: PriceProps) {
                     type="text" 
                     className="bg-transparent ml-2 w-full focus:outline-none" 
                     value={value} 
-                    onChange={updateValue} 
+                    onChange={update} 
                 />
             </div>
         </div>

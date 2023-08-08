@@ -19,7 +19,7 @@ async function checkMessageGroup(postID, userID) {
     });
 
     if (!messageGroup) {
-        throw new DBError("You must message the seller before making an order request.", 400);
+        throw new DBError("You must message the seller about this service before making an order request.", 400);
     }
 
     return messageGroup.groupID;
@@ -176,7 +176,7 @@ export async function updateOrderRequestStatusHandler(req) {
         } else if (orderRequest.status !== "PENDING") {
             throw new DBError("Action has already been taken on this order request.", 409);
         } else if (req.body.status === "PENDING") {
-            return;
+            throw new DBError("You cannot set the order request status to pending.", 400);
         }
 
         const message = await prisma.message.findUnique({

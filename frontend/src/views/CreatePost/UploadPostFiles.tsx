@@ -10,25 +10,22 @@ import { getUniqueArray } from "../../utils/getUniqueArray";
 import { checkImageType } from "../../utils/checkImageType";
 import { FileData } from "../../types/FileData";
 import { parseFiles } from "../../utils/parseFiles";
-import { MAX_FILE_BYTES } from "@freefinder/shared/dist/constants";
-
-export const MAX_POST_FILE_UPLOADS = 20;
+import { MAX_FILE_BYTES, MAX_SERVICE_IMAGE_UPLOADS } from "@freefinder/shared/dist/constants";
+import { CreatePostReducerAction } from "./CreatePost";
 
 interface UploadPostFilesProps {
+    dispatch: React.Dispatch<CreatePostReducerAction>
     setPostService: React.Dispatch<React.SetStateAction<boolean>>,
-    setSection: React.Dispatch<React.SetStateAction<Sections>>,
-    setUploadedImages: React.Dispatch<React.SetStateAction<FileData[]>>,
     uploadedImages: FileData[],
-    thumbnail: FileData | undefined,
-    setThumbnail: React.Dispatch<React.SetStateAction<FileData | undefined>>
+    thumbnail: FileData | undefined
 }
 
-function UploadPostFiles({ setPostService, setSection, uploadedImages, setUploadedImages, thumbnail, setThumbnail }: UploadPostFilesProps) {
+function UploadPostFiles({ dispatch, setPostService, uploadedImages, thumbnail }: UploadPostFilesProps) {
     const inputFileRef = useRef<HTMLInputElement>(null);
     const [errorMessage, setErrorMessage] = useState<string>("");
 
     async function handleDrop(files: FileList): Promise<void> {
-        const { failed, allFiles } = await parseFiles(files, uploadedImages, MAX_FILE_BYTES, MAX_POST_FILE_UPLOADS, checkImageType);
+        const { failed, allFiles } = await parseFiles(files, uploadedImages, MAX_FILE_BYTES, MAX_SERVICE_IMAGE_UPLOADS, checkImageType);
 
         if (failed > 0) {
             setErrorMessage(`Failed to upload ${failed} ${failed === 1 ? "file" : "files"}. Please check that the file formats are 
@@ -37,7 +34,9 @@ function UploadPostFiles({ setPostService, setSection, uploadedImages, setUpload
             setErrorMessage("");
         }
 
-        setUploadedImages([...getUniqueArray<FileData, unknown>(allFiles, (x: FileData) => x.base64Str)]);
+        dispatch({ 
+            payload: { uploadedImages: [...getUniqueArray<FileData, unknown>(allFiles, (x: FileData) => x.base64Str)] } 
+        });
     }
 
     function uploadFile(): void {
@@ -53,8 +52,15 @@ function UploadPostFiles({ setPostService, setSection, uploadedImages, setUpload
     }
 
     function deleteImage(image: FileData): void {
-        if (image === thumbnail) setThumbnail(undefined);
-        setUploadedImages((state) => state.filter((x) => x !== image));
+        if (image === thumbnail) {
+            dispatch({
+                payload: { thumbnail: undefined }
+            });
+        }
+
+        dispatch({ 
+            payload: { uploadedImages: uploadedImages.filter((x) => x !== image) } 
+        });
     }
 
     return (
@@ -71,8 +77,8 @@ function UploadPostFiles({ setPostService, setSection, uploadedImages, setUpload
                 <p className="text-side-text-gray">{`Maximum size: ${MAX_FILE_BYTES / 1000000}MB`}</p>
             </div>
             <p className="text-side-text-gray mt-3 mb-4">Files uploaded:
-                <span className={uploadedImages.length === MAX_POST_FILE_UPLOADS ? 'text-error-text' : 'text-light-green'}>
-                    {` ${uploadedImages.length} / ${MAX_POST_FILE_UPLOADS}`}
+                <span className={uploadedImages.length === MAX_SERVICE_IMAGE_UPLOADS ? 'text-error-text' : 'text-light-green'}>
+                    {` ${uploadedImages.length} / ${MAX_SERVICE_IMAGE_UPLOADS}`}
                 </span>
             </p>
             {errorMessage !== "" && 
@@ -102,9 +108,13 @@ function UploadPostFiles({ setPostService, setSection, uploadedImages, setUpload
                 <button className="side-btn w-[110px]" onClick={() => setPostService(false)}>
                     Cancel
                 </button>
-                <button className={`btn-primary bg-main-blue hover:bg-main-blue-hover text-main-white w-[110px] px-3 
+                <button 
+                className={`btn-primary bg-main-blue hover:bg-main-blue-hover text-main-white w-[110px] px-3 
                 ${uploadedImages.length === 0 ? 'invalid-button' : ''}`}
-                onClick={() => setSection(Sections.ChooseThumbnail)} disabled={uploadedImages.length === 0}>
+                disabled={uploadedImages.length === 0}
+                onClick={() => dispatch({ 
+                    payload: { section: Sections.ChooseThumbnail } 
+                })}>
                     Next
                 </button>
             </div>

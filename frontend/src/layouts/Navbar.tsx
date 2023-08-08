@@ -126,20 +126,24 @@ function Navbar() {
                     </>}
                     {userContext.userData.userID !== "" && windowSize > 1005 &&
                     <>
-                        <NavDropdown
-                            title="Orders"
-                            items={[
-                                ["My orders", (e) => goToPage(e as React.MouseEvent<NavElement>, `/${userContext.userData.username}/saved/posts`)],
-                                ["Order requests", () => setSavedSellersPopUp(true)]
-                            ]}
-                        />
-                        <NavDropdown
-                            title="Saved"
-                            items={[
-                                ["Services", (e) => goToPage(e as React.MouseEvent<NavElement>, `/${userContext.userData.username}/saved/posts`)],
-                                ["Sellers", () => setSavedSellersPopUp(true)]
-                            ]}
-                        />
+                        <li>
+                            <NavDropdown
+                                title="Orders"
+                                items={[
+                                    ["My orders", (e) => goToPage(e as React.MouseEvent<NavElement>, `/${userContext.userData.username}/saved/posts`)],
+                                    ["Order requests", () => setSavedSellersPopUp(true)]
+                                ]}
+                            />
+                        </li>
+                        <li>
+                            <NavDropdown
+                                title="Saved"
+                                items={[
+                                    ["Services", (e) => goToPage(e as React.MouseEvent<NavElement>, `/${userContext.userData.username}/saved/posts`)],
+                                    ["Sellers", () => setSavedSellersPopUp(true)]
+                                ]}
+                            />
+                        </li>
                         <li className="nav-item" onClick={(e) => goToPage(e, `${userContext.userData.username}/posts`)}>
                             My services
                         </li>

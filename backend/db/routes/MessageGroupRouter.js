@@ -4,7 +4,8 @@ import messageRouter from './MessageRouter.js';
 import createdMessageGroupRouter from './CreatedMessageGroupRouter.js';
 import { 
     getMessageGroups, 
-    leaveMessageGroup
+    leaveMessageGroup,
+    clearUnreadMessages
 } from '../controllers/MessageGroupController.js';
 
 const messageGroupRouter = Router();
@@ -19,5 +20,6 @@ messageGroupRouter.use('/created', createdMessageGroupRouter);
 
 messageGroupRouter.post('/all', cookieJwtAuth, getMessageGroups);
 messageGroupRouter.delete('/:groupID', cookieJwtAuth, leaveMessageGroup);
+messageGroupRouter.delete('/:groupID/unreadMessages', cookieJwtAuth, clearUnreadMessages);
 
 export default messageGroupRouter;

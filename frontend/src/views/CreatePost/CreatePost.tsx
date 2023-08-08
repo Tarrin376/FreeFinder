@@ -29,7 +29,16 @@ export type PostData = {
 export type CreatePostState = {
     basic: PackageState,
     standard: PackageState,
-    superior: PackageState
+    superior: PackageState,
+    section: Sections,
+    uploadedImages: FileData[],
+    thumbnail: FileData | undefined,
+    failedUploads: FailedUpload[],
+    createdPost: boolean,
+    title: string,
+    about: string,
+    jobCategory: string,
+    workType: string
 }
 
 export type PackageState = {
@@ -41,9 +50,12 @@ export type PackageState = {
     title: string
 }
 
-export type ReducerAction = { 
+export type CreatePostReducerAction = { 
     type: PackageTypes,
     payload: Partial<PackageState>
+} | {
+    type?: undefined,
+    payload: Partial<CreatePostState>
 };
 
 const INITIAL_PACKAGE_STATE: PackageState = {
@@ -58,10 +70,19 @@ const INITIAL_PACKAGE_STATE: PackageState = {
 const INITIAL_STATE: CreatePostState = {
     basic: { ...INITIAL_PACKAGE_STATE },
     standard: { ...INITIAL_PACKAGE_STATE },
-    superior: { ...INITIAL_PACKAGE_STATE }
+    superior: { ...INITIAL_PACKAGE_STATE },
+    section: Sections.UploadFiles,
+    uploadedImages: [],
+    thumbnail: undefined,
+    failedUploads: [],
+    createdPost: false,
+    title: "",
+    about: "",
+    jobCategory: "",
+    workType: ""
 }
 
-function reducer(state: CreatePostState, action: ReducerAction): CreatePostState {
+function reducer(state: CreatePostState, action: CreatePostReducerAction): CreatePostState {
     switch (action.type) {
         case PackageTypes.BASIC:
             return { ...state, basic: { ...state.basic, ...action.payload } };
@@ -70,28 +91,18 @@ function reducer(state: CreatePostState, action: ReducerAction): CreatePostState
         case PackageTypes.SUPERIOR:
             return { ...state, superior: { ...state.superior, ...action.payload } };
         default:
-            throw new Error("Invalid action type given.");
+            return { ...state, ...action.payload };
     }
 }
 
 function CreatePost({ setPostService, resetState }: CreatePostProps) {
-    const [section, setSection] = useState<Sections>(Sections.UploadFiles);
     const [errorMessage, setErrorMessage] = useState<string>("");
-    const [uploadedImages, setUploadedImages] = useState<FileData[]>([]);
-    const [thumbnail, setThumbnail] = useState<FileData | undefined>();
-    const [failedUploads, setFailedUploads] = useState<FailedUpload[]>([]);
-    const [createdPost, setCreatedPost] = useState<boolean>(false);
+    const [state, dispatch] = useReducer(reducer, INITIAL_STATE);
+
     const postID = useRef<string>("");
     const userContext = useContext(UserContext);
 
-    const [title, setTitle] = useState<string>("");
-    const [about, setAbout] = useState<string>("");
-    const [jobCategory, setJobCategory] = useState<string>("");
-    const [typeOfWork, setTypeOfWork] = useState<string>("");
-    
-    const [state, dispatch] = useReducer(reducer, INITIAL_STATE);
-
-    function constructPackage(pkg: PackageState, type: ReducerAction["type"]): IPackage {
+    function constructPackage(pkg: PackageState, type: PackageTypes): IPackage {
         return {
             ...pkg,
             numOrders: 0,
@@ -102,10 +113,10 @@ function CreatePost({ setPostService, resetState }: CreatePostProps) {
 
     function constructPost(): PostData {
         const post: PostData = { 
-            about: about.trim(), 
-            title: title.trim(),
-            workType: typeOfWork,
-            thumbnail: thumbnail?.base64Str,
+            about: state.about.trim(), 
+            title: state.title.trim(),
+            workType: state.workType,
+            thumbnail: state.thumbnail?.base64Str,
             packages: [constructPackage(state.basic, PackageTypes.BASIC)]
         };
 
@@ -121,14 +132,9 @@ function CreatePost({ setPostService, resetState }: CreatePostProps) {
 
     async function createPost(): Promise<string | undefined> {
         const post: PostData = constructPost();
-        const minPrice = post.packages.reduce((acc, cur) => Math.min(cur.amount, acc), Infinity);
 
         try {
-            const resp = await axios.post<{ postID: string, seller: IUser["seller"], message: string }>(`/api/posts`, {
-                startingPrice: minPrice,
-                post: post
-            });
-
+            const resp = await axios.post<{ postID: string, seller: IUser["seller"], message: string }>(`/api/posts`, post);
             postID.current = resp.data.postID;
             const addedImages = await addPostImages(resp.data.postID);
 
@@ -154,24 +160,27 @@ function CreatePost({ setPostService, resetState }: CreatePostProps) {
     async function addPostImages(postID: string): Promise<boolean> {
         const failed = [];
 
-        for (let i = 0; i < uploadedImages.length; i++) {
+        for (let i = 0; i < state.uploadedImages.length; i++) {
             try {
-                if (uploadedImages[i] !== thumbnail) {
+                if (state.uploadedImages[i] !== state.thumbnail) {
                     await axios.post<{ secure_url: string, message: string }>(`/api/posts/${postID}`, {
-                        image: uploadedImages[i].base64Str,
+                        image: state.uploadedImages[i].base64Str,
                     });
                 }
             }
             catch (err: any) {
                 const errorMessage = getAPIErrorMessage(err as AxiosError<{ message: string }>);
                 failed.push({
-                    fileData: uploadedImages[i], 
+                    fileData: state.uploadedImages[i], 
                     errorMessage: errorMessage
                 });
             }
         }
 
-        setFailedUploads(failed);
+        dispatch({
+            payload: { failedUploads: failed }
+        });
+
         if (failed.length > 0) {
             setErrorMessage(`Unable to upload ${failed.length} ${failed.length === 1 ? "image" : "images"}.`);
             return false;
@@ -180,46 +189,42 @@ function CreatePost({ setPostService, resetState }: CreatePostProps) {
         return true;
     }
 
-    switch (section) {
+    switch (state.section) {
         case Sections.UploadFiles:
             return (
                 <UploadPostFiles 
+                    dispatch={dispatch}
                     setPostService={setPostService} 
-                    setSection={setSection}
-                    uploadedImages={uploadedImages} 
-                    setUploadedImages={setUploadedImages}
-                    thumbnail={thumbnail}
-                    setThumbnail={setThumbnail}
+                    uploadedImages={state.uploadedImages} 
+                    thumbnail={state.thumbnail}
                 />
             );
         case Sections.ChooseThumbnail:
             return (
                 <ChooseThumbnail 
-                    setSection={setSection} 
+                    dispatch={dispatch}
                     setPostService={setPostService}
-                    uploadedImages={uploadedImages}
-                    thumbnail={thumbnail}
-                    setThumbnail={setThumbnail}
+                    uploadedImages={state.uploadedImages}
+                    thumbnail={state.thumbnail}
                 />
             );
         case Sections.BasicPackage:
             return (
                 <Package 
-                    setSection={setSection} 
+                    dispatch={dispatch}
                     setPostService={setPostService} 
                     back={Sections.ChooseThumbnail} 
                     next={Sections.StandardPackage} 
                     title="Basic package"
                     pkgState={state.basic}
                     state={state}
-                    dispatch={dispatch}
                     packageType={PackageTypes.BASIC}
                 />
             );
         case Sections.StandardPackage:
             return (
                 <Package 
-                    setSection={setSection} 
+                    dispatch={dispatch}
                     setPostService={setPostService} 
                     back={Sections.BasicPackage} 
                     skip={Sections.PostDetails} 
@@ -227,14 +232,13 @@ function CreatePost({ setPostService, resetState }: CreatePostProps) {
                     title="Standard package"
                     pkgState={state.standard}
                     state={state}
-                    dispatch={dispatch}
                     packageType={PackageTypes.STANDARD}
                 />
             );
         case Sections.SuperiorPackage:
             return (
                 <Package 
-                    setSection={setSection} 
+                    dispatch={dispatch}
                     setPostService={setPostService}
                     back={Sections.StandardPackage} 
                     skip={Sections.PostDetails} 
@@ -242,31 +246,24 @@ function CreatePost({ setPostService, resetState }: CreatePostProps) {
                     title="Superior package"
                     pkgState={state.superior}
                     state={state}
-                    dispatch={dispatch}
                     packageType={PackageTypes.SUPERIOR}
                 />
             );
         default:
             return (
                 <PostDetails 
+                    dispatch={dispatch}
                     setPostService={setPostService} 
-                    setSection={setSection}
-                    setAbout={setAbout} 
-                    setTitle={setTitle}
-                    about={about} 
-                    title={title} 
+                    about={state.about} 
+                    title={state.title} 
                     errorMessage={errorMessage}
                     setErrorMessage={setErrorMessage}
                     createPost={createPost}
-                    failedUploads={failedUploads}
-                    setFailedUploads={setFailedUploads}
+                    failedUploads={state.failedUploads}
                     postID={postID.current}
-                    createdPost={createdPost}
-                    setCreatedPost={setCreatedPost}
-                    setJobCategory={setJobCategory}
-                    setTypeOfWork={setTypeOfWork}
-                    jobCategory={jobCategory}
-                    typeOfWork={typeOfWork}
+                    createdPost={state.createdPost}
+                    jobCategory={state.jobCategory}
+                    workType={state.workType}
                 />
             );
     }

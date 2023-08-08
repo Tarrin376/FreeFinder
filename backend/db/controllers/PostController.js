@@ -11,7 +11,7 @@ import {
 
 export async function createPost(req, res) {
     try {
-        const { postID, seller } = await createPostHandler(req.body.post, req.body.startingPrice, req.userData.userID);
+        const { postID, seller } = await createPostHandler(req);
         res.status(201).json({ postID: postID, seller: seller, message: "success" });
     }
     catch (err) {

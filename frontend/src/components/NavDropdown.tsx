@@ -6,19 +6,21 @@ import { NavElement } from "../types/NavElement";
 
 interface NavDropdownProps {
     title: string,
-    items: Array<[string, (e?: React.MouseEvent<NavElement>) => void]>
+    items: Array<[string, (e?: React.MouseEvent<NavElement>) => void]>,
+    styles?: string
 }
 
-function NavDropdown({ title, items }: NavDropdownProps) {
+function NavDropdown({ title, items, styles }: NavDropdownProps) {
     const [dropdown, setDropdown] = useState<boolean>(false);
+    const defaultStyles = `cursor-pointer relative z-20`;
 
     function toggleDropdown(): void {
         setDropdown((cur) => !cur);
     }
 
     return (
-        <li className="cursor-pointer relative" onClick={toggleDropdown}>
-            <div className="flex items-center gap-3">
+        <div className={`${defaultStyles} ${styles}`} onClick={toggleDropdown}>
+            <div className="flex items-center gap-2">
                 <span>{title}</span>
                 <img 
                     src={DropdownIcon} 
@@ -30,7 +32,7 @@ function NavDropdown({ title, items }: NavDropdownProps) {
             {dropdown &&
             <OutsideClickHandler onOutsideClick={toggleDropdown}>
                 <div className="absolute bg-main-white top-[30px] right-0 flex flex-col rounded-[6px] 
-                border border-light-border-gray shadow-profile-page-container overflow-hidden min-w-[120px] z-30">
+                border border-light-border-gray shadow-profile-page-container overflow-hidden min-w-[120px]">
                     {items.map((item, index) => {
                         return (
                             <NavDropdownItem
@@ -42,7 +44,7 @@ function NavDropdown({ title, items }: NavDropdownProps) {
                     })}
                 </div>
             </OutsideClickHandler>}
-        </li>
+        </div>
     )
 }
 
