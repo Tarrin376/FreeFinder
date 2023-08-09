@@ -18,7 +18,7 @@ function Price({ value, maxValue, text, updateValue }: PriceProps) {
     }
 
     return (
-        <FilterBoxWrapper text={text} wrapperStyles="max-w-[170px]">
+        <FilterBoxWrapper text={text}>
             <div className="flex items-center">
                 <p>£</p>
                 <input 

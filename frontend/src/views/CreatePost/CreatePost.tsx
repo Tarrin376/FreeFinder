@@ -14,7 +14,7 @@ import { FileData } from '../../types/FileData';
 import { IUser } from '../../models/IUser';
 
 interface CreatePostProps {
-    setPostService: React.Dispatch<React.SetStateAction<boolean>>,
+    updatePostServicePopUp: (val: boolean) => void,
     resetState: () => void
 }
 
@@ -95,7 +95,7 @@ function reducer(state: CreatePostState, action: CreatePostReducerAction): Creat
     }
 }
 
-function CreatePost({ setPostService, resetState }: CreatePostProps) {
+function CreatePost({ updatePostServicePopUp, resetState }: CreatePostProps) {
     const [errorMessage, setErrorMessage] = useState<string>("");
     const [state, dispatch] = useReducer(reducer, INITIAL_STATE);
 
@@ -140,7 +140,7 @@ function CreatePost({ setPostService, resetState }: CreatePostProps) {
 
             if (addedImages) {
                 setErrorMessage("");
-                setPostService(false);
+                updatePostServicePopUp(false);
                 resetState();
             }
 
@@ -194,7 +194,7 @@ function CreatePost({ setPostService, resetState }: CreatePostProps) {
             return (
                 <UploadPostFiles 
                     dispatch={dispatch}
-                    setPostService={setPostService} 
+                    updatePostServicePopUp={updatePostServicePopUp} 
                     uploadedImages={state.uploadedImages} 
                     thumbnail={state.thumbnail}
                 />
@@ -203,7 +203,7 @@ function CreatePost({ setPostService, resetState }: CreatePostProps) {
             return (
                 <ChooseThumbnail 
                     dispatch={dispatch}
-                    setPostService={setPostService}
+                    updatePostServicePopUp={updatePostServicePopUp}
                     uploadedImages={state.uploadedImages}
                     thumbnail={state.thumbnail}
                 />
@@ -212,7 +212,7 @@ function CreatePost({ setPostService, resetState }: CreatePostProps) {
             return (
                 <Package 
                     dispatch={dispatch}
-                    setPostService={setPostService} 
+                    updatePostServicePopUp={updatePostServicePopUp} 
                     back={Sections.ChooseThumbnail} 
                     next={Sections.StandardPackage} 
                     title="Basic package"
@@ -225,7 +225,7 @@ function CreatePost({ setPostService, resetState }: CreatePostProps) {
             return (
                 <Package 
                     dispatch={dispatch}
-                    setPostService={setPostService} 
+                    updatePostServicePopUp={updatePostServicePopUp} 
                     back={Sections.BasicPackage} 
                     skip={Sections.PostDetails} 
                     next={Sections.SuperiorPackage} 
@@ -239,7 +239,7 @@ function CreatePost({ setPostService, resetState }: CreatePostProps) {
             return (
                 <Package 
                     dispatch={dispatch}
-                    setPostService={setPostService}
+                    updatePostServicePopUp={updatePostServicePopUp}
                     back={Sections.StandardPackage} 
                     skip={Sections.PostDetails} 
                     next={Sections.PostDetails} 
@@ -253,7 +253,7 @@ function CreatePost({ setPostService, resetState }: CreatePostProps) {
             return (
                 <PostDetails 
                     dispatch={dispatch}
-                    setPostService={setPostService} 
+                    updatePostServicePopUp={updatePostServicePopUp} 
                     about={state.about} 
                     title={state.title} 
                     errorMessage={errorMessage}

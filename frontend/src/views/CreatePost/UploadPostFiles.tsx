@@ -15,12 +15,12 @@ import { CreatePostReducerAction } from "./CreatePost";
 
 interface UploadPostFilesProps {
     dispatch: React.Dispatch<CreatePostReducerAction>
-    setPostService: React.Dispatch<React.SetStateAction<boolean>>,
+    updatePostServicePopUp: (val: boolean) => void,
     uploadedImages: FileData[],
     thumbnail: FileData | undefined
 }
 
-function UploadPostFiles({ dispatch, setPostService, uploadedImages, thumbnail }: UploadPostFilesProps) {
+function UploadPostFiles({ dispatch, updatePostServicePopUp, uploadedImages, thumbnail }: UploadPostFilesProps) {
     const inputFileRef = useRef<HTMLInputElement>(null);
     const [errorMessage, setErrorMessage] = useState<string>("");
 
@@ -64,7 +64,7 @@ function UploadPostFiles({ dispatch, setPostService, uploadedImages, thumbnail }
     }
 
     return (
-        <PopUpWrapper setIsOpen={setPostService} title="Upload post images">
+        <PopUpWrapper setIsOpen={updatePostServicePopUp} title="Upload post images">
             <DragAndDrop handleDrop={handleDrop}>
                 <div className="absolute top-[50%] left-[50%] translate-x-[-50%] translate-y-[-50%]">
                     <img src={Storage} className="block m-auto w-[50px] h-[50px] mb-3" alt="storage" />
@@ -105,7 +105,7 @@ function UploadPostFiles({ dispatch, setPostService, uploadedImages, thumbnail }
             </div>
             <div className="mt-[35px] flex gap-3 ml-auto w-fit">
                 <input type="file" ref={inputFileRef} className="hidden" onChange={uploadFile} />
-                <button className="side-btn w-[110px]" onClick={() => setPostService(false)}>
+                <button className="side-btn w-[110px]" onClick={() => updatePostServicePopUp(false)}>
                     Cancel
                 </button>
                 <button 

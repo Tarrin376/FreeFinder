@@ -1,4 +1,4 @@
-import { useRef, createContext, useState, useEffect, cloneElement, useReducer } from 'react';
+import { useRef, createContext, useState, cloneElement, useReducer } from 'react';
 import { MAX_SERVICE_PRICE, MAX_SERVICE_DELIVERY_DAYS } from '@freefinder/shared/dist/constants';
 import { usePaginateData } from '../hooks/usePaginateData';
 import { IPost } from '../models/IPost';
@@ -16,6 +16,7 @@ import { sortPostsOption } from 'src/types/sortPostsOption';
 import PostsSidebar from 'src/components/PostsSidebar';
 import FiltersPopUp from 'src/components/FiltersPopUp';
 import { useWindowSize } from 'src/hooks/useWindowSize';
+import AddIcon from "../assets/add.png";
 
 interface FilterPostsProviderProps {
     children: React.ReactElement,
@@ -32,20 +33,20 @@ export type FilterPostsProviderState = {
     extraFilters: string[],
     selectedWork: string[],
     searchOption: SearchOption,
+    deliveryTime: number,
     country: string,
-    filtersPopUp: boolean
+    filtersPopUp: boolean,
+    postServicePopUp: boolean
 }
 
 export const FilterPostsContext = createContext<FilterPosts | undefined>(undefined);
 
 function FilterPostsProvider({ children, urlPrefix }: FilterPostsProviderProps) {
     const postFilters = useRef<PostArgs>(JSON.parse(sessionStorage.getItem("post_filters") ?? "{}"));
-    const deliveryTime = useRef<number>(postFilters.current.deliveryTime ?? MAX_SERVICE_DELIVERY_DAYS);
     const pageRef = useRef<HTMLDivElement>(null);
     const cursor = useRef<string>();
 
     const [page, setPage] = useState<{ value: number }>({ value: 1 });
-    const [postService, setPostService] = useState<boolean>(false);
 
     const location = useLocation();
     const windowSize = useWindowSize();
@@ -62,8 +63,10 @@ function FilterPostsProvider({ children, urlPrefix }: FilterPostsProviderProps) 
         extraFilters: postFilters.current.extraFilters ?? [],
         selectedWork: postFilters.current.selectedWork ?? [],
         searchOption: postFilters.current.searchOption ?? "Work type",
+        deliveryTime: postFilters.current.deliveryTime ?? MAX_SERVICE_DELIVERY_DAYS,
         country: "Any country",
-        filtersPopUp: false
+        filtersPopUp: false,
+        postServicePopUp: false
     });
 
     const posts = usePaginateData<PostArgs, IPost, PaginationResponse<IPost>>(
@@ -79,7 +82,7 @@ function FilterPostsProvider({ children, urlPrefix }: FilterPostsProviderProps) 
             max: state.max,
             country: state.country === "Any country" ? undefined : state.country,
             languages: state.selectedLanguages,
-            deliveryTime: deliveryTime.current,
+            deliveryTime: state.deliveryTime,
             sellerLevels: state.sellerLevels,
             extraFilters: state.extraFilters,
             selectedWork: state.selectedWork,
@@ -87,8 +90,8 @@ function FilterPostsProvider({ children, urlPrefix }: FilterPostsProviderProps) 
         }
     );
 
-    function openPostService(): void {
-        setPostService(true);
+    function updatePostServicePopUp(val: boolean): void {
+        dispatch({ postServicePopUp: val });
     }
 
     function toggleFiltersPopUp(): void {
@@ -103,7 +106,7 @@ function FilterPostsProvider({ children, urlPrefix }: FilterPostsProviderProps) 
             max: state.max,
             country: state.country,
             languages: state.selectedLanguages,
-            deliveryTime: deliveryTime.current,
+            deliveryTime: state.deliveryTime,
             sellerLevels: state.sellerLevels,
             extraFilters: state.extraFilters,
             selectedWork: state.selectedWork,
@@ -111,18 +114,30 @@ function FilterPostsProvider({ children, urlPrefix }: FilterPostsProviderProps) 
         }));
         
         posts.resetState();
-    };
+    }
 
-    useEffect(() => {
-        searchHandler();
-    }, [state.selectedLanguages, state.selectedWork, state.sellerLevels, state.extraFilters]);
+    function clearFilters(): void {
+        dispatch({
+            min: 0,
+            max: MAX_SERVICE_PRICE,
+            sort: "most recent",
+            search: "",
+            selectedLanguages: [],
+            sellerLevels: [],
+            extraFilters: [],
+            selectedWork: [],
+            deliveryTime: MAX_SERVICE_DELIVERY_DAYS,
+            searchOption: "Work type",
+            country: "Any country"
+        });
+    }
 
     return (
         <>
             <AnimatePresence>
-                {postService && 
+                {state.postServicePopUp && 
                 <CreatePost 
-                    setPostService={setPostService} 
+                    updatePostServicePopUp={updatePostServicePopUp} 
                     resetState={posts.resetState} 
                 />}
                 {posts.errorMessage !== "" &&
@@ -133,23 +148,29 @@ function FilterPostsProvider({ children, urlPrefix }: FilterPostsProviderProps) 
                 {state.filtersPopUp && 
                 <FiltersPopUp 
                     loading={posts.loading}
-                    deliveryTime={deliveryTime}
                     searchHandler={searchHandler}
                     dispatch={dispatch}
                     toggleFiltersPopUp={toggleFiltersPopUp}
                     state={state}
+                    clearFilters={clearFilters}
                 />}
             </AnimatePresence>
             <div className="flex">
-                {windowSize >= 1180 &&
+                {windowSize >= 1180 ?
                 <PostsSidebar
                     loading={posts.loading}
-                    openPostService={openPostService}
-                    deliveryTime={deliveryTime}
+                    updatePostServicePopUp={updatePostServicePopUp}
                     searchHandler={searchHandler}
                     dispatch={dispatch}
                     state={state}
-                />}
+                    clearFilters={clearFilters}
+                /> : 
+                <div>
+                    <button className="main-btn flex items-center justify-center rounded-full w-[55px] !h-[55px] 
+                    fixed bottom-5 right-5 z-30 shadow-post" onClick={() => updatePostServicePopUp(true)}>
+                        <img src={AddIcon} alt="" className="w-[25px] h-[25px]" />
+                    </button>
+                </div>}
                 <div className="flex-grow">
                     <div className="border-b border-b-light-border-gray bg-white">
                         <MainFiltersBar

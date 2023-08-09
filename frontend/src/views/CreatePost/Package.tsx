@@ -14,7 +14,7 @@ import {
 
 interface PackageProps {
     dispatch: React.Dispatch<CreatePostReducerAction>,
-    setPostService: React.Dispatch<React.SetStateAction<boolean>>,
+    updatePostServicePopUp: (val: boolean) => void,
     back: Sections,
     skip?: Sections,
     next: Sections,
@@ -113,7 +113,7 @@ function Package(props: PackageProps) {
     }
 
     return (
-        <PopUpWrapper setIsOpen={props.setPostService} title={props.title}>
+        <PopUpWrapper setIsOpen={props.updatePostServicePopUp} title={props.title}>
             <h3 className="mb-2">Title</h3>
             <input 
                 type="text"

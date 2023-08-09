@@ -40,19 +40,23 @@ function MainFiltersBar({ dispatch, state, loading, searchHandler, toggleFilters
                 />
             </div>
             <div className="h-full border-r border-light-border-gray px-[12.75px] flex items-center gap-3 max-[1560px]:hidden">
-                <Price 
-                    value={state.min} 
-                    maxValue={MAX_SERVICE_PRICE}
-                    text="min price" 
-                    updateValue={(cur) => dispatch({ min: cur })}
-                />
+                <div className="w-[170px]">
+                    <Price 
+                        value={state.min} 
+                        maxValue={MAX_SERVICE_PRICE}
+                        text="min price" 
+                        updateValue={(cur) => dispatch({ min: cur })}
+                    />
+                </div>
                 <div>-</div>
-                <Price 
-                    value={state.max} 
-                    maxValue={MAX_SERVICE_PRICE}
-                    text="max price" 
-                    updateValue={(cur) => dispatch({ max: cur })}
-                />
+                <div className="w-[170px]">
+                    <Price 
+                        value={state.max} 
+                        maxValue={MAX_SERVICE_PRICE}
+                        text="max price" 
+                        updateValue={(cur) => dispatch({ max: cur })}
+                    />
+                </div>
             </div>
             <div className="h-full border-r border-light-border-gray pl-[12.75px] pr-[10px] flex items-center">
                 <SortBy 

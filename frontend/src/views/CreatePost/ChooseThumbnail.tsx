@@ -5,12 +5,12 @@ import { CreatePostReducerAction } from "./CreatePost";
 
 interface ChooseThumbnailProps {
     dispatch: React.Dispatch<CreatePostReducerAction>,
-    setPostService: React.Dispatch<React.SetStateAction<boolean>>,
+    updatePostServicePopUp: (val: boolean) => void,
     uploadedImages: FileData[],
     thumbnail: FileData | undefined
 }
 
-function ChooseThumbnail({ dispatch, setPostService, uploadedImages, thumbnail }: ChooseThumbnailProps) {
+function ChooseThumbnail({ dispatch, updatePostServicePopUp, uploadedImages, thumbnail }: ChooseThumbnailProps) {
     function changeThumbnail(newThumbnail: FileData) {
         dispatch({
             payload: { thumbnail: newThumbnail }
@@ -18,7 +18,7 @@ function ChooseThumbnail({ dispatch, setPostService, uploadedImages, thumbnail }
     }
 
     return (
-        <PopUpWrapper setIsOpen={setPostService} title="Choose thumbnail" styles="flex flex-col">
+        <PopUpWrapper setIsOpen={updatePostServicePopUp} title="Choose thumbnail" styles="flex flex-col">
             {uploadedImages.length > 0 &&
             <div className={`flex flex-col gap-9 flex-grow overflow-y-scroll pr-[8px] max-h-[570px] ${!thumbnail ? "mb-9" : ""}`}>
                 {uploadedImages.map((imageData: FileData, index: number) => {

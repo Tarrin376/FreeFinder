@@ -4,14 +4,14 @@ import Filters from "./Filters";
 
 interface FiltersPopUpProps {
     loading: boolean,
-    deliveryTime: React.MutableRefObject<number>,
     searchHandler: () => void,
     dispatch: React.Dispatch<Partial<FilterPostsProviderState>>,
     toggleFiltersPopUp: () => void,
-    state: FilterPostsProviderState
+    state: FilterPostsProviderState,
+    clearFilters: () => void
 }
 
-function FiltersPopUp({ loading, deliveryTime, searchHandler, dispatch, toggleFiltersPopUp, state }: FiltersPopUpProps) {
+function FiltersPopUp({ loading, searchHandler, dispatch, toggleFiltersPopUp, state, clearFilters }: FiltersPopUpProps) {
     function applyFilters(): void {
         searchHandler();
         toggleFiltersPopUp();
@@ -21,14 +21,18 @@ function FiltersPopUp({ loading, deliveryTime, searchHandler, dispatch, toggleFi
         <PopUpWrapper title="Filters" setIsOpen={toggleFiltersPopUp} styles="h-[650px]">
             <Filters 
                 loading={loading}
-                deliveryTime={deliveryTime}
-                searchHandler={searchHandler}
                 dispatch={dispatch}
                 state={state}
             />
-            <button className="main-btn mt-5" onClick={applyFilters}>
-                Apply filters
-            </button>
+            <div className="flex items-center justify-between mt-5">
+                <span className="underline font-bold text-main-blue cursor-pointer" 
+                onClick={clearFilters}>
+                    Clear all
+                </span>
+                <button className="main-btn w-fit" onClick={applyFilters}>
+                    Apply filters
+                </button>
+            </div>
         </PopUpWrapper>
     )
 }

@@ -2,16 +2,11 @@ import { deliveryTimes } from "../utils/deliveryTimes";
 
 interface DeliveryTimesProps {
     loading: boolean,
-    searchHandler: () => void,
-    deliveryTime: React.MutableRefObject<number>,
+    deliveryTime: number,
+    updateDeliveryTime: (newDeliveryTime: number) => void
 }
 
-function DeliveryTimes({ loading, searchHandler, deliveryTime }: DeliveryTimesProps) {
-    function updateDeliveryTime(newDeliveryTime: number): void {
-        deliveryTime.current = newDeliveryTime;
-        searchHandler();
-    }
-
+function DeliveryTimes({ loading, deliveryTime, updateDeliveryTime }: DeliveryTimesProps) {
     return (
         <div className="border-b border-light-border-gray pb-5">
             <h3 className="text-side-text-gray mb-2 text-[16px]">Delivery time</h3>
@@ -24,7 +19,7 @@ function DeliveryTimes({ loading, searchHandler, deliveryTime }: DeliveryTimesPr
                                 name="delivery-time" 
                                 className={`w-[15px] h-[15px] mt-[1px] ${loading ? "invalid-button" : ""}`}
                                 id={cur}
-                                defaultChecked={deliveryTimes[cur] === deliveryTime.current}
+                                defaultChecked={deliveryTimes[cur] === deliveryTime}
                                 onChange={() => updateDeliveryTime(deliveryTimes[cur])}
                             />
                             <label htmlFor={cur} className="text-[15px]">

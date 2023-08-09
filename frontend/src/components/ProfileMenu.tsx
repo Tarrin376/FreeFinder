@@ -41,7 +41,8 @@ function ProfileMenu({ logout }: ProfileMenuProps) {
                 ...userContext.userData, 
                 status: toggledStatus
             }, userContext.userData.username);
-    
+            
+            userContext.socket?.emit("update-user-status", userContext.userData.username, toggledStatus);
             userContext.setUserData(response.userData);
         } 
         catch (_: any) {
@@ -122,15 +123,15 @@ function ProfileMenu({ logout }: ProfileMenuProps) {
                                 action={viewProfile} 
                                 text="View profile" 
                             />}
-                            <DropdownElement 
-                                action={viewSettings} 
-                                text="Account settings" 
-                            />
                             {userContext.userData.seller && 
                             <DropdownElement 
                                 action={viewSellerProfile} 
                                 text="Update seller profile" 
                             />}
+                            <DropdownElement 
+                                action={viewSettings} 
+                                text="Account settings" 
+                            />
                             <DropdownElement 
                                 action={toggleStatus} 
                                 text={`Appear ${userContext.userData.status === UserStatus.ONLINE ? 'offline': 'online'}`}

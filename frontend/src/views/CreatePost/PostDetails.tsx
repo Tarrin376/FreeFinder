@@ -21,7 +21,7 @@ import FailedUploads from "./FailedUploads";
 
 interface PostDetailsProps {
     dispatch: React.Dispatch<CreatePostReducerAction>,
-    setPostService: React.Dispatch<React.SetStateAction<boolean>>,
+    updatePostServicePopUp: (val: boolean) => void,
     createPost: () => Promise<string | undefined>,
     setErrorMessage: React.Dispatch<React.SetStateAction<string>>,
     about: string,
@@ -120,7 +120,7 @@ function PostDetails({ dispatch, jobCategory, setErrorMessage, ...props }: PostD
     }, [jobCategories.categories, dispatch]);
 
     return (
-        <PopUpWrapper setIsOpen={props.setPostService} title="Enter post details">
+        <PopUpWrapper setIsOpen={props.updatePostServicePopUp} title="Enter post details">
             {props.errorMessage !== "" && 
             <ErrorMessage 
                 message={props.errorMessage} 
@@ -222,7 +222,7 @@ function PostDetails({ dispatch, jobCategory, setErrorMessage, ...props }: PostD
                     styles="red-btn btn-primary"
                     textStyles="text-error-text"
                     setErrorMessage={setErrorMessage}
-                    whenComplete={() => props.setPostService(false)}
+                    whenComplete={() => props.updatePostServicePopUp(false)}
                     loadingSvgSize={24}
                     loadingSvgColour="#F43C3C"
                     keepErrorMessage={true}

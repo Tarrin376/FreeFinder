@@ -10,13 +10,11 @@ import { FilterPostsProviderState } from "src/providers/FilterPostsProvider";
 
 interface FiltersProps {
     loading: boolean,
-    deliveryTime: React.MutableRefObject<number>,
-    searchHandler: () => void,
     dispatch: React.Dispatch<Partial<FilterPostsProviderState>>,
     state: FilterPostsProviderState
 }
 
-function Filters({ loading, deliveryTime, searchHandler, dispatch, state }: FiltersProps) {
+function Filters({ loading, dispatch, state }: FiltersProps) {
     return (
         <>
             <div className="flex items-center justify-between gap-3 pb-5 mb-5 min-[1561px]:hidden border-b border-light-border-gray">
@@ -43,9 +41,9 @@ function Filters({ loading, deliveryTime, searchHandler, dispatch, state }: Filt
                 />
             </div>
             <DeliveryTimes 
-                loading={loading} 
-                searchHandler={searchHandler} 
-                deliveryTime={deliveryTime} 
+                loading={loading}  
+                deliveryTime={state.deliveryTime}
+                updateDeliveryTime={(newDeliveryTime: number) => dispatch({ deliveryTime: newDeliveryTime })}
             />
             <h3 className="text-side-text-gray mt-5 mb-2 text-[16px]">
                 Seller speaks
