@@ -4,7 +4,7 @@ import { IMessage } from "../models/IMessage";
 import { getAPIErrorMessage } from "../utils/getAPIErrorMessage";
 import Button from "./Button";
 import { IPackage } from "../models/IPackage";
-import { UserContext } from "../providers/UserContext";
+import { UserContext } from "../providers/UserProvider";
 import { useContext, useState } from "react";
 import ErrorMessage from "./ErrorMessage";
 import PackageOverview from "./PackageOverview";

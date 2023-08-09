@@ -5,10 +5,11 @@ interface SaveProps {
     svgSize: number,
     hoverText: string,
     styles?: string,
-    isSaved?: boolean
+    isSaved?: boolean,
+    hideSaveMessage?: boolean
 }
 
-function Save({ action, svgSize, styles, hoverText, isSaved }: SaveProps) {
+function Save({ action, svgSize, styles, hoverText, isSaved, hideSaveMessage }: SaveProps) {
     const [loading, setLoading] = useState<boolean>(false);
     const [saved, setSaved] = useState<boolean>(isSaved ?? false);
 
@@ -23,11 +24,11 @@ function Save({ action, svgSize, styles, hoverText, isSaved }: SaveProps) {
 
     return (
         <div className={styles}>
-            <div hover-text={`${saved ? "Unsave" : "Save"} ${hoverText}`} className="relative after:w-0 hover:after:bg-main-black 
+            <div hover-text={`${saved ? "Unsave" : "Save"} ${hoverText}`} className={`${!hideSaveMessage ? `relative after:w-0 hover:after:bg-main-black 
             hover:after:content-[attr(hover-text)] hover:after:p-[7px] after:absolute hover:after:whitespace-nowrap 
             hover:after:text-main-white after:right-1/2 after:translate-x-[50%] after:top-[-39px] 
             hover:after:rounded-[6px] hover:after:text-[14px] after:transition-all after:duration-100 after:ease-linear 
-            hover:after:w-fit">
+            hover:after:w-fit` : ""}`}>
                 <svg
                     onClick={handleClick}
                     viewBox="0 0 32 32" 

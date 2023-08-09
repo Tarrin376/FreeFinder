@@ -9,7 +9,7 @@ import Button from './Button';
 import { useNavigate } from 'react-router-dom';
 import { sellerLevelTextStyles } from '../utils/sellerLevelTextStyles';
 import Carousel from './Carousel';
-import { UserContext } from '../providers/UserContext';
+import { UserContext } from '../providers/UserProvider';
 import { motion } from 'framer-motion';
 import { limit } from '../hooks/usePaginateData';
 import Save from './Save';
@@ -89,7 +89,7 @@ function Post({ postInfo, index, canRemove, count, styles }: PostProps) {
     }
 
     return (
-        <motion.div className={`bg-transparent w-[320px] relative ${styles}`} 
+        <motion.div className={`bg-transparent relative ${styles}`} 
         initial={{ opacity: 0 }} animate={{ opacity: 1 }} exit={{ opacity: 0 }} 
         transition={{ delay: 0.05 * (index % limit), duration: 0.2 }}>
             <p className={`absolute rounded-t-[12px] z-20 px-7 py-[11px] w-[100%] 
@@ -109,8 +109,8 @@ function Post({ postInfo, index, canRemove, count, styles }: PostProps) {
             <Carousel
                 images={postInfo.images}
                 btnSize={35}
-                wrapperStyles="bg-very-light-gray border border-light-border-gray rounded-[12px] h-[235px]"
-                imageStyles="object-cover w-full"
+                wrapperStyles="bg-very-light-gray border border-light-border-gray rounded-[12px] w-full pb-[75%]"
+                imageStyles="object-cover w-full h-full"
             />
             <div className="mt-3">
                 <div className="flex items-center mb-2 gap-3 relative">

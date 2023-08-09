@@ -1,10 +1,10 @@
 import { useState, useContext } from 'react';
 import ErrorMessage from "../../components/ErrorMessage";
-import { INITIAL_STATE } from "../../providers/UserContext";
+import { INITIAL_STATE } from "../../providers/UserProvider";
 import axios, { AxiosError } from "axios";
 import { getAPIErrorMessage } from "../../utils/getAPIErrorMessage";
 import Button from "../../components/Button";
-import { UserContext } from '../../providers/UserContext';
+import { UserContext } from '../../providers/UserProvider';
 
 function DangerZone({ setSettingsPopUp }: { setSettingsPopUp: React.Dispatch<React.SetStateAction<boolean>> }) {
     const [errorMessage, setErrorMessage] = useState<string>("");

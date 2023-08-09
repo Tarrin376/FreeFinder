@@ -4,7 +4,7 @@ import { sellerLevelTextStyles } from "../utils/sellerLevelTextStyles";
 import { SellerOptions } from "../enums/SellerOptions";
 import SaveSeller from "./SaveSeller";
 import axios, { AxiosError } from "axios";
-import { UserContext } from "../providers/UserContext";
+import { UserContext } from "../providers/UserProvider";
 import { useContext, useState } from "react";
 import { getAPIErrorMessage } from "../utils/getAPIErrorMessage";
 import { useWindowSize } from "../hooks/useWindowSize";
@@ -23,7 +23,8 @@ interface SellerProps {
     country: string,
     sellerID: string,
     canRemove?: CanRemoveSeller,
-    option?: SellerOptions
+    option?: SellerOptions,
+    hideSaveMessage?: boolean
 }
 
 function Seller(props: SellerProps) {
@@ -58,10 +59,10 @@ function Seller(props: SellerProps) {
 
     return (
         <div className="flex items-start justify-between gap-[8px]">
-            <div className="flex justify-between items-start w-full pr-9">
+            <div className="flex justify-between items-start w-full">
                 <div className="flex items-center gap-3 rounded-[6px] transition-all ease-out duration-100 flex-grow overflow-hidden">
                     {windowSize > 400 &&
-                    <div className="relative">
+                    <div className="relative flex-shrink-0">
                         <ProfilePicAndStatus
                             profilePicURL={props.profilePicURL}
                             imgStyles="cursor-pointer"
@@ -79,7 +80,7 @@ function Seller(props: SellerProps) {
                                 styles="hover:!px-0"
                                 action={props.navigateToProfile}
                             />
-                            <p className="text-[14px] seller-level"
+                            <p className="text-[13px] seller-level"
                             style={sellerLevelTextStyles[props.sellerLevel]}>
                                 {props.sellerLevel}
                             </p>
@@ -99,6 +100,7 @@ function Seller(props: SellerProps) {
                     sellerID={props.sellerID}
                     isSaved={props.option === SellerOptions.REMOVE}
                     action={removeSavedSeller}
+                    hideSaveMessage={props.hideSaveMessage}
                 />}
             </div>
             <AnimatePresence>

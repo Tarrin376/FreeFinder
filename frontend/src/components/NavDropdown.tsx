@@ -1,8 +1,8 @@
 import { useState } from "react";
 import DropdownIcon from "../assets/dropdown.png";
 import OutsideClickHandler from "react-outside-click-handler";
-import NavDropdownItem from "./NavDropdownItem";
 import { NavElement } from "../types/NavElement";
+import DropdownElement from "./DropdownElement";
 
 interface NavDropdownProps {
     title: string,
@@ -35,7 +35,7 @@ function NavDropdown({ title, items, styles }: NavDropdownProps) {
                 border border-light-border-gray shadow-profile-page-container overflow-hidden min-w-[120px]">
                     {items.map((item, index) => {
                         return (
-                            <NavDropdownItem
+                            <DropdownElement
                                 action={item[1]}
                                 text={item[0]}
                                 key={index}

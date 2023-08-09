@@ -3,7 +3,6 @@ import ErrorMessage from "../../components/ErrorMessage";
 import { Sections } from "../../enums/Sections";
 import { FailedUpload } from "../../types/FailedUploaded";
 import { useState, useEffect } from "react";
-import UploadedImage from "../../components/UploadedImage";
 import Button from "../../components/Button";
 import axios, { AxiosError } from "axios";
 import { getAPIErrorMessage } from "../../utils/getAPIErrorMessage";
@@ -18,6 +17,7 @@ import { useFetchJobCategories } from "../../hooks/useFetchJobCategories";
 import ErrorPopUp from "../../components/ErrorPopUp";
 import { ABOUT_SERVICE_LIMIT, SERVICE_TITLE_LIMIT } from "@freefinder/shared/dist/constants";
 import { CreatePostReducerAction } from "./CreatePost";
+import FailedUploads from "./FailedUploads";
 
 interface PostDetailsProps {
     dispatch: React.Dispatch<CreatePostReducerAction>,
@@ -58,9 +58,7 @@ function PostDetails({ dispatch, jobCategory, setErrorMessage, ...props }: PostD
 
     function searchHandler(search: string): void {
         dispatch({
-            payload: {
-                workType: search
-            }
+            payload: { workType: search }
         });
 
         if (search.trim() === "") {
@@ -140,34 +138,17 @@ function PostDetails({ dispatch, jobCategory, setErrorMessage, ...props }: PostD
                 {showFailedUploads ? "Hide all failed images" : "View all failed images"}
             </p>}
             {showFailedUploads && props.failedUploads.length > 0 && 
-            <div className="max-h-[250px] items-center overflow-y-scroll mt-6 pr-[8px] flex flex-col gap-[15px]">
-                {props.failedUploads.map((upload: FailedUpload, index: number) => {
-                    return (
-                        <UploadedImage file={upload.fileData.file} key={index} description={upload.errorMessage} error={true}>
-                            <button className="bg-main-white border-2 border-light-border-gray btn-primary min-w-[120px] px-3
-                            hover:bg-main-white-hover" onClick={() => ignoreUpload(upload)}>
-                                Ignore
-                            </button>
-                            <Button
-                                action={() => retryFileUpload(upload)}
-                                completedText="Uploaded"
-                                defaultText="Retry"
-                                loadingText="Retrying"
-                                styles="red-btn w-[140px] px-3"
-                                textStyles="text-error-text"
-                                setErrorMessage={setErrorMessage}
-                                whenComplete={() => ignoreUpload(upload)}
-                                loadingSvgSize={24}
-                                loadingSvgColour="#F43C3C"
-                                keepErrorMessage={true}
-                            />
-                        </UploadedImage>
-                    )
-                })}
-            </div>}
-            <h3 className="mb-2 mt-6">What category does your service fall under?</h3>
+            <FailedUploads
+                ignoreUpload={ignoreUpload}
+                retryFileUpload={retryFileUpload}
+                setErrorMessage={setErrorMessage}
+                failedUploads={props.failedUploads}
+            />}
+            <h3 className="mb-2 mt-6">
+                What category does your service fall under?
+            </h3>
             <div className="search-bar mb-4">
-                <select className={`w-full cursor-pointer rounded-[8px] focus:outline-none 
+                <select className={`w-full cursor-pointer rounded-[8px] bg-main-white focus:outline-none 
                 ${jobCategories.categories.length === 0 ? "loading" : ""}`} 
                 value={jobCategory} onChange={(e) => dispatch({
                     payload: { jobCategory: e.target.value }

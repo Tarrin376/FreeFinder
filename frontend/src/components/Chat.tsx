@@ -7,7 +7,7 @@ import { AnimatePresence } from "framer-motion";
 import ErrorPopUp from "./ErrorPopUp";
 import CloseSvg from "./CloseSvg";
 import axios, { AxiosError } from "axios";
-import { UserContext } from "../providers/UserContext";
+import { UserContext } from "../providers/UserProvider";
 import { getAPIErrorMessage } from "../utils/getAPIErrorMessage";
 import Actions from "./Actions";
 import Button from "./Button";

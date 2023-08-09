@@ -1,7 +1,7 @@
 import { GroupPreview } from "../types/GroupPreview";
 import ProfilePicAndStatus from "./ProfilePicAndStatus";
 import { useContext } from "react";
-import { UserContext } from "../providers/UserContext";
+import { UserContext } from "../providers/UserProvider";
 import { motion } from "framer-motion";
 import Button from "./Button";
 import CreatorIcon from "../assets/creator.png";

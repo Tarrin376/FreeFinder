@@ -1,6 +1,6 @@
 import PopUpWrapper from "../wrappers/PopUpWrapper";
 import { useContext, useState, useRef, useEffect, useCallback } from "react";
-import { UserContext } from "../providers/UserContext";
+import { UserContext } from "../providers/UserProvider";
 import AllMessagesIcon from "../assets/AllMessages.png";
 import AddGroupIcon from "../assets/AddGroup.png";
 import CreateGroup from "./CreateGroup";

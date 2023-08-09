@@ -169,12 +169,13 @@ function SignUp({ setLogIn, setSignUp, setAccountCreated }: SignUpProps) {
                     <p className="text-box-error-message">
                         {state.passwordErrorMessage}
                     </p>}
-                    <CountriesDropdown 
-                        country={country}
-                        updateCountry={setCountry}
-                        title="Country"
-                        styles="mt-3"
-                    />
+                    <div className="mt-3">
+                        <CountriesDropdown 
+                            country={country}
+                            updateCountry={setCountry}
+                            text="Country"
+                        />
+                    </div>
                 </div>
                 <Button
                     action={createAccount}

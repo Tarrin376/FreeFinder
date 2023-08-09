@@ -6,7 +6,7 @@ interface PageWrapperProps {
 }
 
 function PageWrapper({ children, styles, locationStack }: PageWrapperProps) {
-    const defaultStyles = `max-w-[1430px] m-auto p-[22.5px] min-h-[calc(100vh-90px)]`;
+    const defaultStyles = `max-w-[1430px] m-auto p-7 min-h-[calc(100vh-90px)]`;
 
     return (
         <div className={`${defaultStyles} ${styles}`}>

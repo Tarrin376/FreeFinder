@@ -7,7 +7,7 @@ import { PackageTypes } from "../../enums/PackageTypes";
 import { capitalizeWord } from "../../utils/capitalizeWord";
 import CreateGroup from "../../components/CreateGroup";
 import { FoundUsers } from "../../types/FoundUsers";
-import { UserContext } from "../../providers/UserContext";
+import { UserContext } from "../../providers/UserProvider";
 import { AnimatePresence } from "framer-motion";
 import RequestOrder from "../../components/RequestOrder";
 

@@ -2,7 +2,7 @@ import PopUpWrapper from "../wrappers/PopUpWrapper";
 import Price from "./Price";
 import { useState, useEffect, useContext } from "react";
 import axios, { AxiosError } from "axios";
-import { UserContext } from "../providers/UserContext";
+import { UserContext } from "../providers/UserProvider";
 import ErrorMessage from "./ErrorMessage";
 import { getAPIErrorMessage } from "../utils/getAPIErrorMessage";
 import Button from "./Button";
@@ -65,7 +65,7 @@ function AccountBalance({ setBalancePopUp }: AccountBalanceProps) {
                 <Price 
                     value={amount} 
                     maxValue={MAX_DEPOSIT}
-                    title="Amount (max £500)" 
+                    text="Amount (max £500)" 
                     updateValue={(cur) => setAmount(cur)}
                 />
             </div>

@@ -1,6 +1,6 @@
 import { motion } from "framer-motion";
 import { useContext } from "react";
-import { UserContext } from "../providers/UserContext";
+import { UserContext } from "../providers/UserProvider";
 import AccountOptions from "../components/AccountOptions";
 import SearchSellers from "../components/SearchSellers";
 import { useNavigate } from "react-router-dom";

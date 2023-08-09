@@ -12,14 +12,16 @@ import { IPost } from "../../models/IPost";
 import ProfileSummary from "../../components/ProfileSummary";
 import Options from "../../components/Options";
 import SaveSeller from "../../components/SaveSeller";
-import { UserContext } from "../../providers/UserContext";
+import { UserContext } from "../../providers/UserProvider";
 import Reviews from "../../components/Reviews";
+import { useUserStatus } from "src/hooks/useUserStatus";
 
 function SellerProfileView() {
     const [sellerDetails, setSellerDetails] = useState<SellerProfile>();
     const [errorMessage, setErrorMessage] = useState<string>("");
     const userContext = useContext(UserContext);
     const location = useLocation();
+    const status = useUserStatus(sellerDetails?.user.username, sellerDetails?.user.status);
 
     useNavigateErrorPage("Uh oh! Failed to retrieve seller...", errorMessage);
 
@@ -51,7 +53,9 @@ function SellerProfileView() {
                                     <ProfilePicAndStatus
                                         profilePicURL={sellerDetails.user.profilePicURL}
                                         username={sellerDetails.user.username}
+                                        profileStatus={status}
                                         size={65}
+                                        statusRight={true}
                                     />
                                 </div>
                                 <div className="overflow-hidden flex-grow">

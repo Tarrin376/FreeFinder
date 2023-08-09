@@ -2,7 +2,7 @@ import { IMessage } from "../models/IMessage";
 import { FoundUsers } from "../types/FoundUsers";
 import PackageOverview from "./PackageOverview";
 import { useContext, useState, useEffect } from "react";
-import { UserContext } from "../providers/UserContext";
+import { UserContext } from "../providers/UserProvider";
 import OrderSummary from "./OrderSummary";
 import { getOrderRequestStatusStyles } from "../utils/getOrderRequestStatusStyles";
 import Button from "./Button";

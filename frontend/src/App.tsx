@@ -1,7 +1,7 @@
 import HomeView from './views/HomeView/HomeView';
 import Navbar from './layouts/Navbar';
 import { BrowserRouter, Routes, Route } from 'react-router-dom';
-import UserProvider from './providers/UserContext';
+import UserProvider from './providers/UserProvider';
 import SavedServicesView from './views/SavedServicesView/SavedServicesView';
 import ErrorView from './views/ErrorView/ErrorView';
 import MyPostsView from './views/MyPostsView/MyPostsView';

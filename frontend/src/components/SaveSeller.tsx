@@ -1,5 +1,5 @@
 import { useContext, useState } from "react";
-import { UserContext } from "../providers/UserContext";
+import { UserContext } from "../providers/UserProvider";
 import axios, { AxiosError } from "axios";
 import { getAPIErrorMessage } from "../utils/getAPIErrorMessage";
 import { actionFinished } from "../utils/actionFinished";
@@ -11,10 +11,11 @@ interface SaveSellerProps {
     svgSize: number,
     sellerID: string,
     isSaved?: boolean,
-    action?: (saved: boolean) => Promise<void>
+    action?: (saved: boolean) => Promise<void>,
+    hideSaveMessage?: boolean
 }
 
-function SaveSeller({ svgSize, sellerID, isSaved, action }: SaveSellerProps) {
+function SaveSeller({ svgSize, sellerID, isSaved, action, hideSaveMessage }: SaveSellerProps) {
     const userContext = useContext(UserContext);
     const [errorMessage, setErrorMessage] = useState<string>("");
 
@@ -46,6 +47,7 @@ function SaveSeller({ svgSize, sellerID, isSaved, action }: SaveSellerProps) {
                 svgSize={svgSize}
                 hoverText="seller"
                 isSaved={isSaved}
+                hideSaveMessage={hideSaveMessage}
             />
         </>
     )

@@ -1,6 +1,6 @@
 import { useState, useContext } from "react";
 import axios, { AxiosError } from "axios";
-import { UserContext } from "../providers/UserContext";
+import { UserContext } from "../providers/UserProvider";
 import ErrorPopUp from "./ErrorPopUp";
 import { getAPIErrorMessage } from "../utils/getAPIErrorMessage";
 import { AnimatePresence } from "framer-motion";

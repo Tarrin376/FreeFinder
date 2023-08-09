@@ -49,6 +49,7 @@ function UserProvider({ children }: { children?: React.ReactNode }) {
             ws.on("connect", async () => {
                 try {
                     const resp = await axios.post<{ userData: IUser, message: string }>(`/api/users/jwt-auth`, { socketID: ws.id });
+                    ws.emit("update-user-status", resp.data.userData.username, resp.data.userData.status);
                     setUserData(resp.data.userData);
                 }
                 catch (_: any) {

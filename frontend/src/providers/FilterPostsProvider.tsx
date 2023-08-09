@@ -1,28 +1,21 @@
-import Price from '../components/Price';
-import { useRef, createContext, useState, useContext, useEffect, cloneElement, useReducer } from 'react';
+import { useRef, createContext, useState, useEffect, cloneElement, useReducer } from 'react';
 import { MAX_SERVICE_PRICE, MAX_SERVICE_DELIVERY_DAYS } from '@freefinder/shared/dist/constants';
 import { usePaginateData } from '../hooks/usePaginateData';
 import { IPost } from '../models/IPost';
 import { sortPosts } from '../utils/sortPosts';
 import { useLocation } from 'react-router-dom';
-import CountriesDropdown from '../components/CountriesDropdown';
 import CreatePost from '../views/CreatePost/CreatePost';
-import AddIcon from '../assets/add.png';
-import SearchLanguages from '../components/SearchLanguages';
-import { UserContext } from './UserContext';
-import SellerExperience from '../components/SellerExperience';
 import { FilterPosts } from '../types/FilterPosts';
 import { AnimatePresence } from "framer-motion";
 import ErrorPopUp from '../components/ErrorPopUp';
 import { PaginationResponse } from '../types/PaginateResponse';
 import MainFiltersBar from '../components/MainFiltersBar';
-import SellerLevels from '../components/SellerLevels';
-import DeliveryTimes from '../components/DeliveryTimes';
-import TypeOfWork from '../components/TypeOfWork';
-import ExtraFilters from '../components/ExtraFilters';
 import { SearchOption } from 'src/types/SearchOptions';
 import { PostArgs } from 'src/types/PostArgs';
 import { sortPostsOption } from 'src/types/sortPostsOption';
+import PostsSidebar from 'src/components/PostsSidebar';
+import FiltersPopUp from 'src/components/FiltersPopUp';
+import { useWindowSize } from 'src/hooks/useWindowSize';
 
 interface FilterPostsProviderProps {
     children: React.ReactElement,
@@ -39,7 +32,8 @@ export type FilterPostsProviderState = {
     extraFilters: string[],
     selectedWork: string[],
     searchOption: SearchOption,
-    country: string
+    country: string,
+    filtersPopUp: boolean
 }
 
 export const FilterPostsContext = createContext<FilterPosts | undefined>(undefined);
@@ -53,8 +47,8 @@ function FilterPostsProvider({ children, urlPrefix }: FilterPostsProviderProps) 
     const [page, setPage] = useState<{ value: number }>({ value: 1 });
     const [postService, setPostService] = useState<boolean>(false);
 
-    const userContext = useContext(UserContext);
     const location = useLocation();
+    const windowSize = useWindowSize();
 
     const [state, dispatch] = useReducer((cur: FilterPostsProviderState, payload: Partial<FilterPostsProviderState>) => {
         return { ...cur, ...payload };
@@ -68,7 +62,8 @@ function FilterPostsProvider({ children, urlPrefix }: FilterPostsProviderProps) 
         extraFilters: postFilters.current.extraFilters ?? [],
         selectedWork: postFilters.current.selectedWork ?? [],
         searchOption: postFilters.current.searchOption ?? "Work type",
-        country: "Any country"
+        country: "Any country",
+        filtersPopUp: false
     });
 
     const posts = usePaginateData<PostArgs, IPost, PaginationResponse<IPost>>(
@@ -91,12 +86,13 @@ function FilterPostsProvider({ children, urlPrefix }: FilterPostsProviderProps) 
             searchOption: state.searchOption
         }
     );
-    
-    const nextLevelXP = userContext.userData.seller?.sellerLevel.nextLevel?.xpRequired ?? userContext.userData.seller?.sellerXP ?? 0;
-    const nextLevel = userContext.userData.seller?.sellerLevel.nextLevel?.name ?? "";
 
     function openPostService(): void {
         setPostService(true);
+    }
+
+    function toggleFiltersPopUp(): void {
+        dispatch({ filtersPopUp: !state.filtersPopUp });
     }
 
     function searchHandler(): void {
@@ -134,88 +130,34 @@ function FilterPostsProvider({ children, urlPrefix }: FilterPostsProviderProps) 
                     errorMessage={posts.errorMessage}
                     setErrorMessage={posts.setErrorMessage}
                 />}
+                {state.filtersPopUp && 
+                <FiltersPopUp 
+                    loading={posts.loading}
+                    deliveryTime={deliveryTime}
+                    searchHandler={searchHandler}
+                    dispatch={dispatch}
+                    toggleFiltersPopUp={toggleFiltersPopUp}
+                    state={state}
+                />}
             </AnimatePresence>
             <div className="flex">
-                <div className="h-[calc(100vh-90px)] w-[360px] bg-main-white border-r border-light-border-gray p-[22.5px]">
-                    <button onClick={openPostService} className={`main-btn flex items-center justify-center gap-[10px] mb-[50px] 
-                    ${userContext.userData.username === "" ? "invalid-button" : ""}`}>
-                        <img src={AddIcon} alt="" className="w-[16px] h-[16px]" />
-                        Create new post
-                    </button>
-                    {userContext.userData.seller &&
-                    <>
-                        <h2 className="text-[20px] mb-[22px]">Your experience</h2>
-                        <SellerExperience
-                            level={userContext.userData.seller.sellerLevel.name}
-                            nextLevel={nextLevel}
-                            sellerXP={userContext.userData.seller.sellerXP}
-                            nextLevelXP={nextLevelXP}
-                        />
-                    </>}
-                    <h2 className="text-[20px] mb-[22px]">Filters</h2>
-                    <div className="overflow-y-scroll pr-[8px]" style={{ maxHeight: userContext.userData.seller ? "calc(100vh - 483px)" : "calc(100% - 175px)" }}>
-                        <div className="flex items-center gap-3 pb-5 mb-5 min-[1683px]:hidden border-b border-light-border-gray">
-                            <Price
-                                value={state.min} 
-                                maxValue={MAX_SERVICE_PRICE}
-                                title="min price" 
-                                updateValue={(cur: number) => dispatch({ min: cur })}
-                            />
-                            <div>-</div>
-                            <Price 
-                                value={state.max} 
-                                maxValue={MAX_SERVICE_PRICE}
-                                title="max price" 
-                                updateValue={(cur: number) => dispatch({ max: cur })}
-                            />
-                        </div>
-                        <div className="border-b border-light-border-gray pb-5 mb-5">
-                            <CountriesDropdown 
-                                country={state.country}
-                                updateCountry={(country: string) => dispatch({ country: country })}
-                                styles="w-full text-[15px]"
-                                title="Seller lives in"
-                                anyLocation={true}
-                            />
-                        </div>
-                        <DeliveryTimes 
-                            loading={posts.loading} 
-                            searchHandler={searchHandler} 
-                            deliveryTime={deliveryTime} 
-                        />
-                        <h3 className="text-side-text-gray mt-5 mb-2 text-[16px]">
-                            Seller speaks
-                        </h3>
-                        <SearchLanguages 
-                            loading={posts.loading}
-                            updateLanguages={(languages: string[]) => dispatch({ selectedLanguages: languages })}
-                            selectedLanguages={state.selectedLanguages}
-                            searchBarStyles="h-10"
-                            styles="border-b border-light-border-gray pb-5"
-                        />
-                        <SellerLevels 
-                            loading={posts.loading}
-                            sellerLevels={state.sellerLevels}
-                            updateSellerLevels={(sellerLevels: string[]) => dispatch({ sellerLevels: sellerLevels })} 
-                        />
-                        <TypeOfWork 
-                            selectedWork={state.selectedWork}
-                            updateSelectedWork={(selectedWork: string[]) => dispatch({ selectedWork: selectedWork })}
-                        />
-                        <ExtraFilters 
-                            loading={posts.loading}
-                            extraFilters={state.extraFilters}
-                            updateExtraFilters={(extraFilters: string[]) => dispatch({ extraFilters: extraFilters })}
-                        />
-                    </div>
-                </div>
+                {windowSize >= 1180 &&
+                <PostsSidebar
+                    loading={posts.loading}
+                    openPostService={openPostService}
+                    deliveryTime={deliveryTime}
+                    searchHandler={searchHandler}
+                    dispatch={dispatch}
+                    state={state}
+                />}
                 <div className="flex-grow">
-                    <div className="border-b border-b-light-border-gray bg-white pr-[14px]">
+                    <div className="border-b border-b-light-border-gray bg-white">
                         <MainFiltersBar
                             dispatch={dispatch}
                             state={state}
                             loading={posts.loading}
                             searchHandler={searchHandler}
+                            toggleFiltersPopUp={toggleFiltersPopUp}
                         />
                     </div>
                     <div className="h-[calc(100vh-180px)] overflow-y-scroll" ref={pageRef}>

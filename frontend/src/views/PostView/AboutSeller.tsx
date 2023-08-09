@@ -5,7 +5,7 @@ import ProfileSummary from "../../components/ProfileSummary";
 import SaveSeller from "../../components/SaveSeller";
 import { useNavigate } from "react-router-dom";
 import { useContext } from "react";
-import { UserContext } from "../../providers/UserContext";
+import { UserContext } from "../../providers/UserProvider";
 import { UserStatus } from "../../enums/UserStatus";
 
 interface AboutSellerProps {
@@ -40,7 +40,8 @@ function AboutSeller(props: AboutSellerProps) {
                         imgStyles="cursor-pointer"
                         username={props.username}
                         action={navigateToProfile}
-                        size={65}
+                        size={62}
+                        profileStatus={props.status}
                         statusRight={true}
                     />
                     <div className="overflow-hidden">

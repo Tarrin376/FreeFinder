@@ -3,7 +3,7 @@ import ErrorMessage from "../../components/ErrorMessage";
 import axios, { AxiosError } from "axios";
 import { getAPIErrorMessage } from "../../utils/getAPIErrorMessage";
 import Button from "../../components/Button";
-import { UserContext } from '../../providers/UserContext';
+import { UserContext } from '../../providers/UserProvider';
 import { MIN_PASS_LENGTH, MAX_PASS_LENGTH } from "@freefinder/shared/dist/constants";
 
 function ChangePassword() {

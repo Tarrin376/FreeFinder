@@ -1,6 +1,6 @@
 import { GroupPreview } from "../types/GroupPreview";
 import { useContext } from "react";
-import { UserContext } from "../providers/UserContext";
+import { UserContext } from "../providers/UserProvider";
 
 interface TagsProps {
     isOwnMessage: boolean,

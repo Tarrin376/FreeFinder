@@ -1,7 +1,7 @@
 import { GroupPreview } from "../types/GroupPreview";
 import ProfilePicAndStatus from "./ProfilePicAndStatus";
 import { useContext, useEffect, useCallback, useState } from "react";
-import { UserContext } from "../providers/UserContext";
+import { UserContext } from "../providers/UserProvider";
 import Typing from "./Typing";
 import { useUsersTyping } from "../hooks/useUsersTyping";
 import { IMessage } from "../models/IMessage";

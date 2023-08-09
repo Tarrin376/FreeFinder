@@ -1,5 +1,5 @@
 import { useRef, useEffect, useCallback, useContext } from "react";
-import { UserContext } from "../providers/UserContext";
+import { UserContext } from "../providers/UserProvider";
 import axios from "axios";
 import { IUser } from "../models/IUser";
 import { UserStatus } from "../enums/UserStatus";

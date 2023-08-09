@@ -27,7 +27,7 @@ function Posts({ noResultsFoundTitle, posts, loading, count, canRemove, title }:
     }
 
     return (
-        <PageWrapper styles="!min-h-[calc(100vh-180px)] xxl:max-w-[1430px] xl:max-w-[1075px] lg:max-w-[720px] md:max-w-[358px]">
+        <PageWrapper styles="!min-h-[calc(100vh-180px)] max-w-[1430px]">
             {title && <h1 className="text-[20px] mb-6">{title}</h1>}
             {loading ? 
             <h1 className="text-side-text-gray text-[17px] mb-5">
@@ -51,12 +51,12 @@ function Posts({ noResultsFoundTitle, posts, loading, count, canRemove, title }:
                     );
                 })}
                 {loading && new Array(limit).fill(true).map((_, i) => <PostSkeleton key={i} />)}
-                <PaginationScrollInfo 
-                    data={filterContext.posts} 
-                    page={filterContext.page.value}
-                    styles="mt-7 mb-7"
-                />
             </PostsWrapper>}
+            <PaginationScrollInfo 
+                data={filterContext.posts} 
+                page={filterContext.page.value}
+                styles="mt-7 mb-7"
+            />
             {!loading && posts.length === 0 &&
             <NoResultsFound 
                 title={noResultsFoundTitle}

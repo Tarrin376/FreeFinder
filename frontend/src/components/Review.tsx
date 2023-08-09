@@ -1,7 +1,7 @@
 import { IReview } from "../models/IReview";
 import ProfilePicAndStatus from "./ProfilePicAndStatus";
 import { parseDate } from "../utils/parseDate";
-import { UserContext } from "../providers/UserContext";
+import { UserContext } from "../providers/UserProvider";
 import { useContext, useState } from "react";
 import { getAPIErrorMessage } from "../utils/getAPIErrorMessage";
 import ErrorPopUp from "./ErrorPopUp";
@@ -10,6 +10,7 @@ import axios, { AxiosError } from "axios";
 import Rating from "./Rating";
 import AllReviews from "./AllReviews";
 import Actions from "./Actions";
+import { useUserStatus } from "src/hooks/useUserStatus";
 
 interface ReviewProps {
     reviewInfo: IReview,
@@ -22,6 +23,7 @@ function Review({ reviewInfo, hideActions }: ReviewProps) {
     const [helpfulCount, setHelpfulCount] = useState<number>(reviewInfo._count.foundHelpful);
     const [toggled, setToggled] = useState<boolean>(false);
     const [allReviewsPopUp, setAllReviewsPopUp] = useState<boolean>(false);
+    const status = useUserStatus(reviewInfo.reviewer.username, reviewInfo.reviewer.status);
 
     async function markAsHelpful(): Promise<void> {
         try {
@@ -72,9 +74,9 @@ function Review({ reviewInfo, hideActions }: ReviewProps) {
                 <div className="flex items-center gap-5 relative">
                     <ProfilePicAndStatus
                         profilePicURL={reviewInfo.reviewer.profilePicURL}
-                        profileStatus={reviewInfo.reviewer.status}
+                        profileStatus={status}
                         username={reviewInfo.reviewer.username}
-                        size={45}
+                        size={42}
                         statusRight={true}
                     />
                     <p>{reviewInfo.reviewer.username}</p>

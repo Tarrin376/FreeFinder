@@ -5,7 +5,7 @@ import { fetchUpdatedUser } from "../../utils/fetchUpdatedUser";
 import { getAPIErrorMessage } from "../../utils/getAPIErrorMessage";
 import { AxiosError } from "axios";
 import Button from "../../components/Button";
-import { UserContext } from '../../providers/UserContext';
+import { UserContext } from '../../providers/UserProvider';
 
 function MyDetails() {
     const [firstEmail, setFirstEmail] = useState<string>("");

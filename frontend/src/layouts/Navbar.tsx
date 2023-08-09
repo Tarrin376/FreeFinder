@@ -2,7 +2,7 @@ import { useState, useContext, useRef } from 'react';
 import SignUp from '../components/SignUp';
 import LogIn from '../components/LogIn';
 import AccountCreated from '../components/AccountCreated';
-import { IUserContext, UserContext } from '../providers/UserContext';
+import { IUserContext, UserContext } from '../providers/UserProvider';
 import { Outlet } from 'react-router-dom';
 import ProfileMenu from '../components/ProfileMenu';
 import { useNavigate } from 'react-router-dom';
@@ -15,7 +15,7 @@ import { useWindowSize } from '../hooks/useWindowSize';
 import HamburgerMenu from '../components/HamburgerMenu';
 import Sidebar from './Sidebar';
 import AccountOptions from '../components/AccountOptions';
-import { INITIAL_STATE } from '../providers/UserContext';
+import { INITIAL_STATE } from '../providers/UserProvider';
 import axios from "axios";
 import OnlineStatus from '../components/OnlineStatus';
 import NavDropdown from '../components/NavDropdown';
@@ -107,12 +107,12 @@ function Navbar() {
                         size={30}
                         action={toggleSidebar}
                     />}
-                    {windowSize > 400 && 
+                    {(windowSize >= 440 || userContext.userData.username === "") &&
                     <li className="text-main-blue text-[22px] cursor-pointer mr-8" 
                     onClick={() => resetSelectedElement(`/`)}>
                         FreeFinder
                     </li>}
-                    {windowSize > 681 && 
+                    {windowSize >= 720 && 
                     <>
                         <li className="nav-item" onClick={(e) => goToPage(e, 'posts/all')}>
                             Browse all
@@ -124,7 +124,7 @@ function Navbar() {
                             </li>
                         </>}
                     </>}
-                    {userContext.userData.userID !== "" && windowSize > 1005 &&
+                    {userContext.userData.userID !== "" && windowSize >= 1050 &&
                     <>
                         <li>
                             <NavDropdown
@@ -148,7 +148,11 @@ function Navbar() {
                             My services
                         </li>
                     </>}
-                    {windowSize > 1381 && <SearchSellers styles="ml-8" />}
+                    {((windowSize >= 1450 && userContext.userData.username !== "") || 
+                    (windowSize >= 1150 && userContext.userData.username === "")) && 
+                    <SearchSellers 
+                        styles="ml-8" 
+                    />}
                 </ul>
                 {userContext.userData.username !== "" && <ProfileMenu logout={logout} />}
                 {userContext.userData.username === "" && windowSize > 523 &&

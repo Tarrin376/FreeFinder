@@ -1,22 +1,19 @@
 import { useFetchCountries } from "../hooks/useFetchCountries";
 import { Country } from '../types/Country';
+import FilterBoxWrapper from "src/wrappers/FilterBoxWrapper";
 
 interface CountriesDropdownProps {
     country: string,
     updateCountry: (country: string) => void,
-    styles?: string,
-    title: string,
+    text: string,
     anyLocation?: boolean
 }
 
-function CountriesDropdown({ country, updateCountry, styles, title, anyLocation }: CountriesDropdownProps) {
+function CountriesDropdown({ country, updateCountry, text, anyLocation }: CountriesDropdownProps) {
     const allCountries = useFetchCountries();
 
     return (
-        <div className={`search-bar py-2 ${styles}`}>
-            <p className="text-sm text-side-text-gray h-fit tracking-wide select-none">
-                {title}
-            </p>
+        <FilterBoxWrapper text={text}>
             <select className={`w-full cursor-pointer rounded-[8px] focus:outline-none 
             ${allCountries.countries.length > 0 ? 'bg-main-white' : 'loading'}`} value={country}
             onChange={(e) => updateCountry(e.target.value)}>
@@ -32,7 +29,7 @@ function CountriesDropdown({ country, updateCountry, styles, title, anyLocation 
                     );
                 })}
             </select>
-        </div>
+        </FilterBoxWrapper>
     );
 }
 

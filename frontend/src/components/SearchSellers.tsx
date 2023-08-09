@@ -77,7 +77,7 @@ function SearchSellers({ styles, toggleSidebar }: SearchSellersProps) {
                 />}
             </AnimatePresence>
             <OutsideClickHandler onOutsideClick={() => setHide(true)}>
-                <div className={`relative w-[360px] ${styles}`}>
+                <div className={`relative w-[400px] ${styles}`}>
                     <div className={`flex items-center border border-light-border-gray 
                     rounded-[8px] ${searchQuery && !hide ? "rounded-b-none" : ""} px-3 h-10 bg-transparent w-full`}>
                         <img src={SearchIcon} alt="" className="w-5 h-5"/>

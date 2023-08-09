@@ -17,7 +17,7 @@ function ProfilePicAndStatus(props: ProfilePicAndStatusProps) {
     const statusColour = props.profileStatus === UserStatus.ONLINE ? 'bg-green-500' : 
     props.profileStatus === 'AWAY' ? 'bg-orange-400' : 'bg-side-text-gray';
 
-    const defaultStatusStyles = `w-[16px] h-[16px] absolute rounded-full b
+    const defaultStatusStyles = `absolute rounded-full b
     g-light-green border-2 border-main-white ${statusColour}`;
 
     function handleAction(): void {
@@ -31,8 +31,10 @@ function ProfilePicAndStatus(props: ProfilePicAndStatusProps) {
             {props.profileStatus &&
             <div className={defaultStatusStyles}
             style={{ 
-                top: `${props.size * 0.70}px`, 
-                left: props.statusRight ? `${props.size * 0.70}px` : `0px` 
+                top: `${Math.floor(props.size * 0.71)}px`, 
+                left: props.statusRight ? `${Math.floor(props.size * 0.71)}px` : `0px`,
+                width: `${Math.floor(props.size * 0.32)}px`,
+                height: `${Math.floor(props.size * 0.32)}px`
             }}>
             </div>}
             {props.loading ? 

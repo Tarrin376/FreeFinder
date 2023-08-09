@@ -6,7 +6,7 @@ import axios, { AxiosError } from "axios";
 import { FoundUsers } from "../types/FoundUsers";
 import { getAPIErrorMessage } from "../utils/getAPIErrorMessage";
 import Button from "./Button";
-import { UserContext } from "../providers/UserContext";
+import { UserContext } from "../providers/UserProvider";
 import AddPeople from "./AddPeople";
 import { GroupPreview } from "../types/GroupPreview";
 

@@ -50,7 +50,7 @@ function Sellers({ search, url, setSellersPopUp, savedSellers, option }: Sellers
                     setErrorMessage={sellers.setErrorMessage}
                 />}
             </AnimatePresence>
-            <div ref={pageRef} className="overflow-y-scroll pr-[9px] max-h-[640px] flex flex-col gap-4">
+            <div ref={pageRef} className="overflow-y-scroll pr-[8px] max-h-[640px] flex flex-col gap-4">
                 {sellers.data.map((seller: SellerData, index: number) => {
                     return (
                         <Seller
@@ -70,6 +70,7 @@ function Sellers({ search, url, setSellersPopUp, savedSellers, option }: Sellers
                             profilePicSize={62}
                             key={index}
                             option={option}
+                            hideSaveMessage={true}
                         />
                     )
                 })}

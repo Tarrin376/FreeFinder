@@ -11,7 +11,7 @@ import PageWrapper from "../../wrappers/PageWrapper";
 import Carousel from "../../components/Carousel";
 import parse from "html-react-parser";
 import { useNavigate } from "react-router-dom";
-import { UserContext } from "../../providers/UserContext";
+import { UserContext } from "../../providers/UserProvider";
 import TextEditor from "../../components/TextEditor";
 import { ABOUT_SERVICE_LIMIT, SERVICE_TITLE_LIMIT } from "@freefinder/shared/dist/constants";
 import PostImage from "./PostImage";
@@ -26,6 +26,7 @@ import { scrollIntoView } from "../../utils/scrollIntoView";
 import StarSvg from "../../components/StarSvg";
 import ServiceID from "../../components/ServiceID";
 import { MAX_FILE_BYTES, MAX_SERVICE_IMAGE_UPLOADS } from "@freefinder/shared/dist/constants";
+import { useUserStatus } from "src/hooks/useUserStatus";
 
 export type PostViewState = {
     about: string,
@@ -62,6 +63,7 @@ function PostView() {
         return { ...cur, ...payload };
     }, INITIAL_STATE);
 
+    const status = useUserStatus(state.postData?.postedBy.user.username, state.postData?.postedBy.user.status);
     const isOwner = state.postData?.postedBy.user.username === userContext.userData.username;
 
     function navigateToProfile(): void {
@@ -209,7 +211,7 @@ function PostView() {
                     />}
                 </AnimatePresence>
                 <div className="flex gap-16">
-                    <div className="flex-grow overflow-hidden">
+                    <div className="flex-grow">
                         <div className="flex gap-3 items-center mb-3">
                             {isOwner &&
                             <p className="change" onClick={updateTitle}>
@@ -235,7 +237,7 @@ function PostView() {
                             <div className="relative">
                                 <ProfilePicAndStatus 
                                     profilePicURL={state.postData.postedBy.user.profilePicURL} 
-                                    profileStatus={state.postData.postedBy.user.status}
+                                    profileStatus={status}
                                     action={navigateToProfile}
                                     username={state.postData.postedBy.user.username}
                                     size={50}

@@ -9,7 +9,7 @@ interface SortByProps {
 
 function SortBy({ sort, updateSort }: SortByProps) {
     return (
-        <div className="relative z-30 h-full">
+        <div className="relative h-full">
             <NavDropdown 
                 styles="absolute top-1/2 translate-y-[-50%] left-1/2 translate-x-[-50%] w-fit"
                 title={sort}

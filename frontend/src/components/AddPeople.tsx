@@ -4,7 +4,7 @@ import ProfilePicAndStatus from "./ProfilePicAndStatus";
 import CloseSvg from "./CloseSvg";
 import HighlightedSubstring from "./HighlightedSubstring";
 import { useContext, useState } from "react";
-import { UserContext } from "../providers/UserContext";
+import { UserContext } from "../providers/UserProvider";
 import UserSkeleton from "../skeletons/UserSkeleton";
 import { GroupPreview } from "../types/GroupPreview";
 

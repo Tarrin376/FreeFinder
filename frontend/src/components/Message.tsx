@@ -1,6 +1,6 @@
 import { IMessage } from "../models/IMessage";
 import { useContext, useState } from "react";
-import { UserContext } from "../providers/UserContext";
+import { UserContext } from "../providers/UserProvider";
 import ProfilePicAndStatus from "./ProfilePicAndStatus";
 import { getTime } from "../utils/getTime";
 import MessageSent from "./MessageSent";

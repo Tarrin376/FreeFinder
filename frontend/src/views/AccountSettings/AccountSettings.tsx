@@ -6,7 +6,7 @@ import MyDetails from "./MyDetails";
 import UserProfile from "./UserProfile";
 import ChangePassword from "./ChangePassword";
 import DangerZone from "./DangerZone";
-import { UserContext } from "../../providers/UserContext";
+import { UserContext } from "../../providers/UserProvider";
 import ChangeProfilePicture from "../../components/ChangeProfilePicture";
 
 interface SettingsProps {

@@ -3,7 +3,7 @@ import EditIcon from "../assets/edit.png";
 import { useRef, useState, useContext } from "react";
 import { parseFileBase64 } from "../utils/parseFileBase64";
 import { checkImageType } from "../utils/checkImageType";
-import { UserContext } from "../providers/UserContext";
+import { UserContext } from "../providers/UserProvider";
 import ErrorPopUp from "./ErrorPopUp";
 import { AnimatePresence } from "framer-motion";
 import { MAX_PROFILE_PIC_BYTES } from "@freefinder/shared/dist/constants";

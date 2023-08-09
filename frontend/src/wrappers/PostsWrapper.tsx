@@ -5,7 +5,7 @@ interface PostWrapperProps {
 
 function PostsWrapper({ children }: PostWrapperProps) {
     return (
-        <div className="flex gap-[35px] items-start flex-wrap w-full">
+        <div className="grid w-full gap-7" style={{ gridTemplateColumns: "repeat(auto-fill, minmax(300px, 1fr))" }}>
             {children}
         </div>
     );

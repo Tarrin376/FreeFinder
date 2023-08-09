@@ -7,7 +7,7 @@ import axios, { AxiosError } from "axios";
 import Button from "./Button";
 import AddIcon from "../assets/add.png";
 import { GroupPreview } from "../types/GroupPreview";
-import { UserContext } from "../providers/UserContext";
+import { UserContext } from "../providers/UserProvider";
 import ErrorMessage from "./ErrorMessage";
 
 interface AddUsersToGroupProps {

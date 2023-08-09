@@ -1,5 +1,5 @@
 import { useEffect, useContext, useCallback, useState } from "react";
-import { UserContext } from "../providers/UserContext";
+import { UserContext } from "../providers/UserProvider";
 
 export function useUsersTyping(groupID: string): string[] {
     const userContext = useContext(UserContext);

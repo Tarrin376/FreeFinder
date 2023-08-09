@@ -1,7 +1,7 @@
 import { usePaginateData } from "../hooks/usePaginateData";
 import { IMessage } from "../models/IMessage";
 import { useState, useRef, useContext, useEffect, useCallback, useReducer } from "react";
-import { UserContext } from "../providers/UserContext";
+import { UserContext } from "../providers/UserProvider";
 import { getAPIErrorMessage } from "../utils/getAPIErrorMessage";
 import axios, { AxiosError } from "axios";
 import SendIcon from "../assets/send.png";

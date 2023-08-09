@@ -1,7 +1,7 @@
 import PopUpWrapper from "../wrappers/PopUpWrapper";
 import { useState, useContext } from 'react';
 import ErrorMessage from "./ErrorMessage";
-import { IUserContext, UserContext } from "../providers/UserContext";
+import { IUserContext, UserContext } from "../providers/UserProvider";
 import axios, { AxiosError } from "axios";
 import { IUser } from "../models/IUser";
 import { getAPIErrorMessage } from "../utils/getAPIErrorMessage";

@@ -5,7 +5,7 @@ import { fetchUpdatedUser } from "../../utils/fetchUpdatedUser";
 import { getAPIErrorMessage } from "../../utils/getAPIErrorMessage";
 import { AxiosError } from "axios";
 import Button from "../../components/Button";
-import { UserContext } from '../../providers/UserContext';
+import { UserContext } from '../../providers/UserProvider';
 import Validator from "@freefinder/shared/dist/validator";
 
 function UserProfile() {
@@ -62,7 +62,7 @@ function UserProfile() {
                     <CountriesDropdown 
                         country={country}
                         updateCountry={setCountry} 
-                        title="Country"
+                        text="Country"
                     />
                 </div>
                 <Button
