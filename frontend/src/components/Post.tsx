@@ -15,6 +15,7 @@ import { limit } from '../hooks/usePaginateData';
 import Save from './Save';
 import StarSvg from './StarSvg';
 import { CanRemovePost } from '../types/CanRemovePost';
+import { useUserStatus } from 'src/hooks/useUserStatus';
 
 interface PostProps {
     postInfo: IPost,
@@ -29,9 +30,9 @@ function Post({ postInfo, index, canRemove, count, styles }: PostProps) {
     const [errorMessage, setErrorMessage] = useState<string>("");
     const seconds = getSeconds(postInfo.createdAt);
     const userContext = useContext(UserContext);
+    const status = useUserStatus(postInfo.postedBy.user.username, postInfo.postedBy.user.status);
 
     const navigate = useNavigate();
-    const defaultStyles = `bg-transparent w-[320px] relative`;
 
     async function savePost(saved: boolean): Promise<void> {
         try {
@@ -88,7 +89,7 @@ function Post({ postInfo, index, canRemove, count, styles }: PostProps) {
     }
 
     return (
-        <motion.div className={`${defaultStyles} ${styles}`} 
+        <motion.div className={`bg-transparent w-[320px] relative ${styles}`} 
         initial={{ opacity: 0 }} animate={{ opacity: 1 }} exit={{ opacity: 0 }} 
         transition={{ delay: 0.05 * (index % limit), duration: 0.2 }}>
             <p className={`absolute rounded-t-[12px] z-20 px-7 py-[11px] w-[100%] 
@@ -115,7 +116,7 @@ function Post({ postInfo, index, canRemove, count, styles }: PostProps) {
                 <div className="flex items-center mb-2 gap-3 relative">
                     <ProfilePicAndStatus 
                         profilePicURL={postInfo.postedBy.user.profilePicURL} 
-                        profileStatus={postInfo.postedBy.user.status}
+                        profileStatus={status}
                         action={navigateToProfile}
                         username={postInfo.postedBy.user.username}
                         size={48}

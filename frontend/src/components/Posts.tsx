@@ -35,7 +35,7 @@ function Posts({ noResultsFoundTitle, posts, loading, count, canRemove, title }:
             </h1> :
             <h1 className="text-side-text-gray text-[17px] mb-5">
                 {`${loading ? "Loading results for" : `${count.current}
-                ${count.current === 1 ? " result" : " results"} found`}${filterContext.search ? ` for '${filterContext.search}'` : ""}`}
+                ${count.current === 1 ? " result" : " results"} found`}`}
             </h1>}
             {(loading || posts.length > 0) && 
             <PostsWrapper>

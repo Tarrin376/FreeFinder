@@ -12,6 +12,7 @@ import { AnimatePresence } from "framer-motion";
 import MessageFile from "./MessageFile";
 import OrderRequest from "./OrderRequest";
 import { FoundUsers } from "../types/FoundUsers";
+import { useUserStatus } from "src/hooks/useUserStatus";
 
 interface MessageProps {
     message: IMessage,
@@ -27,6 +28,7 @@ function Message({ message, isLastMessage, sendingMessage, groupMembers, seller,
     const userContext = useContext(UserContext);
     const isOwnMessage = message.from.username === userContext.userData.username;
     const [errorMessage, setErrorMessage] = useState<string>("");
+    const status = useUserStatus(message.from.username, message.from.status);
     
     return (
         <div className={`flex gap-3 items-start w-full ${isOwnMessage ? "flex-row-reverse" : ""}`}>
@@ -40,7 +42,7 @@ function Message({ message, isLastMessage, sendingMessage, groupMembers, seller,
             <div className="w-fit h-fit relative flex-shrink-0">
                 <ProfilePicAndStatus
                     profilePicURL={message.from.profilePicURL}
-                    profileStatus={message.from.status}
+                    profileStatus={status}
                     size={47}
                     username={message.from.username}
                     statusRight={!isOwnMessage}
@@ -48,8 +50,12 @@ function Message({ message, isLastMessage, sendingMessage, groupMembers, seller,
             </div>
             <div className={`flex flex-col gap-[5px] ${isOwnMessage ? "items-end" : "items-start"} ${message.orderRequest ? "flex-grow" : ""}`}>
                 <div className={`flex items-center gap-2 ${isOwnMessage ? "flex-row-reverse" : ""}`}>
-                    <p className="text-[15px]">{isOwnMessage ? "You" : message.from.username}</p>
-                    <p className="text-sm text-side-text-gray">{getTime(message.createdAt)}</p>
+                    <p className="text-[15px]">
+                        {isOwnMessage ? "You" : message.from.username}
+                    </p>
+                    <p className="text-sm text-side-text-gray">
+                        {getTime(message.createdAt)}
+                    </p>
                 </div>
                 <div className="flex gap-[5px] items-end w-full">
                     {isOwnMessage && <MessageSent sendingMessage={sendingMessage && isLastMessage} />}

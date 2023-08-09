@@ -99,6 +99,10 @@ io.on("connection", (socket) => {
         io.sockets.in(groupID).emit("show-updated-members", members, groupID);
     });
 
+    socket.on("update-user-status", (username, status) => {
+        io.emit("show-user-status", username, status);
+    });
+
     socket.on("leave-rooms", () => {
         for (const room of socket.rooms) {
             if (room !== socket.id) {
