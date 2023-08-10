@@ -116,84 +116,86 @@ function SignUp({ setLogIn, setSignUp, setAccountCreated }: SignUpProps) {
 
     return (
         <PopUpWrapper setIsOpen={setSignUp} title="Create your new account" styles="!max-w-[470px]">
-            <form>
-                <p className="mb-6 text-side-text-gray text-[16px]">Signing up for FreeFinder is fast and 100% free!</p>
-                {errorMessage !== "" && 
-                <ErrorMessage 
-                    message={errorMessage} 
-                    title="Account creation failed."
-                    setErrorMessage={setErrorMessage}
-                />}
-                <div className="flex flex-col mb-8">
-                    <input 
-                        type="email" 
-                        placeholder="Enter your email" 
-                        className={`search-bar ${state.emailFirstErrorMessage !== "" && state.emailFirst !== "" && "invalid-input"}`} 
-                        onChange={(e) => checkEmail(e, true)}
-                    />
-                    {state.emailFirst !== "" && 
-                    <p className="text-box-error-message">
-                        {state.emailFirstErrorMessage}
-                    </p>}
-                    <input 
-                        type="email" 
-                        placeholder="Confirm your email" 
-                        className={`search-bar mt-3 ${state.emailSecondErrorMessage !== "" && state.emailSecond !== "" && "invalid-input"}`} 
-                        onChange={(e) => checkEmail(e, false)}
-                        onPaste={(e) => {
-                            e.preventDefault();
-                            return false;
-                        }}
-                    />
-                    {state.emailSecond !== "" && 
-                    <p className="text-box-error-message">
-                        {state.emailSecondErrorMessage}
-                    </p>}
-                    <input 
-                        type="text" 
-                        placeholder="Create a username" 
-                        className="search-bar mt-3" 
-                        onChange={(e) => validateUsername(e)} 
-                    />
-                    {state.usernameErrorMessage !== "" && state.username !== "" && 
-                    <p className="text-box-error-message">
-                        {state.usernameErrorMessage}
-                    </p>}
-                    <input 
-                        type="password" 
-                        placeholder="Create a password" 
-                        className={`search-bar mt-3 ${state.passwordErrorMessage !== "" && state.password !== "" && "invalid-input"}`} 
-                        onChange={(e) => checkPassword(e)} 
-                    />
-                    {state.password !== "" && 
-                    <p className="text-box-error-message">
-                        {state.passwordErrorMessage}
-                    </p>}
-                    <div className="mt-3">
-                        <CountriesDropdown 
-                            country={country}
-                            updateCountry={setCountry}
-                            text="Country"
+            <div>
+                <form>
+                    <p className="mb-6 text-side-text-gray text-[16px]">Signing up for FreeFinder is fast and 100% free!</p>
+                    {errorMessage !== "" && 
+                    <ErrorMessage 
+                        message={errorMessage} 
+                        title="Account creation failed."
+                        setErrorMessage={setErrorMessage}
+                    />}
+                    <div className="flex flex-col mb-8">
+                        <input 
+                            type="email" 
+                            placeholder="Enter your email" 
+                            className={`search-bar ${state.emailFirstErrorMessage !== "" && state.emailFirst !== "" && "invalid-input"}`} 
+                            onChange={(e) => checkEmail(e, true)}
                         />
+                        {state.emailFirst !== "" && 
+                        <p className="text-box-error-message">
+                            {state.emailFirstErrorMessage}
+                        </p>}
+                        <input 
+                            type="email" 
+                            placeholder="Confirm your email" 
+                            className={`search-bar mt-3 ${state.emailSecondErrorMessage !== "" && state.emailSecond !== "" && "invalid-input"}`} 
+                            onChange={(e) => checkEmail(e, false)}
+                            onPaste={(e) => {
+                                e.preventDefault();
+                                return false;
+                            }}
+                        />
+                        {state.emailSecond !== "" && 
+                        <p className="text-box-error-message">
+                            {state.emailSecondErrorMessage}
+                        </p>}
+                        <input 
+                            type="text" 
+                            placeholder="Create a username" 
+                            className="search-bar mt-3" 
+                            onChange={(e) => validateUsername(e)} 
+                        />
+                        {state.usernameErrorMessage !== "" && state.username !== "" && 
+                        <p className="text-box-error-message">
+                            {state.usernameErrorMessage}
+                        </p>}
+                        <input 
+                            type="password" 
+                            placeholder="Create a password" 
+                            className={`search-bar mt-3 ${state.passwordErrorMessage !== "" && state.password !== "" && "invalid-input"}`} 
+                            onChange={(e) => checkPassword(e)} 
+                        />
+                        {state.password !== "" && 
+                        <p className="text-box-error-message">
+                            {state.passwordErrorMessage}
+                        </p>}
+                        <div className="mt-3">
+                            <CountriesDropdown 
+                                country={country}
+                                updateCountry={setCountry}
+                                text="Country"
+                            />
+                        </div>
                     </div>
-                </div>
-                <Button
-                    action={createAccount}
-                    completedText="Account created"
-                    defaultText="Create account"
-                    loadingText="Checking details"
-                    styles={`main-btn ${!isValidForm() ? "invalid-button" : ""}`}
-                    textStyles="text-main-white"
-                    setErrorMessage={setErrorMessage}
-                    loadingSvgSize={28}
-                    keepErrorMessage={true}
-                />
-            </form>
-            <p className="mt-6 text-side-text-gray text-[15px]">Already have an account? 
-                <span className="text-main-blue ml-2 cursor-pointer hover:text-main-black" onClick={openLogIn}>
-                    Log In
-                </span>
-            </p>
+                    <Button
+                        action={createAccount}
+                        completedText="Account created"
+                        defaultText="Create account"
+                        loadingText="Checking details"
+                        styles={`main-btn ${!isValidForm() ? "invalid-button" : ""}`}
+                        textStyles="text-main-white"
+                        setErrorMessage={setErrorMessage}
+                        loadingSvgSize={28}
+                        keepErrorMessage={true}
+                    />
+                </form>
+                <p className="mt-6 text-side-text-gray text-[15px]">Already have an account? 
+                    <span className="text-main-blue ml-2 cursor-pointer hover:text-main-black" onClick={openLogIn}>
+                        Log In
+                    </span>
+                </p>
+            </div>
         </PopUpWrapper>
     );
 }

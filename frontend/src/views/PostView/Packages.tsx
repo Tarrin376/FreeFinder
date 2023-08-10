@@ -83,7 +83,7 @@ function Packages({ packages, seller, workType, postID }: PackagesProps) {
                 <div className="p-6 h-[calc(100%-50px)] flex flex-col justify-between">
                     <div className="flex-grow overflow-y-scroll pr-[8px]">
                         <div className="flex justify-between items-center mt-[-6px]">
-                            <h3 className="text-[20px]">
+                            <h3 className="text-[18px]">
                                 {`${capitalizeWord(curPkg.type)} package`}
                             </h3>
                             {isMostPopular(curPkg.type) && 

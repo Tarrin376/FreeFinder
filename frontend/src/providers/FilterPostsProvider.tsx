@@ -1,4 +1,4 @@
-import { useRef, createContext, useState, cloneElement, useReducer } from 'react';
+import { useRef, createContext, useState, cloneElement, useReducer, useCallback } from 'react';
 import { MAX_SERVICE_PRICE, MAX_SERVICE_DELIVERY_DAYS } from '@freefinder/shared/dist/constants';
 import { usePaginateData } from '../hooks/usePaginateData';
 import { IPost } from '../models/IPost';
@@ -34,9 +34,21 @@ export type FilterPostsProviderState = {
     selectedWork: string[],
     searchOption: SearchOption,
     deliveryTime: number,
-    country: string,
-    filtersPopUp: boolean,
-    postServicePopUp: boolean
+    country: string
+}
+
+export const defaultStateValues: FilterPostsProviderState = {
+    min: 0,
+    max: MAX_SERVICE_PRICE,
+    sort: "most recent",
+    search: "",
+    selectedLanguages: [],
+    sellerLevels: [],
+    extraFilters: [],
+    selectedWork: [],
+    searchOption: "Work type",
+    deliveryTime: MAX_SERVICE_DELIVERY_DAYS,
+    country: "Any country"
 }
 
 export const FilterPostsContext = createContext<FilterPosts | undefined>(undefined);
@@ -47,6 +59,8 @@ function FilterPostsProvider({ children, urlPrefix }: FilterPostsProviderProps) 
     const cursor = useRef<string>();
 
     const [page, setPage] = useState<{ value: number }>({ value: 1 });
+    const [filtersPopUp, setFiltersPopUp] = useState<boolean>(false);
+    const [postServicePopUp, setPostServicePopUp] = useState<boolean>(false);
 
     const location = useLocation();
     const windowSize = useWindowSize();
@@ -64,11 +78,24 @@ function FilterPostsProvider({ children, urlPrefix }: FilterPostsProviderProps) 
         selectedWork: postFilters.current.selectedWork ?? [],
         searchOption: postFilters.current.searchOption ?? "Work type",
         deliveryTime: postFilters.current.deliveryTime ?? MAX_SERVICE_DELIVERY_DAYS,
-        country: "Any country",
-        filtersPopUp: false,
-        postServicePopUp: false
+        country: "Any country"
     });
 
+    const getModifiedFiltersCount = useCallback((): number => {
+        let count = 0;
+        for (const key of Object.keys(state)) {
+            const curValue = state[key as keyof FilterPostsProviderState];
+            const defaultValue = defaultStateValues[key as keyof FilterPostsProviderState];
+
+            if ((Array.isArray(curValue) && curValue.length > 0) || (!Array.isArray(curValue) && curValue !== defaultValue)) {
+                count++;
+            }
+        }
+
+        return count;
+    }, [state]);
+
+    const [modifiedFiltersCount, setModifiedFiltersCount] = useState<number>(getModifiedFiltersCount());
     const posts = usePaginateData<PostArgs, IPost, PaginationResponse<IPost>>(
         pageRef, 
         cursor,
@@ -91,11 +118,11 @@ function FilterPostsProvider({ children, urlPrefix }: FilterPostsProviderProps) 
     );
 
     function updatePostServicePopUp(val: boolean): void {
-        dispatch({ postServicePopUp: val });
+        setPostServicePopUp(val);
     }
 
     function toggleFiltersPopUp(): void {
-        dispatch({ filtersPopUp: !state.filtersPopUp });
+        setFiltersPopUp((cur) => !cur);
     }
 
     function searchHandler(): void {
@@ -131,11 +158,11 @@ function FilterPostsProvider({ children, urlPrefix }: FilterPostsProviderProps) 
             country: "Any country"
         });
     }
-
+    
     return (
         <>
             <AnimatePresence>
-                {state.postServicePopUp && 
+                {postServicePopUp && 
                 <CreatePost 
                     updatePostServicePopUp={updatePostServicePopUp} 
                     resetState={posts.resetState} 
@@ -145,7 +172,7 @@ function FilterPostsProvider({ children, urlPrefix }: FilterPostsProviderProps) 
                     errorMessage={posts.errorMessage}
                     setErrorMessage={posts.setErrorMessage}
                 />}
-                {state.filtersPopUp && 
+                {filtersPopUp && 
                 <FiltersPopUp 
                     loading={posts.loading}
                     searchHandler={searchHandler}
@@ -153,6 +180,9 @@ function FilterPostsProvider({ children, urlPrefix }: FilterPostsProviderProps) 
                     toggleFiltersPopUp={toggleFiltersPopUp}
                     state={state}
                     clearFilters={clearFilters}
+                    modifiedFiltersCount={modifiedFiltersCount}
+                    setModifiedFiltersCount={setModifiedFiltersCount}
+                    getModifiedFiltersCount={getModifiedFiltersCount}
                 />}
             </AnimatePresence>
             <div className="flex">
@@ -179,6 +209,7 @@ function FilterPostsProvider({ children, urlPrefix }: FilterPostsProviderProps) 
                             loading={posts.loading}
                             searchHandler={searchHandler}
                             toggleFiltersPopUp={toggleFiltersPopUp}
+                            modifiedFiltersCount={modifiedFiltersCount}
                         />
                     </div>
                     <div className="h-[calc(100vh-180px)] overflow-y-scroll" ref={pageRef}>

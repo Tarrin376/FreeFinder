@@ -114,98 +114,100 @@ function Package(props: PackageProps) {
 
     return (
         <PopUpWrapper setIsOpen={props.updatePostServicePopUp} title={props.title}>
-            <h3 className="mb-2">Title</h3>
-            <input 
-                type="text"
-                placeholder="Enter title of package"
-                className="search-bar mb-4"
-                onChange={updateTitle}
-                value={props.pkgState.title}
-                maxLength={70}
-            />
-            <h3 className="mb-2">
-                Package cost
-                <span className="text-side-text-gray">
-                    {` (£1 - £${MAX_SERVICE_PRICE})`}
-                </span>
-            </h3>
-            <div className="flex items-center search-bar mb-4">
-                <p className="select-none">£</p>
+            <div>
+                <h3 className="mb-2">Title</h3>
+                <input 
+                    type="text"
+                    placeholder="Enter title of package"
+                    className="search-bar mb-4"
+                    onChange={updateTitle}
+                    value={props.pkgState.title}
+                    maxLength={70}
+                />
+                <h3 className="mb-2">
+                    Package cost
+                    <span className="text-side-text-gray">
+                        {` (£1 - £${MAX_SERVICE_PRICE})`}
+                    </span>
+                </h3>
+                <div className="flex items-center search-bar mb-4">
+                    <p className="select-none">£</p>
+                    <input 
+                        type="text" 
+                        min={1} 
+                        max={2500} 
+                        value={props.pkgState.amount > 0 ? props.pkgState.amount : ""} 
+                        className="w-full h-full focus:outline-none 
+                        placeholder-search-text bg-transparent ml-3" 
+                        onChange={updatePackageAmount} 
+                    />
+                </div>
+                <h3 className="mb-2">
+                    Delivery time
+                    <span className="text-side-text-gray">
+                        {` (in days)`}
+                    </span>
+                </h3>
                 <input 
                     type="text" 
                     min={1} 
-                    max={2500} 
-                    value={props.pkgState.amount > 0 ? props.pkgState.amount : ""} 
-                    className="w-full h-full focus:outline-none 
-                    placeholder-search-text bg-transparent ml-3" 
-                    onChange={updatePackageAmount} 
+                    max={360} 
+                    placeholder={`Must be between 1 and ${MAX_SERVICE_DELIVERY_DAYS} days`}
+                    className="search-bar mb-4" 
+                    onChange={updateDeliveryTime} 
+                    value={props.pkgState.deliveryTime > 0 ? props.pkgState.deliveryTime : ""} 
                 />
+                <h3 className="mb-2">Amount of revisions</h3>
+                <ul className="items-center w-fit text-sm flex bg-hover-light-gray rounded-[8px] px-2 mb-4">
+                    {REVISIONS.map((times: string, index: number) => {
+                        return (
+                            <RevisionListItem
+                                curRevision={times} 
+                                updateRevision={updateRevision} 
+                                revisions={props.pkgState.revisions} 
+                                key={index}
+                            />
+                        );
+                    })}
+                </ul>
+                <h3 className="mb-2">
+                    Brief description of the package
+                </h3>
+                <textarea 
+                    placeholder="Write about the basic package here" 
+                    className="w-full search-bar mb-4" 
+                    rows={5} 
+                    maxLength={250} 
+                    onChange={updateDescription} 
+                    value={props.pkgState.description} 
+                />
+                <h3 className="mb-1">{`Features that come with your ${props.title.toLowerCase()}`}</h3>
+                <p className="text-side-text-gray mb-3">Features added:
+                    <span className={props.pkgState.features.length === MAX_SERVICE_FEATURES ? 'text-error-text' : 'text-light-green'}>
+                        {` ${props.pkgState.features.length} / ${MAX_SERVICE_FEATURES}`}
+                    </span>
+                </p>
+                <button className="btn-primary bg-main-black hover:bg-main-black-hover 
+                text-main-white w-[140px] px-3" onClick={addNewFeature}>
+                    Add Feature
+                </button>
+                <div className="flex flex-col gap-2 max-h-[200px] mt-5 overflow-y-scroll pr-[8px] rounded-[8px] overflow-visible">
+                    {props.pkgState.features.map((value, index) => {
+                        return (
+                            <input 
+                                type="text" 
+                                className="search-bar focus:outline-none" 
+                                value={value}
+                                placeholder="E.g. Video Thumbnail included"
+                                onChange={(e) => updateFeatureInput(index, e.target.value)} 
+                                key={index}
+                                maxLength={70}
+                            />
+                        );
+                    })}
+                </div>
             </div>
-            <h3 className="mb-2">
-                Delivery time
-                <span className="text-side-text-gray">
-                    {` (in days)`}
-                </span>
-            </h3>
-            <input 
-                type="text" 
-                min={1} 
-                max={360} 
-                placeholder={`Must be between 1 and ${MAX_SERVICE_DELIVERY_DAYS} days`}
-                className="search-bar mb-4" 
-                onChange={updateDeliveryTime} 
-                value={props.pkgState.deliveryTime > 0 ? props.pkgState.deliveryTime : ""} 
-            />
-            <h3 className="mb-2">Amount of revisions</h3>
-            <ul className="items-center w-fit text-sm flex bg-hover-light-gray rounded-[8px] px-2 mb-4">
-                {REVISIONS.map((times: string, index: number) => {
-                    return (
-                        <RevisionListItem
-                            curRevision={times} 
-                            updateRevision={updateRevision} 
-                            revisions={props.pkgState.revisions} 
-                            key={index}
-                        />
-                    );
-                })}
-            </ul>
-            <h3 className="mb-2">
-                Brief description of the package
-            </h3>
-            <textarea 
-                placeholder="Write about the basic package here" 
-                className="w-full search-bar mb-4" 
-                rows={5} 
-                maxLength={250} 
-                onChange={updateDescription} 
-                value={props.pkgState.description} 
-            />
-            <h3 className="mb-1">{`Features that come with your ${props.title.toLowerCase()}`}</h3>
-            <p className="text-side-text-gray mb-3">Features added:
-                <span className={props.pkgState.features.length === MAX_SERVICE_FEATURES ? 'text-error-text' : 'text-light-green'}>
-                    {` ${props.pkgState.features.length} / ${MAX_SERVICE_FEATURES}`}
-                </span>
-            </p>
-            <button className="btn-primary bg-main-black hover:bg-main-black-hover 
-            text-main-white w-[140px] px-3" onClick={addNewFeature}>
-                Add Feature
-            </button>
-            <div className="flex flex-col gap-2 max-h-[200px] mt-5 overflow-y-scroll pr-[8px] rounded-[8px] overflow-visible">
-                {props.pkgState.features.map((value, index) => {
-                    return (
-                        <input 
-                            type="text" 
-                            className="search-bar focus:outline-none" 
-                            value={value}
-                            placeholder="E.g. Video Thumbnail included"
-                            onChange={(e) => updateFeatureInput(index, e.target.value)} 
-                            key={index}
-                            maxLength={70}
-                        />
-                    );
-                })}
-            </div>
-            <div className="flex gap-3 justify-end mt-[35px]">
+            <div className="flex gap-3 justify-end">
                 {props.skip !== undefined && 
                 <button className="side-btn w-[110px]" onClick={skipPackage}>
                     Skip

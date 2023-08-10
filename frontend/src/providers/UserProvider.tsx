@@ -34,7 +34,7 @@ function UserProvider({ children }: { children?: React.ReactNode }) {
     const [socket, setSocket] = useState<Socket>();
 
     function raiseFailedConnection(err: Error): void {
-        setErrorMessage(`Failed to establish a new web socket connection: ${err.message}`);
+        setErrorMessage(`Failed to establish a new connection: ${err.message}`);
     }
     
     useEffect(() => {
@@ -49,7 +49,7 @@ function UserProvider({ children }: { children?: React.ReactNode }) {
             ws.on("connect", async () => {
                 try {
                     const resp = await axios.post<{ userData: IUser, message: string }>(`/api/users/jwt-auth`, { socketID: ws.id });
-                    ws.emit("update-user-status", resp.data.userData.username, resp.data.userData.status);
+                    ws.volatile.emit("update-user-status", resp.data.userData.username, resp.data.userData.status);
                     setUserData(resp.data.userData);
                 }
                 catch (_: any) {

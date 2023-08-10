@@ -8,25 +8,29 @@ interface FiltersPopUpProps {
     dispatch: React.Dispatch<Partial<FilterPostsProviderState>>,
     toggleFiltersPopUp: () => void,
     state: FilterPostsProviderState,
-    clearFilters: () => void
+    clearFilters: () => void,
+    modifiedFiltersCount: number,
+    setModifiedFiltersCount: React.Dispatch<React.SetStateAction<number>>,
+    getModifiedFiltersCount: () => number
 }
 
-function FiltersPopUp({ loading, searchHandler, dispatch, toggleFiltersPopUp, state, clearFilters }: FiltersPopUpProps) {
+function FiltersPopUp(props: FiltersPopUpProps) {
     function applyFilters(): void {
-        searchHandler();
-        toggleFiltersPopUp();
+        props.setModifiedFiltersCount(props.getModifiedFiltersCount());
+        props.searchHandler();
+        props.toggleFiltersPopUp();
     }
 
     return (
-        <PopUpWrapper title="Filters" setIsOpen={toggleFiltersPopUp} styles="h-[650px]">
+        <PopUpWrapper title="Filters" setIsOpen={props.toggleFiltersPopUp} styles="h-[650px]">
             <Filters 
-                loading={loading}
-                dispatch={dispatch}
-                state={state}
+                loading={props.loading}
+                dispatch={props.dispatch}
+                state={props.state}
             />
-            <div className="flex items-center justify-between mt-5">
+            <div className="flex items-center justify-between">
                 <span className="underline font-bold text-main-blue cursor-pointer" 
-                onClick={clearFilters}>
+                onClick={props.clearFilters}>
                     Clear all
                 </span>
                 <button className="main-btn w-fit" onClick={applyFilters}>

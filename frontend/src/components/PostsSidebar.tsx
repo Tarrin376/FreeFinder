@@ -28,7 +28,9 @@ function PostsSidebar({ loading, updatePostServicePopUp, searchHandler, dispatch
             </button>
             {userContext.userData.seller &&
             <>
-                <h2 className="text-[20px] mb-[22px]">Your experience</h2>
+                <h2 className="text-[18px] mb-[22px]">
+                    Your experience
+                </h2>
                 <SellerExperience
                     level={userContext.userData.seller.sellerLevel.name}
                     nextLevel={nextLevel}
@@ -36,7 +38,7 @@ function PostsSidebar({ loading, updatePostServicePopUp, searchHandler, dispatch
                     nextLevelXP={nextLevelXP}
                 />
             </>}
-            <h2 className="text-[20px] mb-[22px]">
+            <h2 className="text-[18px] mb-[22px]">
                 Filters
                 <span className="text-[15px] underline text-main-blue ml-2 cursor-pointer font-bold" 
                 onClick={clearFilters}>

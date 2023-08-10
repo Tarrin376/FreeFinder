@@ -10,6 +10,7 @@ import { MAX_PROFILE_PIC_BYTES } from "@freefinder/shared/dist/constants";
 import { fetchUpdatedUser } from "src/utils/fetchUpdatedUser";
 import { getAPIErrorMessage } from "src/utils/getAPIErrorMessage";
 import { AxiosError } from "axios";
+import DropdownElement from "./DropdownElement";
 
 interface ChangeProfilePictureProps {
     loading: boolean,
@@ -95,21 +96,22 @@ function ChangeProfilePicture({ loading, updateLoading }: ChangeProfilePicturePr
             hover:bg-main-white-hover border border-light-border-gray btn-primary py-[3px] px-2 h-fit 
             cursor-pointer rounded-[6px]" onClick={() => setProfileDropdown(true)}>
                 <img src={EditIcon} alt="edit" className="w-4 h-4" />
-                <p className="text-main-black text-[13px]">Edit</p>
+                <p className="text-main-black text-sm">Edit</p>
             </button>
             {profileDropdown && 
             <OutsideClickHandler onOutsideClick={() => setProfileDropdown(false)}>
                 <div className="absolute bg-main-white left-[20px] mt-[17px] flex flex-col rounded-[6px] 
                 border border-light-border-gray shadow-profile-page-container overflow-hidden">
-                    <p className="text-[13px] cursor-pointer hover:bg-main-white-hover 
-                    profile-menu-element pt-[6px] pb-[6px]" onClick={triggerUpload}>
-                        {`Upload (max ${MAX_PROFILE_PIC_BYTES / 1000000}MB)`}
-                    </p>
-                    <p className="text-[13px] cursor-pointer hover:bg-main-white-hover 
-                    profile-menu-element pt-[6px] pb-[6px] border-t border-t-light-border-gray"
-                    onClick={removePhoto}>
-                        Remove
-                    </p>
+                    <DropdownElement 
+                        action={triggerUpload} 
+                        text={`Upload (max ${MAX_PROFILE_PIC_BYTES / 1000000}MB)`} 
+                        styles="!text-sm" 
+                    />
+                    <DropdownElement 
+                        action={removePhoto} 
+                        text="Remove"
+                        styles="!text-sm" 
+                    />
                     <input 
                         type='file' 
                         ref={inputFileRef} 

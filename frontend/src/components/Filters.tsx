@@ -16,7 +16,7 @@ interface FiltersProps {
 
 function Filters({ loading, dispatch, state }: FiltersProps) {
     return (
-        <>
+        <div>
             <div className="flex items-center justify-between gap-3 pb-5 mb-5 min-[1561px]:hidden border-b border-light-border-gray">
                 <Price
                     value={state.min} 
@@ -69,7 +69,7 @@ function Filters({ loading, dispatch, state }: FiltersProps) {
                 extraFilters={state.extraFilters}
                 updateExtraFilters={(extraFilters: string[]) => dispatch({ extraFilters: extraFilters })}
             />     
-        </>
+        </div>
     )
 }
 

@@ -53,7 +53,7 @@ function CreateReview({ postID, sellerID }: CreateReviewProps) {
                     setErrorMessage={setErrorMessage} 
                 />}
             </AnimatePresence>
-            <h1 className="text-[22px] text-main-white mb-3">Rate your experience</h1>
+            <h1 className="text-[20px] text-main-white mb-3">Rate your experience</h1>
             <h2 className="text-main-white mb-[2px]">Service as described</h2>
             <Rating 
                 rating={serviceAsDescribed} 

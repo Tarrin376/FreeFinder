@@ -38,7 +38,7 @@ function Sidebar(props: SidebarProps) {
                             colour="#9c9c9c"
                             action={props.toggleSidebar}
                         />
-                        <h1 className="text-main-blue text-[22px]">
+                        <h1 className="text-main-blue text-[20px]">
                             FreeFinder
                         </h1>
                     </div>

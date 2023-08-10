@@ -65,70 +65,72 @@ function ChangeSellerDetails({ setSellerProfilePopUp }: ChangeSellerDetailsProps
 
     return (
         <PopUpWrapper setIsOpen={setSellerProfilePopUp} title="Seller Profile">
-            <AnimatePresence>
-                {errorMessage !== "" && 
-                <ErrorPopUp 
-                    errorMessage={errorMessage} 
-                    setErrorMessage={setErrorMessage}
-                />}
-            </AnimatePresence>
-            <p className="mb-2">
-                Seller summary 
-                <span className="text-side-text-gray">
-                    {` (Max ${MAX_SELLER_SUMMARY_CHARS} characters)`}
-                </span>
-            </p>
-            <input 
-                className="search-bar mb-4" 
-                placeholder="Summarize your work"
-                onChange={(e) => setSummary(e.target.value)}
-                value={summary}
-                maxLength={MAX_SELLER_SUMMARY_CHARS}
-            />
-            <p className="mb-2">
-                Seller description 
-                <span className="text-side-text-gray">
-                    {` (Max ${MAX_SELLER_DESC_CHARS} characters)`}
-                </span>
-            </p>
-            <textarea
-                rows={7} 
-                className="search-bar mb-4" 
-                value={description}
-                maxLength={MAX_SELLER_DESC_CHARS} 
-                onChange={(e) => setDescription(e.target.value)}
-                placeholder="Describe what services you provide and what you can offer"
-            />
-            <p className="mb-2">Languages you speak</p>
-            <SearchLanguages 
-                updateLanguages={setSelectedLanguages}
-                selectedLanguages={selectedLanguages} 
-            />
-            <p className="mb-2 mt-4">Your skills</p>
-            <input 
-                type="text" 
-                className="search-bar"
-                placeholder="Enter a skill"
-                value={skill}
-                onChange={(e) => setSkill(e.target.value)}
-            />
-            {skill !== "" &&
-            <button className="side-btn w-fit !h-[30px] rounded-[6px] mt-4 text-[15px]" onClick={addSkill}>
-                Add skill
-            </button>}
-            <Options
-                options={skills}
-                removeOption={removeSkill}
-                styles="bg-very-light-pink"
-                textColour="#bf01ff"
-                wrapperStyles="mt-4"
-            />
+            <div>
+                <AnimatePresence>
+                    {errorMessage !== "" && 
+                    <ErrorPopUp 
+                        errorMessage={errorMessage} 
+                        setErrorMessage={setErrorMessage}
+                    />}
+                </AnimatePresence>
+                <p className="mb-2">
+                    Seller summary 
+                    <span className="text-side-text-gray">
+                        {` (Max ${MAX_SELLER_SUMMARY_CHARS} characters)`}
+                    </span>
+                </p>
+                <input 
+                    className="search-bar mb-4" 
+                    placeholder="Summarize your work"
+                    onChange={(e) => setSummary(e.target.value)}
+                    value={summary}
+                    maxLength={MAX_SELLER_SUMMARY_CHARS}
+                />
+                <p className="mb-2">
+                    Seller description 
+                    <span className="text-side-text-gray">
+                        {` (Max ${MAX_SELLER_DESC_CHARS} characters)`}
+                    </span>
+                </p>
+                <textarea
+                    rows={7} 
+                    className="search-bar mb-4" 
+                    value={description}
+                    maxLength={MAX_SELLER_DESC_CHARS} 
+                    onChange={(e) => setDescription(e.target.value)}
+                    placeholder="Describe what services you provide and what you can offer"
+                />
+                <p className="mb-2">Languages you speak</p>
+                <SearchLanguages 
+                    updateLanguages={setSelectedLanguages}
+                    selectedLanguages={selectedLanguages} 
+                />
+                <p className="mb-2 mt-4">Your skills</p>
+                <input 
+                    type="text" 
+                    className="search-bar"
+                    placeholder="Enter a skill"
+                    value={skill}
+                    onChange={(e) => setSkill(e.target.value)}
+                />
+                {skill !== "" &&
+                <button className="side-btn w-fit !h-[30px] rounded-[6px] mt-4 text-[15px]" onClick={addSkill}>
+                    Add skill
+                </button>}
+                <Options
+                    options={skills}
+                    removeOption={removeSkill}
+                    styles="bg-very-light-pink"
+                    textColour="#bf01ff"
+                    wrapperStyles="mt-4"
+                />
+            </div>
             <Button
                 action={updateSellerDetails}
                 completedText="Seller profile updated"
                 defaultText="Update seller profile"
                 loadingText="Updating seller profile"
-                styles={`main-btn mt-[35px] ${selectedLanguages.length === 0 ? "invalid-button" : ""}`}
+                styles={`main-btn ${selectedLanguages.length === 0 ? "invalid-button" : ""}`}
                 textStyles="text-main-white"
                 setErrorMessage={setErrorMessage}
                 whenComplete={closeSellerProfilePopUp}

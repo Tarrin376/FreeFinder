@@ -43,50 +43,52 @@ function Sellers({ search, url, setSellersPopUp, savedSellers, option }: Sellers
 
     return (
         <PopUpWrapper title={getTitle()} setIsOpen={setSellersPopUp} styles="max-w-[640px]">
-            <AnimatePresence>
-                {sellers.errorMessage !== "" &&
-                <ErrorPopUp
-                    errorMessage={sellers.errorMessage}
-                    setErrorMessage={sellers.setErrorMessage}
-                />}
-            </AnimatePresence>
-            <div ref={pageRef} className="overflow-y-scroll pr-[8px] max-h-[640px] flex flex-col gap-4">
-                {sellers.data.map((seller: SellerData, index: number) => {
-                    return (
-                        <Seller
-                            navigateToProfile={() => navigateToProfile(seller.sellerID)}
-                            profilePicURL={seller.user.profilePicURL}
-                            username={seller.user.username}
-                            searchQuery={search}
-                            sellerLevel={seller.sellerLevel.name}
-                            summary={seller.summary}
-                            country={seller.user.country}
-                            sellerID={seller.sellerID}
-                            canRemove={option === SellerOptions.REMOVE ? {
-                                count: sellers.count,
-                                deletingSeller: deletingSeller,
-                                setDeletingSeller: setDeletingSeller
-                            } : undefined}
-                            profilePicSize={62}
-                            key={index}
-                            option={option}
-                            hideSaveMessage={true}
-                        />
-                    )
-                })}
-                {sellers.loading && new Array(limit).fill(0).map((_, index: number) => {
-                    return (
-                        <SellerSkeleton 
-                            size={62}
-                            key={index}
-                        />
-                    )
-                })}
-                <PaginationScrollInfo 
-                    data={sellers} 
-                    page={page.value}
-                    styles="mt-2 mb-2"
-                />
+            <div>
+                <AnimatePresence>
+                    {sellers.errorMessage !== "" &&
+                    <ErrorPopUp
+                        errorMessage={sellers.errorMessage}
+                        setErrorMessage={sellers.setErrorMessage}
+                    />}
+                </AnimatePresence>
+                <div ref={pageRef} className="overflow-y-scroll pr-[8px] max-h-[640px] flex flex-col gap-4">
+                    {sellers.data.map((seller: SellerData, index: number) => {
+                        return (
+                            <Seller
+                                navigateToProfile={() => navigateToProfile(seller.sellerID)}
+                                profilePicURL={seller.user.profilePicURL}
+                                username={seller.user.username}
+                                searchQuery={search}
+                                sellerLevel={seller.sellerLevel.name}
+                                summary={seller.summary}
+                                country={seller.user.country}
+                                sellerID={seller.sellerID}
+                                canRemove={option === SellerOptions.REMOVE ? {
+                                    count: sellers.count,
+                                    deletingSeller: deletingSeller,
+                                    setDeletingSeller: setDeletingSeller
+                                } : undefined}
+                                profilePicSize={62}
+                                key={index}
+                                option={option}
+                                hideSaveMessage={true}
+                            />
+                        )
+                    })}
+                    {sellers.loading && new Array(limit).fill(0).map((_, index: number) => {
+                        return (
+                            <SellerSkeleton 
+                                size={62}
+                                key={index}
+                            />
+                        )
+                    })}
+                    <PaginationScrollInfo 
+                        data={sellers} 
+                        page={page.value}
+                        styles="mt-2 mb-2"
+                    />
+                </div>
             </div>
         </PopUpWrapper>
     )

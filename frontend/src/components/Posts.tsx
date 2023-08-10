@@ -28,12 +28,12 @@ function Posts({ noResultsFoundTitle, posts, loading, count, canRemove, title }:
 
     return (
         <PageWrapper styles="!min-h-[calc(100vh-180px)] max-w-[1430px]">
-            {title && <h1 className="text-[20px] mb-6">{title}</h1>}
+            {title && <h1 className="text-[18px] mb-5">{title}</h1>}
             {loading ? 
-            <h1 className="text-side-text-gray text-[17px] mb-5">
+            <h1 className="text-side-text-gray mb-5">
                 Finding services...
             </h1> :
-            <h1 className="text-side-text-gray text-[17px] mb-5">
+            <h1 className="text-side-text-gray mb-5">
                 {`${loading ? "Loading results for" : `${count.current}
                 ${count.current === 1 ? " result" : " results"} found`}`}
             </h1>}

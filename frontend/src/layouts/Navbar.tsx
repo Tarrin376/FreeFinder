@@ -20,6 +20,7 @@ import axios from "axios";
 import OnlineStatus from '../components/OnlineStatus';
 import NavDropdown from '../components/NavDropdown';
 import { NavElement } from '../types/NavElement';
+import { UserStatus } from 'src/enums/UserStatus';
 
 function Navbar() {
     const [signUp, setSignUp] = useState<boolean>(false);
@@ -59,6 +60,7 @@ function Navbar() {
     async function logout(): Promise<void> {
         try {
             await axios.delete<{ message: string }>(`/api/users/session`);
+            userContext.socket?.volatile.emit("update-user-status", userContext.userData.username, UserStatus.OFFLINE);
             userContext.setUserData(INITIAL_STATE.userData);
         }
         catch (_: any) {
@@ -108,7 +110,7 @@ function Navbar() {
                         action={toggleSidebar}
                     />}
                     {(windowSize >= 440 || userContext.userData.username === "") &&
-                    <li className="text-main-blue text-[22px] cursor-pointer mr-8" 
+                    <li className="text-main-blue text-[20px] cursor-pointer mr-8" 
                     onClick={() => resetSelectedElement(`/`)}>
                         FreeFinder
                     </li>}

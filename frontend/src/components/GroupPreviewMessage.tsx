@@ -92,8 +92,10 @@ function GroupPreviewMessage({ group, selectedGroup, action }: GroupPreviewMessa
                             </div>
                         </div>}
                         {unreadMessages > 0 ?
-                        <div className="bg-error-text rounded-full w-fit px-2 h-[20px] flex items-center justify-center">
-                            <span className="text-xs text-main-white">{unreadMessages}</span>
+                        <div className="bg-error-text rounded-full w-fit px-[7px] h-[20px] flex items-center justify-center">
+                            <span className="text-xs text-main-white">
+                                {unreadMessages}
+                            </span>
                         </div> : 
                         lastMessage && lastMessage.from.username === userContext.userData.username &&
                         <MessageSent sendingMessage={false} />}

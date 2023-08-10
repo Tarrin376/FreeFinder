@@ -119,7 +119,7 @@ function SellerProfileView() {
                 </div>
                 {sellerDetails.posts.length > 0 &&
                 <>
-                    <h2 className="text-[20px] mb-5">
+                    <h2 className="text-[18px] mb-5">
                         {`${sellerDetails.user.username}${sellerDetails.user.username[sellerDetails.user.username.length - 1] === 's' ? 
                         "'" : "'s"} available services`}
                     </h2>

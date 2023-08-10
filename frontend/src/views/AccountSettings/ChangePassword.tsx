@@ -46,7 +46,7 @@ function ChangePassword() {
 
     return (
         <>
-            <h1 className="text-[20px]">Password</h1>
+            <h1 className="text-[18px]">Password</h1>
             <p className="text-side-text-gray mt-1 pb-4 border-b border-b-nav-search-gray">
                 Please enter your current password to change your password
             </p>

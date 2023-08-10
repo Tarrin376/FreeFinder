@@ -52,44 +52,46 @@ function RequestOrder({ curPkg, postID, seller, workType, setRequestOrderPopUp }
 
     return (
         <PopUpWrapper title="Request an order" setIsOpen={setRequestOrderPopUp}>
-            {errorMessage !== "" && 
-            <ErrorMessage 
-                message={errorMessage} 
-                setErrorMessage={setErrorMessage} 
-                title="Unable to request order"
-            />}
-            <KeyPair
-                itemKey="Service ID"
-                itemValue={postID}
-                styles="mb-5"
-                textSize={16}
-            />
-            <PackageOverview 
-                type={curPkg.type}
-                revisions={curPkg.revisions}
-                seller={seller}
-                workType={workType}
-                wrapperStyles="mb-5"
-            />
-            <h2 className="mb-3">Summary</h2>
-            <OrderSummary
-                subTotal={curPkg.amount}
-                total={curPkg.amount + curPkg.amount * SERVICE_FEE}
-                deliveryTime={curPkg.deliveryTime}
-            />
-            <CheckBox
-                labelName="terms"
-                text={`I understand that the transaction amount will be held by FreeFinder until the order request 
-                has expired (${VALID_DURATION_DAYS} days) or is accepted by the seller. If the delivery window is exceeded, I am permitted 
-                to cancel the order with or without notifying the seller.`}
-                styles="mt-5"
-                setChecked={setChecked}
-            />
+            <div>
+                {errorMessage !== "" && 
+                <ErrorMessage 
+                    message={errorMessage} 
+                    setErrorMessage={setErrorMessage} 
+                    title="Unable to request order"
+                />}
+                <KeyPair
+                    itemKey="Service ID"
+                    itemValue={postID}
+                    styles="mb-5"
+                    textSize={16}
+                />
+                <PackageOverview 
+                    type={curPkg.type}
+                    revisions={curPkg.revisions}
+                    seller={seller}
+                    workType={workType}
+                    wrapperStyles="mb-5"
+                />
+                <h2 className="mb-3">Summary</h2>
+                <OrderSummary
+                    subTotal={curPkg.amount}
+                    total={curPkg.amount + curPkg.amount * SERVICE_FEE}
+                    deliveryTime={curPkg.deliveryTime}
+                />
+                <CheckBox
+                    labelName="terms"
+                    text={`I understand that the transaction amount will be held by FreeFinder until the order request 
+                    has expired (${VALID_DURATION_DAYS} days) or is accepted by the seller. If the delivery window is exceeded, I am permitted 
+                    to cancel the order with or without notifying the seller.`}
+                    styles="mt-5"
+                    setChecked={setChecked}
+                />
+            </div>
             <Button
                 action={requestAnOrder}
                 defaultText="Request an order"
                 loadingText="Requesting an order"
-                styles={`main-btn mt-7 ${checked ? "" : "invalid-button"}`}
+                styles={`main-btn ${checked ? "" : "invalid-button"}`}
                 textStyles="text-main-white"
                 setErrorMessage={setErrorMessage}
                 loadingSvgSize={28}

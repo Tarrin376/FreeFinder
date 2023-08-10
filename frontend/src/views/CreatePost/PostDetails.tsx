@@ -121,126 +121,128 @@ function PostDetails({ dispatch, jobCategory, setErrorMessage, ...props }: PostD
 
     return (
         <PopUpWrapper setIsOpen={props.updatePostServicePopUp} title="Enter post details">
-            {props.errorMessage !== "" && 
-            <ErrorMessage 
-                message={props.errorMessage} 
-                title="Failed to complete action."
-                setErrorMessage={setErrorMessage}
-                styles="mb-6"
-            />}
-            {jobCategories.errorMessage !== "" &&
-            <ErrorPopUp
-                errorMessage={jobCategories.errorMessage}
-                setErrorMessage={jobCategories.setErrorMessage}
-            />}
-            {props.failedUploads.length > 0 && 
-            <p className="text-main-blue mb-6 underline cursor-pointer" onClick={toggleFailedUploads}>
-                {showFailedUploads ? "Hide all failed images" : "View all failed images"}
-            </p>}
-            {showFailedUploads && props.failedUploads.length > 0 && 
-            <FailedUploads
-                ignoreUpload={ignoreUpload}
-                retryFileUpload={retryFileUpload}
-                setErrorMessage={setErrorMessage}
-                failedUploads={props.failedUploads}
-            />}
-            <h3 className="mb-2 mt-6">
-                What category does your service fall under?
-            </h3>
-            <div className="search-bar mb-4">
-                <select className={`w-full cursor-pointer rounded-[8px] bg-main-white focus:outline-none 
-                ${jobCategories.categories.length === 0 ? "loading" : ""}`} 
-                value={jobCategory} onChange={(e) => dispatch({
-                    payload: { jobCategory: e.target.value }
-                })}>
-                    {jobCategories.categories.map((category: IJobCategory, index: number) => {
-                        return (
-                            <option key={index} value={category.name}>
-                                {category.name}
-                            </option>
-                        )
-                    })}
-                </select>
-            </div>
-            <h3 className="mb-2">Your type of work</h3>
-            <OutsideClickHandler onOutsideClick={() => setHideMatched(true)}>
-                <>
-                    <input 
-                        type="text" 
-                        className={`search-bar ${matchedWork.length > 0 && !hideMatched ? "!rounded-b-none" : ""} focus:!outline-none`}
-                        placeholder="Search for your type of work" 
-                        value={props.workType}
-                        onChange={(e) => searchHandler(e.target.value)}
-                        onFocus={() => setHideMatched(false)}
-                    />
-                    {matchedWork.length > 0 && !hideMatched &&
-                    <MatchedResults 
-                        search={props.workType}
-                        matchedResults={matchedWork}
-                        action={(value: string) => {
-                            dispatch({
-                                payload: { workType: value }
-                            });
-
-                            setHideMatched(true);
-                            searchHandler(value);
-                        }}
-                    />}
-                </>
-            </OutsideClickHandler>
-            <h3 className="mb-2 mt-4">Title</h3>
-            <input 
-                type="text" 
-                className="search-bar mb-4" 
-                value={props.title} 
-                maxLength={SERVICE_TITLE_LIMIT} 
-                placeholder="Enter title" 
-                onChange={(e) => dispatch({
-                    payload: { title: e.target.value }
-                })} 
-            />
-            <h3 className="mb-2">Write about section</h3>
-            <TextEditor
-                value={props.about}
-                limit={ABOUT_SERVICE_LIMIT}
-                setValue={(value) => dispatch({
-                    payload: { about: value }
-                })}
-            />
-            <div className="flex justify-end gap-3 mt-8">
-                <button className="side-btn w-[110px]" onClick={() => dispatch({ 
-                    payload: { section: Sections.BasicPackage }
-                })}>
-                    Back
-                </button>
-                {props.createdPost ?
-                <Button 
-                    action={deletePost}
-                    completedText="Post deleted"
-                    defaultText="Delete post"
-                    loadingText="Deleting post"
-                    styles="red-btn btn-primary"
-                    textStyles="text-error-text"
+            <div>
+                {props.errorMessage !== "" && 
+                <ErrorMessage 
+                    message={props.errorMessage} 
+                    title="Failed to complete action."
                     setErrorMessage={setErrorMessage}
-                    whenComplete={() => props.updatePostServicePopUp(false)}
-                    loadingSvgSize={24}
-                    loadingSvgColour="#F43C3C"
-                    keepErrorMessage={true}
-                /> :
-                <Button
-                    action={props.createPost}
-                    completedText="Post created"
-                    defaultText="Post service"
-                    loadingText="Creating post"
-                    styles={`min-w-[185px] w-fit ${!validInputs() ? "invalid-button" : "main-btn !h-[42px]"}`}
-                    textStyles="text-main-white"
-                    setErrorMessage={setErrorMessage}
-                    loadingSvgSize={24}
-                    keepErrorMessage={true}
-                    whenComplete={() => dispatch({
-                        payload: { createdPost: true }
-                    })}
+                    styles="mb-6"
                 />}
+                {jobCategories.errorMessage !== "" &&
+                <ErrorPopUp
+                    errorMessage={jobCategories.errorMessage}
+                    setErrorMessage={jobCategories.setErrorMessage}
+                />}
+                {props.failedUploads.length > 0 && 
+                <p className="text-main-blue mb-6 underline cursor-pointer" onClick={toggleFailedUploads}>
+                    {showFailedUploads ? "Hide all failed images" : "View all failed images"}
+                </p>}
+                {showFailedUploads && props.failedUploads.length > 0 && 
+                <FailedUploads
+                    ignoreUpload={ignoreUpload}
+                    retryFileUpload={retryFileUpload}
+                    setErrorMessage={setErrorMessage}
+                    failedUploads={props.failedUploads}
+                />}
+                <h3 className="mb-2 mt-6">
+                    What category does your service fall under?
+                </h3>
+                <div className="search-bar mb-4">
+                    <select className={`w-full cursor-pointer rounded-[8px] bg-main-white focus:outline-none 
+                    ${jobCategories.categories.length === 0 ? "loading" : ""}`} 
+                    value={jobCategory} onChange={(e) => dispatch({
+                        payload: { jobCategory: e.target.value }
+                    })}>
+                        {jobCategories.categories.map((category: IJobCategory, index: number) => {
+                            return (
+                                <option key={index} value={category.name}>
+                                    {category.name}
+                                </option>
+                            )
+                        })}
+                    </select>
+                </div>
+                <h3 className="mb-2">Your type of work</h3>
+                <OutsideClickHandler onOutsideClick={() => setHideMatched(true)}>
+                    <>
+                        <input 
+                            type="text" 
+                            className={`search-bar ${matchedWork.length > 0 && !hideMatched ? "!rounded-b-none" : ""} focus:!outline-none`}
+                            placeholder="Search for your type of work" 
+                            value={props.workType}
+                            onChange={(e) => searchHandler(e.target.value)}
+                            onFocus={() => setHideMatched(false)}
+                        />
+                        {matchedWork.length > 0 && !hideMatched &&
+                        <MatchedResults 
+                            search={props.workType}
+                            matchedResults={matchedWork}
+                            action={(value: string) => {
+                                dispatch({
+                                    payload: { workType: value }
+                                });
+
+                                setHideMatched(true);
+                                searchHandler(value);
+                            }}
+                        />}
+                    </>
+                </OutsideClickHandler>
+                <h3 className="mb-2 mt-4">Title</h3>
+                <input 
+                    type="text" 
+                    className="search-bar mb-4" 
+                    value={props.title} 
+                    maxLength={SERVICE_TITLE_LIMIT} 
+                    placeholder="Enter title" 
+                    onChange={(e) => dispatch({
+                        payload: { title: e.target.value }
+                    })} 
+                />
+                <h3 className="mb-2">Write about section</h3>
+                <TextEditor
+                    value={props.about}
+                    limit={ABOUT_SERVICE_LIMIT}
+                    setValue={(value) => dispatch({
+                        payload: { about: value }
+                    })}
+                />
+                <div className="flex justify-end gap-3 mt-8">
+                    <button className="side-btn w-[110px]" onClick={() => dispatch({ 
+                        payload: { section: Sections.BasicPackage }
+                    })}>
+                        Back
+                    </button>
+                    {props.createdPost ?
+                    <Button 
+                        action={deletePost}
+                        completedText="Post deleted"
+                        defaultText="Delete post"
+                        loadingText="Deleting post"
+                        styles="red-btn btn-primary"
+                        textStyles="text-error-text"
+                        setErrorMessage={setErrorMessage}
+                        whenComplete={() => props.updatePostServicePopUp(false)}
+                        loadingSvgSize={24}
+                        loadingSvgColour="#F43C3C"
+                        keepErrorMessage={true}
+                    /> :
+                    <Button
+                        action={props.createPost}
+                        completedText="Post created"
+                        defaultText="Post service"
+                        loadingText="Creating post"
+                        styles={`min-w-[185px] w-fit ${!validInputs() ? "invalid-button" : "main-btn !h-[42px]"}`}
+                        textStyles="text-main-white"
+                        setErrorMessage={setErrorMessage}
+                        loadingSvgSize={24}
+                        keepErrorMessage={true}
+                        whenComplete={() => dispatch({
+                            payload: { createdPost: true }
+                        })}
+                    />}
+                </div>
             </div>
         </PopUpWrapper>
     );

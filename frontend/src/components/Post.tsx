@@ -143,14 +143,14 @@ function Post({ postInfo, index, canRemove, count, styles }: PostProps) {
                     </div>
                 </div>
                 <p className="text-side-text-gray text-[15px]">{getTimePosted(postInfo.createdAt)}</p>
-                <div className="flex items-center mb-2 mt-[4px]">
-                    <p className="text-[14px] seller-level" style={sellerLevelTextStyles[postInfo.postedBy.sellerLevel.name]}>
+                <div className="mt-[4px] mb-[10px]">
+                    <span className="text-[14px] seller-level mr-2 inline-block" style={sellerLevelTextStyles[postInfo.postedBy.sellerLevel.name]}>
                         {postInfo.postedBy.sellerLevel.name}
-                    </p>
+                    </span>
                     {seconds < 60 * 60 * 24 && 
-                    <p className="bg-[#e6ebff] text-[#4E73F8] text-[14px] px-3 ml-[10px] rounded-[6px]">
+                    <span className="bg-[#e6ebff] text-[#4E73F8] inline-block text-[14px] px-3 rounded-[6px]">
                         New
-                    </p>}
+                    </span>}
                 </div>
                 <div className="pb-2 border-b border-b-light-border-gray h-[60px]">
                     <p className="text-[16px] link leading-6 overflow-hidden text-ellipsis line-clamp-2 !p-0" onClick={openPostView}>

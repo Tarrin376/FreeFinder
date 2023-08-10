@@ -111,12 +111,14 @@ io.on("connection", (socket) => {
         }
     });
 
-    socket.on("disconnect", async () => {
+    socket.on("disconnecting", async () => {
         try {
             await prisma.user.update({
                 where: { userID: socket.userData.userID },
                 data: { status: "OFFLINE" }
             });
+
+            io.emit("show-user-status", socket.userData.username, "OFFLINE");
         }
         catch (_) {
             // Ignore failure to update user's status and try again the next time they connect.

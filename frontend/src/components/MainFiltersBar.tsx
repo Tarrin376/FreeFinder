@@ -12,10 +12,11 @@ interface MainFiltersBarProps {
     state: FilterPostsProviderState,
     loading: boolean,
     searchHandler: () => void,
-    toggleFiltersPopUp: () => void
+    toggleFiltersPopUp: () => void,
+    modifiedFiltersCount: number
 }
 
-function MainFiltersBar({ dispatch, state, loading, searchHandler, toggleFiltersPopUp }: MainFiltersBarProps) {
+function MainFiltersBar({ dispatch, state, loading, searchHandler, toggleFiltersPopUp, modifiedFiltersCount }: MainFiltersBarProps) {
     const windowSize = useWindowSize();
 
     return (
@@ -66,12 +67,21 @@ function MainFiltersBar({ dispatch, state, loading, searchHandler, toggleFilters
             </div>
             {windowSize < 1180 &&
             <div className="h-full border-r border-light-border-gray px-[12.75px] flex items-center">
-                <button className="side-btn !h-[48px] w-[110px] flex items-center justify-center gap-[5px]" onClick={toggleFiltersPopUp}>
-                    <img src={FilterIcon} className="w-[15px] h-[15px]" alt="" />
-                    <span className="text-main-blue">
-                        Filters
-                    </span>
-                </button>
+                <div className="relative">
+                    <button className="side-btn !h-[48px] w-[110px] flex items-center justify-center gap-[5px]" onClick={toggleFiltersPopUp}>
+                        <img src={FilterIcon} className="w-[15px] h-[15px]" alt="" />
+                        <span className="text-main-blue">
+                            Filters
+                        </span>
+                    </button>
+                    {modifiedFiltersCount > 0 &&
+                    <div className="bg-main-blue rounded-full w-fit px-[7px] h-[20px] flex items-center 
+                    justify-center absolute top-[-6px] right-[-6px]">
+                        <span className="text-xs text-main-white">
+                            {modifiedFiltersCount}
+                        </span>
+                    </div>}
+                </div>
             </div>}
             <div className="pl-[22.5px]">
                 <button className={`btn-primary text-main-white bg-main-blue w-[160px] h-[48px] hover:bg-main-blue-hover

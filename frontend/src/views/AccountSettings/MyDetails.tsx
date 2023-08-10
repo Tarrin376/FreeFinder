@@ -39,7 +39,7 @@ function MyDetails() {
 
     return (
         <>
-            <h1 className="text-[20px]">My Details</h1>
+            <h1 className="text-[18px]">My Details</h1>
             <p className="text-side-text-gray mt-1 pb-4 border-b border-b-nav-search-gray mb-7">
                 Change your details
             </p>

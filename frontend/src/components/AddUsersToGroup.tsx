@@ -46,31 +46,33 @@ function AddUsersToGroup({ groupID, groupMembers, setToggleAddUsersPopUp }: AddU
 
     return (
         <PopUpWrapper setIsOpen={setToggleAddUsersPopUp} title="Add users to group">
-            {errorMessage !== "" &&
-            <ErrorMessage
-                message={errorMessage}
-                setErrorMessage={setErrorMessage}
-                title="Failed to add users to group."
-            />}
-            <AddPeople
-                groupMembers={groupMembers}
-                addedUsers={addedUsers}
-                setAddedUsers={setAddedUsers}
-            />
-            <Button
-                action={addUsersToGroup}
-                completedText="Users added to group"
-                defaultText="Add users to group"
-                loadingText="Adding users to group"
-                styles={`main-btn items-center justify-center gap-2 ${addedUsers.length === 0 ? "invalid-button" : ""} mt-7`}
-                textStyles="text-main-white"
-                setErrorMessage={setErrorMessage}
-                loadingSvgSize={28}
-                whenComplete={() => setToggleAddUsersPopUp(false)}
-                keepErrorMessage={true}
-            >
-                <img src={AddIcon} alt="" className="w-[16px] h-[16px]" />
-            </Button>
+            <div>
+                {errorMessage !== "" &&
+                <ErrorMessage
+                    message={errorMessage}
+                    setErrorMessage={setErrorMessage}
+                    title="Failed to add users to group."
+                />}
+                <AddPeople
+                    groupMembers={groupMembers}
+                    addedUsers={addedUsers}
+                    setAddedUsers={setAddedUsers}
+                />
+                <Button
+                    action={addUsersToGroup}
+                    completedText="Users added to group"
+                    defaultText="Add users to group"
+                    loadingText="Adding users to group"
+                    styles={`main-btn items-center justify-center gap-2 ${addedUsers.length === 0 ? "invalid-button" : ""} mt-7`}
+                    textStyles="text-main-white"
+                    setErrorMessage={setErrorMessage}
+                    loadingSvgSize={28}
+                    whenComplete={() => setToggleAddUsersPopUp(false)}
+                    keepErrorMessage={true}
+                >
+                    <img src={AddIcon} alt="" className="w-[16px] h-[16px]" />
+                </Button>
+            </div>
         </PopUpWrapper>
     )
 }

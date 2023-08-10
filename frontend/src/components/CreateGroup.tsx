@@ -66,61 +66,63 @@ function CreateGroup({ setCreateGroupPopUp, seller, initialServiceID }: CreateGr
 
     return (
         <PopUpWrapper setIsOpen={setCreateGroupPopUp} title="Create new message group">
-            {errorMessage !== "" && 
-            <ErrorMessage 
-                message={errorMessage} 
-                setErrorMessage={setErrorMessage} 
-                title="Uh oh! Something went wrong."
-            />}
-            <p className="mb-2">Service ID</p>
-            <input 
-                type="text" 
-                className="search-bar"
-                placeholder="Enter service ID"
-                value={serviceID}
-                onChange={updateServiceID}
-                disabled={initialServiceID !== undefined}
-            />
-            {findSellerBtn && serviceID !== "" &&
-            <Button
-                action={findSeller}
-                completedText="Found seller"
-                defaultText="Find seller"
-                loadingText="Finding seller"
-                styles="side-btn !h-[30px] rounded-[6px] mt-3"
-                textStyles="text-main-blue"
-                setErrorMessage={setErrorMessage}
-                loadingSvgSize={20}
-                loadingSvgColour="#4E73F8"
-                keepErrorMessage={true}
-            />}
-            <p className="mb-2 mt-4">Group Name</p>
-            <input 
-                type="text" 
-                className="search-bar mb-4"
-                placeholder="Enter group name"
-                value={groupName}
-                onChange={(e) => setGroupName(e.target.value)}
-                maxLength={30}
-            />
-            <AddPeople
-                addedUsers={addedUsers}
-                setAddedUsers={setAddedUsers}
-            />
-            <Button
-                action={createNewGroup}
-                completedText="Group created"
-                defaultText="Create new group"
-                loadingText="Creating group"
-                styles={`main-btn items-center justify-center gap-2 ${!validInputs() ? "invalid-button" : ""} mt-7`}
-                textStyles="text-main-white"
-                setErrorMessage={setErrorMessage}
-                loadingSvgSize={28}
-                whenComplete={() => setCreateGroupPopUp(false)}
-                keepErrorMessage={true}
-            >
-                <img src={AddIcon} alt="" className="w-[16px] h-[16px]" />
-            </Button>
+            <div>
+                {errorMessage !== "" && 
+                <ErrorMessage 
+                    message={errorMessage} 
+                    setErrorMessage={setErrorMessage} 
+                    title="Uh oh! Something went wrong."
+                />}
+                <p className="mb-2">Service ID</p>
+                <input 
+                    type="text" 
+                    className="search-bar"
+                    placeholder="Enter service ID"
+                    value={serviceID}
+                    onChange={updateServiceID}
+                    disabled={initialServiceID !== undefined}
+                />
+                {findSellerBtn && serviceID !== "" &&
+                <Button
+                    action={findSeller}
+                    completedText="Found seller"
+                    defaultText="Find seller"
+                    loadingText="Finding seller"
+                    styles="side-btn !h-[30px] rounded-[6px] mt-3"
+                    textStyles="text-main-blue"
+                    setErrorMessage={setErrorMessage}
+                    loadingSvgSize={20}
+                    loadingSvgColour="#4E73F8"
+                    keepErrorMessage={true}
+                />}
+                <p className="mb-2 mt-4">Group Name</p>
+                <input 
+                    type="text" 
+                    className="search-bar mb-4"
+                    placeholder="Enter group name"
+                    value={groupName}
+                    onChange={(e) => setGroupName(e.target.value)}
+                    maxLength={30}
+                />
+                <AddPeople
+                    addedUsers={addedUsers}
+                    setAddedUsers={setAddedUsers}
+                />
+                <Button
+                    action={createNewGroup}
+                    completedText="Group created"
+                    defaultText="Create new group"
+                    loadingText="Creating group"
+                    styles={`main-btn items-center justify-center gap-2 ${!validInputs() ? "invalid-button" : ""} mt-7`}
+                    textStyles="text-main-white"
+                    setErrorMessage={setErrorMessage}
+                    loadingSvgSize={28}
+                    whenComplete={() => setCreateGroupPopUp(false)}
+                    keepErrorMessage={true}
+                >
+                    <img src={AddIcon} alt="" className="w-[16px] h-[16px]" />
+                </Button>
+            </div>
         </PopUpWrapper>
     )
 }

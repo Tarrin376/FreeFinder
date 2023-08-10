@@ -25,7 +25,7 @@ export function useToggleAwayStatus(): void {
                         status: UserStatus.ONLINE 
                     });
                     
-                    userContext.socket?.emit("update-user-status", userContext.userData.username, UserStatus.ONLINE);
+                    userContext.socket?.volatile.emit("update-user-status", userContext.userData.username, UserStatus.ONLINE);
                     userContext.setUserData({ ...setToOnline.data.userData });
                 }
 
@@ -53,7 +53,7 @@ export function useToggleAwayStatus(): void {
                             status: UserStatus.AWAY 
                         });
                         
-                        userContext.socket?.emit("update-user-status", userContext.userData.username, UserStatus.AWAY);
+                        userContext.socket?.volatile.emit("update-user-status", userContext.userData.username, UserStatus.AWAY);
                         userContext.setUserData({ ...setToAway.data.userData });
                     }
                 }

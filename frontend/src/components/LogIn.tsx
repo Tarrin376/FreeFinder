@@ -6,6 +6,7 @@ import axios, { AxiosError } from "axios";
 import { IUser } from "../models/IUser";
 import { getAPIErrorMessage } from "../utils/getAPIErrorMessage";
 import Button from "./Button";
+import { UserStatus } from "src/enums/UserStatus";
 
 interface LogInProps {
     setLogIn: React.Dispatch<React.SetStateAction<boolean>>,
@@ -39,6 +40,7 @@ function LogIn({ setLogIn, setSignUp }: LogInProps) {
                 socketID: userContext.socket ? userContext.socket.id : undefined
             });
 
+            userContext.socket?.volatile.emit("update-user-status", resp.data.userData.username, UserStatus.ONLINE);
             userContext.setUserData({ ...resp.data.userData });
             closeLoginPopUp();
         }
@@ -50,44 +52,46 @@ function LogIn({ setLogIn, setSignUp }: LogInProps) {
 
     return (
         <PopUpWrapper setIsOpen={setLogIn} title="Welcome back!" styles="!max-w-[470px]">
-            <form>
-                <p className="mb-6 text-side-text-gray text-[16px]">Enter your details below</p>
-                {errorMessage !== "" && 
-                <ErrorMessage 
-                    message={errorMessage} 
-                    title="There was a problem signing in."
-                    setErrorMessage={setErrorMessage}
-                />}
-                <div className="flex gap-3 flex-col mb-8">
-                    <input 
-                        type="text" 
-                        placeholder="Your email or username" 
-                        className="search-bar" onChange={(e) => setUsernameOrEmail(e.target.value)} 
+            <div>
+                <form>
+                    <p className="mb-6 text-side-text-gray text-[16px]">Enter your details below</p>
+                    {errorMessage !== "" && 
+                    <ErrorMessage 
+                        message={errorMessage} 
+                        title="There was a problem signing in."
+                        setErrorMessage={setErrorMessage}
+                    />}
+                    <div className="flex gap-3 flex-col mb-8">
+                        <input 
+                            type="text" 
+                            placeholder="Your email or username" 
+                            className="search-bar" onChange={(e) => setUsernameOrEmail(e.target.value)} 
+                        />
+                        <input 
+                            type="password" 
+                            placeholder="Password" 
+                            autoComplete="password" 
+                            className="search-bar" onChange={(e) => setPassword(e.target.value)} 
+                        />
+                    </div>
+                    <Button
+                        action={logInAttempt}
+                        defaultText="Log In"
+                        loadingText="Logging in"
+                        styles="main-btn"
+                        textStyles="text-main-white"
+                        setErrorMessage={setErrorMessage}
+                        loadingSvgSize={28}
+                        type="submit"
+                        keepErrorMessage={true}
                     />
-                    <input 
-                        type="password" 
-                        placeholder="Password" 
-                        autoComplete="password" 
-                        className="search-bar" onChange={(e) => setPassword(e.target.value)} 
-                    />
-                </div>
-                <Button
-                    action={logInAttempt}
-                    defaultText="Log In"
-                    loadingText="Logging in"
-                    styles="main-btn"
-                    textStyles="text-main-white"
-                    setErrorMessage={setErrorMessage}
-                    loadingSvgSize={28}
-                    type="submit"
-                    keepErrorMessage={true}
-                />
-            </form>
-            <p className="mt-6 text-side-text-gray text-[15px]">Dont yet have an account? 
-                <span className="text-main-blue ml-2 cursor-pointer hover:text-main-black" onClick={openSignUp}>
-                    Sign Up
-                </span>
-            </p>
+                </form>
+                <p className="mt-6 text-side-text-gray text-[15px]">Dont yet have an account? 
+                    <span className="text-main-blue ml-2 cursor-pointer hover:text-main-black" onClick={openSignUp}>
+                        Sign Up
+                    </span>
+                </p>
+            </div>
         </PopUpWrapper>
     );
 }

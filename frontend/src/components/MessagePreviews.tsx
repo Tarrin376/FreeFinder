@@ -96,45 +96,49 @@ function MessagePreviews({ setMessagesPopUp }: MessagePreviewsProps) {
     }, [userContext.socket]);
 
     return (
-        <PopUpWrapper setIsOpen={setMessagesPopUp} title="Messages" styles="!max-w-[950px] h-[950px]">
-            <AnimatePresence>
-                {createGroupPopUp && 
-                <CreateGroup 
-                    setCreateGroupPopUp={setCreateGroupPopUp} 
-                />}
-            </AnimatePresence>
-            <div className="flex flex-1 overflow-y-hidden">
-                <div className="flex flex-col w-[290px] flex-shrink-0 border-r border-light-border-gray pr-3">
-                    <div className="flex items-center justify-between w-full mb-4">
-                        <div className="flex items-center gap-2">
-                            <img src={AllMessagesIcon} className="w-[16px] h-[16px]" alt="" />
-                            <p className="text-side-text-gray text-[15px]">{`All messages (${groupCount})`}</p>
+        <PopUpWrapper setIsOpen={setMessagesPopUp} title="Messages" styles="!max-w-[950px] !h-[950px]" firstChildStyles="!max-h-fit">
+            <div>
+                <AnimatePresence>
+                    {createGroupPopUp && 
+                    <CreateGroup 
+                        setCreateGroupPopUp={setCreateGroupPopUp} 
+                    />}
+                </AnimatePresence>
+                <div className="flex flex-1 overflow-y-hidden">
+                    <div className="flex flex-col w-[290px] flex-shrink-0 border-r border-light-border-gray pr-3">
+                        <div className="flex items-center justify-between w-full mb-4">
+                            <div className="flex items-center gap-2">
+                                <img src={AllMessagesIcon} className="w-[16px] h-[16px]" alt="" />
+                                <p className="text-side-text-gray text-[15px]">{`All messages (${groupCount})`}</p>
+                            </div>
+                            <img 
+                                src={AddGroupIcon} 
+                                className="w-[25px] h-[25px] cursor-pointer" 
+                                onClick={openCreateGroupPopUp}
+                                alt="" 
+                            />
                         </div>
-                        <img 
-                            src={AddGroupIcon} 
-                            className="w-[25px] h-[25px] cursor-pointer" 
-                            onClick={openCreateGroupPopUp}
-                            alt="" 
+                        <AllGroups
+                            allGroups={allGroups}
+                            pageRef={pageRef}
+                            group={group}
+                            setGroup={setGroup}
                         />
                     </div>
-                    <AllGroups
-                        allGroups={allGroups}
-                        pageRef={pageRef}
+                    {group ? 
+                    <Chat 
                         group={group}
+                        setAllGroups={setAllGroups}
+                        setGroupCount={setGroupCount}
                         setGroup={setGroup}
-                    />
+                        key={group.groupID} 
+                    /> : 
+                    <div className="flex-grow flex items-center justify-center">
+                        <p className="text-side-text-gray text-[18px]">
+                            You are in no group chats.
+                        </p>
+                    </div>}
                 </div>
-                {group ? 
-                <Chat 
-                    group={group}
-                    setAllGroups={setAllGroups}
-                    setGroupCount={setGroupCount}
-                    setGroup={setGroup}
-                    key={group.groupID} 
-                /> : 
-                <div className="flex-grow flex items-center justify-center">
-                    <p className="text-side-text-gray text-[18px]">You are in no group chats.</p>
-                </div>}
             </div>
         </PopUpWrapper>
     )

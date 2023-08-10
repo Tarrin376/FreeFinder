@@ -59,69 +59,71 @@ function AccountSettings({ setSettingsPopUp }: SettingsProps) {
 
     return (
         <PopUpWrapper setIsOpen={setSettingsPopUp} title="Account Settings">
-            {errorMessage !== "" && 
-            <ErrorMessage 
-                message={errorMessage} 
-                title="Unable to upload image"
-                setErrorMessage={setErrorMessage}
-            />}
-            <div className="flex gap-5">
-                <div className="relative w-fit h-fit">
-                    <ProfilePicAndStatus 
-                        profilePicURL={userContext.userData.profilePicURL} 
-                        username={userContext.userData.username}
-                        setErrorMessage={setErrorMessage} 
-                        loading={state.loading} 
-                        size={80}
-                    />
-                    {!state.loading &&
-                    <ChangeProfilePicture
-                        loading={state.loading}
-                        updateLoading={(loading) => dispatch({ loading: loading })}
-                    />}
+            <div>
+                {errorMessage !== "" && 
+                <ErrorMessage 
+                    message={errorMessage} 
+                    title="Unable to upload image"
+                    setErrorMessage={setErrorMessage}
+                />}
+                <div className="flex gap-5">
+                    <div className="relative w-fit h-fit">
+                        <ProfilePicAndStatus 
+                            profilePicURL={userContext.userData.profilePicURL} 
+                            username={userContext.userData.username}
+                            setErrorMessage={setErrorMessage} 
+                            loading={state.loading} 
+                            size={80}
+                        />
+                        {!state.loading &&
+                        <ChangeProfilePicture
+                            loading={state.loading}
+                            updateLoading={(loading) => dispatch({ loading: loading })}
+                        />}
+                    </div>
+                    <div>
+                        <p>
+                            Username: 
+                            <span className="text-main-blue">
+                                {` ${userContext.userData.username}`}
+                            </span>
+                        </p>
+                        <p>
+                            Country:
+                            <span className="text-main-blue">
+                                {` ${userContext.userData.country}`}
+                            </span>
+                        </p>
+                        <p>
+                            Email:
+                            <span className="text-main-blue">
+                                {` ${userContext.userData.email}`}
+                            </span>
+                        </p>
+                    </div>
                 </div>
-                <div>
-                    <p>
-                        Username: 
-                        <span className="text-main-blue">
-                            {` ${userContext.userData.username}`}
-                        </span>
-                    </p>
-                    <p>
-                        Country:
-                        <span className="text-main-blue">
-                            {` ${userContext.userData.country}`}
-                        </span>
-                    </p>
-                    <p>
-                        Email:
-                        <span className="text-main-blue">
-                            {` ${userContext.userData.email}`}
-                        </span>
-                    </p>
+                <div className="mt-8 mb-5">
+                    <ul className="border-b border-b-nav-search-gray flex justify-between mt-5 list-none">
+                        <li className={state.option === Options.details ? "settings-selection" : "settings-unselected"}
+                        onClick={() => updateOption(Options.details)}>
+                            My details
+                        </li>
+                        <li className={state.option === Options.profile ? "settings-selection" : "settings-unselected"}
+                        onClick={() => updateOption(Options.profile)}>
+                            Profile
+                        </li>
+                        <li className={state.option === Options.password ? "settings-selection" : "settings-unselected"}
+                        onClick={() => updateOption(Options.password)}>
+                            Password
+                        </li>
+                        <li className={state.option === Options.dangerZone ? "settings-selection" : "settings-unselected"}
+                        onClick={() => updateOption(Options.dangerZone)}>
+                            Danger Zone
+                        </li>
+                    </ul>
                 </div>
+                {getOption()}
             </div>
-            <div className="mt-5 mb-5">
-                <ul className="border-b border-b-nav-search-gray flex justify-between mt-5 list-none">
-                    <li className={state.option === Options.details ? "settings-selection" : "settings-unselected"}
-                    onClick={() => updateOption(Options.details)}>
-                        My details
-                    </li>
-                    <li className={state.option === Options.profile ? "settings-selection" : "settings-unselected"}
-                    onClick={() => updateOption(Options.profile)}>
-                        Profile
-                    </li>
-                    <li className={state.option === Options.password ? "settings-selection" : "settings-unselected"}
-                    onClick={() => updateOption(Options.password)}>
-                        Password
-                    </li>
-                    <li className={state.option === Options.dangerZone ? "settings-selection" : "settings-unselected"}
-                    onClick={() => updateOption(Options.dangerZone)}>
-                        Danger Zone
-                    </li>
-                </ul>
-            </div>
-            {getOption()}
         </PopUpWrapper>
     );
 }

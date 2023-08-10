@@ -9,7 +9,7 @@ interface DragAndDropProps {
 function DragAndDrop({ children, handleDrop, styles }: DragAndDropProps) {
     const [dragging, setDragging] = useState<boolean>(false);
     const counter = useRef<number>(0);
-    const defaultStyles = `w-full h-[260px] outline-2 outline-dashed rounded-[8px] relative`;
+    const defaultStyles = `w-full h-[260px] border-2 border-dashed rounded-[8px] relative`;
 
     function dragInHandler(e: React.DragEvent<HTMLDivElement>): void {
         e.preventDefault();
@@ -49,7 +49,7 @@ function DragAndDrop({ children, handleDrop, styles }: DragAndDropProps) {
     
     return (
         <div onDragEnter={dragInHandler} onDragLeave={dragOutHandler} onDragOver={dragHandler} onDrop={dropHandler}
-        className={`${defaultStyles} ${dragging ? 'outline-main-blue bg-[#f8f9ff]' : 'outline-light-gray'} ${styles}`}>
+        className={`${defaultStyles} ${dragging ? 'border-main-blue bg-[#f8f9ff]' : 'border-light-gray'} ${styles}`}>
             {children}
         </div>
     )

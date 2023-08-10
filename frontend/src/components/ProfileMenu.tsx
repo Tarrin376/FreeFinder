@@ -42,7 +42,7 @@ function ProfileMenu({ logout }: ProfileMenuProps) {
                 status: toggledStatus
             }, userContext.userData.username);
             
-            userContext.socket?.emit("update-user-status", userContext.userData.username, toggledStatus);
+            userContext.socket?.volatile.emit("update-user-status", userContext.userData.username, toggledStatus);
             userContext.setUserData(response.userData);
         } 
         catch (_: any) {
