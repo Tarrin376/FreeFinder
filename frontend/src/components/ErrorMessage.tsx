@@ -9,7 +9,7 @@ interface ErrorMessageProps {
 }
 
 function ErrorMessage({ message, title, styles, setErrorMessage }: ErrorMessageProps) {
-    const defaultStyles = `border-nav-search-gray border rounded-[11px] p-3 mb-6 flex items-center gap-3`;
+    const defaultStyles = `border-nav-search-gray border rounded-[11px] p-3 mb-5 flex items-center gap-3`;
 
     function closeErrorMessage(): void {
         setErrorMessage("");

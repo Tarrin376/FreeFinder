@@ -12,6 +12,7 @@ import { PackageTypes } from '../../enums/PackageTypes';
 import { Sections } from '../../enums/Sections';
 import { FileData } from '../../types/FileData';
 import { IUser } from '../../models/IUser';
+import { compressImage } from 'src/utils/compressImage';
 
 interface CreatePostProps {
     updatePostServicePopUp: (val: boolean) => void,
@@ -111,12 +112,12 @@ function CreatePost({ updatePostServicePopUp, resetState }: CreatePostProps) {
         }
     }
 
-    function constructPost(): PostData {
+    async function constructPost(): Promise<PostData> {
         const post: PostData = { 
             about: state.about.trim(), 
             title: state.title.trim(),
             workType: state.workType,
-            thumbnail: state.thumbnail?.base64Str,
+            thumbnail: await compressImage(state.thumbnail!.file),
             packages: [constructPackage(state.basic, PackageTypes.BASIC)]
         };
 
@@ -131,17 +132,19 @@ function CreatePost({ updatePostServicePopUp, resetState }: CreatePostProps) {
     }
 
     async function createPost(): Promise<string | undefined> {
-        const post: PostData = constructPost();
+        const post: PostData = await constructPost();
 
         try {
             const resp = await axios.post<{ postID: string, seller: IUser["seller"], message: string }>(`/api/posts`, post);
             postID.current = resp.data.postID;
-            const addedImages = await addPostImages(resp.data.postID);
 
-            if (addedImages) {
+            const failed = await addPostImages(resp.data.postID);
+            if (failed.length === 0) {
                 setErrorMessage("");
                 updatePostServicePopUp(false);
                 resetState();
+            } else {
+                setErrorMessage(`Unable to upload ${failed.length} ${failed.length === 1 ? "image" : "images"}.`);
             }
 
             if (!userContext.userData.seller) {
@@ -157,14 +160,15 @@ function CreatePost({ updatePostServicePopUp, resetState }: CreatePostProps) {
         }
     }
 
-    async function addPostImages(postID: string): Promise<boolean> {
-        const failed = [];
+    async function addPostImages(postID: string): Promise<FailedUpload[]> {
+        const failed: FailedUpload[] = [];
 
         for (let i = 0; i < state.uploadedImages.length; i++) {
             try {
                 if (state.uploadedImages[i] !== state.thumbnail) {
+                    const compressed = await compressImage(state.uploadedImages[i].file);
                     await axios.post<{ secure_url: string, message: string }>(`/api/posts/${postID}`, {
-                        image: state.uploadedImages[i].base64Str,
+                        image: compressed
                     });
                 }
             }
@@ -181,12 +185,7 @@ function CreatePost({ updatePostServicePopUp, resetState }: CreatePostProps) {
             payload: { failedUploads: failed }
         });
 
-        if (failed.length > 0) {
-            setErrorMessage(`Unable to upload ${failed.length} ${failed.length === 1 ? "image" : "images"}.`);
-            return false;
-        }
-
-        return true;
+        return failed;
     }
 
     switch (state.section) {

@@ -11,7 +11,7 @@ interface PopUpWrapperProps {
 
 function PopUpWrapper({ children, setIsOpen, title, styles, firstChildStyles } : PopUpWrapperProps) {
     const defaultStyles = `bg-main-white rounded-[12px] shadow-pop-up 
-    max-h-[95%] h-fit max-w-[520px] w-[95%] m-auto flex flex-col min-h-0 overflow-hidden`;
+    max-h-[95%] h-fit max-w-[520px] w-[95%] m-auto flex flex-col overflow-hidden`;
 
     function closePopUp(): void {
         setIsOpen(false);
@@ -33,7 +33,7 @@ function PopUpWrapper({ children, setIsOpen, title, styles, firstChildStyles } :
                         {title}
                     </h1>
                 </div>
-                <div className={`flex overflow-y-scroll flex-col p-5 ${firstChildStyles}`}>
+                <div className={`overflow-y-scroll flex flex-col h-full p-5 ${firstChildStyles}`}>
                     {Array.isArray(children) ? children[0] : children}
                 </div>
                 {Array.isArray(children) &&

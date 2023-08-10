@@ -128,7 +128,7 @@ function Chat({ group, setAllGroups, setGroupCount, setGroup }: ChatProps) {
                     setToggleAddUsersPopUp={setToggleAddUsersPopUp}
                 />}
             </AnimatePresence>
-            <div className="bg-transparent pl-4 w-full flex items-center justify-between flex-shrink-0 gap-5">
+            <div className="bg-transparent pl-5 w-full flex items-center justify-between flex-shrink-0 gap-5">
                 <div className="flex items-center gap-4 overflow-hidden">
                     <ProfilePicAndStatus
                         profilePicURL=""
@@ -219,11 +219,11 @@ function Chat({ group, setAllGroups, setGroupCount, setGroup }: ChatProps) {
                     </Actions>
                 </div>
             </div>
-            <div className="p-4 pr-0 bg-transparent border-b border-light-border-gray">
+            <div className="p-5 py-3 pr-0 bg-transparent border-b border-light-border-gray">
                 <ServiceID
                     postID={group.postID}
                     textSize={14}
-                    styles="w-full"
+                    styles="w-fit"
                 />
             </div>
             <ChatBox 

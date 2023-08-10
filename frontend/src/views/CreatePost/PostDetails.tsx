@@ -100,6 +100,7 @@ function PostDetails({ dispatch, jobCategory, setErrorMessage, ...props }: PostD
     async function deletePost(): Promise<string | undefined> {
         try {
             await axios.delete<{ message: string }>(`/api/posts/${props.postID}`);
+            props.updatePostServicePopUp(false);
         }
         catch (err: any) {
             const errorMessage = getAPIErrorMessage(err as AxiosError<{ message: string }>);
@@ -125,9 +126,8 @@ function PostDetails({ dispatch, jobCategory, setErrorMessage, ...props }: PostD
                 {props.errorMessage !== "" && 
                 <ErrorMessage 
                     message={props.errorMessage} 
-                    title="Failed to complete action."
+                    title="Failed to create post."
                     setErrorMessage={setErrorMessage}
-                    styles="mb-6"
                 />}
                 {jobCategories.errorMessage !== "" &&
                 <ErrorPopUp
@@ -135,7 +135,7 @@ function PostDetails({ dispatch, jobCategory, setErrorMessage, ...props }: PostD
                     setErrorMessage={jobCategories.setErrorMessage}
                 />}
                 {props.failedUploads.length > 0 && 
-                <p className="text-main-blue mb-6 underline cursor-pointer" onClick={toggleFailedUploads}>
+                <p className="text-main-blue mb-5 underline cursor-pointer font-bold" onClick={toggleFailedUploads}>
                     {showFailedUploads ? "Hide all failed images" : "View all failed images"}
                 </p>}
                 {showFailedUploads && props.failedUploads.length > 0 && 
@@ -145,7 +145,7 @@ function PostDetails({ dispatch, jobCategory, setErrorMessage, ...props }: PostD
                     setErrorMessage={setErrorMessage}
                     failedUploads={props.failedUploads}
                 />}
-                <h3 className="mb-2 mt-6">
+                <h3 className="mb-2">
                     What category does your service fall under?
                 </h3>
                 <div className="search-bar mb-4">
@@ -208,41 +208,39 @@ function PostDetails({ dispatch, jobCategory, setErrorMessage, ...props }: PostD
                         payload: { about: value }
                     })}
                 />
-                <div className="flex justify-end gap-3 mt-8">
-                    <button className="side-btn w-[110px]" onClick={() => dispatch({ 
-                        payload: { section: Sections.BasicPackage }
-                    })}>
-                        Back
-                    </button>
-                    {props.createdPost ?
-                    <Button 
-                        action={deletePost}
-                        completedText="Post deleted"
-                        defaultText="Delete post"
-                        loadingText="Deleting post"
-                        styles="red-btn btn-primary"
-                        textStyles="text-error-text"
-                        setErrorMessage={setErrorMessage}
-                        whenComplete={() => props.updatePostServicePopUp(false)}
-                        loadingSvgSize={24}
-                        loadingSvgColour="#F43C3C"
-                        keepErrorMessage={true}
-                    /> :
-                    <Button
-                        action={props.createPost}
-                        completedText="Post created"
-                        defaultText="Post service"
-                        loadingText="Creating post"
-                        styles={`min-w-[185px] w-fit ${!validInputs() ? "invalid-button" : "main-btn !h-[42px]"}`}
-                        textStyles="text-main-white"
-                        setErrorMessage={setErrorMessage}
-                        loadingSvgSize={24}
-                        keepErrorMessage={true}
-                        whenComplete={() => dispatch({
-                            payload: { createdPost: true }
-                        })}
-                    />}
-                </div>
+            </div>
+            <div className="flex justify-end gap-3">
+                <button className="side-btn w-[110px]" onClick={() => dispatch({ 
+                    payload: { section: Sections.BasicPackage }
+                })}>
+                    Back
+                </button>
+                {props.createdPost ?
+                <Button 
+                    action={deletePost}
+                    defaultText="Delete post"
+                    loadingText="Deleting post"
+                    styles="red-btn btn-primary"
+                    textStyles="text-error-text"
+                    setErrorMessage={setErrorMessage}
+                    loadingSvgSize={24}
+                    loadingSvgColour="#F43C3C"
+                    keepErrorMessage={true}
+                /> :
+                <Button
+                    action={props.createPost}
+                    completedText="Post created"
+                    defaultText="Post service"
+                    loadingText="Creating post"
+                    styles={`min-w-[185px] w-fit ${!validInputs() ? "invalid-button" : "main-btn !h-[42px]"}`}
+                    textStyles="text-main-white"
+                    setErrorMessage={setErrorMessage}
+                    loadingSvgSize={24}
+                    keepErrorMessage={true}
+                    whenComplete={() => dispatch({
+                        payload: { createdPost: true }
+                    })}
+                />}
             </div>
         </PopUpWrapper>
     );

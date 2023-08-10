@@ -2,7 +2,6 @@ import { useState, useContext } from 'react';
 import { IPost } from '../models/IPost';
 import ProfilePicAndStatus from './ProfilePicAndStatus';
 import { getTimePosted, getSeconds } from '../utils/getTimePosted';
-import { actionFinished } from '../utils/actionFinished';
 import axios, { AxiosError } from "axios";
 import { getAPIErrorMessage } from '../utils/getAPIErrorMessage';
 import Button from './Button';
@@ -16,6 +15,8 @@ import Save from './Save';
 import StarSvg from './StarSvg';
 import { CanRemovePost } from '../types/CanRemovePost';
 import { useUserStatus } from 'src/hooks/useUserStatus';
+import ErrorPopUp from './ErrorPopUp';
+import { AnimatePresence } from 'framer-motion';
 
 interface PostProps {
     postInfo: IPost,
@@ -31,24 +32,22 @@ function Post({ postInfo, index, canRemove, count, styles }: PostProps) {
     const seconds = getSeconds(postInfo.createdAt);
     const userContext = useContext(UserContext);
     const status = useUserStatus(postInfo.postedBy.user.username, postInfo.postedBy.user.status);
-
     const navigate = useNavigate();
 
-    async function savePost(saved: boolean): Promise<void> {
+    async function savePost(saved: boolean): Promise<boolean> {
         try {
-            if (errorMessage !== "") {
-                return;
-            }
-
             if (saved) {
                 await axios.delete<{ message: string }>(`/api/users/${userContext.userData.username}/saved/posts/${postInfo.postID}`);
             } else {
                 await axios.post<{ message: string }>(`/api/users/${userContext.userData.username}/saved/posts/${postInfo.postID}`);
             }
+
+            return true;
         }
         catch (err: any) {
             const errorMessage = getAPIErrorMessage(err as AxiosError<{ message: string }>);
-            actionFinished(setErrorMessage, errorMessage, "");
+            setErrorMessage(errorMessage);
+            return false;
         }
     }
 
@@ -59,20 +58,24 @@ function Post({ postInfo, index, canRemove, count, styles }: PostProps) {
         
         try {
             canRemove.setDeletingPost(true);
-            if (!canRemove.unsave) {
-                await axios.delete<{ message: string }>(`${canRemove.removeURL}/${postInfo.postID}`);
+            if (canRemove.unsave) {
+                const saved = await savePost(true);
+                if (!saved) {
+                    return;
+                }
             } else {
-                await savePost(true);
+                await axios.delete<{ message: string }>(`${canRemove.removeURL}/${postInfo.postID}`);
             }
             
             count.current -= 1;
-            canRemove.setDeletingPost(false);
             setHide(true);
         }
         catch (err: any) {
             const errorMessage = getAPIErrorMessage(err as AxiosError<{ message: string }>);
-            canRemove.setDeletingPost(false);
             return errorMessage;
+        }
+        finally {
+            canRemove.setDeletingPost(false);
         }
     }
 
@@ -92,11 +95,6 @@ function Post({ postInfo, index, canRemove, count, styles }: PostProps) {
         <motion.div className={`bg-transparent relative ${styles}`} 
         initial={{ opacity: 0 }} animate={{ opacity: 1 }} exit={{ opacity: 0 }} 
         transition={{ delay: 0.05 * (index % limit), duration: 0.2 }}>
-            <p className={`absolute rounded-t-[12px] z-20 px-7 py-[11px] w-[100%] 
-            transition-all whitespace-normal ease-out duration-100 text-center 
-            ${errorMessage !== "" ? 'bg-error-text text-main-white' : '!py-[0px]'}`}>
-                {errorMessage !== "" ? errorMessage : ""}
-            </p>
             {userContext.userData.username !== postInfo.postedBy.user.username &&
             userContext.userData.username !== "" &&
             <Save
@@ -109,9 +107,16 @@ function Post({ postInfo, index, canRemove, count, styles }: PostProps) {
             <Carousel
                 images={postInfo.images}
                 btnSize={35}
-                wrapperStyles="bg-very-light-gray border border-light-border-gray rounded-[12px] w-full pb-[75%]"
+                wrapperStyles="bg-very-light-gray border border-light-border-gray rounded-[12px] w-full pb-[66.66%]"
                 imageStyles="object-cover w-full h-full"
             />
+            <AnimatePresence>
+                {errorMessage !== "" && 
+                <ErrorPopUp 
+                    errorMessage={errorMessage} 
+                    setErrorMessage={setErrorMessage}
+                />}
+            </AnimatePresence>
             <div className="mt-3">
                 <div className="flex items-center mb-2 gap-3 relative">
                     <ProfilePicAndStatus 

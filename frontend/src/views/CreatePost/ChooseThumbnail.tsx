@@ -24,7 +24,7 @@ function ChooseThumbnail({ dispatch, updatePostServicePopUp, uploadedImages, thu
                 <div className="flex flex-col gap-5 flex-grow overflow-y-scroll pr-[8px] max-h-[570px]">
                     {uploadedImages.map((imageData: FileData, index: number) => {
                         return (
-                            <div className={`w-full min-h-[300px] h-[300px] bg-center bg-cover rounded-[8px] relative cursor-pointer 
+                            <div className={`w-full pb-[66.66%] bg-center bg-cover rounded-[8px] relative cursor-pointer 
                             border-2 border-light-border-gray hover:border-main-blue transition ease-out duration-200 
                             ${imageData === thumbnail ? "border-main-blue" : ""}`} 
                             style={{ backgroundImage: `url(${imageData.base64Str})` }} key={index} onClick={() => changeThumbnail(imageData)}>

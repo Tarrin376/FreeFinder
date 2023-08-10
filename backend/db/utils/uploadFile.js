@@ -30,15 +30,21 @@ async function uploader(newFile, url, max_bytes, type, prevFile) {
     try {
         const upload = await cloudinary.uploader.upload(newFile, { 
             public_id: url, 
-            resource_type: type || "image"
+            resource_type: type,
+            transformation: type === "image" ? {
+                quality: "auto"
+            } : undefined
         });
     
         if (upload.bytes > max_bytes) {
-            await deleteCloudinaryResource(url, type || "image");
+            await deleteCloudinaryResource(url, type);
             if (prevFile) {
                 await cloudinary.uploader.upload(`data:image/jpeg;base64,${prevFile.base64FileData}`, {
                     public_id: prevFile.result.public_id,
-                    resource_type: "image"
+                    resource_type: "image",
+                    transformation: {
+                        quality: "auto"
+                    }
                 });
             }
 

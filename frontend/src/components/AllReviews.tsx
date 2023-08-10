@@ -8,13 +8,12 @@ import Review from "./Review";
 interface AllReviewsProps {
     url: string,
     setAllReviewsPopUp: React.Dispatch<React.SetStateAction<boolean>>,
-    maxWidth: string,
-    maxHeight: string,
+    styles: string,
     title: string,
     hideActions?: boolean
 }
 
-function AllReviews({ url, setAllReviewsPopUp, maxWidth, maxHeight, title, hideActions }: AllReviewsProps) {
+function AllReviews({ url, setAllReviewsPopUp, styles, title, hideActions }: AllReviewsProps) {
     const [page, setPage] = useState<{ value: number }>({ value: 1 });
     const pageRef = useRef<HTMLDivElement>(null);
     const cursor = useRef<string>();
@@ -22,8 +21,8 @@ function AllReviews({ url, setAllReviewsPopUp, maxWidth, maxHeight, title, hideA
     const reviews = usePaginateData<{}, IReview, ReviewsResponse<IReview>>(pageRef, cursor, url, page, setPage, {});
 
     return (
-        <PopUpWrapper setIsOpen={setAllReviewsPopUp} title={title} styles={maxWidth}>
-            <div className={`overflow-y-scroll pr-[8px] ${maxHeight} flex gap-7 flex-col`} ref={pageRef}>
+        <PopUpWrapper setIsOpen={setAllReviewsPopUp} title={title} styles={styles}>
+            <div className={`flex gap-7 flex-col`} ref={pageRef}>
                 {reviews.data.map((review: IReview, index: number) => {
                     return (
                         <Review 

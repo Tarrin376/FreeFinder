@@ -63,8 +63,7 @@ function Review({ reviewInfo, hideActions }: ReviewProps) {
                 <AllReviews
                     url={`/api/sellers/${reviewInfo.sellerID}/reviews?reviewer=${reviewInfo.reviewer.username}&sort=date&include_old=true`}
                     setAllReviewsPopUp={setAllReviewsPopUp}
-                    maxWidth="max-w-[590px]"
-                    maxHeight="max-h-[620px]"
+                    styles="max-w-[590px] !h-[590px]"
                     title={`${reviewInfo.reviewer.username[reviewInfo.reviewer.username.length - 1] === 's' ? 
                     `${reviewInfo.reviewer.username}'` : `${reviewInfo.reviewer.username}'s`} review history`}
                     hideActions={true}

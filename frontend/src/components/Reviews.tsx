@@ -77,8 +77,7 @@ function Reviews({ url, reviewsRef }: ReviewsProps) {
                 <AllReviews 
                     url={url}
                     setAllReviewsPopUp={setAllReviewsPopUp}
-                    maxWidth="max-w-[720px]"
-                    maxHeight="max-h-[720px]"
+                    styles="max-w-[780px] !h-[780px]"
                     title={`Ratings and reviews (${reviews.count})`}
                 />}
                 {errorMessage !== "" && 

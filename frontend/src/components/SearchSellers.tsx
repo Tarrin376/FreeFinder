@@ -103,7 +103,7 @@ function SearchSellers({ styles, toggleSidebar }: SearchSellersProps) {
                         </p>}
                         {!errorMessage &&
                         <div className="flex flex-col gap-4">
-                            {!loading ? sellers.map((seller: SellerData, index: number) => {
+                            {!loading ? sellers.map((seller: SellerData) => {
                                 return (
                                     <Seller
                                         navigateToProfile={() => navigateToProfile(seller.sellerID)}
@@ -115,7 +115,7 @@ function SearchSellers({ styles, toggleSidebar }: SearchSellersProps) {
                                         country={seller.user.country}
                                         sellerID={seller.sellerID}
                                         profilePicSize={52}
-                                        key={index}
+                                        key={seller.sellerID}
                                     />
                                 )
                             }) : new Array(QUERY_LIMIT).fill(0).map((_, index: number) => {

@@ -77,52 +77,42 @@ export async function createPostHandler(req) {
                     },
                     workType: {
                         connect: { name: req.body.workType }
+                    },
+                    packages: {
+                        create: [
+                            {
+                                deliveryTime: req.body.packages[0].deliveryTime,
+                                revisions: req.body.packages[0].revisions,
+                                description: req.body.packages[0].description,
+                                features: req.body.packages[0].features,
+                                amount: req.body.packages[0].amount,
+                                type: req.body.packages[0].type,
+                                title: req.body.packages[0].title,
+                            },
+                            req.body.packages.length >= 2 ?
+                            {
+                                deliveryTime: req.body.packages[1].deliveryTime,
+                                revisions: req.body.packages[1].revisions,
+                                description: req.body.packages[1].description,
+                                features: req.body.packages[1].features,
+                                amount: req.body.packages[1].amount,
+                                type: req.body.packages[1].type,
+                                title: req.body.packages[1].title,
+                            } : undefined,
+                            req.body.packages.length === 3 ?
+                            {
+                                deliveryTime: req.body.packages[2].deliveryTime,
+                                revisions: req.body.packages[2].revisions,
+                                description: req.body.packages[2].description,
+                                features: req.body.packages[2].features,
+                                amount: req.body.packages[2].amount,
+                                type: req.body.packages[2].type,
+                                title: req.body.packages[2].title,
+                            } : undefined
+                        ]
                     }
                 }
             });
-            
-            await tx.package.create({
-                data: {
-                    postID: res.postID,
-                    deliveryTime: req.body.packages[0].deliveryTime,
-                    revisions: req.body.packages[0].revisions,
-                    description: req.body.packages[0].description,
-                    features: req.body.packages[0].features,
-                    amount: req.body.packages[0].amount,
-                    type: req.body.packages[0].type,
-                    title: req.body.packages[0].title,
-                }
-            });
-    
-            if (req.body.packages.length >= 2) {
-                await tx.package.create({
-                    data: {
-                        postID: res.postID,
-                        deliveryTime: req.body.packages[1].deliveryTime,
-                        revisions: req.body.packages[1].revisions,
-                        description: req.body.packages[1].description,
-                        features: req.body.packages[1].features,
-                        amount: req.body.packages[1].amount,
-                        type: req.body.packages[1].type,
-                        title: req.body.packages[1].title,
-                    }
-                });
-            }
-    
-            if (req.body.packages.length === 3) {
-                await tx.package.create({
-                    data: {
-                        postID: res.postID,
-                        deliveryTime: req.body.packages[2].deliveryTime,
-                        revisions: req.body.packages[2].revisions,
-                        description: req.body.packages[2].description,
-                        features: req.body.packages[2].features,
-                        amount: req.body.packages[2].amount,
-                        type: req.body.packages[2].type,
-                        title: req.body.packages[2].title,
-                    }
-                });
-            }
 
             const uuid = uuidv4();
             const result = await uploadFile(req.body.thumbnail, `FreeFinder/PostImages/${res.postID}/${uuid}`, MAX_FILE_BYTES, "image");
@@ -140,8 +130,7 @@ export async function createPostHandler(req) {
                 seller: seller
             };
         }, {
-            maxWait: 5000,
-            timeout: 20000
+            timeout: 10000
         });
     }
     catch (err) {
@@ -167,12 +156,17 @@ export async function deleteImageHandler(req) {
             select: {
                 postedBy: {
                     select: { userID: true }
+                },
+                _count: {
+                    select: { images: true }
                 }
             }
         });
 
         if (req.userData.userID !== post.postedBy.userID) {
             throw new DBError("You are not authorized to delete this image.", 403);
+        } else if (post._count.images === 1) {
+            throw new DBError("You must have at least 1 image in your post.", 400);
         }
 
         return await prisma.$transaction(async (tx) => {
@@ -379,6 +373,8 @@ export async function updatePostHandler(req) {
                     }
                 })
             };
+        }, {
+            timeout: 10000
         });
     }
     catch (err) {
@@ -430,8 +426,9 @@ export async function deletePostHandler(postID, userID) {
             throw err;
         } else if (err instanceof Prisma.PrismaClientValidationError) {
             throw new DBError("Missing required fields or fields provided are invalid.", 400);
-        } else if (err instanceof Prisma.PrismaClientKnownRequestError && err.code === "P2225") {
-            throw new DBError("Post not found.", 404);
+        } else if (err instanceof Prisma.PrismaClientKnownRequestError) {
+            if (err.code === "P2225") throw new DBError("Post not found.", 404);
+            else throw new DBError("You must complete all remaining orders for this service.", 400);
         } else {
             throw new DBError("Something went wrong. Please try again later.", 500);
         }

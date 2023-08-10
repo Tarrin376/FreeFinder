@@ -1,7 +1,7 @@
 import { useState } from "react";
 
 interface SaveProps {
-    action: (checked: boolean) => Promise<string | undefined | void>,
+    action: (checked: boolean) => Promise<string | undefined | boolean | void>,
     svgSize: number,
     hoverText: string,
     styles?: string,
@@ -33,7 +33,7 @@ function Save({ action, svgSize, styles, hoverText, isSaved, hideSaveMessage }: 
                     onClick={handleClick}
                     viewBox="0 0 32 32" 
                     xmlns="http://www.w3.org/2000/svg"
-                    className={`block ${saved ? "fill-[#00ac0086]" : "fill-[#00000086]"} stroke-white stroke-2 cursor-pointer`}
+                    className={`block ${saved ? "fill-[#00d400b9]" : "fill-[#000000ab]"} stroke-white stroke-2 cursor-pointer`}
                     style={{ width: svgSize, height: svgSize, scale: loading ? '0.90' : '1' }}
                     aria-hidden="true" 
                     role="presentation" 

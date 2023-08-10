@@ -9,21 +9,21 @@ import { motion } from "framer-motion";
 import ErrorPopUp from "../../components/ErrorPopUp";
 import LoadingSvg from "../../components/LoadingSvg";
 import { PostViewState } from "./PostView";
+import { compressImage } from "src/utils/compressImage";
 
 interface PostImageProps {
     images: IPostImage[],
     index: number,
     isOwner: boolean,
-    removingImage: number,
     dispatch: React.Dispatch<Partial<PostViewState>>,
     action: () => void,
-    getImage: (ref: React.RefObject<HTMLInputElement>) => Promise<unknown | undefined>
 }
 
 function PostImage(props: PostImageProps) {
     const changeImageFileRef = useRef<HTMLInputElement>(null);
     const [errorMessage, setErrorMessage] = useState<string>("");
     const [updatingImage, setUpdatingImage] = useState<boolean>(false);
+    const [removingImage, setRemovingImage] = useState<boolean>(false);
     const location = useLocation();
 
     function triggerFileUpload(): void {
@@ -34,15 +34,15 @@ function PostImage(props: PostImageProps) {
 
     async function changeImage(): Promise<void> {
         try {
-            setUpdatingImage(true);
-
-            const image = await props.getImage(changeImageFileRef);
-            if (image === undefined) {
+            if (!changeImageFileRef.current || !changeImageFileRef.current.files) {
                 return;
             }
 
+            setUpdatingImage(true);
+            const compressedImage = await compressImage(changeImageFileRef.current.files[0]);
+
             const resp = await axios.put<{ post: PostPage, message: string }>(`/api${location.pathname}`, {
-                newImage: image,
+                newImage: compressedImage,
                 imageURL: props.images[props.index].url
             });
             
@@ -57,12 +57,8 @@ function PostImage(props: PostImageProps) {
     }
 
     async function removeImage(): Promise<void> {
-        if (props.removingImage !== -1) {
-            return;
-        }
-
         try {
-            props.dispatch({ removingImage: props.index });
+            setRemovingImage(true);
             const resp = await axios.delete<{ updatedPost: PostPage, message: string }>
             (`/api${location.pathname}/${props.images[props.index].cloudinaryID}`);
 
@@ -76,7 +72,7 @@ function PostImage(props: PostImageProps) {
             setErrorMessage(errorMessage);
         }
         finally {
-            props.dispatch({ removingImage: -1 });
+            setRemovingImage(false);
         }
     }
 
@@ -99,7 +95,7 @@ function PostImage(props: PostImageProps) {
                         key={props.index}
                     />
                     <AnimatePresence>
-                        {(updatingImage || props.removingImage === props.index) &&
+                        {(updatingImage || removingImage) &&
                         <motion.div className="w-full h-full rounded-[8px] flex items-center gap-2
                         justify-center bg-[#1d1d1db7] absolute top-0 left-0" initial={{ opacity: 0 }}
                         animate={{ opacity: 1 }} exit={{ opacity: 0 }} transition={{ duration: 0.2 }}>

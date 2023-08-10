@@ -21,7 +21,7 @@ function Messages({ messages, sendingMessage, groupMembers, seller, workType, gr
                 return (
                     <Message
                         message={message}
-                        key={index}
+                        key={message.messageID}
                         isLastMessage={index === 0}
                         sendingMessage={sendingMessage}
                         groupMembers={groupMembers}

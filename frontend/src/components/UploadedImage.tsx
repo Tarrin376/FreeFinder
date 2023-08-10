@@ -19,8 +19,8 @@ function UploadedImage({ file, children, description, error }: FileProps) {
                         {file.name}
                     </p>
                 </div>
-                <p className="text-side-text-gray text-sm">
-                    {error && <span className="text-error-text">Error: </span>}
+                <p className="text-side-text-gray text-[15px]">
+                    {error && <span className="text-error-text text-[15px]">Error: </span>}
                     {description}
                 </p>
             </div>

@@ -191,6 +191,7 @@ function Package(props: PackageProps) {
                 text-main-white w-[140px] px-3" onClick={addNewFeature}>
                     Add Feature
                 </button>
+                {props.pkgState.features.length > 0 &&
                 <div className="flex flex-col gap-2 max-h-[200px] mt-5 overflow-y-scroll pr-[8px] rounded-[8px] overflow-visible">
                     {props.pkgState.features.map((value, index) => {
                         return (
@@ -205,7 +206,7 @@ function Package(props: PackageProps) {
                             />
                         );
                     })}
-                </div>
+                </div>}
             </div>
             <div className="flex gap-3 justify-end">
                 {props.skip !== undefined && 

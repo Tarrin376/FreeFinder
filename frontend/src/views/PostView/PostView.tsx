@@ -17,16 +17,16 @@ import { ABOUT_SERVICE_LIMIT, SERVICE_TITLE_LIMIT } from "@freefinder/shared/dis
 import PostImage from "./PostImage";
 import ErrorPopUp from "../../components/ErrorPopUp";
 import { AnimatePresence } from "framer-motion";
-import { checkImageType } from "../../utils/checkImageType";
-import { parseFileBase64 } from "../../utils/parseFileBase64";
 import LoadingSvg from "../../components/LoadingSvg";
 import Reviews from "../../components/Reviews";
 import CreateReview from "../../components/CreateReview";
 import { scrollIntoView } from "../../utils/scrollIntoView";
 import StarSvg from "../../components/StarSvg";
 import ServiceID from "../../components/ServiceID";
-import { MAX_FILE_BYTES, MAX_SERVICE_IMAGE_UPLOADS } from "@freefinder/shared/dist/constants";
+import { MAX_SERVICE_IMAGE_UPLOADS } from "@freefinder/shared/dist/constants";
 import { useUserStatus } from "src/hooks/useUserStatus";
+import { compressImage } from "src/utils/compressImage";
+import { IPostImage } from "src/models/IPostImage";
 
 export type PostViewState = {
     about: string,
@@ -35,19 +35,17 @@ export type PostViewState = {
     titleToggle: boolean,
     postData: PostPage | undefined,
     index: number,
-    addingImage: boolean,
-    removingImage: number
+    addingImage: boolean
 }
 
-const INITIAL_STATE = {
+const INITIAL_STATE: PostViewState = {
     about: "",
     title: "",
     aboutToggle: false,
     titleToggle: false,
     postData: undefined,
     index: 0,
-    addingImage: false,
-    removingImage: -1
+    addingImage: false
 }
 
 function PostView() {
@@ -84,49 +82,19 @@ function PostView() {
         }
     }
 
-    async function getImage(ref: React.RefObject<HTMLInputElement>): Promise<unknown | undefined> {
-        try {
-            if (!ref.current || !ref.current.files) {
-                return;
-            }
-
-            const newImage = ref.current.files[0];
-            const valid = checkImageType(newImage, MAX_FILE_BYTES);
-
-            if (valid) {
-                try {
-                    const base64Str = await parseFileBase64(newImage);
-                    return base64Str;
-                }
-                catch (_: any) {
-                    setErrorMessage("Something went wrong. Please try again later.");
-                }
-            } else {
-                setErrorMessage(`Image format is unsupported or image size is over ${MAX_FILE_BYTES / 1000000}MB.`);
-            }
-        }
-        catch (err: any) {
-            const errorMessage = getAPIErrorMessage(err as AxiosError<{ message: string }>);
-            setErrorMessage(errorMessage);
-        }
-    }
-
     async function addImage(): Promise<void> {
         try {
-            if (!imagesRef.current) {
+            if (!imagesRef.current || !addImageFileRef.current || 
+                !addImageFileRef.current.files || !state.postData) {
                 return;
             }
 
             dispatch({ addingImage: true });
-            const image = await getImage(addImageFileRef);
-            
-            if (image === undefined || !state.postData) {
-                return;
-            }
+            const compressedImage = await compressImage(addImageFileRef.current.files[0]);
 
             const resp = await axios.post<{ updatedPost: PostPage, message: string }>
             (`/api${location.pathname}`, {
-                image: image,
+                image: compressedImage
             });
             
             dispatch({
@@ -211,7 +179,7 @@ function PostView() {
                     />}
                 </AnimatePresence>
                 <div className="flex gap-16">
-                    <div className="flex-grow">
+                    <div className="flex-grow min-w-0">
                         <div className="flex gap-3 items-center mb-3">
                             {isOwner &&
                             <p className="change" onClick={updateTitle}>
@@ -276,22 +244,20 @@ function PostView() {
                             images={state.postData.images}
                             btnSize={50}
                             wrapperStyles="bg-very-light-gray rounded-[12px] border 
-                            border-light-border-gray shadow-info-component h-[510px]"
+                            border-light-border-gray shadow-info-component pb-[56.25%]"
                             imageStyles="object-contain object-center"
                             startIndex={state.index}
                         />
                         <div className="mt-5 whitespace-nowrap overflow-x-scroll relative pb-5" ref={imagesRef}>
-                            {state.postData.images.map((_, index: number) => {
+                            {state.postData.images.map((image: IPostImage, index: number) => {
                                 return (
                                     <PostImage
                                         images={state.postData!.images}
                                         index={index}
                                         isOwner={isOwner}
-                                        removingImage={state.removingImage}
                                         dispatch={dispatch}
                                         action={() => dispatch({ index: index })}
-                                        getImage={getImage}
-                                        key={index}
+                                        key={image.url}
                                     />
                                 )
                             })}

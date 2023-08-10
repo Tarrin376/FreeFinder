@@ -41,11 +41,11 @@ function Posts({ noResultsFoundTitle, posts, loading, count, canRemove, title }:
             <PostsWrapper>
                 {posts.map((post: IPost, index: number) => {
                     return (
-                        <Post 
+                        <Post
                             postInfo={post} 
                             index={index}
                             canRemove={canRemove}
-                            key={index}
+                            key={post.postID}
                             count={count}
                         />
                     );

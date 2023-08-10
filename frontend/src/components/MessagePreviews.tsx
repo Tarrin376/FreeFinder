@@ -96,15 +96,15 @@ function MessagePreviews({ setMessagesPopUp }: MessagePreviewsProps) {
     }, [userContext.socket]);
 
     return (
-        <PopUpWrapper setIsOpen={setMessagesPopUp} title="Messages" styles="!max-w-[950px] !h-[950px]" firstChildStyles="!max-h-fit">
-            <div>
+        <PopUpWrapper setIsOpen={setMessagesPopUp} title="Messages" styles="!max-w-[950px] !h-[950px]">
+            <div className="flex-grow flex min-h-0">
                 <AnimatePresence>
                     {createGroupPopUp && 
                     <CreateGroup 
                         setCreateGroupPopUp={setCreateGroupPopUp} 
                     />}
                 </AnimatePresence>
-                <div className="flex flex-1 overflow-y-hidden">
+                <div className="flex flex-grow">
                     <div className="flex flex-col w-[290px] flex-shrink-0 border-r border-light-border-gray pr-3">
                         <div className="flex items-center justify-between w-full mb-4">
                             <div className="flex items-center gap-2">

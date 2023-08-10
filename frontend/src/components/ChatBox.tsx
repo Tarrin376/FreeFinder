@@ -261,12 +261,6 @@ function ChatBox({ seller, workType, groupID, groupMembers }: ChatBoxProps) {
         });
     }
 
-    const scrollToBottom = useCallback(() => {
-        if (inputRef.current) {
-            inputRef.current.scrollTop = inputRef.current.scrollHeight;
-        }
-    }, []);
-
     const showMessage = useCallback((message: IMessage, id: string, from: string, updateMessage: boolean) => {
         if (id === groupID && from !== userContext.userData.username) {
             addMessage(message, updateMessage);
@@ -274,8 +268,10 @@ function ChatBox({ seller, workType, groupID, groupMembers }: ChatBoxProps) {
     }, [groupID, addMessage, userContext.userData.username]);
 
     useEffect(() => {
-        scrollToBottom();
-    }, [state.newMessages, scrollToBottom]);
+        if (inputRef.current) {
+            inputRef.current.scrollTop = inputRef.current.scrollHeight;
+        }
+    }, [state.newMessages]);
 
     useEffect(() => {
         userContext.socket?.on("receive-message", showMessage);
@@ -289,7 +285,7 @@ function ChatBox({ seller, workType, groupID, groupMembers }: ChatBoxProps) {
     }, [messages.data]);
 
     return (
-        <>
+        <div className="flex-grow flex flex-col min-h-0">
             <AnimatePresence>
                 {toggleSupportedFormats && <SupportedFileFormats setToggleSupportedFormats={setToggleSupportedFormats} />}
                 {errorMessage !== "" &&
@@ -338,9 +334,7 @@ function ChatBox({ seller, workType, groupID, groupMembers }: ChatBoxProps) {
                     />}
                 </AnimatePresence>
                 <div className="mb-2">
-                    <Typing 
-                        usersTyping={usersTyping} 
-                    />
+                    <Typing usersTyping={usersTyping} />
                 </div>
                 <form className="search-bar w-full items-center" onSubmit={sendMessage}>
                     <input 
@@ -402,7 +396,7 @@ function ChatBox({ seller, workType, groupID, groupMembers }: ChatBoxProps) {
                     </div>
                 </form>
             </div>
-        </>
+        </div>
     )
 }
 

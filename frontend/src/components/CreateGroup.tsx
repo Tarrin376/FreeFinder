@@ -108,21 +108,21 @@ function CreateGroup({ setCreateGroupPopUp, seller, initialServiceID }: CreateGr
                     addedUsers={addedUsers}
                     setAddedUsers={setAddedUsers}
                 />
-                <Button
-                    action={createNewGroup}
-                    completedText="Group created"
-                    defaultText="Create new group"
-                    loadingText="Creating group"
-                    styles={`main-btn items-center justify-center gap-2 ${!validInputs() ? "invalid-button" : ""} mt-7`}
-                    textStyles="text-main-white"
-                    setErrorMessage={setErrorMessage}
-                    loadingSvgSize={28}
-                    whenComplete={() => setCreateGroupPopUp(false)}
-                    keepErrorMessage={true}
-                >
-                    <img src={AddIcon} alt="" className="w-[16px] h-[16px]" />
-                </Button>
             </div>
+            <Button
+                action={createNewGroup}
+                completedText="Group created"
+                defaultText="Create new group"
+                loadingText="Creating group"
+                styles={`main-btn items-center justify-center gap-2 ${!validInputs() ? "invalid-button" : ""}`}
+                textStyles="text-main-white"
+                setErrorMessage={setErrorMessage}
+                loadingSvgSize={28}
+                whenComplete={() => setCreateGroupPopUp(false)}
+                keepErrorMessage={true}
+            >
+                <img src={AddIcon} alt="" className="w-[16px] h-[16px]" />
+            </Button>
         </PopUpWrapper>
     )
 }

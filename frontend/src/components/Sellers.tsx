@@ -52,7 +52,7 @@ function Sellers({ search, url, setSellersPopUp, savedSellers, option }: Sellers
                     />}
                 </AnimatePresence>
                 <div ref={pageRef} className="overflow-y-scroll pr-[8px] max-h-[640px] flex flex-col gap-4">
-                    {sellers.data.map((seller: SellerData, index: number) => {
+                    {sellers.data.map((seller: SellerData) => {
                         return (
                             <Seller
                                 navigateToProfile={() => navigateToProfile(seller.sellerID)}
@@ -69,7 +69,7 @@ function Sellers({ search, url, setSellersPopUp, savedSellers, option }: Sellers
                                     setDeletingSeller: setDeletingSeller
                                 } : undefined}
                                 profilePicSize={62}
-                                key={index}
+                                key={seller.sellerID}
                                 option={option}
                                 hideSaveMessage={true}
                             />
