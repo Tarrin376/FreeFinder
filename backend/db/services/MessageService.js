@@ -54,7 +54,7 @@ export async function sendMessageHandler(req) {
         await checkUser(req.userData.userID, req.username);
 
         return await prisma.$transaction(async (tx) => {
-            const newMessage = await prisma.message.create({
+            const newMessage = await tx.message.create({
                 data: {
                     fromID: req.userData.userID,
                     groupID: req.groupID,
@@ -65,7 +65,7 @@ export async function sendMessageHandler(req) {
                 }
             });
     
-            await prisma.groupMember.updateMany({
+            await tx.groupMember.updateMany({
                 where: { groupID: req.groupID },
                 data: {
                     unreadMessages: {
@@ -80,7 +80,7 @@ export async function sendMessageHandler(req) {
             });
     
             for (const member of members) {
-                await prisma.user.update({
+                await tx.user.update({
                     where: { userID: member.userID },
                     data: {
                         unreadMessages: {

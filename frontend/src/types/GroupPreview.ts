@@ -16,6 +16,7 @@ export type GroupPreview = {
             profilePicURL: string,
             status: UserStatus,
             userID: string
-        }
+        },
+        unreadMessages: number
     }>
 };

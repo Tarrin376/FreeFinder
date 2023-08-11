@@ -29,8 +29,8 @@ function PopUpWrapper({ children, setIsOpen, title, styles, firstChildStyles } :
                             action={closePopUp}
                         />
                     </div>
-                    <h1 className="text-[18px] text-center">
-                        {title}
+                    <h1 className={`text-[18px] text-center ${title === "" ? "collapse" : ""}`}>
+                        {title || "placeholder"}
                     </h1>
                 </div>
                 <div className={`overflow-y-scroll flex flex-col h-full p-5 ${firstChildStyles}`}>

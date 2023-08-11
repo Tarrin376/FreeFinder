@@ -37,7 +37,8 @@ export const groupPreviewProperties = {
                     status: true,
                     userID: true
                 }
-            }
+            },
+            unreadMessages: true
         }
     },
     post: {

@@ -21,10 +21,8 @@ export async function authenticateUser(req, res) {
         req.userData = user;
         req.username = user.username;
 
-        const setOnline = await updateUserHandler(req);
-        req.userData = setOnline;
-
-        const sign = await cookieJwtSign(req, res);
+        const updatedUser = await updateUserHandler(req);
+        const sign = await cookieJwtSign(res, updatedUser);
         return sign;
     }
     catch (err) {
@@ -37,8 +35,9 @@ export async function jwtAuthenticateUser(req, res) {
         req.body = { status: "ONLINE", socketID: req.body.socketID };
         req.username = req.userData.username;
 
-        const setOnline = await updateUserHandler(req);
-        return res.json({ userData: setOnline });
+        const updatedUser = await updateUserHandler(req);
+        const sign = await cookieJwtSign(res, updatedUser);
+        return sign;
     }
     catch (err) {
         res.status(err.code).json({ message: err.message });
@@ -80,10 +79,8 @@ export async function searchUsers(req, res) {
 
 export async function updateUser(req, res) {
     try {
-        const updated = await updateUserHandler(req);
-        req.userData = updated;
-        
-        const sign = await cookieJwtSign(req, res);
+        const updatedUser = await updateUserHandler(req);
+        const sign = await cookieJwtSign(res, updatedUser);
         return sign;
     }
     catch (err) {

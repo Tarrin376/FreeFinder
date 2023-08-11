@@ -13,6 +13,7 @@ import AccountBalance from "./AccountBalance";
 import ChatIcon from "../assets/chat.png";
 import MessagePreviews from "./MessagePreviews";
 import DropdownElement from "./DropdownElement";
+import Count from "./Count";
 
 interface ProfileMenuProps {
     logout: () => Promise<void>
@@ -79,15 +80,22 @@ function ProfileMenu({ logout }: ProfileMenuProps) {
     }
 
     return (
-        <div className="flex gap-6 items-center z-30">
+        <div className="flex gap-7 items-center z-30">
             <AnimatePresence>
                 {settingsPopUp && <AccountSettings setSettingsPopUp={setSettingsPopUp} />}
                 {sellerProfilePopUp && <ChangeSellerDetails setSellerProfilePopUp={setSellerProfilePopUp} />}
                 {balancePopUp && <AccountBalance setBalancePopUp={setBalancePopUp} />}
                 {messagesPopUp && <MessagePreviews setMessagesPopUp={setMessagesPopUp} />}
             </AnimatePresence>
-            <div className="flex gap-3 items-center">
-                <img src={ChatIcon} className="w-[32px] h-[32px] cursor-pointer" alt="chat" onClick={viewMessages} />
+            <div className="flex gap-5 items-center">
+                <div className="w-fit h-fit relative cursor-pointer" onClick={viewMessages}>
+                    <img src={ChatIcon} className="w-[32px] h-[32px]" alt="chat" />
+                    {userContext.userData.unreadMessages > 0 && 
+                    <Count
+                        value={userContext.userData.unreadMessages}
+                        styles="absolute top-[-8px] right-[-5px]"
+                    />}
+                </div>
                 <div className="relative cursor-pointer">
                     <img src={NotificationIcon} className="w-[32px] h-[32px]" alt="notifications" />
                     <span className="absolute top-[2px] right-[3px] flex h-[12px] w-[12px]">

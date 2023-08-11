@@ -1,3 +1,4 @@
+import { cookieJwtSign } from "../middleware/cookieJwtSign.js";
 import { 
     getMessageGroupsHandler, 
     leaveMessageGroupHandler,
@@ -26,8 +27,9 @@ export async function leaveMessageGroup(req, res) {
 
 export async function clearUnreadMessages(req, res) {
     try {
-        await clearUnreadMessagesHandler(req);
-        res.json({ message: "success" });
+        const updatedUser = await clearUnreadMessagesHandler(req);
+        const sign = await cookieJwtSign(res, updatedUser);
+        return sign;
     }
     catch (err) {
         res.status(err.code).json({ message: err.message });

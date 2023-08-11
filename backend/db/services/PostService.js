@@ -60,8 +60,6 @@ export async function createPostHandler(req) {
 
         if (!req.body.title || req.body.title.length > SERVICE_TITLE_LIMIT) {
             throw new DBError(`Title must be between 1 and ${SERVICE_TITLE_LIMIT} characters long.`, 400);
-        } else if (!req.body.about || req.body.about.length > ABOUT_SERVICE_LIMIT) {
-            throw new DBError(`About section must be between 1 and ${ABOUT_SERVICE_LIMIT} characters long.`, 400);
         }
 
         const startingPrice = req.body.packages.reduce((acc, cur) => Math.min(cur.amount, acc), Infinity);
@@ -327,14 +325,16 @@ export async function updatePostHandler(req) {
             
                 if (!image) {
                     throw new DBError("Image not found.", 404);
-                }
-            
-                if (req.userData.userID !== image.post.postedBy.userID) {
+                } else if (req.userData.userID !== image.post.postedBy.userID) {
                     throw new DBError("You are not authorized to update this image.", 403);
                 }
                 
-                const uuid = uuidv4();
-                const result = await uploadFile(req.body.newImage, `FreeFinder/PostImages/${req.params.id}/${uuid}`, MAX_FILE_BYTES, "image");
+                const result = await uploadFile(
+                    req.body.newImage, 
+                    `FreeFinder/PostImages/${req.params.id}/${image.cloudinaryID}`, 
+                    MAX_FILE_BYTES, 
+                    "image"
+                );
 
                 await tx.postImage.update({ 
                     where: {
@@ -344,15 +344,9 @@ export async function updatePostHandler(req) {
                         }
                     },
                     data: {
-                        cloudinaryID: uuid,
                         url: result.secure_url
                     }
                 });
-
-                await deleteCloudinaryResource(
-                    `FreeFinder/PostImages/${req.params.id}/${image.cloudinaryID}`, 
-                    "image"
-                );
             }
 
             const updatedPost = await tx.post.update({ 

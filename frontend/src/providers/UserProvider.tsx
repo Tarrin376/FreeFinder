@@ -14,7 +14,8 @@ export const INITIAL_STATE: IUserContext = {
         email: "",
         status: UserStatus.ONLINE,
         userID: "",
-        seller: null
+        seller: null,
+        unreadMessages: 0
     },
     socket: undefined,
     setUserData: (_: IUser) => {}
@@ -69,8 +70,10 @@ function UserProvider({ children }: { children?: React.ReactNode }) {
         }
     }, [socket]);
 
+    console.log(userData);
+
     return (
-        <UserContext.Provider value={{userData, socket, setUserData}}>
+        <UserContext.Provider value={{ userData, socket, setUserData }}>
             <AnimatePresence>
                 {errorMessage !== "" &&
                 <ErrorPopUp

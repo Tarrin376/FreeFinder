@@ -1,7 +1,6 @@
 import OutsideClickHandler from "react-outside-click-handler";
 import EditIcon from "../assets/edit.png";
 import { useRef, useState, useContext } from "react";
-import { parseFileBase64 } from "../utils/parseFileBase64";
 import { checkImageType } from "../utils/checkImageType";
 import { UserContext } from "../providers/UserProvider";
 import ErrorPopUp from "./ErrorPopUp";
@@ -11,6 +10,7 @@ import { fetchUpdatedUser } from "src/utils/fetchUpdatedUser";
 import { getAPIErrorMessage } from "src/utils/getAPIErrorMessage";
 import { AxiosError } from "axios";
 import DropdownElement from "./DropdownElement";
+import { compressImage } from "src/utils/compressImage";
 
 interface ChangeProfilePictureProps {
     loading: boolean,
@@ -63,8 +63,8 @@ function ChangeProfilePicture({ loading, updateLoading }: ChangeProfilePicturePr
 
         if (valid) {
             try {
-                const base64Str = await parseFileBase64(profilePic);
-                updateProfilePic(base64Str);
+                const compressedImage = await compressImage(profilePic);
+                updateProfilePic(compressedImage);
             }
             catch (err: any) {
                 setErrorMessage("Something went wrong. Please try again later.");

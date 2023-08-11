@@ -8,6 +8,9 @@ import { IMessage } from "../models/IMessage";
 import { getTime } from "../utils/getTime";
 import MessageSent from "./MessageSent";
 import Tags from "./Tags";
+import axios from "axios";
+import { IUser } from "src/models/IUser";
+import Count from "./Count";
 
 interface GroupPreviewMessageProps {
     group: GroupPreview,
@@ -18,23 +21,40 @@ interface GroupPreviewMessageProps {
 function GroupPreviewMessage({ group, selectedGroup, action }: GroupPreviewMessageProps) {
     const userContext = useContext(UserContext);
     const [lastMessage, setLastMessage] = useState<IMessage>(group.lastMessage);
-    const [unreadMessages, setUnreadMessages] = useState<number>(0);
+
+    const [unreadMessages, setUnreadMessages] = useState<number>(group.members.find((member) => {
+        return member.user.username === userContext.userData.username
+    })!.unreadMessages);
+
     const usersTyping = useUsersTyping(group.groupID);
     const isOwnMessage = lastMessage && lastMessage.from.username === userContext.userData.username;
 
-    const showNewMessages = useCallback((message: IMessage, id: string): void => {
-        if (id === group.groupID) {
-            setLastMessage(message);
-            if (selectedGroup?.groupID !== group.groupID) {
-                setUnreadMessages((cur) => cur + 1);
-            }
-        }
-    }, [group.groupID, selectedGroup?.groupID]);
+    const clearUnreadMessages = useCallback(async (): Promise<void> => {
+        try {
+            const resp = await axios.delete<{ userData: IUser, message: string }>
+            (`/api/users/${userContext.userData.username}/message-groups/${group.groupID}/unreadMessages`);
 
-    function openGroupChat() {
-        setUnreadMessages(0);
-        action(group);
-    }
+            userContext.setUserData(resp.data.userData);
+            setUnreadMessages(0);
+        }
+        catch (_: any) {
+            // Ignore failure to clear unread messages and try again when the user re-enters the group chat.
+        }
+    }, [userContext, group.groupID]);
+
+    const showNewMessages = useCallback(async (message: IMessage, id: string): Promise<void> => {
+        if (id !== group.groupID) {
+            return;
+        }
+
+        setLastMessage(message);
+        if (selectedGroup?.groupID !== group.groupID) {
+            setUnreadMessages((cur) => cur + 1);
+            return;
+        } 
+        
+        await clearUnreadMessages();
+    }, [group.groupID, selectedGroup?.groupID, clearUnreadMessages]);
 
     useEffect(() => {
         userContext.socket?.on("receive-message", showNewMessages);
@@ -44,10 +64,18 @@ function GroupPreviewMessage({ group, selectedGroup, action }: GroupPreviewMessa
         }
     }, [userContext.socket, showNewMessages]);
 
+    useEffect(() => {
+        (async () => {
+            if (selectedGroup?.groupID === group.groupID && unreadMessages > 0) {
+                await clearUnreadMessages();
+            }
+        })();
+    }, [selectedGroup, group.groupID, clearUnreadMessages, unreadMessages]);
+
     return (
         <div className={`w-full flex items-center justify-between p-2 ${group.groupID === selectedGroup?.groupID ? 
         "bg-hover-light-gray" : "hover:bg-hover-light-gray"} rounded-[6px] cursor-pointer transition-all ease-out duration-100 
-        overflow-hidden flex-shrink-0`} onClick={openGroupChat}>
+        overflow-hidden flex-shrink-0`} onClick={() => action(group)}>
             <div className="flex items-center gap-3 overflow-hidden w-full">
                 <ProfilePicAndStatus
                     profilePicURL=""
@@ -91,12 +119,7 @@ function GroupPreviewMessage({ group, selectedGroup, action }: GroupPreviewMessa
                                 />}
                             </div>
                         </div>}
-                        {unreadMessages > 0 ?
-                        <div className="bg-error-text rounded-full w-fit px-[7px] h-[20px] flex items-center justify-center">
-                            <span className="text-xs text-main-white">
-                                {unreadMessages}
-                            </span>
-                        </div> : 
+                        {unreadMessages > 0 ? <Count value={unreadMessages} /> : 
                         lastMessage && lastMessage.from.username === userContext.userData.username &&
                         <MessageSent sendingMessage={false} />}
                     </div>

@@ -155,7 +155,7 @@ export async function updateUserHandler(req) {
             result = await uploadFile(req.body.profilePic, `FreeFinder/ProfilePictures/${req.userData.userID}`, MAX_PROFILE_PIC_BYTES, "image");
         }
 
-        const updated = await prisma.user.update({
+        const updatedUser = await prisma.user.update({
             select: { ...userProperties },
             where: { userID: req.userData.userID },
             data: { 
@@ -167,7 +167,7 @@ export async function updateUserHandler(req) {
             }
         });
         
-        return updated;
+        return updatedUser;
     }
     catch (err) {
         if (err instanceof DBError) {

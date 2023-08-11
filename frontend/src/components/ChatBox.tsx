@@ -168,6 +168,8 @@ function ChatBox({ seller, workType, groupID, groupMembers }: ChatBoxProps) {
                         uploadedFiles: []
                     });
                 });
+            } else {
+                setErrorMessage(`Failed to upload ${files.failed.length} ${files.failed.length === 1 ? "file" : "files"}.`);
             }
         }
         catch (err: any) {

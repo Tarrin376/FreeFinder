@@ -5,6 +5,7 @@ import { prisma } from '../index.js';
 import { getPaginatedData } from '../utils/getPaginatedData.js';
 import { groupPreviewProperties } from '../utils/groupPreviewProperties.js';
 import { formatGroup } from '../utils/formatGroup.js';
+import { userProperties } from '../utils/userProperties.js';
 
 export async function getMessageGroupsHandler(req) {
     try {
@@ -82,14 +83,39 @@ export async function leaveMessageGroupHandler(req) {
 export async function clearUnreadMessagesHandler(req) {
     try {
         await checkUser(req.userData.userID, req.username);
-        await prisma.groupMember.update({
-            data: { unreadMessages: 0 },
-            where: {
-                groupID_userID: {
-                    groupID: req.params.groupID,
-                    userID: req.userData.userID
+
+        return await prisma.$transaction(async (tx) => {
+            const groupMember = await tx.groupMember.findUnique({
+                select: { unreadMessages: true },
+                where: {
+                    groupID_userID: {
+                        groupID: req.params.groupID,
+                        userID: req.userData.userID
+                    }
                 }
-            }
+            });
+
+            await tx.groupMember.update({
+                data: { unreadMessages: 0 },
+                where: {
+                    groupID_userID: {
+                        groupID: req.params.groupID,
+                        userID: req.userData.userID
+                    }
+                }
+            });
+
+            const updatedUser = await tx.user.update({
+                select: { ...userProperties },
+                where: { userID: req.userData.userID },
+                data: {
+                    unreadMessages: {
+                        decrement: groupMember.unreadMessages
+                    }
+                }
+            });
+
+            return updatedUser;
         });
     }
     catch (err) {

@@ -25,5 +25,6 @@ export const userProperties = {
     profilePicURL: true,
     email: true,
     status: true,
-    userID: true
+    userID: true,
+    unreadMessages: true
 }

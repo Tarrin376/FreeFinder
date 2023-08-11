@@ -7,6 +7,7 @@ export interface IUser {
     email: string,
     status: UserStatus,
     userID: string,
+    unreadMessages: number,
     seller: {
         description: string,
         sellerID: string,
