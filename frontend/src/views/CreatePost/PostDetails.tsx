@@ -1,6 +1,6 @@
 import PopUpWrapper from "../../wrappers/PopUpWrapper";
 import ErrorMessage from "../../components/ErrorMessage";
-import { Sections } from "../../enums/Sections";
+import { CreatePostSections } from "../../enums/CreatePostSections";
 import { FailedUpload } from "../../types/FailedUploaded";
 import { useState, useEffect } from "react";
 import Button from "../../components/Button";
@@ -18,6 +18,7 @@ import ErrorPopUp from "../../components/ErrorPopUp";
 import { ABOUT_SERVICE_LIMIT, SERVICE_TITLE_LIMIT } from "@freefinder/shared/dist/constants";
 import { CreatePostReducerAction } from "./CreatePost";
 import FailedUploads from "./FailedUploads";
+import { compressImage } from "src/utils/compressImage";
 
 interface PostDetailsProps {
     dispatch: React.Dispatch<CreatePostReducerAction>,
@@ -77,9 +78,8 @@ function PostDetails({ dispatch, jobCategory, setErrorMessage, ...props }: PostD
 
     async function retryFileUpload(upload: FailedUpload): Promise<string | undefined> {
         try {
-            await axios.post<{ updatedPost: PostPage, message: string }>(`/api/posts/${props.postID}`, { 
-                image: upload.fileData.base64Str 
-            });
+            const compressedImage = await compressImage(upload.fileData.file);
+            await axios.post<{ updatedPost: PostPage, message: string }>(`/api/posts/${props.postID}`, { image: compressedImage });
         }
         catch (err: any) {
             const errorMessage = getAPIErrorMessage(err as AxiosError<{ message: string }>);
@@ -93,7 +93,11 @@ function PostDetails({ dispatch, jobCategory, setErrorMessage, ...props }: PostD
         }
 
         dispatch({
-            payload: { failedUploads: props.failedUploads.filter((x: FailedUpload) => x.fileData.base64Str !== upload.fileData.base64Str) }
+            payload: { 
+                failedUploads: props.failedUploads.filter((x: FailedUpload) => {
+                    return x.fileData.base64Str !== upload.fileData.base64Str
+                })
+            }
         });
     }
 
@@ -126,7 +130,7 @@ function PostDetails({ dispatch, jobCategory, setErrorMessage, ...props }: PostD
                 {props.errorMessage !== "" && 
                 <ErrorMessage 
                     message={props.errorMessage} 
-                    title="Failed to create post."
+                    title="Failed to create post"
                     setErrorMessage={setErrorMessage}
                 />}
                 {jobCategories.errorMessage !== "" &&
@@ -211,35 +215,37 @@ function PostDetails({ dispatch, jobCategory, setErrorMessage, ...props }: PostD
             </div>
             <div className="flex justify-end gap-3">
                 <button className="side-btn w-[110px]" onClick={() => dispatch({ 
-                    payload: { section: Sections.BasicPackage }
+                    payload: { section: CreatePostSections.BasicPackage }
                 })}>
                     Back
                 </button>
                 {props.createdPost ?
-                <Button 
-                    action={deletePost}
-                    defaultText="Delete post"
-                    loadingText="Deleting post"
-                    styles="red-btn btn-primary"
-                    textStyles="text-error-text"
-                    setErrorMessage={setErrorMessage}
-                    loadingSvgSize={24}
-                    loadingSvgColour="#F43C3C"
-                    keepErrorMessage={true}
-                /> :
+                <div className="flex gap-3">
+                    <Button 
+                        action={deletePost}
+                        defaultText="Delete post"
+                        loadingText="Deleting post"
+                        styles="red-btn btn-primary"
+                        textStyles="text-error-text"
+                        setErrorMessage={setErrorMessage}
+                        loadingSvgSize={24}
+                        loadingSvgColour="#F43C3C"
+                        keepErrorMessage={true}
+                    />
+                    <button className="w-[110px] main-btn !h-[42px]" onClick={() => props.updatePostServicePopUp(false)}>
+                        Finish
+                    </button>
+                </div> :
                 <Button
                     action={props.createPost}
                     completedText="Post created"
                     defaultText="Post service"
                     loadingText="Creating post"
-                    styles={`min-w-[185px] w-fit ${!validInputs() ? "invalid-button" : "main-btn !h-[42px]"}`}
+                    styles={`min-w-[185px] w-fit !h-[42px] ${!validInputs() ? "invalid-button" : "main-btn"}`}
                     textStyles="text-main-white"
                     setErrorMessage={setErrorMessage}
                     loadingSvgSize={24}
                     keepErrorMessage={true}
-                    whenComplete={() => dispatch({
-                        payload: { createdPost: true }
-                    })}
                 />}
             </div>
         </PopUpWrapper>

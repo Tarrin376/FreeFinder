@@ -33,16 +33,20 @@ function RequestOrder({ curPkg, postID, seller, workType, setRequestOrderPopUp }
         }
 
         try {
-            const resp = await axios.post<{ newMessage: IMessage, message: string }>
+            const resp = await axios.post<{ newMessage: IMessage, sockets: string[], message: string }>
             (`/api/users/${userContext.userData.username}/order-requests/${seller.userID}/${postID}/${curPkg.type}`);
 
-            userContext.socket?.emit(
-                "send-message", 
-                resp.data.newMessage, 
-                resp.data.newMessage.groupID, 
-                userContext.userData.username, 
-                false
-            );
+            for (const socket of resp.data.sockets) {
+                if (socket !== userContext.socket?.id) {
+                    userContext.socket?.emit(
+                        "send-message", 
+                        resp.data.newMessage, 
+                        resp.data.newMessage.groupID, 
+                        userContext.userData.username, 
+                        socket
+                    );
+                }
+            }
         }
         catch (err: any) {
             const errorMessage = getAPIErrorMessage(err as AxiosError<{ message: string }>);

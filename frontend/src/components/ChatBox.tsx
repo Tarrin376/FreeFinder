@@ -149,7 +149,7 @@ function ChatBox({ seller, workType, groupID, groupMembers }: ChatBoxProps) {
                 groupID: ""
             }, false);
 
-            const resp = await axios.post<{ newMessage: IMessage, message: string }>
+            const resp = await axios.post<{ newMessage: IMessage, sockets: string[], message: string }>
             (`/api/users/${userContext.userData.username}/message-groups/${groupID}/messages`, { 
                 message: message 
             });
@@ -161,12 +161,14 @@ function ChatBox({ seller, workType, groupID, groupMembers }: ChatBoxProps) {
                     files: files.succeeded
                 };
 
-                userContext.socket.emit("send-message", newMessage, groupID, userContext.userData.username, false, () => {
-                    dispatch({ 
-                        sendingMessage: false, 
-                        newMessages: [newMessage, ...state.newMessages],
-                        uploadedFiles: []
-                    });
+                for (const socket of resp.data.sockets) {
+                    userContext.socket.emit("send-message", newMessage, groupID, userContext.userData.username, socket);
+                }
+
+                dispatch({ 
+                    sendingMessage: false, 
+                    newMessages: [newMessage, ...state.newMessages],
+                    uploadedFiles: []
                 });
             } else {
                 setErrorMessage(`Failed to upload ${files.failed.length} ${files.failed.length === 1 ? "file" : "files"}.`);

@@ -1,4 +1,4 @@
-export enum Sections {
+export enum CreatePostSections {
     PostDetails,
     UploadFiles,
     ChooseThumbnail,

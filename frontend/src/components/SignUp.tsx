@@ -122,7 +122,7 @@ function SignUp({ setLogIn, setSignUp, setAccountCreated }: SignUpProps) {
                     {errorMessage !== "" && 
                     <ErrorMessage 
                         message={errorMessage} 
-                        title="Account creation failed."
+                        title="Account creation failed"
                         setErrorMessage={setErrorMessage}
                     />}
                     <div className="flex flex-col mb-8">
@@ -153,7 +153,8 @@ function SignUp({ setLogIn, setSignUp, setAccountCreated }: SignUpProps) {
                         <input 
                             type="text" 
                             placeholder="Create a username" 
-                            className="search-bar mt-3" 
+                            className="search-bar mt-3"
+                            value={state.username}
                             onChange={(e) => validateUsername(e)} 
                         />
                         {state.usernameErrorMessage !== "" && state.username !== "" && 

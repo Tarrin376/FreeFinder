@@ -12,14 +12,16 @@ import Chat from "./Chat";
 import AllGroups from "./AllGroups";
 
 interface MessagePreviewsProps {
-    setMessagesPopUp: React.Dispatch<React.SetStateAction<boolean>>
+    group: GroupPreview | undefined,
+    setGroup: React.Dispatch<React.SetStateAction<GroupPreview | undefined>>,
+    setMessagesPopUp: React.Dispatch<React.SetStateAction<boolean>>,
+    setGlobalUnreadMessages: React.Dispatch<React.SetStateAction<number>>
 }
 
-function MessagePreviews({ setMessagesPopUp }: MessagePreviewsProps) {
+function MessagePreviews({ setMessagesPopUp, group, setGroup, setGlobalUnreadMessages }: MessagePreviewsProps) {
     const userContext = useContext(UserContext);
     const [createGroupPopUp, setCreateGroupPopUp] = useState<boolean>(false);
     const [page, setPage] = useState<{ value: number }>({ value: 1 });
-    const [group, setGroup] = useState<GroupPreview>();
 
     const pageRef = useRef<HTMLDivElement>(null);
     const cursor = useRef<string>();
@@ -66,7 +68,7 @@ function MessagePreviews({ setMessagesPopUp }: MessagePreviewsProps) {
                 return group;
             }
         }));
-    }, [group?.groupID]);
+    }, [group?.groupID, setGroup]);
 
     useEffect(() => {
         setGroupCount(messageGroups.count.current);
@@ -77,7 +79,7 @@ function MessagePreviews({ setMessagesPopUp }: MessagePreviewsProps) {
         if (!group && allGroups.length > 0) {
             setGroup(allGroups[0]);
         }
-    }, [group, allGroups]);
+    }, [group, allGroups, setGroup]);
 
     useEffect(() => {
         userContext.socket?.on("new-group", showNewGroup);
@@ -92,8 +94,9 @@ function MessagePreviews({ setMessagesPopUp }: MessagePreviewsProps) {
     useEffect(() => {
         return () => {
             userContext.socket?.emit("leave-rooms");
+            setGroup(undefined);
         }
-    }, [userContext.socket]);
+    }, [userContext.socket, setGroup]);
 
     return (
         <PopUpWrapper setIsOpen={setMessagesPopUp} title="Messages" styles="!max-w-[950px] !h-[950px]">
@@ -123,6 +126,7 @@ function MessagePreviews({ setMessagesPopUp }: MessagePreviewsProps) {
                             pageRef={pageRef}
                             group={group}
                             setGroup={setGroup}
+                            setGlobalUnreadMessages={setGlobalUnreadMessages}
                         />
                     </div>
                     {group ? 

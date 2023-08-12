@@ -9,7 +9,7 @@ import { getAPIErrorMessage } from "../../utils/getAPIErrorMessage";
 import { FailedUpload } from '../../types/FailedUploaded';
 import { UserContext } from '../../providers/UserProvider';
 import { PackageTypes } from '../../enums/PackageTypes';
-import { Sections } from '../../enums/Sections';
+import { CreatePostSections } from '../../enums/CreatePostSections';
 import { FileData } from '../../types/FileData';
 import { IUser } from '../../models/IUser';
 import { compressImage } from 'src/utils/compressImage';
@@ -31,7 +31,7 @@ export type CreatePostState = {
     basic: PackageState,
     standard: PackageState,
     superior: PackageState,
-    section: Sections,
+    section: CreatePostSections,
     uploadedImages: FileData[],
     thumbnail: FileData | undefined,
     failedUploads: FailedUpload[],
@@ -72,7 +72,7 @@ const INITIAL_STATE: CreatePostState = {
     basic: { ...INITIAL_PACKAGE_STATE },
     standard: { ...INITIAL_PACKAGE_STATE },
     superior: { ...INITIAL_PACKAGE_STATE },
-    section: Sections.UploadFiles,
+    section: CreatePostSections.UploadFiles,
     uploadedImages: [],
     thumbnail: undefined,
     failedUploads: [],
@@ -144,7 +144,7 @@ function CreatePost({ updatePostServicePopUp, resetState }: CreatePostProps) {
                 updatePostServicePopUp(false);
                 resetState();
             } else {
-                setErrorMessage(`Unable to upload ${failed.length} ${failed.length === 1 ? "image" : "images"}.`);
+                return `Unable to upload ${failed.length} ${failed.length === 1 ? "image" : "images"}.`;
             }
 
             if (!userContext.userData.seller) {
@@ -157,6 +157,9 @@ function CreatePost({ updatePostServicePopUp, resetState }: CreatePostProps) {
         catch (err: any) {
             const errorMessage = getAPIErrorMessage(err as AxiosError<{ message: string }>);
             return errorMessage;
+        }
+        finally {
+            dispatch({ payload: { createdPost: true } });
         }
     }
 
@@ -189,7 +192,7 @@ function CreatePost({ updatePostServicePopUp, resetState }: CreatePostProps) {
     }
 
     switch (state.section) {
-        case Sections.UploadFiles:
+        case CreatePostSections.UploadFiles:
             return (
                 <UploadPostFiles 
                     dispatch={dispatch}
@@ -198,7 +201,7 @@ function CreatePost({ updatePostServicePopUp, resetState }: CreatePostProps) {
                     thumbnail={state.thumbnail}
                 />
             );
-        case Sections.ChooseThumbnail:
+        case CreatePostSections.ChooseThumbnail:
             return (
                 <ChooseThumbnail 
                     dispatch={dispatch}
@@ -207,41 +210,41 @@ function CreatePost({ updatePostServicePopUp, resetState }: CreatePostProps) {
                     thumbnail={state.thumbnail}
                 />
             );
-        case Sections.BasicPackage:
+        case CreatePostSections.BasicPackage:
             return (
                 <Package 
                     dispatch={dispatch}
                     updatePostServicePopUp={updatePostServicePopUp} 
-                    back={Sections.ChooseThumbnail} 
-                    next={Sections.StandardPackage} 
+                    back={CreatePostSections.ChooseThumbnail} 
+                    next={CreatePostSections.StandardPackage} 
                     title="Basic package"
                     pkgState={state.basic}
                     state={state}
                     packageType={PackageTypes.BASIC}
                 />
             );
-        case Sections.StandardPackage:
+        case CreatePostSections.StandardPackage:
             return (
                 <Package 
                     dispatch={dispatch}
                     updatePostServicePopUp={updatePostServicePopUp} 
-                    back={Sections.BasicPackage} 
-                    skip={Sections.PostDetails} 
-                    next={Sections.SuperiorPackage} 
+                    back={CreatePostSections.BasicPackage} 
+                    skip={CreatePostSections.PostDetails} 
+                    next={CreatePostSections.SuperiorPackage} 
                     title="Standard package"
                     pkgState={state.standard}
                     state={state}
                     packageType={PackageTypes.STANDARD}
                 />
             );
-        case Sections.SuperiorPackage:
+        case CreatePostSections.SuperiorPackage:
             return (
                 <Package 
                     dispatch={dispatch}
                     updatePostServicePopUp={updatePostServicePopUp}
-                    back={Sections.StandardPackage} 
-                    skip={Sections.PostDetails} 
-                    next={Sections.PostDetails} 
+                    back={CreatePostSections.StandardPackage} 
+                    skip={CreatePostSections.PostDetails} 
+                    next={CreatePostSections.PostDetails} 
                     title="Superior package"
                     pkgState={state.superior}
                     state={state}

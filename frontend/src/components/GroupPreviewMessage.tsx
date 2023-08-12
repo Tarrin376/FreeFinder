@@ -15,10 +15,11 @@ import Count from "./Count";
 interface GroupPreviewMessageProps {
     group: GroupPreview,
     selectedGroup: GroupPreview | undefined,
-    action: (group: GroupPreview) => void
+    action: (group: GroupPreview) => void,
+    setGlobalUnreadMessages: React.Dispatch<React.SetStateAction<number>>
 }
 
-function GroupPreviewMessage({ group, selectedGroup, action }: GroupPreviewMessageProps) {
+function GroupPreviewMessage({ group, selectedGroup, action, setGlobalUnreadMessages }: GroupPreviewMessageProps) {
     const userContext = useContext(UserContext);
     const [lastMessage, setLastMessage] = useState<IMessage>(group.lastMessage);
 
@@ -35,12 +36,13 @@ function GroupPreviewMessage({ group, selectedGroup, action }: GroupPreviewMessa
             (`/api/users/${userContext.userData.username}/message-groups/${group.groupID}/unreadMessages`);
 
             userContext.setUserData(resp.data.userData);
+            setGlobalUnreadMessages((cur) => cur - unreadMessages);
             setUnreadMessages(0);
         }
         catch (_: any) {
             // Ignore failure to clear unread messages and try again when the user re-enters the group chat.
         }
-    }, [userContext, group.groupID]);
+    }, [userContext, group.groupID, setGlobalUnreadMessages, unreadMessages]);
 
     const showNewMessages = useCallback(async (message: IMessage, id: string): Promise<void> => {
         if (id !== group.groupID) {

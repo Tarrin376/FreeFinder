@@ -14,7 +14,7 @@ interface AddPeopleProps {
     setAddedUsers: React.Dispatch<React.SetStateAction<FoundUsers>>,
 }
 
-const LIMIT = 2;
+const LIMIT = 1;
 
 function AddPeople({ groupMembers, addedUsers, setAddedUsers }: AddPeopleProps) {
     const [userSearch, setUserSearch] = useState<string>("");

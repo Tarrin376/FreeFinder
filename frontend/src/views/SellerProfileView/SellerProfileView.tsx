@@ -126,12 +126,12 @@ function SellerProfileView() {
                     <div className="overflow-x-scroll whitespace-nowrap pb-5">
                         {sellerDetails.posts.map((post: IPost, index: number) => {
                             return (
-                                <Post
-                                    postInfo={post}
-                                    index={index}
-                                    styles={`inline-block ${index > 0 ? "ml-5" : ""}`}
-                                    key={index}
-                                />
+                                <div className={`w-[299px] inline-block ${index > 0 ? "ml-5" : ""}`} key={post.postID}>
+                                    <Post
+                                        postInfo={post}
+                                        index={index}
+                                    />
+                                </div>
                             )
                         })}
                     </div>

@@ -8,26 +8,21 @@ import ChangePassword from "./ChangePassword";
 import DangerZone from "./DangerZone";
 import { UserContext } from "../../providers/UserProvider";
 import ChangeProfilePicture from "../../components/ChangeProfilePicture";
+import KeyPair from "src/components/KeyPair";
+import { AccountSections } from "src/enums/AccountSections";
 
 interface SettingsProps {
     setSettingsPopUp: React.Dispatch<React.SetStateAction<boolean>>,
 }
 
-enum Options {
-    details,
-    profile,
-    password,
-    dangerZone
-}
-
 export type AccountSettingsState = {
-    option: Options,
+    option: AccountSections,
     loading: boolean,
     profileDropdown: boolean
 }
 
 const INITIAL_STATE: AccountSettingsState = {
-    option: Options.details,
+    option: AccountSections.details,
     loading: false,
     profileDropdown: false
 }
@@ -40,17 +35,17 @@ function AccountSettings({ setSettingsPopUp }: SettingsProps) {
         return { ...state, ...payload };
     }, INITIAL_STATE);
 
-    function updateOption(next: Options): void {
+    function updateOption(next: AccountSections): void {
         dispatch({ option: next });
     }
 
     function getOption(): React.ReactElement<any> {
         switch (state.option) {
-            case Options.details:
+            case AccountSections.details:
                 return <MyDetails />
-            case Options.profile:
+            case AccountSections.profile:
                 return <UserProfile />
-            case Options.password:
+            case AccountSections.password:
                 return <ChangePassword />
             default:
                 return <DangerZone setSettingsPopUp={setSettingsPopUp} />
@@ -66,7 +61,7 @@ function AccountSettings({ setSettingsPopUp }: SettingsProps) {
                     title="Unable to upload image"
                     setErrorMessage={setErrorMessage}
                 />}
-                <div className="flex gap-5">
+                <div className="flex gap-5 items-center">
                     <div className="relative w-fit h-fit">
                         <ProfilePicAndStatus 
                             profilePicURL={userContext.userData.profilePicURL} 
@@ -81,43 +76,40 @@ function AccountSettings({ setSettingsPopUp }: SettingsProps) {
                             updateLoading={(loading) => dispatch({ loading: loading })}
                         />}
                     </div>
-                    <div>
-                        <p>
-                            Username: 
-                            <span className="text-main-blue">
-                                {` ${userContext.userData.username}`}
-                            </span>
-                        </p>
-                        <p>
-                            Country:
-                            <span className="text-main-blue">
-                                {` ${userContext.userData.country}`}
-                            </span>
-                        </p>
-                        <p>
-                            Email:
-                            <span className="text-main-blue">
-                                {` ${userContext.userData.email}`}
-                            </span>
-                        </p>
+                    <div className="overflow-hidden">
+                        <KeyPair
+                            itemKey="Username"
+                            itemValue={userContext.userData.username}
+                            textSize={15}
+                        />
+                        <KeyPair
+                            itemKey="Country"
+                            itemValue={userContext.userData.country}
+                            textSize={15}
+                        />
+                        <KeyPair
+                            itemKey="Email"
+                            itemValue={userContext.userData.email}
+                            textSize={15}
+                        />
                     </div>
                 </div>
                 <div className="mt-8 mb-5">
                     <ul className="border-b border-b-nav-search-gray flex justify-between mt-5 list-none">
-                        <li className={state.option === Options.details ? "settings-selection" : "settings-unselected"}
-                        onClick={() => updateOption(Options.details)}>
+                        <li className={state.option === AccountSections.details ? "settings-selection" : "settings-unselected"}
+                        onClick={() => updateOption(AccountSections.details)}>
                             My details
                         </li>
-                        <li className={state.option === Options.profile ? "settings-selection" : "settings-unselected"}
-                        onClick={() => updateOption(Options.profile)}>
+                        <li className={state.option === AccountSections.profile ? "settings-selection" : "settings-unselected"}
+                        onClick={() => updateOption(AccountSections.profile)}>
                             Profile
                         </li>
-                        <li className={state.option === Options.password ? "settings-selection" : "settings-unselected"}
-                        onClick={() => updateOption(Options.password)}>
+                        <li className={state.option === AccountSections.password ? "settings-selection" : "settings-unselected"}
+                        onClick={() => updateOption(AccountSections.password)}>
                             Password
                         </li>
-                        <li className={state.option === Options.dangerZone ? "settings-selection" : "settings-unselected"}
-                        onClick={() => updateOption(Options.dangerZone)}>
+                        <li className={state.option === AccountSections.dangerZone ? "settings-selection" : "settings-unselected"}
+                        onClick={() => updateOption(AccountSections.dangerZone)}>
                             Danger Zone
                         </li>
                     </ul>

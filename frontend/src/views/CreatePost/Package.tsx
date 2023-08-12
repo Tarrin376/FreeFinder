@@ -1,4 +1,4 @@
-import { Sections } from "../../enums/Sections";
+import { CreatePostSections } from "../../enums/CreatePostSections";
 import PopUpWrapper from "../../wrappers/PopUpWrapper";
 import { PackageState } from "./CreatePost";
 import { CreatePostReducerAction } from "./CreatePost";
@@ -15,9 +15,9 @@ import {
 interface PackageProps {
     dispatch: React.Dispatch<CreatePostReducerAction>,
     updatePostServicePopUp: (val: boolean) => void,
-    back: Sections,
-    skip?: Sections,
-    next: Sections,
+    back: CreatePostSections,
+    skip?: CreatePostSections,
+    next: CreatePostSections,
     pkgState: PackageState,
     state: CreatePostState,
     packageType: PackageTypes,

@@ -1,9 +1,9 @@
-import { MAX_PASS_LENGTH, MIN_PASS_LENGTH } from "./constants.js";
+import { MAX_PASS_LENGTH, MIN_PASS_LENGTH, MIN_USERNAME_LENGTH, MAX_USERNAME_LENGTH } from "./constants.js";
 
 class Validator {
     static validateUsername(username: string): string {
-        if (username === "") {
-            return "Username cannot be empty.";
+        if (username.length < MIN_USERNAME_LENGTH || username.length > MAX_USERNAME_LENGTH) {
+            return `Username must be between ${MIN_USERNAME_LENGTH} and ${MAX_USERNAME_LENGTH} characters long.`;
         } else if (username[0].toLowerCase() === username[0].toUpperCase()) {
             return "Username must have a leading alphabetical character.";
         } else if (username.split(" ").length > 1) {

@@ -1,6 +1,7 @@
 import { IMessageFile } from "../models/IMessageFile";
 import LoadingSvg from "./LoadingSvg";
 import File from "./File";
+import DownloadIcon from "../assets/download.png";
 
 interface MessageFileProps {
     file: IMessageFile,
@@ -24,8 +25,11 @@ function MessageFile({ file, sending }: MessageFileProps) {
             <File fileType={file.fileType} fileName={file.name}>
                 {!sending ?
                 <a href={file.url} download={file.name} target="_blank" rel="noreferrer">
-                    <button className="main-btn w-fit !h-[30px] rounded-[6px] text-sm">
-                        Download
+                    <button className="main-btn w-fit !h-[30px] rounded-[6px]">
+                        <div className="flex items-center justify-center gap-1">
+                            <img src={DownloadIcon} className="w-[16px] h-[16px]" alt="" />
+                            <span className="text-sm text-main-white">Download</span>
+                        </div>
                     </button>
                 </a> : 
                 <div className="flex-shrink-0">

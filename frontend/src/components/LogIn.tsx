@@ -30,7 +30,7 @@ function LogIn({ setLogIn, setSignUp }: LogInProps) {
 
     async function logInAttempt(): Promise<string | undefined> {
         if (usernameOrEmail === "" || password === "") {
-            return "Please fill in both inputs to sign into your account";
+            return "Please fill in both fields to sign into your account.";
         }
 
         try {
@@ -58,7 +58,7 @@ function LogIn({ setLogIn, setSignUp }: LogInProps) {
                     {errorMessage !== "" && 
                     <ErrorMessage 
                         message={errorMessage} 
-                        title="There was a problem signing in."
+                        title="There was a problem signing in"
                         setErrorMessage={setErrorMessage}
                     />}
                     <div className="flex gap-3 flex-col mb-8">

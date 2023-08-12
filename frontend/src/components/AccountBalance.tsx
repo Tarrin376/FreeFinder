@@ -50,7 +50,7 @@ function AccountBalance({ setBalancePopUp }: AccountBalanceProps) {
                 <ErrorMessage 
                     message={errorMessage} 
                     setErrorMessage={setErrorMessage} 
-                    title="Uh oh! Something went wrong."
+                    title="Uh oh! Something went wrong"
                     styles="mb-7"
                 />}
                 <p className="text-side-text-gray pb-5 border-b border-light-border-gray">

@@ -33,7 +33,9 @@ function DangerZone({ setSettingsPopUp }: { setSettingsPopUp: React.Dispatch<Rea
                 title="Failed to delete account"
                 setErrorMessage={setErrorMessage}
             />}
-            <h1 className="text-[18px] text-error-text">Delete account</h1>
+            <h1 className="text-[18px] text-error-text">
+                Delete account
+            </h1>
             <p className="text-side-text-gray mt-1 pb-4">
                 Once you delete your account, there is no going back. Please be certain.
             </p>

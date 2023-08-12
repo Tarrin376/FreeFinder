@@ -51,7 +51,7 @@ function AddUsersToGroup({ groupID, groupMembers, setToggleAddUsersPopUp }: AddU
                 <ErrorMessage
                     message={errorMessage}
                     setErrorMessage={setErrorMessage}
-                    title="Failed to add users to group."
+                    title="Failed to add users to group"
                 />}
                 <AddPeople
                     groupMembers={groupMembers}

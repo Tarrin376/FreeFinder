@@ -234,7 +234,7 @@ export async function addImageHandler(req) {
             await tx.postImage.create({
                 data: {
                     postID: req.params.id,
-                    url: result.secure_url,
+                    url: result.eager[0].secure_url,
                     cloudinaryID: uuid
                 }
             });

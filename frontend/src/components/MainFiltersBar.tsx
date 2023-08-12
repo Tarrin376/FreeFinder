@@ -34,6 +34,7 @@ function MainFiltersBar({ dispatch, state, loading, searchHandler, toggleFilters
                 </div>
                 <NavDropdown 
                     title={state.searchOption}
+                    textSize={16}
                     items={[
                         ["Work type", () => dispatch({ searchOption: "Work type" })],
                         ["Service ID", () => dispatch({ searchOption: "Service ID" })],

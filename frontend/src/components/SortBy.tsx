@@ -12,6 +12,7 @@ function SortBy({ sort, updateSort }: SortByProps) {
         <div className="relative h-full">
             <NavDropdown 
                 styles="absolute top-1/2 translate-y-[-50%] left-1/2 translate-x-[-50%] w-fit"
+                textSize={16}
                 title={sort}
                 items={Object.keys(sortPosts).map((param) => {
                     return [param, () => updateSort(param as sortPostsOption)]

@@ -75,9 +75,9 @@ function Button(props: ButtonProps) {
                     colour={props.loadingSvgColour}
                 /> :
                 props.children && btnText === props.defaultText && props.children}
-                <p className={props.textStyles}>
+                <span className={props.textStyles}>
                     {btnText}
-                </p>
+                </span>
             </div>
         </button>
     )

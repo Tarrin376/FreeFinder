@@ -12,8 +12,8 @@ export async function getMessages(req, res) {
 
 export async function sendMessage(req, res) {
     try {
-        const newMessage = await sendMessageHandler(req);
-        res.json({ newMessage: newMessage, message: "success" });
+        const { newMessage, sockets } = await sendMessageHandler(req);
+        res.json({ newMessage: newMessage, sockets: sockets, message: "success" });
     }
     catch (err) {
         res.status(err.code).json({ message: err.message });

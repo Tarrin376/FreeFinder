@@ -70,8 +70,6 @@ function UserProvider({ children }: { children?: React.ReactNode }) {
         }
     }, [socket]);
 
-    console.log(userData);
-
     return (
         <UserContext.Provider value={{ userData, socket, setUserData }}>
             <AnimatePresence>

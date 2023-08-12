@@ -5,8 +5,8 @@ interface CountProps {
 
 function Count({ value, styles }: CountProps) {
     return (
-        <div className={`bg-error-text rounded-full w-fit px-[7px] h-[20px] flex items-center justify-center ${styles}`}>
-            <span className="text-xs text-main-white">
+        <div className={`bg-main-blue rounded-full w-fit px-[7px] h-[17px] flex items-center justify-center ${styles}`}>
+            <span className="text-[11px] text-main-white">
                 {value}
             </span>
         </div>

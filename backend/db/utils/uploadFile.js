@@ -3,6 +3,15 @@ import { DBError } from "../customErrors/DBError.js";
 import { deleteCloudinaryResource } from "./deleteCloudinaryResource.js";
 import axios from "axios";
 
+const imageTransformation = {
+    eager: [{ 
+        format: "webp"
+    }],
+    transformation: {
+        quality: "auto"
+    }
+}
+
 export async function uploadFile(newFile, url, max_bytes, type) {
     try {
         if (type === "image") {
@@ -26,25 +35,22 @@ export async function uploadFile(newFile, url, max_bytes, type) {
     }
 }
 
-async function uploader(newFile, url, max_bytes, type, prevFile) {
+async function uploader(newFile, url, max_bytes, type, prevImage) {
     try {
         const upload = await cloudinary.uploader.upload(newFile, { 
             public_id: url, 
             resource_type: type,
-            transformation: type === "image" ? {
-                quality: "auto"
-            } : undefined
+            eager: type === "image" ? imageTransformation.eager : undefined,
+            transformation: type === "image" ? imageTransformation.transformation : undefined
         });
     
         if (upload.bytes > max_bytes) {
             await deleteCloudinaryResource(url, type);
-            if (prevFile) {
-                await cloudinary.uploader.upload(`data:image/jpeg;base64,${prevFile.base64FileData}`, {
-                    public_id: prevFile.result.public_id,
+            if (prevImage) {
+                await cloudinary.uploader.upload(`data:image/jpeg;base64,${prevImage.base64FileData}`, {
+                    public_id: prevImage.result.public_id,
                     resource_type: "image",
-                    transformation: {
-                        quality: "auto"
-                    }
+                    ...imageTransformation
                 });
             }
 

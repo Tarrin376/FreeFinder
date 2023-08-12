@@ -19,7 +19,7 @@ async function checkMessageGroup(postID, userID) {
     });
 
     if (!messageGroup) {
-        throw new DBError("You must message the seller about this service before making an order request.", 400);
+        throw new DBError("You must message the seller about this service before performing this action.", 400);
     }
 
     return messageGroup.groupID;
@@ -95,6 +95,15 @@ export async function sendOrderRequestHandler(req) {
         }
 
         await checkOrderRequests(packageID, req.userData.userID);
+        const members = await prisma.groupMember.findMany({
+            where: { groupID: groupID },
+            select: {
+                user: { 
+                    select: { socketID: true }
+                }
+            }
+        });
+
         return await prisma.$transaction(async (tx) => {
             const message = await tx.message.create({
                 select: { ...messageProperties },
@@ -133,8 +142,11 @@ export async function sendOrderRequestHandler(req) {
             orderRequest.total = parseFloat(orderRequest.total);
 
             return {
-                ...message,
-                orderRequest: orderRequest
+                newMessage: {
+                    ...message,
+                    orderRequest: orderRequest,
+                },
+                sockets: members.map((member) => member.user.socketID).filter((socket) => socket !== null)
             }
         });
     }
@@ -160,11 +172,12 @@ export async function updateOrderRequestStatusHandler(req) {
             select: { 
                 userID: true,
                 messageID: true,
+                package: {
+                    select: { postID: true }
+                },
                 status: true,
                 seller: {
-                    select: {
-                        userID: true
-                    }
+                    select: { userID: true }
                 }
             }
         });
@@ -176,12 +189,21 @@ export async function updateOrderRequestStatusHandler(req) {
         } else if (orderRequest.status !== "PENDING") {
             throw new DBError("Action has already been taken on this order request.", 409);
         } else if (req.body.status === "PENDING") {
-            throw new DBError("You cannot set the order request status to pending.", 400);
+            throw new DBError("You cannot set the order request status to 'pending'.", 400);
         }
 
         const message = await prisma.message.findUnique({
             where: { messageID: orderRequest.messageID },
             select: { ...messageProperties }
+        });
+
+        const members = await prisma.groupMember.findMany({
+            where: { groupID: message.groupID },
+            select: {
+                user: { 
+                    select: { socketID: true }
+                }
+            }
         });
 
         return await prisma.$transaction(async (tx) => {
@@ -207,8 +229,11 @@ export async function updateOrderRequestStatusHandler(req) {
             updatedOrderRequest.total = parseFloat(updatedOrderRequest.total);
 
             return {
-                ...message,
-                orderRequest: updatedOrderRequest
+                updatedMessage: {
+                    ...message,
+                    orderRequest: updatedOrderRequest
+                },
+                sockets: members.map((member) => member.user.socketID).filter((socket) => socket !== null) 
             }
         });
     }

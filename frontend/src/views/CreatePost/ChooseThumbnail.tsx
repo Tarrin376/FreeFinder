@@ -1,7 +1,8 @@
 import PopUpWrapper from "../../wrappers/PopUpWrapper";
-import { Sections } from "../../enums/Sections";
+import { CreatePostSections } from "../../enums/CreatePostSections";
 import { FileData } from "../../types/FileData";
 import { CreatePostReducerAction } from "./CreatePost";
+import ThumbnailImage from "./ThumbnailImage";
 
 interface ChooseThumbnailProps {
     dispatch: React.Dispatch<CreatePostReducerAction>,
@@ -24,15 +25,12 @@ function ChooseThumbnail({ dispatch, updatePostServicePopUp, uploadedImages, thu
                 <div className="flex flex-col gap-5 flex-grow overflow-y-scroll pr-[8px] max-h-[570px]">
                     {uploadedImages.map((imageData: FileData, index: number) => {
                         return (
-                            <div className={`w-full pb-[66.66%] bg-center bg-cover rounded-[8px] relative cursor-pointer 
-                            border-2 border-light-border-gray hover:border-main-blue transition ease-out duration-200 
-                            ${imageData === thumbnail ? "border-main-blue" : ""}`} 
-                            style={{ backgroundImage: `url(${imageData.base64Str})` }} key={index} onClick={() => changeThumbnail(imageData)}>
-                                {imageData === thumbnail &&
-                                <p className="absolute top-5 right-5 bg-[#0f0f0fb4] text-main-white seller-level">
-                                    Use as thumbnail
-                                </p>}
-                            </div>
+                            <ThumbnailImage
+                                imageData={imageData}
+                                thumbnail={thumbnail}
+                                changeThumbnail={changeThumbnail}
+                                key={index}
+                            />
                         )
                     })}
                 </div>}
@@ -43,12 +41,12 @@ function ChooseThumbnail({ dispatch, updatePostServicePopUp, uploadedImages, thu
                 </p>}
             </div>
             <div className="flex gap-3 justify-end">
-                <button className="side-btn w-[110px]" onClick={() => dispatch({ payload: { section: Sections.UploadFiles } })}>
+                <button className="side-btn w-[110px]" onClick={() => dispatch({ payload: { section: CreatePostSections.UploadFiles } })}>
                     Back
                 </button>
                 <button className={`btn-primary bg-main-blue hover:bg-main-blue-hover text-main-white w-[110px] px-3
                 ${!thumbnail ? "pointer-events-none invalid-button" : ""}`}
-                onClick={() => dispatch({ payload: { section: Sections.BasicPackage } })}>
+                onClick={() => dispatch({ payload: { section: CreatePostSections.BasicPackage } })}>
                     Next
                 </button>
             </div>

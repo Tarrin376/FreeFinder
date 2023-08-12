@@ -78,9 +78,10 @@ export async function searchUsersHandler(search, take) {
     try {
         const users = await prisma.user.findMany({
             take: take ? take : undefined,
+            orderBy: { username: 'asc' },
             where: {
                 username: search ? {
-                    contains: search,
+                    startsWith: search,
                     mode: 'insensitive'
                 } : undefined
             },
@@ -158,12 +159,13 @@ export async function updateUserHandler(req) {
         const updatedUser = await prisma.user.update({
             select: { ...userProperties },
             where: { userID: req.userData.userID },
-            data: { 
-                profilePicURL: result ? result.secure_url : result,
+            data: {
+                profilePicURL: result ? result.eager[0].secure_url : result,
                 username: req.body.username,
                 country: req.body.country,
                 status: req.body.status,
-                email: req.body.email
+                email: req.body.email,
+                socketID: req.body.socketID
             }
         });
         

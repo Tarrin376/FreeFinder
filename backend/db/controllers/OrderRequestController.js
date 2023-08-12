@@ -2,8 +2,8 @@ import { sendOrderRequestHandler, updateOrderRequestStatusHandler } from "../ser
 
 export async function sendOrderRequest(req, res) {
     try {
-        const newMessage = await sendOrderRequestHandler(req);
-        res.json({ newMessage: newMessage, message: "success" });
+        const { newMessage, sockets } = await sendOrderRequestHandler(req);
+        res.json({ newMessage: newMessage, sockets: sockets, message: "success" });
     }
     catch (err) {
         res.status(err.code).json({ message: err.message });
@@ -12,8 +12,8 @@ export async function sendOrderRequest(req, res) {
 
 export async function updateOrderRequestStatus(req, res) {
     try {
-        const updatedMessage = await updateOrderRequestStatusHandler(req);
-        res.json({ updatedMessage: updatedMessage, message: "success" });
+        const { updatedMessage, sockets } = await updateOrderRequestStatusHandler(req);
+        res.json({ updatedMessage: updatedMessage, sockets: sockets, message: "success" });
     }
     catch (err) {
         res.status(err.code).json({ message: err.message });

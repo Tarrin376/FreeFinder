@@ -2,7 +2,7 @@ import PopUpWrapper from "../../wrappers/PopUpWrapper";
 import { useRef } from 'react';
 import DragAndDrop from "../../components/DragAndDrop";
 import Storage from '../../assets/storage.png';
-import { Sections } from "../../enums/Sections";
+import { CreatePostSections } from "../../enums/CreatePostSections";
 import ErrorMessage from "../../components/ErrorMessage";
 import { useState } from "react";
 import UploadedImage from "../../components/UploadedImage";
@@ -12,6 +12,7 @@ import { FileData } from "../../types/FileData";
 import { parseFiles } from "../../utils/parseFiles";
 import { MAX_FILE_BYTES, MAX_SERVICE_IMAGE_UPLOADS } from "@freefinder/shared/dist/constants";
 import { CreatePostReducerAction } from "./CreatePost";
+import { SUPPORTED_IMAGE_FORMATS } from "../../utils/checkImageType";
 
 interface UploadPostFilesProps {
     dispatch: React.Dispatch<CreatePostReducerAction>
@@ -74,8 +75,8 @@ function UploadPostFiles({ dispatch, updatePostServicePopUp, uploadedImages, thu
                     </div>
                 </DragAndDrop>
                 <div className="flex items-center justify-between mt-5">
-                    <p className="text-side-text-gray">Supported formats: PNG, JPG</p>
-                    <p className="text-side-text-gray">{`Maximum size: ${MAX_FILE_BYTES / 1000000}MB`}</p>
+                    <p className="text-side-text-gray">Supported formats: {SUPPORTED_IMAGE_FORMATS.join(", ")}</p>
+                    <p className="text-side-text-gray">{`Max size: ${MAX_FILE_BYTES / 1000000}MB`}</p>
                 </div>
                 <p className="text-side-text-gray mt-2">Files uploaded:
                     <span className={uploadedImages.length === MAX_SERVICE_IMAGE_UPLOADS ? 'text-error-text' : 'text-light-green'}>
@@ -85,7 +86,7 @@ function UploadPostFiles({ dispatch, updatePostServicePopUp, uploadedImages, thu
                 {errorMessage !== "" && 
                 <ErrorMessage 
                     message={errorMessage} 
-                    title="Unable to upload some of your files."
+                    title="Unable to upload some of your files"
                     setErrorMessage={setErrorMessage}
                     styles="mt-4"
                 />}
@@ -117,7 +118,7 @@ function UploadPostFiles({ dispatch, updatePostServicePopUp, uploadedImages, thu
                 ${uploadedImages.length === 0 ? 'invalid-button' : ''}`}
                 disabled={uploadedImages.length === 0}
                 onClick={() => dispatch({ 
-                    payload: { section: Sections.ChooseThumbnail } 
+                    payload: { section: CreatePostSections.ChooseThumbnail } 
                 })}>
                     Next
                 </button>

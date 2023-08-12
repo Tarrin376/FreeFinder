@@ -1,4 +1,4 @@
-import { useState, useContext, useRef } from 'react';
+import { useState, useContext, useRef, useEffect } from 'react';
 import SignUp from '../components/SignUp';
 import LogIn from '../components/LogIn';
 import AccountCreated from '../components/AccountCreated';
@@ -131,6 +131,7 @@ function Navbar() {
                         <li>
                             <NavDropdown
                                 title="Orders"
+                                textSize={16}
                                 items={[
                                     ["My orders", (e) => goToPage(e as React.MouseEvent<NavElement>, `/${userContext.userData.username}/saved/posts`)],
                                     ["Order requests", () => setSavedSellersPopUp(true)]
@@ -140,6 +141,7 @@ function Navbar() {
                         <li>
                             <NavDropdown
                                 title="Saved"
+                                textSize={16}
                                 items={[
                                     ["Services", (e) => goToPage(e as React.MouseEvent<NavElement>, `/${userContext.userData.username}/saved/posts`)],
                                     ["Sellers", () => setSavedSellersPopUp(true)]

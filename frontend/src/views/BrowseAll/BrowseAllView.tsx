@@ -1,6 +1,5 @@
 import Posts from "../../components/Posts";
 import { IPost } from "src/models/IPost";
-import { memo } from "react";
 
 interface BrowseAllViewProps {
     posts?: IPost[] | undefined,
@@ -19,4 +18,4 @@ function BrowseAllView({ posts, loading, count }: BrowseAllViewProps) {
     )
 }
 
-export default memo(BrowseAllView);
+export default BrowseAllView;

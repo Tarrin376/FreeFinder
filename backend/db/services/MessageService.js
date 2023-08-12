@@ -68,29 +68,33 @@ export async function sendMessageHandler(req) {
             await tx.groupMember.updateMany({
                 where: { groupID: req.groupID },
                 data: {
-                    unreadMessages: {
-                        increment: 1
-                    }
+                    unreadMessages: { increment: 1 }
                 }
             });
     
             const members = await prisma.groupMember.findMany({
                 where: { groupID: req.groupID },
-                select: { userID: true }
+                select: { 
+                    userID: true,
+                    user: {
+                        select: { socketID: true }
+                    }
+                }
             });
     
             for (const member of members) {
                 await tx.user.update({
                     where: { userID: member.userID },
                     data: {
-                        unreadMessages: {
-                            increment: 1
-                        }
+                        unreadMessages: { increment: 1 }
                     }
                 });
             }
     
-            return newMessage;
+            return {
+                newMessage: newMessage,
+                sockets: members.map((member) => member.user.socketID).filter((socket) => socket !== null)
+            }
         });
     }
     catch (err) {

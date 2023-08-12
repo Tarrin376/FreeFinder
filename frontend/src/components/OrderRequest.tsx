@@ -32,12 +32,24 @@ function OrderRequest({ message, seller, workType, groupID }: OrderRequestProps)
     async function updateOrderStatus(status: OrderRequestStatus): Promise<string | undefined> {
         try {
             setLoading(true);
-            const resp = await axios.put<{ updatedMessage: IMessage, message: string }>
+            const resp = await axios.put<{ updatedMessage: IMessage, sockets: string[], message: string }>
             (`/api/users/${userContext.userData.username}/order-requests/${message.orderRequest!.id}`, {
                 status: status
             });
 
-            userContext.socket?.emit("send-message", resp.data.updatedMessage, groupID, userContext.userData.username, true);
+            for (const socket of resp.data.sockets) {
+                if (socket !== userContext.socket?.id) {
+                    userContext.socket?.emit(
+                        "send-message", 
+                        resp.data.updatedMessage, 
+                        groupID, 
+                        userContext.userData.username, 
+                        socket, 
+                        true
+                    );
+                }
+            }
+
             setStatus(status);
         }
         catch (err: any) {

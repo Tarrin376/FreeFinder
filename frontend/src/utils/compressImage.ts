@@ -4,8 +4,7 @@ import { parseFileBase64 } from "./parseFileBase64";
 const imageCompressionOptions: Options = {
     maxSizeMB: 1,
     useWebWorker: true,
-    maxWidthOrHeight: 1920,
-    fileType: "image/webp"
+    maxWidthOrHeight: 1920
 }
 
 export async function compressImage(image: File): Promise<unknown> {
