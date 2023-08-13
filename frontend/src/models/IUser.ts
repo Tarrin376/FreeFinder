@@ -1,4 +1,5 @@
 import { UserStatus } from "../enums/UserStatus";
+import { TNotificationSettings } from "src/types/TNotificationSettings";
 
 export interface IUser {
     username: string,
@@ -8,6 +9,8 @@ export interface IUser {
     status: UserStatus,
     userID: string,
     unreadMessages: number,
+    unreadNotifications: number,
+    notificationSettings: TNotificationSettings | null,
     seller: {
         description: string,
         sellerID: string,

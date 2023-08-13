@@ -11,27 +11,40 @@ datasource db {
 }
 
 model User {
-    userID         String          @id @default(uuid())
-    username       String          @unique
-    hash           String
-    country        String
-    memberDate     DateTime        @default(now())
-    status         UserStatus
-    profilePicURL  String          @default("")
-    email          String          @unique
-    seller         Seller?
-    reviews        Review[]
-    orders         Order[]
-    foundHelpful   HelpfulReview[]
-    balance        Decimal         @default(0) @db.Decimal(12, 2)
-    sentMessages   Message[]
-    messageGroups  GroupMember[]
-    createdGroups  MessageGroup[]
-    savedPosts     SavedPost[]
-    savedSellers   SavedSeller[]
-    socketID       String?
-    orderRequests  OrderRequest[]
-    unreadMessages Int             @default(0)
+    userID               String          @id @default(uuid())
+    username             String          @unique
+    hash                 String
+    country              String
+    memberDate           DateTime        @default(now())
+    status               UserStatus
+    profilePicURL        String          @default("")
+    email                String          @unique
+    seller               Seller?
+    reviews              Review[]
+    orders               Order[]
+    foundHelpful         HelpfulReview[]
+    balance              Decimal         @default(0) @db.Decimal(12, 2)
+    sentMessages         Message[]
+    messageGroups        GroupMember[]
+    createdGroups        MessageGroup[]
+    savedPosts           SavedPost[]
+    savedSellers         SavedSeller[]
+    socketID             String?
+    orderRequests        OrderRequest[]
+    unreadMessages       Int             @default(0)
+    notificationSettings Json
+    notifications        Notification[]
+    unreadNotifications  Int             @default(0)
+}
+
+model Notification {
+    notificationID String   @id @default(uuid())
+    user           User     @relation(fields: [userID], references: [userID], onDelete: Cascade)
+    userID         String
+    title          String
+    text           String
+    createdAt      DateTime @default(now())
+    unread         Boolean  @default(true)
 }
 
 model MessageGroup {

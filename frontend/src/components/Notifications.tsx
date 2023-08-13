@@ -27,12 +27,13 @@ function Notifications({ toggleNotifications }: NotificationsProps) {
                         </span>
                     </div>
                     <AnimatePresence>
-                        {section === NotificationSections.allNotifications ? 
-                        <AllNotifications /> : 
+                        {section === NotificationSections.settings && 
                         <NotificationSettings 
                             updateSection={setSection} 
                         />}
                     </AnimatePresence>
+                    {section === NotificationSections.allNotifications && 
+                    <AllNotifications />}
                 </div>
                 <div className="p-4 border-t border-light-border-gray flex items-center justify-between">
                     <button onClick={() => setSection(NotificationSections.settings)}>

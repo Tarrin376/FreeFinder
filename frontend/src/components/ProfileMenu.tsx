@@ -31,6 +31,7 @@ function ProfileMenu({ logout }: ProfileMenuProps) {
 
     const userContext = useContext(UserContext);
     const [globalUnreadMessages, setGlobalUnreadMessages] = useState<number>(userContext.userData.unreadMessages);
+    const [unreadNotifications, setUnreadNotifications] = useState<number>(userContext.userData.unreadNotifications);
     const [group, setGroup] = useState<GroupPreview>();
     const navigate = useNavigate();
 
@@ -43,11 +44,7 @@ function ProfileMenu({ logout }: ProfileMenuProps) {
         setDisabled(true);
 
         try {
-            const response = await fetchUpdatedUser({
-                ...userContext.userData, 
-                status: toggledStatus
-            }, userContext.userData.username);
-            
+            const response = await fetchUpdatedUser({ status: toggledStatus }, userContext.userData.username);
             userContext.socket?.volatile.emit("update-user-status", userContext.userData.username, toggledStatus);
             userContext.setUserData(response.userData);
         } 
@@ -93,7 +90,8 @@ function ProfileMenu({ logout }: ProfileMenuProps) {
 
     useEffect(() => {
         setGlobalUnreadMessages(userContext.userData.unreadMessages);
-    }, [userContext.userData.unreadMessages]);
+        setUnreadNotifications(userContext.userData.unreadNotifications);
+    }, [userContext.userData.unreadMessages, userContext.userData.unreadNotifications]);
 
     useEffect(() => {
         userContext.socket?.on("receive-message", updateGlobalUnreadMessages);
@@ -129,10 +127,11 @@ function ProfileMenu({ logout }: ProfileMenuProps) {
                 <div className="w-fit relative">
                     <div className="relative cursor-pointer" onClick={toggleNotifications}>
                         <img src={NotificationIcon} className="w-[29px] h-[29px]" alt="notifications" />
+                        {unreadNotifications > 0 &&
                         <span className="absolute top-0 right-[2px] flex h-[12px] w-[12px]">
                             <span className="animate-ping absolute inline-flex h-full w-full rounded-full bg-main-blue opacity-75"></span>
                             <span className="relative inline-flex rounded-full h-hull w-full bg-main-blue"></span>
-                        </span>
+                        </span>}
                     </div>
                     <AnimatePresence>
                         {notificationsPopUp && 

@@ -1,7 +1,7 @@
 import { IUser } from "../models/IUser";
 import axios from "axios";
 
-export async function fetchUpdatedUser(data: IUser, username: string, profilePic?: string | unknown): Promise<{ 
+export async function fetchUpdatedUser(data: Partial<IUser>, username: string, profilePic?: string | unknown): Promise<{ 
     message: string, 
     userData: IUser 
 }> {

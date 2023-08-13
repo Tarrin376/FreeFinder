@@ -26,5 +26,7 @@ export const userProperties = {
     email: true,
     status: true,
     userID: true,
-    unreadMessages: true
+    unreadMessages: true,
+    notificationSettings: true,
+    unreadNotifications: true
 }

@@ -18,8 +18,7 @@ function UserProfile() {
     async function updateProfile(): Promise<string | undefined> {
         try {
             const updated = await fetchUpdatedUser({ 
-                ...userContext.userData, 
-                username, 
+                username: username, 
                 country: country 
             }, userContext.userData.username);
 

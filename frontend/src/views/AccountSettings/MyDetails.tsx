@@ -24,11 +24,7 @@ function MyDetails() {
 
     async function updateDetails(): Promise<string | undefined> {
         try {
-            const updated = await fetchUpdatedUser({ 
-                ...userContext.userData, 
-                email: firstEmail 
-            }, userContext.userData.username);
-            
+            const updated = await fetchUpdatedUser({ email: firstEmail }, userContext.userData.username);
             userContext.setUserData(updated.userData);
         }
         catch (err: any) {

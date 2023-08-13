@@ -57,6 +57,12 @@ export async function registerUserHandler(userData) {
                 country: userData.country,
                 email: userData.email,
                 status: 'ONLINE',
+                notificationSettings: {
+                    "mentionsAndReplies": true,
+                    "orderRequests": true,
+                    "rewards": true,
+                    "savedServices": true
+                }
             }
         });
     }
@@ -165,7 +171,8 @@ export async function updateUserHandler(req) {
                 country: req.body.country,
                 status: req.body.status,
                 email: req.body.email,
-                socketID: req.body.socketID
+                socketID: req.body.socketID,
+                notificationSettings: req.body.notificationSettings
             }
         });
         

@@ -15,7 +15,9 @@ export const INITIAL_STATE: IUserContext = {
         status: UserStatus.ONLINE,
         userID: "",
         seller: null,
-        unreadMessages: 0
+        unreadMessages: 0,
+        unreadNotifications: 0,
+        notificationSettings: null
     },
     socket: undefined,
     setUserData: (_: IUser) => {}

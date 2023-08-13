@@ -55,7 +55,7 @@ const io = new SocketIOServer(server, {
 
 io.use((socket, next) => {
     const cookies = socket.handshake.headers.cookie;
-    const jwtToken = cookies && cookies.split(';').find(cookie => cookie.trim().startsWith("access_token="));
+    const jwtToken = cookies && cookies.split(';').find(cookie => cookie.trim().startsWith("freefinder_session="));
     const accessToken = jwtToken && jwtToken.split('=')[1];
 
     if (!accessToken) {

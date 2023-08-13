@@ -37,7 +37,7 @@ function ChangeProfilePicture({ loading, updateLoading }: ChangeProfilePicturePr
         }
 
         try {
-            const response = await fetchUpdatedUser({ ...userContext.userData }, userContext.userData.username, profilePic);
+            const response = await fetchUpdatedUser({}, userContext.userData.username, profilePic);
             userContext.setUserData(response.userData);
             setErrorMessage("");
         }

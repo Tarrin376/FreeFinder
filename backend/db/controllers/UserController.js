@@ -50,7 +50,7 @@ export async function deleteUserSession(req, res) {
         req.username = req.userData.username;
 
         await updateUserHandler(req);
-        return res.clearCookie("access_token").json({ message: "success" });
+        return res.clearCookie("freefinder_session").json({ message: "success" });
     }
     catch (err) {
         res.status(500).json({ message: err.message });
@@ -91,7 +91,7 @@ export async function updateUser(req, res) {
 export async function deleteUser(req, res) {
     try {
         await deleteUserHandler(req);
-        return res.clearCookie("access_token").json({ message: "success" });
+        return res.clearCookie("freefinder_session").json({ message: "success" });
     }
     catch (err) {
         res.status(err.code).json({ message: err.message });

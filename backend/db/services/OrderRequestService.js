@@ -113,6 +113,14 @@ export async function sendOrderRequestHandler(req) {
                     messageText: `${req.username} has requested an order.`
                 }
             });
+
+            await tx.notification.create({
+                data: {
+                    userID: req.params.seller,
+                    title: `New order request`,
+                    text: `${req.userData.userID} has requested a ${req.params.packageType} order for service ID: ${req.params.postID}.`
+                }
+            });
             
             const date = new Date();
             const expiryDate = new Date(date.setDate(date.getDate() + VALID_DURATION_DAYS));
@@ -135,6 +143,13 @@ export async function sendOrderRequestHandler(req) {
                 where: { userID: req.userData.userID },
                 data: {
                     balance: { decrement: total }
+                }
+            });
+
+            await tx.user.update({
+                where: { userID: req.params.seller },
+                data: {
+                    unreadNotifications: { increment: 1 }
                 }
             });
 
