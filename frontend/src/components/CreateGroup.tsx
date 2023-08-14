@@ -71,7 +71,7 @@ function CreateGroup({ setCreateGroupPopUp, seller, initialServiceID }: CreateGr
                 <ErrorMessage 
                     message={errorMessage} 
                     setErrorMessage={setErrorMessage} 
-                    title="Uh oh! Something went wrong"
+                    title="Something went wrong"
                 />}
                 <p className="mb-2">Service ID</p>
                 <input 

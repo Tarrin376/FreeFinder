@@ -16,6 +16,7 @@ import { GroupPreview } from "src/types/GroupPreview";
 import { IMessage } from "src/models/IMessage";
 import Notifications from "./Notifications";
 import NavDropdown from "./NavDropdown";
+import DropdownElement from "./DropdownElement";
 
 interface ProfileMenuProps {
     logout: () => Promise<void>
@@ -24,7 +25,7 @@ interface ProfileMenuProps {
 function ProfileMenu({ logout }: ProfileMenuProps) {
     const [disabled, setDisabled] = useState<boolean>(false);
     const [settingsPopUp, setSettingsPopUp] = useState<boolean>(false);
-    const [sellerProfilePopUp, setSellerProfilePopUp] = useState<boolean>(false);
+    const [updateSellerProfilePopUp, setUpdateSellerProfilePopUp] = useState<boolean>(false);
     const [balancePopUp, setBalancePopUp] = useState<boolean>(false);
     const [messagesPopUp, setMessagesPopUp] = useState<boolean>(false);
     const [notificationsPopUp, setNotificationsPopUp] = useState<boolean>(false);
@@ -61,8 +62,8 @@ function ProfileMenu({ logout }: ProfileMenuProps) {
         setSettingsPopUp(true);
     }
 
-    function viewSellerProfile(): void {
-        setSellerProfilePopUp(true);
+    function viewUpdateSellerProfile(): void {
+        setUpdateSellerProfilePopUp(true);
     }
 
     function viewBalance(): void {
@@ -105,7 +106,7 @@ function ProfileMenu({ logout }: ProfileMenuProps) {
         <div className="flex gap-7 items-center z-30">
             <AnimatePresence>
                 {settingsPopUp && <AccountSettings setSettingsPopUp={setSettingsPopUp} />}
-                {sellerProfilePopUp && <ChangeSellerDetails setSellerProfilePopUp={setSellerProfilePopUp} />}
+                {updateSellerProfilePopUp && <ChangeSellerDetails setSellerProfilePopUp={setUpdateSellerProfilePopUp} />}
                 {balancePopUp && <AccountBalance setBalancePopUp={setBalancePopUp} />}
                 {messagesPopUp && 
                 <MessagePreviews 
@@ -150,19 +151,36 @@ function ProfileMenu({ logout }: ProfileMenuProps) {
                         statusRight={true}
                         size={38}
                     />
-                    <NavDropdown
-                        title={userContext.userData.username}
-                        textStyles="max-w-[140px] text-ellipsis whitespace-nowrap overflow-hidden"
-                        textSize={14}
-                        items={[
-                            ["Your balance", viewBalance],
-                            userContext.userData.seller ? ["View profile", viewProfile] : undefined,
-                            userContext.userData.seller ? ["Update seller profile", viewSellerProfile] : undefined,
-                            ["Account settings", viewSettings],
-                            [`Appear ${userContext.userData.status === UserStatus.ONLINE ? 'offline': 'online'}`, toggleStatus],
-                            ["Log out", logout]
-                        ]}
-                    />
+                    <NavDropdown textStyles="max-w-[140px] text-ellipsis whitespace-nowrap overflow-hidden"
+                    title={userContext.userData.username} textSize={14}>
+                        <DropdownElement
+                            text="Your balance"
+                            action={viewBalance}
+                        />
+                        {userContext.userData.seller &&
+                        <>
+                            <DropdownElement
+                                text="View profile"
+                                action={viewProfile}
+                            />
+                            <DropdownElement
+                                text="Update seller profile"
+                                action={viewUpdateSellerProfile}
+                            />
+                        </>}
+                        <DropdownElement
+                            text="Account settings"
+                            action={viewSettings}
+                        />
+                        <DropdownElement
+                            text={`Appear ${userContext.userData.status === UserStatus.ONLINE ? 'offline': 'online'}`}
+                            action={toggleStatus}
+                        />
+                        <DropdownElement
+                            text="Log out"
+                            action={logout}
+                        />
+                    </NavDropdown>
                 </div>
             </div>
         </div>

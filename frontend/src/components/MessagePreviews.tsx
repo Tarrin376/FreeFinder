@@ -43,7 +43,7 @@ function MessagePreviews({ setMessagesPopUp, group, setGroup, setGlobalUnreadMes
 
     const showNewGroup = useCallback((group: GroupPreview) => {
         userContext.socket?.emit("join-message-group", group.groupID);
-        setAllGroups((cur) => [...cur, group]);
+        setAllGroups((cur) => [group, ...cur]);
         setGroupCount((cur) => cur + 1);
     }, [userContext.socket]);
 

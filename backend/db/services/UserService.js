@@ -270,8 +270,8 @@ export async function getUserPostsHandler(req) {
         };
 
         const options = {
-            orderBy: sortPosts[req.body.sort],
-        }
+            orderBy: sortPosts[req.body.sort]
+        };
 
         const result = await getPaginatedData(
             where, 
@@ -301,8 +301,6 @@ export async function getUserPostsHandler(req) {
     catch (err) {
         if (err instanceof DBError) {
             throw err;
-        } else if (err instanceof Prisma.PrismaClientValidationError) {
-            throw new DBError("Missing required fields or fields provided are invalid.", 400);
         } else {
             throw new DBError("Something went wrong. Please try again later.", 500);
         }

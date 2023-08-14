@@ -87,7 +87,7 @@ io.on("connection", (socket) => {
     });
 
     socket.on("leave-room", (userID, groupID) => {
-        socket.to(groupID).emit("left-room", userID, groupID);
+        io.sockets.in(groupID).emit("left-room", userID, groupID);
     });
 
     socket.on("added-to-group", (socketID, group) => {

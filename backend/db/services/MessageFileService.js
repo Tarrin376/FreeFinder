@@ -21,7 +21,7 @@ export async function addMessageFileHandler(req) {
 
         const fileExtension = req.body.name.split('.').pop().toLowerCase();
         const result = await cloudinary.uploader.upload(req.body.file, { 
-            folder: `FreeFinder/MessageFiles/${req.messageID}`,
+            folder: `FreeFinder/MessageFiles/${message.groupID}/${req.messageID}`,
             tags: [fileExtension],
             resource_type: "raw",
             public_id: req.body.name,

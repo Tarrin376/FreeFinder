@@ -3,6 +3,7 @@ import savedPostRouter from './SavedPostRouter.js';
 import savedSellerRouter from './SavedSellerRouter.js';
 import messageGroupRouter from './MessageGroupRouter.js';
 import orderRequestRouter from './OrderRequestRouter.js';
+import notificationRouter from './NotificationRouter.js';
 import { cookieJwtAuth } from '../middleware/cookieJwtAuth.js';
 import 
 { 
@@ -31,6 +32,7 @@ userRouter.use('/:username/saved/posts', savedPostRouter);
 userRouter.use('/:username/saved/sellers', savedSellerRouter);
 userRouter.use('/:username/message-groups', messageGroupRouter);
 userRouter.use('/:username/order-requests', orderRequestRouter);
+userRouter.use('/:username/notifications', notificationRouter);
 
 userRouter.post('/:username/posts', cookieJwtAuth, getUserPosts);
 

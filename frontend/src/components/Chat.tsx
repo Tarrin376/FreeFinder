@@ -55,7 +55,9 @@ function Chat({ group, setAllGroups, setGroupCount, setGroup }: ChatProps) {
     async function deleteGroup(): Promise<string | undefined> {
         try {
             await axios.delete<{ message: string }>(`/api/users/${userContext.userData.username}/message-groups/created/${group.groupID}`);
-            updateUserLeftRoom(userContext.userData.userID, group.groupID);
+            for (const groupMember of groupMembers) {
+                userContext.socket?.emit("leave-room", groupMember.user.userID, group.groupID);
+            }
         }
         catch (err: any) {
             const errorMessage = getAPIErrorMessage(err as AxiosError<{ message: string }>);
@@ -66,7 +68,7 @@ function Chat({ group, setAllGroups, setGroupCount, setGroup }: ChatProps) {
     async function leaveGroup(): Promise<string | undefined> {
         try {
             await axios.delete<{ message: string }>(`/api/users/${userContext.userData.username}/message-groups/${group.groupID}`);
-            updateUserLeftRoom(userContext.userData.userID, group.groupID);
+            userContext.socket?.emit("leave-room", userContext.userData.userID, group.groupID);
         }
         catch (err: any) {
             const errorMessage = getAPIErrorMessage(err as AxiosError<{ message: string }>);

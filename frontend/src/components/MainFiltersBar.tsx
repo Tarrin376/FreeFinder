@@ -6,6 +6,8 @@ import NavDropdown from "./NavDropdown";
 import { FilterPostsProviderState } from "src/providers/FilterPostsProvider";
 import { useWindowSize } from "src/hooks/useWindowSize";
 import FilterIcon from "../assets/filter.png";
+import Count from "./Count";
+import DropdownElement from "./DropdownElement";
 
 interface MainFiltersBarProps {
     dispatch: React.Dispatch<Partial<FilterPostsProviderState>>,
@@ -32,14 +34,16 @@ function MainFiltersBar({ dispatch, state, loading, searchHandler, toggleFilters
                         value={state.search}
                     />
                 </div>
-                <NavDropdown 
-                    title={state.searchOption}
-                    textSize={16}
-                    items={[
-                        ["Work type", () => dispatch({ searchOption: "Work type" })],
-                        ["Service ID", () => dispatch({ searchOption: "Service ID" })],
-                    ]} 
-                />
+                <NavDropdown title={state.searchOption} textSize={16}>
+                    <DropdownElement
+                        text="Work type"
+                        action={() => dispatch({ searchOption: "Work type" })}
+                    />
+                    <DropdownElement
+                        text="Service ID"
+                        action={() => dispatch({ searchOption: "Service ID" })}
+                    />
+                </NavDropdown>
             </div>
             <div className="h-full border-r border-light-border-gray px-[12.75px] flex items-center gap-3 max-[1560px]:hidden">
                 <div className="w-[170px]">
@@ -76,12 +80,10 @@ function MainFiltersBar({ dispatch, state, loading, searchHandler, toggleFilters
                         </span>
                     </button>
                     {modifiedFiltersCount > 0 &&
-                    <div className="bg-main-blue rounded-full w-fit px-[7px] h-[20px] flex items-center 
-                    justify-center absolute top-[-6px] right-[-6px]">
-                        <span className="text-xs text-main-white">
-                            {modifiedFiltersCount}
-                        </span>
-                    </div>}
+                    <Count
+                        value={modifiedFiltersCount}
+                        styles="absolute top-[-7px] right-[-7px]"
+                    />}
                 </div>
             </div>}
             <div className="pl-[22.5px]">

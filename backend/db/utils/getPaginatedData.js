@@ -15,7 +15,7 @@ export async function getPaginatedData(where, select, tableName, limit, cursor, 
         };
 
         const result = await prisma[tableName].findMany(query);
-        const count = cursor[cursorColumn] ? 0 : await prisma[tableName].count({ where: { ...where } });
+        const count = cursor[cursorColumn] ? 0 : await prisma[tableName].count({ where: where });
 
         if (result.length === 0) {
             return { 

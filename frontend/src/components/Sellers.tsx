@@ -27,7 +27,6 @@ function Sellers({ search, url, setSellersPopUp, savedSellers, option }: Sellers
 
     const [page, setPage] = useState<{ value: number }>({ value: 1 });
     const [deletingSeller, setDeletingSeller] = useState<boolean>(false);
-
     const sellers = usePaginateData<{}, SellerData, PaginationResponse<SellerData>>(pageRef, cursor, url, page, setPage, {});
 
     function navigateToProfile(sellerID: string) {
@@ -68,7 +67,7 @@ function Sellers({ search, url, setSellersPopUp, savedSellers, option }: Sellers
                                     deletingSeller: deletingSeller,
                                     setDeletingSeller: setDeletingSeller
                                 } : undefined}
-                                profilePicSize={62}
+                                profilePicSize={60}
                                 key={seller.sellerID}
                                 option={option}
                                 hideSaveMessage={true}
@@ -78,7 +77,7 @@ function Sellers({ search, url, setSellersPopUp, savedSellers, option }: Sellers
                     {sellers.loading && new Array(limit).fill(0).map((_, index: number) => {
                         return (
                             <SellerSkeleton 
-                                size={62}
+                                size={60}
                                 key={index}
                             />
                         )

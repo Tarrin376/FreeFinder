@@ -12,7 +12,6 @@ import { AnimatePresence } from "framer-motion";
 import MessageFile from "./MessageFile";
 import OrderRequest from "./OrderRequest";
 import { FoundUsers } from "../types/FoundUsers";
-import { useUserStatus } from "src/hooks/useUserStatus";
 import DateOccurred from "./DateOccurred";
 
 interface MessageProps {
@@ -29,7 +28,6 @@ interface MessageProps {
 function Message({ message, isLastMessage, sendingMessage, groupMembers, seller, workType, groupID, firstMessageOfDay }: MessageProps) {
     const userContext = useContext(UserContext);
     const isOwnMessage = message.from.username === userContext.userData.username;
-    const status = useUserStatus(message.from.username, message.from.status);
     const date = useRef<string>(new Date(message.createdAt).toLocaleDateString());
     const [errorMessage, setErrorMessage] = useState<string>("");
     
@@ -51,7 +49,7 @@ function Message({ message, isLastMessage, sendingMessage, groupMembers, seller,
                 <div className="w-fit h-fit relative flex-shrink-0">
                     <ProfilePicAndStatus
                         profilePicURL={message.from.profilePicURL}
-                        profileStatus={status}
+                        profileStatus={message.from.status}
                         size={47}
                         username={message.from.username}
                         statusRight={!isOwnMessage}

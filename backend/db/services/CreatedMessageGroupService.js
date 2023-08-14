@@ -32,7 +32,8 @@ async function addMembers(members, groupID, tx) {
                         status: true,
                         userID: true
                     }
-                }
+                },
+                unreadMessages: true
             }
         });
 
@@ -87,7 +88,7 @@ export async function createMessageGroupHandler(req) {
         if (err instanceof DBError) {
             throw err;
         } else if (err instanceof Prisma.PrismaClientKnownRequestError && err.code === "P2002") {
-            throw new DBError("You have already created a group with this seller.", 409);
+            throw new DBError("You have already created a group for this service.", 409);
         } else if (err instanceof Prisma.PrismaClientValidationError) {
             throw new DBError("Missing required fields or fields provided are invalid.", 400);
         } else {
@@ -104,7 +105,10 @@ export async function deleteMessageGroupHandler(req) {
         await checkUser(req.userData.userID, req.username);
         const group = await prisma.messageGroup.findUnique({
             where: { groupID: req.params.groupID },
-            select: { creatorID: true }
+            select: { 
+                creatorID: true,
+                groupID: true
+            }
         });
 
         if (!group) {
@@ -115,24 +119,12 @@ export async function deleteMessageGroupHandler(req) {
             throw new DBError("You are not the creator of this group.", 403);
         }
 
-        const messages = await prisma.message.findMany({
-            where: { groupID: req.params.groupID },
-            select: {
-                messageID: true,
-                files: {
-                    select: {
-                        url: true
-                    }
-                }
-            }
-        });
-
-        for (const message of messages) {
-            await deleteCloudinaryResource(`FreeFinder/MessageFiles/${message.messageID}`, "raw", true);
-        }
-
-        await prisma.messageGroup.delete({
-            where: { groupID: req.params.groupID }
+        await prisma.$transaction(async (tx) => {
+            await tx.messageGroup.delete({
+                where: { groupID: req.params.groupID }
+            });
+    
+            await deleteCloudinaryResource(`FreeFinder/MessageFiles/${group.groupID}`, "raw", true);
         });
     }
     catch (err) {

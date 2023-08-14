@@ -56,6 +56,7 @@ model MessageGroup {
     postID    String
     creator   User          @relation(fields: [creatorID], references: [userID], onDelete: Cascade)
     creatorID String
+    createdAt DateTime      @default(now())
 
     @@unique([postID, creatorID])
 }

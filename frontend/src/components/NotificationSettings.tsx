@@ -52,7 +52,7 @@ function NotificationSettings({ updateSection }: NotificationSettingsProps) {
 
     return (
         <motion.div className="p-4 flex flex-col min-h-0" initial={{ x: "-100%" }} 
-        animate={{ x: 0 }} exit={{ x: "-100%" }} transition={{ duration: 0.1 }}>
+        animate={{ x: 0 }} exit={{ x: "-100%" }} transition={{ duration: 0.2 }}>
             <AnimatePresence>
                 {errorMessage !== "" && 
                 <ErrorPopUp 
@@ -82,7 +82,7 @@ function NotificationSettings({ updateSection }: NotificationSettingsProps) {
                     toggle={state.orderRequests} 
                     updateToggle={(value: boolean) => updateNotificationSettings({ orderRequests: value })} 
                     title="Order requests"
-                    text="Show me all order requests made on my services."
+                    text="Give me updates on order requests that I have made and received."
                     styles="mt-4"
                 />
                 <ToggleSwitch 

@@ -10,6 +10,7 @@ import { getAPIErrorMessage } from "src/utils/getAPIErrorMessage";
 import { AxiosError } from "axios";
 import { compressImage } from "src/utils/compressImage";
 import Dropdown from "./Dropdown";
+import DropdownElement from "./DropdownElement";
 
 interface ChangeProfilePictureProps {
     loading: boolean,
@@ -105,15 +106,18 @@ function ChangeProfilePicture({ loading, updateLoading }: ChangeProfilePicturePr
                 <input type="file" ref={inputFileRef} className="hidden" onChange={uploadProfilePic} />
                 <AnimatePresence>
                     {profileDropdown &&
-                    <Dropdown
-                        toggleDropdown={toggleProfileDropdown}
-                        textStyles="!text-[13px]"
-                        styles="!left-0 !top-full mt-[5px] w-fit"
-                        items={[
-                            [`Upload (max ${MAX_PROFILE_PIC_BYTES / 1000000}MB)`, triggerUpload],
-                            ["Remove", removePhoto]
-                        ]}
-                    />}
+                    <Dropdown toggleDropdown={toggleProfileDropdown} styles="!left-0 !top-full mt-[5px] w-fit">
+                        <DropdownElement
+                            text={`Upload (max ${MAX_PROFILE_PIC_BYTES / 1000000}MB)`}
+                            action={triggerUpload}
+                            styles="!text-[13px]"
+                        />
+                        <DropdownElement
+                            text="Remove"
+                            action={removePhoto}
+                            styles="!text-[13px]"
+                        />
+                    </Dropdown>}
                 </AnimatePresence>
             </div>
         </div>

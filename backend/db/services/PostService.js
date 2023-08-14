@@ -8,7 +8,6 @@ import { sortPosts } from '../utils/sortPosts.js';
 import { getPostFilters } from '../utils/getPostFilters.js';
 import { postProperties } from '../utils/postProperties.js';
 import { getPaginatedData } from '../utils/getPaginatedData.js';
-import { getPostedBy } from '../utils/getPostedBy.js';
 import { getAvgRatings } from '../utils/getAvgRatings.js';
 import { uploadFile } from '../utils/uploadFile.js';
 import { 
@@ -18,7 +17,6 @@ import {
     MAX_SERVICE_DELIVERY_DAYS, 
     REVISIONS,
     SERVICE_TITLE_LIMIT,
-    ABOUT_SERVICE_LIMIT,
     MAX_SERVICE_IMAGE_UPLOADS
 } from '@freefinder/shared/dist/constants.js';
 import Validator from '@freefinder/shared/dist/validator.js';

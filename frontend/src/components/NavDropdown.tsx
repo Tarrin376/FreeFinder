@@ -1,29 +1,27 @@
-import { useState, useRef } from "react";
+import { useState } from "react";
 import DropdownIcon from "../assets/dropdown.png";
 import { AnimatePresence } from "framer-motion";
-import { DropdownItem } from "src/types/DropdownItem";
 import Dropdown from "./Dropdown";
 
 interface NavDropdownProps {
     title: string,
-    items: Array<DropdownItem>,
     textSize: number,
     textStyles?: string,
-    styles?: string
+    styles?: string,
+    children?: React.ReactNode
 }
 
-function NavDropdown({ title, items, textSize, textStyles, styles }: NavDropdownProps) {
+function NavDropdown({ title, textSize, textStyles, styles, children }: NavDropdownProps) {
     const [dropdown, setDropdown] = useState<boolean>(false);
     const defaultStyles = `cursor-pointer relative z-20`;
-    const filteredItems = useRef<Array<DropdownItem>>(items.filter((item) => item !== undefined));
 
     function toggleDropdown(): void {
         setDropdown((cur) => !cur);
     }
 
     return (
-        <div className={`${defaultStyles} ${styles}`} onClick={toggleDropdown}>
-            <div className="flex items-center gap-2">
+        <div className={`${defaultStyles} ${styles}`}>
+            <div className="flex items-center gap-2" onClick={toggleDropdown}>
                 <span className={textStyles} style={{ fontSize: `${textSize}px` }}>
                     {title}
                 </span>
@@ -36,10 +34,9 @@ function NavDropdown({ title, items, textSize, textStyles, styles }: NavDropdown
             </div>
             <AnimatePresence>
                 {dropdown &&
-                <Dropdown
-                    toggleDropdown={toggleDropdown}
-                    items={filteredItems.current}
-                />}
+                <Dropdown toggleDropdown={toggleDropdown}>
+                    {children}
+                </Dropdown>}
             </AnimatePresence>
         </div>
     )

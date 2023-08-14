@@ -49,11 +49,75 @@ export async function getMessagesHandler(req) {
     }
 }
 
+function getMentionedMembers(members, message) {
+    const words = message.split(' ');
+    const memberMap = new Map();
+    const mentionedMembers = new Set();
+
+    for (const member of members) {
+        memberMap.set(member.user.username, member);
+    }
+
+    for (const word of words) {
+        if (word.length > 0 && word[0] === '@') {
+            const member = word.substring(1);
+            if (memberMap.has(member)) {
+                mentionedMembers.add(memberMap.get(member));
+            }
+        }
+    }
+
+    return mentionedMembers;
+}
+
 export async function sendMessageHandler(req) {
     try {
         await checkUser(req.userData.userID, req.username);
+        const members = await prisma.groupMember.findMany({
+            where: { groupID: req.groupID },
+            select: { 
+                userID: true,
+                user: {
+                    select: { 
+                        socketID: true,
+                        username: true,
+                        notificationSettings: true
+                    }
+                }
+            }
+        });
+
+        const group = await prisma.messageGroup.findUnique({
+            where: { groupID: req.groupID },
+            select: { groupName: true }
+        });
 
         return await prisma.$transaction(async (tx) => {
+            const mentionedMembers = getMentionedMembers(members, req.body.message);
+
+            for (const member of mentionedMembers) {
+                if (member.user.username !== req.userData.userID && member.user.notificationSettings.mentionsAndReplies) {
+                    await tx.notification.create({
+                        data: {
+                            userID: member.userID,
+                            title: "You were mentioned in a chat group",
+                            text: `${req.userData.username} mentioned you ${mentionedMembers.length > 1 ? 
+                                `and ${mentionedMembers.length - 1} others` : ""} in the '${group.groupName}' chat group. Check your messages to see
+                                what they said!`
+                        }
+                    });
+    
+                    await tx.user.update({
+                        where: { userID: member.userID },
+                        data: {
+                            unreadNotifications: {
+                                increment: 1
+                            }
+                        }
+                    });
+                }
+            }
+
             const newMessage = await tx.message.create({
                 data: {
                     fromID: req.userData.userID,
@@ -69,16 +133,6 @@ export async function sendMessageHandler(req) {
                 where: { groupID: req.groupID },
                 data: {
                     unreadMessages: { increment: 1 }
-                }
-            });
-    
-            const members = await prisma.groupMember.findMany({
-                where: { groupID: req.groupID },
-                select: { 
-                    userID: true,
-                    user: {
-                        select: { socketID: true }
-                    }
                 }
             });
     

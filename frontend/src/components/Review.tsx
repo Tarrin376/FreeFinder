@@ -10,7 +10,6 @@ import axios, { AxiosError } from "axios";
 import Rating from "./Rating";
 import AllReviews from "./AllReviews";
 import Actions from "./Actions";
-import { useUserStatus } from "src/hooks/useUserStatus";
 
 interface ReviewProps {
     reviewInfo: IReview,
@@ -23,7 +22,6 @@ function Review({ reviewInfo, hideActions }: ReviewProps) {
     const [helpfulCount, setHelpfulCount] = useState<number>(reviewInfo._count.foundHelpful);
     const [toggled, setToggled] = useState<boolean>(false);
     const [allReviewsPopUp, setAllReviewsPopUp] = useState<boolean>(false);
-    const status = useUserStatus(reviewInfo.reviewer.username, reviewInfo.reviewer.status);
 
     async function markAsHelpful(): Promise<void> {
         try {
@@ -73,7 +71,7 @@ function Review({ reviewInfo, hideActions }: ReviewProps) {
                 <div className="flex items-center gap-5 relative">
                     <ProfilePicAndStatus
                         profilePicURL={reviewInfo.reviewer.profilePicURL}
-                        profileStatus={status}
+                        profileStatus={reviewInfo.reviewer.status}
                         username={reviewInfo.reviewer.username}
                         size={42}
                         statusRight={true}

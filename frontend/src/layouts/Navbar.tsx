@@ -1,4 +1,4 @@
-import { useState, useContext, useRef, useEffect } from 'react';
+import { useState, useContext, useRef } from 'react';
 import SignUp from '../components/SignUp';
 import LogIn from '../components/LogIn';
 import AccountCreated from '../components/AccountCreated';
@@ -21,6 +21,7 @@ import OnlineStatus from '../components/OnlineStatus';
 import NavDropdown from '../components/NavDropdown';
 import { NavElement } from '../types/NavElement';
 import { UserStatus } from 'src/enums/UserStatus';
+import DropdownElement from 'src/components/DropdownElement';
 
 function Navbar() {
     const [signUp, setSignUp] = useState<boolean>(false);
@@ -129,24 +130,28 @@ function Navbar() {
                     {userContext.userData.userID !== "" && windowSize >= 1050 &&
                     <>
                         <li>
-                            <NavDropdown
-                                title="Orders"
-                                textSize={16}
-                                items={[
-                                    ["My orders", (e) => goToPage(e as React.MouseEvent<NavElement>, `/${userContext.userData.username}/saved/posts`)],
-                                    ["Order requests", () => setSavedSellersPopUp(true)]
-                                ]}
-                            />
+                            <NavDropdown title="Orders" textSize={16}>
+                                <DropdownElement
+                                    text="My orders"
+                                    action={(e) => goToPage(e as React.MouseEvent<NavElement>, `/${userContext.userData.username}/saved/posts`)}
+                                />
+                                <DropdownElement
+                                    text="Order requests"
+                                    action={() => setSavedSellersPopUp(true)}
+                                />
+                            </NavDropdown>
                         </li>
                         <li>
-                            <NavDropdown
-                                title="Saved"
-                                textSize={16}
-                                items={[
-                                    ["Services", (e) => goToPage(e as React.MouseEvent<NavElement>, `/${userContext.userData.username}/saved/posts`)],
-                                    ["Sellers", () => setSavedSellersPopUp(true)]
-                                ]}
-                            />
+                            <NavDropdown title="Saved" textSize={16}>
+                                <DropdownElement
+                                    text="Services"
+                                    action={(e) => goToPage(e as React.MouseEvent<NavElement>, `/${userContext.userData.username}/saved/posts`)}
+                                />
+                                <DropdownElement
+                                    text="Sellers"
+                                    action={() => setSavedSellersPopUp(true)}
+                                />
+                            </NavDropdown>
                         </li>
                         <li className="nav-item" onClick={(e) => goToPage(e, `${userContext.userData.username}/posts`)}>
                             My services

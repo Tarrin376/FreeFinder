@@ -74,8 +74,7 @@ function AddPeople({ groupMembers, addedUsers, setAddedUsers }: AddPeopleProps) 
                 <p className="text-center text-side-text-gray">
                     No results found
                 </p>}
-                {!foundUsers.loading ? 
-                foundUsers.users.map((user: FoundUsers[number], index: number) => {
+                {!foundUsers.loading ? foundUsers.users.map((user: FoundUsers[number], index: number) => {
                     const added = addedUsers.find((x) => x.username === user.username) !== undefined || user.username === userContext.userData.username;
                     const isMember = groupMembers && groupMembers.find((x) => x.user.username === user.username) !== undefined;
 

@@ -16,7 +16,7 @@ import EmojiPicker from "emoji-picker-react";
 import { motion } from "framer-motion";
 import AttachFiles from "./AttachFiles";
 import { FileData } from "../types/FileData";
-import UploadedFile from "./UploadedFile";
+import UploadedFiles from "./UploadedFiles";
 import { GroupPreview } from "../types/GroupPreview";
 import TagSuggestions from "./TagSuggestions";
 import { FailedUpload } from "../types/FailedUploaded";
@@ -66,6 +66,7 @@ function ChatBox({ seller, workType, groupID, groupMembers }: ChatBoxProps) {
     const [page, setPage] = useState<{ value: number }>({ value: 1 });
 
     const [toggleSupportedFormats, setToggleSupportedFormats] = useState<boolean>(false);
+    const url = `/api/users/${userContext.userData.username}/message-groups/${groupID}/messages/all`;
     
     const inputRef = useRef<HTMLInputElement>(null);
     const pageRef = useRef<HTMLDivElement>(null);
@@ -75,8 +76,6 @@ function ChatBox({ seller, workType, groupID, groupMembers }: ChatBoxProps) {
     const [state, dispatch] = useReducer((cur: ChatBoxState, payload: Partial<ChatBoxState>) => {
         return { ...cur, ...payload };
     }, INITIAL_STATE);
-
-    const url = `/api/users/${userContext.userData.username}/message-groups/${groupID}/messages/all`;
 
     const messages = usePaginateData<{}, IMessage, PaginationResponse<IMessage>>(pageRef, cursor, url, page, setPage, {}, true);
     const selectedIndex = useArrowNavigation<MatchedMembers[number]>(suggestionsRef, inputRef, state.matchedMembers, 53, TAG_SUGGESTIONS_HEIGHT);
@@ -265,6 +264,10 @@ function ChatBox({ seller, workType, groupID, groupMembers }: ChatBoxProps) {
         });
     }
 
+    function removeFile(file: FileData): void {
+        dispatch({ uploadedFiles: state.uploadedFiles.filter((x: FileData) => x !== file) });
+    }
+
     const showMessage = useCallback((message: IMessage, id: string, from: string, updateMessage: boolean) => {
         if (id === groupID && from !== userContext.userData.username) {
             addMessage(message, updateMessage);
@@ -285,7 +288,7 @@ function ChatBox({ seller, workType, groupID, groupMembers }: ChatBoxProps) {
     }, [userContext.socket, showMessage]);
 
     useEffect(() => {
-        dispatch({ newMessages: messages.data })
+        dispatch({ newMessages: messages.data });
     }, [messages.data]);
 
     return (
@@ -354,26 +357,19 @@ function ChatBox({ seller, workType, groupID, groupMembers }: ChatBoxProps) {
                         })}
                     />
                     <div className="flex w-full justify-between items-end">
-                        {state.uploadedFiles.length === 0 ? 
-                        <p className="text-side-text-gray text-sm">
-                            {`View supported file formats `}
-                            <span className="text-main-blue text-sm underline cursor-pointer" onClick={() => setToggleSupportedFormats(true)}>
-                                here
-                            </span>
-                        </p> : 
-                        <div className="flex-grow flex flex-wrap gap-2 overflow-hidden">
-                            {state.uploadedFiles.map((x: FileData, index: number) => {
-                                return (
-                                    <UploadedFile 
-                                        key={index}
-                                        fileData={x} 
-                                        removeFile={(file) => dispatch({ 
-                                            uploadedFiles: state.uploadedFiles.filter((x: FileData) => x !== file) 
-                                        })}
-                                    />
-                                );
-                            })}
-                        </div>}
+                        <div>
+                            {state.uploadedFiles.length > 0 &&
+                            <UploadedFiles
+                                uploadedFiles={state.uploadedFiles}
+                                removeFile={removeFile}
+                            />}
+                            <p className="text-side-text-gray text-sm">
+                                {`View supported file formats `}
+                                <span className="text-main-blue text-sm underline cursor-pointer" onClick={() => setToggleSupportedFormats(true)}>
+                                    here
+                                </span>
+                            </p>
+                        </div>
                         <div className="flex items-center flex-shrink-0">
                             <button onClick={toggleEmojiPopUp} type="button" className="ml-3">
                                 <img 

@@ -38,16 +38,14 @@ function OrderRequest({ message, seller, workType, groupID }: OrderRequestProps)
             });
 
             for (const socket of resp.data.sockets) {
-                if (socket !== userContext.socket?.id) {
-                    userContext.socket?.emit(
-                        "send-message", 
-                        resp.data.updatedMessage, 
-                        groupID, 
-                        userContext.userData.username, 
-                        socket, 
-                        true
-                    );
-                }
+                userContext.socket?.emit(
+                    "send-message", 
+                    resp.data.updatedMessage, 
+                    groupID, 
+                    userContext.userData.username, 
+                    socket, 
+                    true
+                );
             }
 
             setStatus(status);

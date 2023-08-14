@@ -10,31 +10,34 @@ import { userProperties } from '../utils/userProperties.js';
 export async function getMessageGroupsHandler(req) {
     try {
         await checkUser(req.userData.userID, req.username);
-        const where = { userID: req.userData.userID };
-
-        const select = {
-            group: { 
-                select: { ...groupPreviewProperties }
+        const where = { 
+            members: {
+                some: {
+                    user: {
+                        username: req.username
+                    }
+                }
             }
         };
 
-        const cursor = req.body.cursor ? { 
-            groupID_userID: {
-                groupID: req.body.cursor,
-                postID: req.userData.userID
+        const select = groupPreviewProperties;
+        const options = {
+            orderBy: {
+                createdAt: 'desc'
             }
-        } : {};
+        };
 
         const result = await getPaginatedData(
             where,
             select, 
-            "groupMember", 
+            "messageGroup", 
             req.body.limit, 
-            cursor, 
-            "groupID_userID", 
+            { groupID: req.body.cursor }, 
+            "groupID", 
+            options
         );
 
-        const groups = result.next.map((x) => formatGroup(x.group));
+        const groups = result.next.map((x) => formatGroup(x));
         return {
             ...result,
             next: groups
@@ -55,7 +58,8 @@ export async function getMessageGroupsHandler(req) {
 export async function leaveMessageGroupHandler(req) {
     try {
         await checkUser(req.userData.userID, req.username);
-        await prisma.groupMember.delete({
+        const groupMember = await prisma.groupMember.findUnique({
+            select: { unreadMessages: true },
             where: {
                 groupID_userID: {
                     groupID: req.params.groupID,
@@ -63,6 +67,23 @@ export async function leaveMessageGroupHandler(req) {
                 }
             }
         });
+
+        await prisma.$transaction([
+            prisma.groupMember.delete({
+                where: {
+                    groupID_userID: {
+                        groupID: req.params.groupID,
+                        userID: req.userData.userID
+                    }
+                }
+            }),
+            prisma.user.update({
+                where: { userID: req.userData.userID },
+                data: {
+                    unreadMessages: { decrement: groupMember.unreadMessages }
+                }
+            })
+        ]);
     }
     catch (err) {
         if (err instanceof DBError) {

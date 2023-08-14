@@ -1,7 +1,7 @@
 import { useState, useContext } from 'react';
 import { IPost } from '../models/IPost';
 import ProfilePicAndStatus from './ProfilePicAndStatus';
-import { getTimePosted, getSeconds } from '../utils/getTimePosted';
+import { getTimeCreated, getSeconds } from '../utils/getTimeCreated';
 import axios, { AxiosError } from "axios";
 import { getAPIErrorMessage } from '../utils/getAPIErrorMessage';
 import Button from './Button';
@@ -14,7 +14,6 @@ import { limit } from '../hooks/usePaginateData';
 import Save from './Save';
 import StarSvg from './StarSvg';
 import { CanRemovePost } from '../types/CanRemovePost';
-import { useUserStatus } from 'src/hooks/useUserStatus';
 import ErrorPopUp from './ErrorPopUp';
 import { AnimatePresence } from 'framer-motion';
 
@@ -31,7 +30,6 @@ function Post({ postInfo, index, canRemove, count, styles }: PostProps) {
     const [errorMessage, setErrorMessage] = useState<string>("");
     const seconds = getSeconds(postInfo.createdAt);
     const userContext = useContext(UserContext);
-    const status = useUserStatus(postInfo.postedBy.user.username, postInfo.postedBy.user.status);
     const navigate = useNavigate();
 
     async function savePost(saved: boolean): Promise<boolean> {
@@ -121,7 +119,7 @@ function Post({ postInfo, index, canRemove, count, styles }: PostProps) {
                 <div className="flex items-center mb-2 gap-3 relative">
                     <ProfilePicAndStatus 
                         profilePicURL={postInfo.postedBy.user.profilePicURL} 
-                        profileStatus={status}
+                        profileStatus={postInfo.postedBy.user.status}
                         action={navigateToProfile}
                         username={postInfo.postedBy.user.username}
                         size={48}
@@ -129,7 +127,7 @@ function Post({ postInfo, index, canRemove, count, styles }: PostProps) {
                     />
                     <div className="flex-grow overflow-hidden">
                         <div className="flex justify-between gap-3">
-                            <p className="whitespace-nowrap text-ellipsis overflow-hidden hover:text-main-blue cursor-pointer" 
+                            <p className="whitespace-nowrap text-ellipsis overflow-hidden link cursor-pointer" 
                             onClick={navigateToProfile}>
                                 {postInfo.postedBy.user.username}
                             </p>
@@ -147,7 +145,9 @@ function Post({ postInfo, index, canRemove, count, styles }: PostProps) {
                         </p>
                     </div>
                 </div>
-                <p className="text-side-text-gray text-[15px]">{getTimePosted(postInfo.createdAt)}</p>
+                <p className="text-side-text-gray text-[15px]">
+                    {getTimeCreated(postInfo.createdAt, "Posted")}
+                </p>
                 <div className="mt-[4px] mb-[10px]">
                     <span className="text-[14px] seller-level mr-2 inline-block" style={sellerLevelTextStyles[postInfo.postedBy.sellerLevel.name]}>
                         {postInfo.postedBy.sellerLevel.name}

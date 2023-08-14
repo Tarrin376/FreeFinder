@@ -14,16 +14,14 @@ import Options from "../../components/Options";
 import SaveSeller from "../../components/SaveSeller";
 import { UserContext } from "../../providers/UserProvider";
 import Reviews from "../../components/Reviews";
-import { useUserStatus } from "src/hooks/useUserStatus";
 
 function SellerProfileView() {
     const [sellerDetails, setSellerDetails] = useState<SellerProfile>();
     const [errorMessage, setErrorMessage] = useState<string>("");
     const userContext = useContext(UserContext);
     const location = useLocation();
-    const status = useUserStatus(sellerDetails?.user.username, sellerDetails?.user.status);
 
-    useNavigateErrorPage("Uh oh! Failed to retrieve seller...", errorMessage);
+    useNavigateErrorPage("Failed to retrieve this seller...", errorMessage);
 
     useEffect(() => {
         (async () => {
@@ -53,7 +51,7 @@ function SellerProfileView() {
                                     <ProfilePicAndStatus
                                         profilePicURL={sellerDetails.user.profilePicURL}
                                         username={sellerDetails.user.username}
-                                        profileStatus={status}
+                                        profileStatus={sellerDetails?.user.status}
                                         size={65}
                                         statusRight={true}
                                     />

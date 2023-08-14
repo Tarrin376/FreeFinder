@@ -17,14 +17,14 @@ function AllGroups({ allGroups, pageRef, group, setGroup, setGlobalUnreadMessage
 
     return (
         <div className="overflow-y-scroll scrollbar-hide flex-grow w-full flex flex-col gap-3" ref={pageRef}>
-            {allGroups.map((msgGroup: GroupPreview, index: number) => {
+            {allGroups.map((msgGroup: GroupPreview) => {
                 return (
                     <GroupPreviewMessage 
                         group={msgGroup}
                         selectedGroup={group}
                         action={updateMessageGroup}
                         setGlobalUnreadMessages={setGlobalUnreadMessages}
-                        key={index}
+                        key={msgGroup.groupID}
                     />
                 )
             })}

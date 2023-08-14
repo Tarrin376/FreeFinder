@@ -24,12 +24,15 @@ function TagSuggestions({ tag, groupMembers, inputRef, dispatch, matchedMembers,
         }
 
         let index = inputRef.current.value.length - 1;
+        let lastWhitespace = inputRef.current.value.length;
+
         while (index >= 0 && inputRef.current.value[index] !== "@") {
+            if (inputRef.current.value[index] === " ") lastWhitespace = index;
             index--;
         }
 
         if (index >= 0) {
-            inputRef.current.value = `${inputRef.current.value.substring(0, index + 1)}${username} ${inputRef.current.value.substring(index + 1)}`;
+            inputRef.current.value = `${inputRef.current.value.substring(0, index + 1)}${username} ${inputRef.current.value.substring(lastWhitespace)}`;
             inputRef.current.focus();
         }
 

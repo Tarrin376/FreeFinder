@@ -1,3 +1,4 @@
+import { useUserStatus } from 'src/hooks/useUserStatus';
 import { UserStatus } from '../enums/UserStatus';
 import { generateLetterAvatar } from '../utils/generateLetterAvatar';
 
@@ -14,8 +15,9 @@ interface ProfilePicAndStatusProps {
 }
 
 function ProfilePicAndStatus(props: ProfilePicAndStatusProps) {
-    const statusColour = props.profileStatus === UserStatus.ONLINE ? 'bg-green-500' : 
-    props.profileStatus === 'AWAY' ? 'bg-orange-400' : 'bg-side-text-gray';
+    const status = useUserStatus(props.username, props.profileStatus);
+    const statusColour = status === UserStatus.ONLINE ? 'bg-green-500' : 
+    status === 'AWAY' ? 'bg-orange-400' : 'bg-side-text-gray';
 
     const defaultStatusStyles = `absolute rounded-full b
     g-light-green border-2 border-main-white ${statusColour}`;

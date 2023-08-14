@@ -2,7 +2,7 @@ import { useLocation } from "react-router-dom";
 import { useEffect, useState, useContext, useReducer, useRef } from 'react';
 import { PostPage } from "../../types/PostPage";
 import ProfilePicAndStatus from "../../components/ProfilePicAndStatus";
-import { getTimePosted } from "../../utils/getTimePosted";
+import { getTimeCreated } from "../../utils/getTimeCreated";
 import AboutSeller from "./AboutSeller";
 import Packages from "./Packages";
 import axios, { AxiosError } from "axios";
@@ -24,7 +24,6 @@ import { scrollIntoView } from "../../utils/scrollIntoView";
 import StarSvg from "../../components/StarSvg";
 import ServiceID from "../../components/ServiceID";
 import { MAX_SERVICE_IMAGE_UPLOADS } from "@freefinder/shared/dist/constants";
-import { useUserStatus } from "src/hooks/useUserStatus";
 import { compressImage } from "src/utils/compressImage";
 import { IPostImage } from "src/models/IPostImage";
 
@@ -61,7 +60,6 @@ function PostView() {
         return { ...cur, ...payload };
     }, INITIAL_STATE);
 
-    const status = useUserStatus(state.postData?.postedBy.user.username, state.postData?.postedBy.user.status);
     const isOwner = state.postData?.postedBy.user.username === userContext.userData.username;
 
     function navigateToProfile(): void {
@@ -205,7 +203,7 @@ function PostView() {
                             <div className="relative">
                                 <ProfilePicAndStatus 
                                     profilePicURL={state.postData.postedBy.user.profilePicURL} 
-                                    profileStatus={status}
+                                    profileStatus={state.postData?.postedBy.user.status}
                                     action={navigateToProfile}
                                     username={state.postData.postedBy.user.username}
                                     size={50}
@@ -231,7 +229,7 @@ function PostView() {
                                     </p>
                                 </div>
                                 <p className="text-side-text-gray text-[15px] mt-[1px]">
-                                    {getTimePosted(state.postData.createdAt)}
+                                    {getTimeCreated(state.postData.createdAt, "Posted")}
                                 </p>
                             </div>
                         </div>

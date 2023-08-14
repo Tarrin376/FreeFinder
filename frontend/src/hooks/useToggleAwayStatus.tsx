@@ -19,7 +19,7 @@ export function useToggleAwayStatus(): void {
                 }
 
                 canCheck.current = false;
-                if (userContext.userData.status !== UserStatus.ONLINE) {
+                if (userContext.userData.status === UserStatus.AWAY) {
                     const setToOnline = await axios.put<{ userData: IUser, message: string }>
                     (`/api/users/${userContext.userData.username}`, { 
                         status: UserStatus.ONLINE 

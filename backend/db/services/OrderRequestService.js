@@ -76,7 +76,14 @@ export async function sendOrderRequestHandler(req) {
     try {
         const seller = await prisma.seller.findUnique({
             where: { userID: req.params.seller },
-            select: { sellerID: true }
+            select: { 
+                sellerID: true,
+                user: {
+                    select: {
+                        notificationSettings: true
+                    }
+                }
+            }
         });
 
         if (!seller) {
@@ -98,6 +105,7 @@ export async function sendOrderRequestHandler(req) {
         const members = await prisma.groupMember.findMany({
             where: { groupID: groupID },
             select: {
+                userID: true,
                 user: { 
                     select: { socketID: true }
                 }
@@ -114,13 +122,22 @@ export async function sendOrderRequestHandler(req) {
                 }
             });
 
-            await tx.notification.create({
-                data: {
-                    userID: req.params.seller,
-                    title: `New order request`,
-                    text: `${req.userData.userID} has requested a ${req.params.packageType} order for service ID: ${req.params.postID}.`
-                }
-            });
+            if (seller.user.notificationSettings.orderRequests) {
+                await tx.notification.create({
+                    data: {
+                        userID: req.params.seller,
+                        title: `New order request`,
+                        text: `${req.userData.username} has requested a ${req.params.packageType} package order for service ID: ${req.params.postID}.`
+                    }
+                });
+
+                await tx.user.update({
+                    where: { userID: req.params.seller },
+                    data: {
+                        unreadNotifications: { increment: 1 }
+                    }
+                });
+            }
             
             const date = new Date();
             const expiryDate = new Date(date.setDate(date.getDate() + VALID_DURATION_DAYS));
@@ -139,17 +156,26 @@ export async function sendOrderRequestHandler(req) {
                 }
             });
 
+            await tx.groupMember.updateMany({
+                where: { groupID: message.groupID },
+                data: {
+                    unreadMessages: { increment: 1 }
+                }
+            });
+    
+            for (const member of members) {
+                await tx.user.update({
+                    where: { userID: member.userID },
+                    data: {
+                        unreadMessages: { increment: 1 }
+                    }
+                });
+            }
+
             await tx.user.update({
                 where: { userID: req.userData.userID },
                 data: {
                     balance: { decrement: total }
-                }
-            });
-
-            await tx.user.update({
-                where: { userID: req.params.seller },
-                data: {
-                    unreadNotifications: { increment: 1 }
                 }
             });
 
@@ -179,25 +205,65 @@ export async function sendOrderRequestHandler(req) {
     }
 }
 
+function getNotificationMessage(status, seller, user, packageType, postID) {
+    switch (status) {
+        case "ACCEPTED":
+            return {
+                title: "Order request accepted",
+                text: `${seller} accepted your ${packageType} package order request for service ID: ${postID}.`
+            }
+        case "DECLINED":
+            return {
+                title: "Order request declined",
+                text: `${seller} declined your ${packageType} package order request for service ID: ${postID}.`
+            }
+        case "CANCELLED":
+            return {
+                title: "Order request cancelled",
+                text: `${user} cancelled their ${packageType} package order request for service ID: ${postID}.` 
+            }
+        default:
+            throw new DBError(`Unknown order request status: ${status}.`, 400);
+    }
+}
+
 export async function updateOrderRequestStatusHandler(req) {
     try {
         await checkUser(req.userData.userID, req.username);
         const orderRequest = await prisma.orderRequest.findUnique({
             where: { id: req.params.id },
             select: { 
+                id: true,
                 userID: true,
+                user: {
+                    select: {
+                        username: true,
+                        notificationSettings: true
+                    }
+                },
                 messageID: true,
                 package: {
-                    select: { postID: true }
+                    select: { 
+                        postID: true,
+                        type: true
+                    }
                 },
                 status: true,
                 seller: {
-                    select: { userID: true }
+                    select: { 
+                        user: { 
+                            select: {
+                                username: true,
+                                userID: true,
+                                notificationSettings: true
+                            }
+                        }
+                    }
                 }
             }
         });
 
-        if (req.userData.userID !== orderRequest.userID && req.userData.userID !== orderRequest.seller.userID) {
+        if (req.userData.userID !== orderRequest.seller.user.userID && req.userData.userID !== orderRequest.userID) {
             throw new DBError("You are not authorized to update this order request.", 403);
         } else if (!orderRequest) {
             throw new DBError("Order request not found.", 404);
@@ -215,6 +281,7 @@ export async function updateOrderRequestStatusHandler(req) {
         const members = await prisma.groupMember.findMany({
             where: { groupID: message.groupID },
             select: {
+                userID: true,
                 user: { 
                     select: { socketID: true }
                 }
@@ -236,6 +303,48 @@ export async function updateOrderRequestStatusHandler(req) {
                     where: { userID: orderRequest.userID },
                     data: {
                         balance: { increment: updatedOrderRequest.total }
+                    }
+                });
+            }
+
+            await tx.groupMember.updateMany({
+                where: { groupID: message.groupID },
+                data: {
+                    unreadMessages: { increment: 1 }
+                }
+            });
+    
+            for (const member of members) {
+                await tx.user.update({
+                    where: { userID: member.userID },
+                    data: {
+                        unreadMessages: { increment: 1 }
+                    }
+                });
+            }
+
+            const notificationMessage = getNotificationMessage(
+                req.body.status, 
+                orderRequest.seller.user.username, 
+                orderRequest.user.username,
+                orderRequest.package.type,
+                orderRequest.package.postID
+            );
+            
+            if ((req.body.status === "CANCELLED" && orderRequest.seller.user.notificationSettings.orderRequests) || 
+            (req.body.status !== "CANCELLED" && orderRequest.user.notificationSettings.orderRequests)) {
+                await tx.notification.create({
+                    data: {
+                        title: notificationMessage.title,
+                        text: notificationMessage.text,
+                        userID: req.body.status === "CANCELLED" ? orderRequest.seller.user.userID : orderRequest.userID
+                    }
+                });
+
+                await tx.user.update({
+                    where: { userID: req.body.status === "CANCELLED" ? orderRequest.seller.user.userID : orderRequest.userID },
+                    data: {
+                        unreadNotifications: { increment: 1 }
                     }
                 });
             }

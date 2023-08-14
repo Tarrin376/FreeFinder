@@ -1,16 +1,16 @@
-export function getTimePosted(createdAt: Date): string {
+export function getTimeCreated(createdAt: Date, text?: string): string {
     const seconds = getSeconds(createdAt);
     if (seconds < 60) {
-        return `Posted ${seconds} ${seconds !== 1 ? 'seconds' : 'second'} ago`;
+        return `${text ? `${text} ` : ""}${seconds} ${seconds !== 1 ? 'seconds' : 'second'} ago`;
     } else if (seconds < 60 * 60) {
         const minutes = Math.floor(seconds / 60);
-        return `Posted ${minutes} ${minutes !== 1 ? 'minutes' : 'minute'} ago`;
+        return `${text ? `${text} ` : ""}${minutes} ${minutes !== 1 ? 'minutes' : 'minute'} ago`;
     } else if (seconds < 60 * 60 * 24) {
         const hours = Math.floor(seconds / 60 / 60);
-        return `Posted ${hours} ${hours !== 1 ? 'hours' : 'hour'} ago`;
+        return `${text ? `${text} ` : ""}${hours} ${hours !== 1 ? 'hours' : 'hour'} ago`;
     } else {
         const days = Math.floor(seconds / 60 / 60 / 24);
-        return `Posted ${days} ${days !== 1 ? 'days' : 'day'} ago`;
+        return `${text ? `${text} ` : ""}${days} ${days !== 1 ? 'days' : 'day'} ago`;
     }
 }
 

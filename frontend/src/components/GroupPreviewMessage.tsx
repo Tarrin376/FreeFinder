@@ -51,11 +51,13 @@ function GroupPreviewMessage({ group, selectedGroup, action, setGlobalUnreadMess
 
         setLastMessage(message);
         if (selectedGroup?.groupID !== group.groupID) {
+            console.log(selectedGroup?.groupID, group.groupID);
             setUnreadMessages((cur) => cur + 1);
             return;
-        } 
+        } else {
+            await clearUnreadMessages();
+        }
         
-        await clearUnreadMessages();
     }, [group.groupID, selectedGroup?.groupID, clearUnreadMessages]);
 
     useEffect(() => {
@@ -73,6 +75,8 @@ function GroupPreviewMessage({ group, selectedGroup, action, setGlobalUnreadMess
             }
         })();
     }, [selectedGroup, group.groupID, clearUnreadMessages, unreadMessages]);
+
+    console.log(unreadMessages);
 
     return (
         <div className={`w-full flex items-center justify-between p-2 ${group.groupID === selectedGroup?.groupID ? 
@@ -106,7 +110,7 @@ function GroupPreviewMessage({ group, selectedGroup, action, setGlobalUnreadMess
                         <div className="flex justify-between items-center overflow-hidden">
                             <div className="flex-grow overflow-hidden">
                                 {!lastMessage ? 
-                                <p className="text-sm text-ellipsis whitespace-nowrap overflow-hidden">
+                                <p className="text-sm mt-[3px] text-ellipsis whitespace-nowrap overflow-hidden text-side-text-gray">
                                     Say hello to everyone!
                                 </p> :
                                 <Tags
