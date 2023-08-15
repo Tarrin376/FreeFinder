@@ -97,7 +97,7 @@ function Chat({ group, setAllGroups, setGroupCount, setGroup }: ChatProps) {
                     return {
                         ...x,
                         members: groupMembers
-                    }
+                    };
                 }
             })
         });
@@ -138,7 +138,7 @@ function Chat({ group, setAllGroups, setGroupCount, setGroup }: ChatProps) {
                         username={group.groupName}
                     />
                     <div>
-                        <p className="text-[17px] font-bold text-ellipsis whitespace-nowrap overflow-hidden mb-1">
+                        <p className="text-[17px] font-bold text-ellipsis whitespace-nowrap overflow-hidden mb-1" title={group.groupName}>
                             {group.groupName}
                         </p>
                     </div>

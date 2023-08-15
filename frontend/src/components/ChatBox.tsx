@@ -26,6 +26,8 @@ import { MatchedMembers } from "../types/MatchedMembers";
 import { useArrowNavigation } from "../hooks/useArrowNavigation";
 import { FoundUsers } from "../types/FoundUsers";
 import Messages from "./Messages";
+import { INotification } from "src/models/INotification";
+import { SendNotification } from "src/types/SendNotification";
 
 interface ChatBoxProps {
     seller: FoundUsers[number],
@@ -113,65 +115,75 @@ function ChatBox({ seller, workType, groupID, groupMembers }: ChatBoxProps) {
         return {
             failed: failed,
             succeeded: succeeded
+        };
+    }
+
+    function createMessage(message: string): IMessage {
+        return {
+            from: {
+                username: userContext.userData.username,
+                profilePicURL: userContext.userData.profilePicURL,
+                status: userContext.userData.status
+            },
+            files: state.uploadedFiles.map((x) => {
+                return {
+                    url: "",
+                    name: x.file.name,
+                    fileType: x.file.type,
+                    fileSize: x.file.size
+                };
+            }),
+            messageText: message,
+            createdAt: new Date(),
+            messageID: "",
+            groupID: ""
+        };
+    }
+
+    function notifyGroupMembers(sockets: string[], mentioned: SendNotification[], newMessage: IMessage): void {
+        for (const socket of sockets) {
+            userContext.socket?.emit("send-message", newMessage, groupID, userContext.userData.username, socket);
+        }
+
+        for (const mention of mentioned) {
+            userContext.socket?.emit("send-notification", mention.notification, mention.socketID);
         }
     }
 
     async function sendMessage(e: React.FormEvent<HTMLFormElement>): Promise<void> {
         e.preventDefault();
-        if (!inputRef.current || state.sendingMessage || !userContext.socket || 
-            (inputRef.current.value === "" && state.uploadedFiles.length === 0)) {
+        if (!inputRef.current || state.sendingMessage || (inputRef.current.value === "" && state.uploadedFiles.length === 0)) {
             return;
         }
 
         try {
             const message = inputRef.current.value;
             dispatch({ sendingMessage: true });
-            inputRef.current.value = "";
-            
-            addMessage({
-                from: {
-                    username: userContext.userData.username,
-                    profilePicURL: userContext.userData.profilePicURL,
-                    status: userContext.userData.status
-                },
-                files: state.uploadedFiles.map((x) => {
-                    return {
-                        url: "",
-                        name: x.file.name,
-                        fileType: x.file.type,
-                        fileSize: x.file.size
-                    }
-                }),
-                messageText: message,
-                createdAt: new Date(),
-                messageID: "",
-                groupID: ""
-            }, false);
 
-            const resp = await axios.post<{ newMessage: IMessage, sockets: string[], message: string }>
+            inputRef.current.value = "";
+            addMessage(createMessage(message), false);
+
+            const resp = await axios.post<{ newMessage: IMessage, sockets: string[], mentioned: SendNotification[], message: string }>
             (`/api/users/${userContext.userData.username}/message-groups/${groupID}/messages`, { 
                 message: message 
             });
 
             const files = await addMessageFiles(resp.data.newMessage.messageID);
-            if (files.failed.length === 0) {
-                const newMessage = {
-                    ...resp.data.newMessage,
-                    files: files.succeeded
-                };
-
-                for (const socket of resp.data.sockets) {
-                    userContext.socket.emit("send-message", newMessage, groupID, userContext.userData.username, socket);
-                }
-
-                dispatch({ 
-                    sendingMessage: false, 
-                    newMessages: [newMessage, ...state.newMessages],
-                    uploadedFiles: []
-                });
-            } else {
+            if (files.failed.length > 0) {
                 setErrorMessage(`Failed to upload ${files.failed.length} ${files.failed.length === 1 ? "file" : "files"}.`);
             }
+
+            const newMessage = {
+                ...resp.data.newMessage,
+                files: files.succeeded
+            };
+
+            notifyGroupMembers(resp.data.sockets, resp.data.mentioned, newMessage);
+            dispatch({ 
+                sendingMessage: false, 
+                newMessages: [newMessage, ...state.newMessages],
+                uploadedFiles: []
+            });
         }
         catch (err: any) {
             const errorMessage = getAPIErrorMessage(err as AxiosError<{ message: string }>);

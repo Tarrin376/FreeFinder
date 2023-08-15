@@ -15,7 +15,7 @@ function SavedServicesView({ posts, loading, count }: SavedServicesViewProps) {
 
     return (
         <Posts
-            noResultsFoundTitle="Sorry, we could not find any of your saved posts."
+            noResultsFoundTitle="Sorry, we could not find any of your saved services."
             posts={posts}
             loading={loading ?? true}
             count={count}
@@ -25,7 +25,7 @@ function SavedServicesView({ posts, loading, count }: SavedServicesViewProps) {
                 removeURL: filterContext?.endpoint ?? "",
                 unsave: true
             }}
-            title="Your saved posts"
+            title="Your saved services"
         />
     )
 }

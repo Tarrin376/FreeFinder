@@ -165,6 +165,7 @@ model Post {
     workTypeID    String
     messageGroups MessageGroup[]
     savedPosts    SavedPost[]
+    hidden        Boolean        @default(false)
 }
 
 model JobCategory {
@@ -264,6 +265,7 @@ enum UserStatus {
     ONLINE
     OFFLINE
     AWAY
+    BUSY
 }
 
 enum OrderStatus {

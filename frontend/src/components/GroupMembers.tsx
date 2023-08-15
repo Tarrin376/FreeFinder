@@ -29,7 +29,7 @@ function GroupMembers({ groupMembers, creatorID, removeUser, setErrorMessage }: 
                                 username={member.user.username}
                                 size={41}
                             />
-                            <p className="overflow-hidden text-ellipsis whitespace-nowrap text-[15px]">
+                            <p className="overflow-hidden text-ellipsis whitespace-nowrap text-[15px]" title={member.user.username}>
                                 {member.user.username}
                             </p>
                             {member.user.userID === creatorID && 

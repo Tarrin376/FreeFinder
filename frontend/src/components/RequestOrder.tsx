@@ -13,6 +13,7 @@ import { FoundUsers } from "../types/FoundUsers";
 import OrderSummary from "./OrderSummary";
 import CheckBox from "./CheckBox";
 import { SERVICE_FEE, VALID_DURATION_DAYS } from "@freefinder/shared/dist/constants";
+import { SendNotification } from "src/types/SendNotification";
 
 interface RequestOrderProps {
     curPkg: IPackage,
@@ -33,19 +34,21 @@ function RequestOrder({ curPkg, postID, seller, workType, setRequestOrderPopUp }
         }
 
         try {
-            const resp = await axios.post<{ newMessage: IMessage, sockets: string[], message: string }>
+            const resp = await axios.post<{ newMessage: IMessage, sockets: string[], notify: SendNotification | undefined, message: string }>
             (`/api/users/${userContext.userData.username}/order-requests/${seller.userID}/${postID}/${curPkg.type}`);
 
             for (const socket of resp.data.sockets) {
-                if (socket !== userContext.socket?.id) {
-                    userContext.socket?.emit(
-                        "send-message", 
-                        resp.data.newMessage, 
-                        resp.data.newMessage.groupID, 
-                        userContext.userData.username, 
-                        socket
-                    );
-                }
+                userContext.socket?.emit(
+                    "send-message", 
+                    resp.data.newMessage, 
+                    resp.data.newMessage.groupID, 
+                    userContext.userData.username, 
+                    socket
+                );
+            }
+
+            if (resp.data.notify) {
+                userContext.socket?.emit("send-notification", resp.data.notify.notification, resp.data.notify.socketID);
             }
         }
         catch (err: any) {

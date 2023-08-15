@@ -28,5 +28,5 @@ export function useFetchJobCategories(): {
         categories,
         errorMessage,
         setErrorMessage
-    }
+    };
 }

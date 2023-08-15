@@ -52,7 +52,7 @@ function AboutSeller(props: AboutSellerProps) {
                             </p>
                         </div>
                         <p className="text-side-text-gray text-[15px] whitespace-nowrap text-ellipsis 
-                        overflow-hidden mt-[2px]">
+                        overflow-hidden mt-[2px]" title={props.summary}>
                             {props.summary}
                         </p>
                         <p className="text-side-text-gray text-[15px]">

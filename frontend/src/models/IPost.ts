@@ -7,6 +7,7 @@ export interface IPost {
     startingPrice: number,
     title: string,
     rating: number | null,
+    hidden: boolean,
     _count: {
         reviews: number
     },

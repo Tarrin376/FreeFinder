@@ -41,7 +41,7 @@ export async function getMessageGroupsHandler(req) {
         return {
             ...result,
             next: groups
-        }
+        };
     }
     catch (err) {
         if (err instanceof DBError) {

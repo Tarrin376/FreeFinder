@@ -39,5 +39,5 @@ export async function parseFiles(files: FileList, uploadedFiles: FileData[], max
     return {
         failed: failed,
         allFiles: uniqueFiles
-    }
+    };
 }

@@ -54,7 +54,7 @@ function MessagePreviews({ setMessagesPopUp, group, setGroup, setGlobalUnreadMes
                 return {
                     ...cur,
                     members: members
-                }
+                };
             });
         }
 
@@ -63,7 +63,7 @@ function MessagePreviews({ setMessagesPopUp, group, setGroup, setGlobalUnreadMes
                 return {
                     ...group,
                     members: members
-                } 
+                };
             } else {
                 return group;
             }

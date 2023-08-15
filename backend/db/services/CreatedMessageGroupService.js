@@ -52,6 +52,7 @@ export async function createMessageGroupHandler(req) {
         const post = await prisma.post.findUnique({
             where: { postID: req.body.postID },
             select: {
+                hidden: true,
                 postedBy: {
                     select: {
                         userID: true
@@ -60,8 +61,12 @@ export async function createMessageGroupHandler(req) {
             }
         });
 
-        if (post.postedBy.userID === req.userData.userID) {
+        if (!post) {
+            throw new DBError("Service not found.", 404);
+        } else if (post.postedBy.userID === req.userData.userID) {
             throw new DBError("You cannot create a message group for your own service.", 400);
+        } else if (post.hidden) {
+            throw new DBError("You cannot create a message group for a hidden service.", 403);
         }
 
         return await prisma.$transaction(async (tx) => {
@@ -81,7 +86,7 @@ export async function createMessageGroupHandler(req) {
                     members: allMembers.map((x) => x.member)
                 },
                 sockets: allMembers.map((x) => x.socketID).filter((socketID) => socketID !== null)
-            }
+            };
         });
     }
     catch (err) {
@@ -160,13 +165,13 @@ export async function updateMessageGroupHandler(req) {
                         members: [...group.members, ...allMembers.map((x) => x.member)]
                     },
                     sockets: allMembers.map((x) => x.socketID).filter((socketID) => socketID !== null)
-                }
+                };
             }
     
             return {
                 group: group,
                 sockets: []
-            }
+            };
         });
     }
     catch (err) {

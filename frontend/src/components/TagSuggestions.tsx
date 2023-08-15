@@ -63,7 +63,7 @@ function TagSuggestions({ tag, groupMembers, inputRef, dispatch, matchedMembers,
     }, [inputRef, autoCompleteTag, dispatch, matchedMembers, selectedTagIndex]);
 
     useEffect(() => {
-        const matchedResults = getMatchedResults(groupMembers.map(member => member.user.username), tag, true);
+        const matchedResults = getMatchedResults(groupMembers.map(member => member.user.username), tag, true, true);
         dispatch({ 
             matchedMembers: groupMembers
             .filter(member => matchedResults.some((x) => x[0] === member.user.username))
@@ -71,7 +71,7 @@ function TagSuggestions({ tag, groupMembers, inputRef, dispatch, matchedMembers,
                 return {
                     ...member,
                     foundAt: parseInt(matchedResults.find((x) => x[0] === member.user.username)![1])
-                }
+                };
             })
         });
     }, [tag, groupMembers, dispatch]);

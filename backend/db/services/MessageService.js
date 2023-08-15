@@ -4,6 +4,7 @@ import { DBError } from '../customErrors/DBError.js';
 import { getPaginatedData } from '../utils/getPaginatedData.js';
 import { checkUser } from '../utils/checkUser.js';
 import { messageProperties } from '../utils/messageProperties.js';
+import { notificationProperties } from '../utils/notificationProperties.js';
 
 export async function getMessagesHandler(req) {
     try {
@@ -35,7 +36,7 @@ export async function getMessagesHandler(req) {
 
                 return message;
             })
-        }
+        };
     }
     catch (err) {
         if (err instanceof DBError) {
@@ -94,16 +95,17 @@ export async function sendMessageHandler(req) {
 
         return await prisma.$transaction(async (tx) => {
             const mentionedMembers = getMentionedMembers(members, req.body.message);
+            const mentioned = [];
 
             for (const member of mentionedMembers) {
                 if (member.user.username !== req.userData.userID && member.user.notificationSettings.mentionsAndReplies) {
-                    await tx.notification.create({
+                    const notification = await tx.notification.create({
+                        select: notificationProperties,
                         data: {
                             userID: member.userID,
                             title: "You were mentioned in a chat group",
-                            text: `${req.userData.username} mentioned you ${mentionedMembers.length > 1 ? 
-                                `and ${mentionedMembers.length - 1} others` : ""} in the '${group.groupName}' chat group. Check your messages to see
-                                what they said!`
+                            text: `${req.username} mentioned you ${mentionedMembers.length > 1 ? `and ${mentionedMembers.length - 1} others` : ""} 
+                            in the '${group.groupName}' chat group. Check your messages to see what they said!`
                         }
                     });
     
@@ -115,6 +117,13 @@ export async function sendMessageHandler(req) {
                             }
                         }
                     });
+                    
+                    if (member.user.socketID) {
+                        mentioned.push({
+                            socketID: member.user.socketID,
+                            notification: notification
+                        });
+                    }
                 }
             }
 
@@ -147,8 +156,9 @@ export async function sendMessageHandler(req) {
     
             return {
                 newMessage: newMessage,
-                sockets: members.map((member) => member.user.socketID).filter((socket) => socket !== null)
-            }
+                sockets: members.map((member) => member.user.socketID).filter((socket) => socket !== null),
+                mentioned: mentioned
+            };
         });
     }
     catch (err) {

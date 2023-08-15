@@ -1,8 +1,6 @@
 export function getPostFilters(req) {
     if (req.body.searchOption === "Service ID") {
-        return {
-            postID: req.body.search ? req.body.search : undefined
-        }
+        return { postID: req.body.search ? req.body.search : undefined };
     }
 
     return {
@@ -42,5 +40,5 @@ export function getPostFilters(req) {
                 in: req.body.selectedWork
             } : undefined
         }
-    }
+    };
 }

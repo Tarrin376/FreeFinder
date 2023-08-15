@@ -2,7 +2,6 @@ import { useLocation } from "react-router-dom";
 import { useEffect, useState, useContext, useReducer, useRef } from 'react';
 import { PostPage } from "../../types/PostPage";
 import ProfilePicAndStatus from "../../components/ProfilePicAndStatus";
-import { getTimeCreated } from "../../utils/getTimeCreated";
 import AboutSeller from "./AboutSeller";
 import Packages from "./Packages";
 import axios, { AxiosError } from "axios";
@@ -26,6 +25,7 @@ import ServiceID from "../../components/ServiceID";
 import { MAX_SERVICE_IMAGE_UPLOADS } from "@freefinder/shared/dist/constants";
 import { compressImage } from "src/utils/compressImage";
 import { IPostImage } from "src/models/IPostImage";
+import { useTimeCreated } from "src/hooks/useTimeCreated";
 
 export type PostViewState = {
     about: string,
@@ -48,19 +48,21 @@ const INITIAL_STATE: PostViewState = {
 }
 
 function PostView() {
-    const location = useLocation();
-    const navigate = useNavigate();
-    const userContext = useContext(UserContext);
     const addImageFileRef = useRef<HTMLInputElement>(null);
     const reviewsRef = useRef<HTMLDivElement>(null);
     const imagesRef = useRef<HTMLDivElement>(null);
     const [errorMessage, setErrorMessage] = useState<string>("");
+
+    const location = useLocation();
+    const navigate = useNavigate();
+    const userContext = useContext(UserContext);
 
     const [state, dispatch] = useReducer((cur: PostViewState, payload: Partial<PostViewState>) => {
         return { ...cur, ...payload };
     }, INITIAL_STATE);
 
     const isOwner = state.postData?.postedBy.user.username === userContext.userData.username;
+    const timeCreated = useTimeCreated(state.postData?.createdAt);
 
     function navigateToProfile(): void {
         if (state.postData) {
@@ -229,7 +231,7 @@ function PostView() {
                                     </p>
                                 </div>
                                 <p className="text-side-text-gray text-[15px] mt-[1px]">
-                                    {getTimeCreated(state.postData.createdAt, "Posted")}
+                                    {`Posted ${timeCreated}`}
                                 </p>
                             </div>
                         </div>
@@ -238,14 +240,20 @@ function PostView() {
                             textSize={15}
                             styles="mb-4"
                         />
-                        <Carousel
-                            images={state.postData.images}
-                            btnSize={50}
-                            wrapperStyles="bg-very-light-gray rounded-[12px] border 
-                            border-light-border-gray shadow-info-component pb-[56.25%]"
-                            imageStyles="object-contain object-center"
-                            startIndex={state.index}
-                        />
+                        <div className="w-full relative overflow-hidden bg-very-light-gray rounded-[12px] border 
+                        border-light-border-gray shadow-info-component">
+                            <Carousel
+                                images={state.postData.images}
+                                btnSize={50}
+                                wrapperStyles="pb-[56.25%]"
+                                imageStyles="object-contain object-center"
+                                startIndex={state.index}
+                            />
+                            {state.postData.hidden && 
+                            <p className="absolute top-0 text-center bg-side-text-gray text-main-white w-full py-[10px]">
+                                This service has been hidden by the seller.
+                            </p>}
+                        </div>
                         <div className="mt-5 whitespace-nowrap overflow-x-scroll relative pb-5" ref={imagesRef}>
                             {state.postData.images.map((image: IPostImage, index: number) => {
                                 return (
@@ -319,6 +327,7 @@ function PostView() {
                             packages={state.postData.packages}
                             postID={state.postData.postID}
                             workType={state.postData.workType.name}
+                            hidden={state.postData.hidden}
                             seller={{
                                 username: state.postData.postedBy.user.username,
                                 status: state.postData.postedBy.user.status,
@@ -334,6 +343,7 @@ function PostView() {
                         <CreateReview 
                             postID={state.postData.postID} 
                             sellerID={state.postData.sellerID}
+                            hidden={state.postData.hidden}
                         />
                     </div>
                 </div>

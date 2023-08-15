@@ -1,5 +1,6 @@
 export const enum UserStatus {
     ONLINE = "ONLINE",
     OFFLINE = "OFFLINE",
-    AWAY = "AWAY"
+    AWAY = "AWAY",
+    BUSY = "BUSY"
 }

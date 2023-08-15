@@ -35,5 +35,5 @@ export function useFetchLanguages(): {
     return {
         languages,
         errorMessage
-    }
+    };
 }

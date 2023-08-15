@@ -36,5 +36,5 @@ export function useFetchUsers(userSearch: string, limit: number, setErrorMessage
     return {
         users: users,
         loading: loading
-    }
+    };
 }

@@ -51,7 +51,6 @@ function GroupPreviewMessage({ group, selectedGroup, action, setGlobalUnreadMess
 
         setLastMessage(message);
         if (selectedGroup?.groupID !== group.groupID) {
-            console.log(selectedGroup?.groupID, group.groupID);
             setUnreadMessages((cur) => cur + 1);
             return;
         } else {
@@ -76,8 +75,6 @@ function GroupPreviewMessage({ group, selectedGroup, action, setGlobalUnreadMess
         })();
     }, [selectedGroup, group.groupID, clearUnreadMessages, unreadMessages]);
 
-    console.log(unreadMessages);
-
     return (
         <div className={`w-full flex items-center justify-between p-2 ${group.groupID === selectedGroup?.groupID ? 
         "bg-hover-light-gray" : "hover:bg-hover-light-gray"} rounded-[6px] cursor-pointer transition-all ease-out duration-100 
@@ -90,7 +87,7 @@ function GroupPreviewMessage({ group, selectedGroup, action, setGlobalUnreadMess
                 />
                 <div className="overflow-hidden flex-grow">
                     <div className="flex justify-between items-center gap-2">
-                        <span className="text-ellipsis whitespace-nowrap overflow-hidden text-[15px]">
+                        <span className="text-ellipsis whitespace-nowrap overflow-hidden text-[15px]" title={group.groupName}>
                             {group.groupName}
                         </span>
                         {lastMessage && 

@@ -91,7 +91,7 @@ function Navbar() {
                     savedSellers={true}
                     option={SellerOptions.REMOVE}
                 />}
-                {sidebar && windowSize <= 1381 && 
+                {sidebar && windowSize < 1610 && 
                 <Sidebar 
                     setLogIn={setLogIn}
                     setSignUp={setSignUp}
@@ -105,17 +105,17 @@ function Navbar() {
             </AnimatePresence>
             <nav className="flex gap-8 items-center px-7 h-[90px] border-b border-b-light-border-gray bg-main-white">
                 <ul className="flex items-center gap-7 list-none flex-grow">
-                    {windowSize <= 1381 && 
+                    {windowSize < 1610 && 
                     <HamburgerMenu
                         size={30}
                         action={toggleSidebar}
                     />}
-                    {(windowSize >= 440 || userContext.userData.username === "") &&
+                    {(windowSize >= 450 || userContext.userData.username === "") &&
                     <li className="text-main-blue text-[20px] cursor-pointer mr-8" 
                     onClick={() => resetSelectedElement(`/`)}>
                         FreeFinder
                     </li>}
-                    {windowSize >= 720 && 
+                    {windowSize >= 865 && 
                     <>
                         <li className="nav-item" onClick={(e) => goToPage(e, 'posts/all')}>
                             Browse all
@@ -127,13 +127,13 @@ function Navbar() {
                             </li>
                         </>}
                     </>}
-                    {userContext.userData.userID !== "" && windowSize >= 1050 &&
+                    {userContext.userData.userID !== "" && windowSize >= 1200 &&
                     <>
                         <li>
                             <NavDropdown title="Orders" textSize={16}>
                                 <DropdownElement
                                     text="My orders"
-                                    action={(e) => goToPage(e as React.MouseEvent<NavElement>, `/${userContext.userData.username}/saved/posts`)}
+                                    action={() => navigate(`/${userContext.userData.username}/saved/posts`)}
                                 />
                                 <DropdownElement
                                     text="Order requests"
@@ -145,7 +145,7 @@ function Navbar() {
                             <NavDropdown title="Saved" textSize={16}>
                                 <DropdownElement
                                     text="Services"
-                                    action={(e) => goToPage(e as React.MouseEvent<NavElement>, `/${userContext.userData.username}/saved/posts`)}
+                                    action={() => navigate(`/${userContext.userData.username}/saved/posts`)}
                                 />
                                 <DropdownElement
                                     text="Sellers"
@@ -157,7 +157,7 @@ function Navbar() {
                             My services
                         </li>
                     </>}
-                    {((windowSize >= 1450 && userContext.userData.username !== "") || 
+                    {((windowSize >= 1610 && userContext.userData.username !== "") || 
                     (windowSize >= 1150 && userContext.userData.username === "")) && 
                     <SearchSellers 
                         styles="ml-8" 

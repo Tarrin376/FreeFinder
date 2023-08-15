@@ -15,10 +15,11 @@ interface PackagesProps {
     packages: IPackage[],
     seller: FoundUsers[number],
     workType: string,
-    postID: string
+    postID: string,
+    hidden: boolean
 }
 
-function Packages({ packages, seller, workType, postID }: PackagesProps) {
+function Packages({ packages, seller, workType, postID, hidden }: PackagesProps) {
     const userContext = useContext(UserContext);
     const [createGroupPopUp, setCreateGroupPopUp] = useState<boolean>(false);
     const [requestOrderPopUp, setRequestOrderPopUp] = useState<boolean>(false);
@@ -128,15 +129,16 @@ function Packages({ packages, seller, workType, postID }: PackagesProps) {
                             })}
                         </ul>
                     </div>
-                    {userContext.userData.username !== "" &&
                     <div className="flex-shrink-0">
-                        <button className="side-btn w-full !h-12 mt-6" onClick={() => setCreateGroupPopUp(true)}>
-                        Message seller
+                        <button className={`side-btn w-full !h-12 mt-6 ${userContext.userData.username === "" || hidden ? "invalid-button" : ""}`} 
+                        onClick={() => setCreateGroupPopUp(true)}>
+                            Message seller
                         </button>
-                        <button className="main-btn mt-3" onClick={() => setRequestOrderPopUp(true)}>
+                        <button className={`main-btn mt-3 ${userContext.userData.username === "" || hidden ? "invalid-button" : ""}`} 
+                        onClick={() => setRequestOrderPopUp(true)}>
                             Request an order
                         </button>
-                    </div>}
+                    </div>
                 </div>
             </>}
         </div>

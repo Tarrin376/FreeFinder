@@ -10,6 +10,7 @@ export function useToggleAwayStatus(): void {
     const userContext = useContext(UserContext);
     const lastActive = useRef<number>(Date.now());
     const canCheck = useRef<boolean>(true);
+    const prevStatus = useRef<UserStatus>(userContext.userData.status);
     
     const updateLastActive = useCallback((): void => {
         (async () => {
@@ -22,10 +23,10 @@ export function useToggleAwayStatus(): void {
                 if (userContext.userData.status === UserStatus.AWAY) {
                     const setToOnline = await axios.put<{ userData: IUser, message: string }>
                     (`/api/users/${userContext.userData.username}`, { 
-                        status: UserStatus.ONLINE 
+                        status: prevStatus.current
                     });
                     
-                    userContext.socket?.volatile.emit("update-user-status", userContext.userData.username, UserStatus.ONLINE);
+                    userContext.socket?.volatile.emit("update-user-status", userContext.userData.username, prevStatus.current);
                     userContext.setUserData({ ...setToOnline.data.userData });
                 }
 
@@ -47,7 +48,8 @@ export function useToggleAwayStatus(): void {
             (async () => {
                 try {
                     const now = Date.now();
-                    if ((now - lastActive.current) / 1000 >= AWAY_TRIGGER_DURATION && userContext.userData.status === UserStatus.ONLINE) {
+                    if ((now - lastActive.current) / 1000 >= AWAY_TRIGGER_DURATION && userContext.userData.status !== UserStatus.OFFLINE &&
+                    userContext.userData.status !== UserStatus.AWAY) {
                         const setToAway = await axios.put<{ userData: IUser, message: string }>
                         (`/api/users/${userContext.userData.username}`, { 
                             status: UserStatus.AWAY 
@@ -66,7 +68,13 @@ export function useToggleAwayStatus(): void {
         return () => {
             clearInterval(interval);
         }
-    }, [userContext, userContext.userData.username])
+    }, [userContext, userContext.userData.username]);
+
+    useEffect(() => {
+        if (userContext.userData.status !== UserStatus.AWAY) {
+            prevStatus.current = userContext.userData.status;
+        }
+    }, [userContext.userData.status]);
 
     useEffect(() => {
         window.addEventListener("mousemove", updateLastActive);

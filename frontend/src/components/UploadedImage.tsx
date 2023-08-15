@@ -15,7 +15,7 @@ function UploadedImage({ file, children, description, error }: FileProps) {
                     <div className="w-[27px] h-full">
                         <FileTypeIcon fileType={file.type} />
                     </div>
-                    <p className="whitespace-nowrap text-ellipsis overflow-hidden text-[15px]">
+                    <p className="whitespace-nowrap text-ellipsis overflow-hidden text-[15px]" title={file.name}>
                         {file.name}
                     </p>
                 </div>

@@ -21,8 +21,8 @@ function NavDropdown({ title, textSize, textStyles, styles, children }: NavDropd
 
     return (
         <div className={`${defaultStyles} ${styles}`}>
-            <div className="flex items-center gap-2" onClick={toggleDropdown}>
-                <span className={textStyles} style={{ fontSize: `${textSize}px` }}>
+            <div className={`flex items-center ${title === "" ? "" : "gap-2"}`} onClick={toggleDropdown}>
+                <span className={textStyles} style={{ fontSize: `${textSize}px` }} title={title}>
                     {title}
                 </span>
                 <img 

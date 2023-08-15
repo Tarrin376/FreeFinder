@@ -3,19 +3,13 @@ import { DBError } from '../customErrors/DBError.js';
 import { checkUser } from '../utils/checkUser.js';
 import { prisma } from '../index.js';
 import { getPaginatedData } from '../utils/getPaginatedData.js';
+import { notificationProperties } from '../utils/notificationProperties.js';
 
 export async function getNotificationsHandler(req) {
     try {
         await checkUser(req.userData.userID, req.username);
         const where = { userID: req.userData.userID };
-
-        const select = {
-            notificationID: true,
-            title: true,
-            text: true,
-            createdAt: true,
-            unread: true
-        };
+        const select = notificationProperties;
 
         const options = {
             orderBy: {
@@ -77,6 +71,30 @@ export async function updateToReadHandler(req) {
             throw err;
         } else if (err instanceof Prisma.PrismaClientValidationError) {
             throw new DBError("Missing required fields or fields provided are invalid.", 400);
+        } else {
+            throw new DBError("Something went wrong. Please try again later.", 500);
+        }
+    }
+}
+
+export async function updateAllToReadHandler(req) {
+    try {
+        await checkUser(req.userData.userID, req.username);
+
+        await prisma.$transaction([
+            prisma.notification.updateMany({
+                where: { userID: req.userData.userID },
+                data: { unread: false }
+            }),
+            prisma.user.update({
+                where: { userID: req.userData.userID },
+                data: { unreadNotifications: 0 }
+            })
+        ]);
+    }
+    catch (err) {
+        if (err instanceof DBError) {
+            throw err;
         } else {
             throw new DBError("Something went wrong. Please try again later.", 500);
         }

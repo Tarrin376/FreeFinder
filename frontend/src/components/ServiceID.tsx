@@ -19,9 +19,10 @@ function ServiceID({ postID, textSize, styles }: ServiceIDProps) {
                 itemKey="Service ID"
                 itemValue={postID}
                 textSize={textSize}
-                styles="text-ellipsis whitespace-nowrap overflow-hidden pt-[1px]"
+                styles="pt-[1px]"
             />
-            <button className="side-btn w-fit !h-[30px] rounded-[6px]" style={{ fontSize: `${textSize}px` }} onClick={copyServiceID}>
+            <button className="side-btn w-fit !h-[30px] rounded-[6px]" 
+            style={{ fontSize: `${textSize}px` }} onClick={copyServiceID}>
                 copy
             </button>
         </div>

@@ -186,7 +186,7 @@ export async function deleteImageHandler(req) {
                     return {
                         ...pkg,
                         amount: parseInt(pkg.amount)
-                    }
+                    };
                 })
             };
         });
@@ -248,7 +248,7 @@ export async function addImageHandler(req) {
                     return {
                         ...pkg,
                         amount: parseInt(pkg.amount)
-                    }
+                    };
                 })
             };
         });
@@ -280,7 +280,7 @@ export async function getPostHandler(postID) {
                 return {
                     ...pkg,
                     amount: parseInt(pkg.amount)
-                }
+                };
             })
         };
     }
@@ -353,6 +353,7 @@ export async function updatePostHandler(req) {
                 data: {
                     about: req.body.about,
                     title: req.body.title,
+                    hidden: req.body.hidden
                 }
             });
             
@@ -362,7 +363,7 @@ export async function updatePostHandler(req) {
                     return {
                         ...pkg,
                         amount: parseInt(pkg.amount)
-                    }
+                    };
                 })
             };
         }, {
@@ -436,7 +437,11 @@ export async function getPostsHandler(req) {
             orderBy: sortPosts[req.body.sort],
         };
         
-        const where = getPostFilters(req);
+        const where = {
+            ...getPostFilters(req),
+            hidden: false
+        };
+
         const select = {
             postedBy: {
                 select: {
@@ -464,6 +469,7 @@ export async function getPostsHandler(req) {
             startingPrice: true,
             title: true,
             postID: true,
+            hidden: true,
             images: {
                 select: {
                     url: true,
@@ -492,13 +498,13 @@ export async function getPostsHandler(req) {
             return {
                 ...post,
                 rating: postRatings[index]._avg.rating
-            }
+            };
         });
     
         return {
             ...result,
             next: posts
-        }
+        };
     }
     finally {
         await prisma.$disconnect();

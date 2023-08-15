@@ -17,12 +17,11 @@ function HighlightedSubstring({ styles, action, word, substring, foundAt }: High
     }
 
     return (
-        <p className={`${defaultStyles} ${styles}`}
-        onClick={clickHandler} key={word}>
+        <p className={`${defaultStyles} ${styles}`} onClick={clickHandler} title={word}>
             {chars.map((char: string, curIndex: number) => {
                 return (
-                    <span className={`text-[15px] ${curIndex >= foundAt && curIndex < foundAt + substring.length ? " bg-highlight" : ""}`} 
-                    key={curIndex}>
+                    <span className={`text-[15px] transition-all ease-out duration-200 ${curIndex >= foundAt && 
+                    curIndex < foundAt + substring.length ? " bg-highlight" : ""}`} key={curIndex}>
                         {char}
                     </span>
                 )

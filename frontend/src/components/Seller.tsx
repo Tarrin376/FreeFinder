@@ -30,7 +30,7 @@ interface SellerProps {
 function Seller(props: SellerProps) {
     const userContext = useContext(UserContext);
     const [errorMessage, setErrorMessage] = useState<string>("");
-    const [hide, setHide] = useState<boolean>(false);
+    const [remove, setRemove] = useState<boolean>(false);
     const windowSize = useWindowSize();
 
     async function removeSavedSeller(_: boolean): Promise<void> {
@@ -42,7 +42,7 @@ function Seller(props: SellerProps) {
             props.canRemove.setDeletingSeller(true);
             await axios.delete<{ message: string }>(`/api/users/${userContext.userData.username}/saved/sellers/${props.sellerID}`);
             props.canRemove.count.current -= 1;
-            setHide(true);
+            setRemove(true);
         }
         catch (err: any) {
             const errorMessage = getAPIErrorMessage(err as AxiosError<{ message: string }>);
@@ -53,7 +53,7 @@ function Seller(props: SellerProps) {
         }
     }
     
-    if (hide) {
+    if (remove) {
         return <></>
     }
 
@@ -85,8 +85,8 @@ function Seller(props: SellerProps) {
                                 {props.sellerLevel}
                             </p>
                         </div>
-                        <p className="text-[14px] text-side-text-gray 
-                        whitespace-nowrap text-ellipsis overflow-hidden mt-[2px]">
+                        <p className="text-[14px] text-side-text-gray whitespace-nowrap text-ellipsis overflow-hidden mt-[2px]"
+                        title={props.summary}>
                             {props.summary}
                         </p>
                         <p className="text-[14px] text-side-text-gray">

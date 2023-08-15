@@ -221,8 +221,39 @@ export async function getSellerDetailsHandler(sellerID) {
 
 export async function getSellersHandler(search, limit, cursor) {
     try {
-        const sellers = await querySellers(search, limit, cursor);
-        return sellers;
+        const where = {
+            user: {
+                username: search ? {
+                    startsWith: search,
+                    mode: 'insensitive'
+                } : undefined
+            }
+        };
+    
+        const select = {
+            user: {
+                select: {
+                    username: true,
+                    profilePicURL: true,
+                    country: true,
+                    status: true,
+                }
+            },
+            sellerLevel: {
+                select: {
+                    name: true
+                }
+            },
+            summary: true,
+            sellerID: true
+        };
+    
+        const options = {
+            orderBy: { sellerID: 'asc' }
+        };
+    
+        const result = await getPaginatedData(where, select, "seller", limit, { sellerID: cursor }, "sellerID", options);
+        return result;
     }
     catch (err) {
         if (err instanceof Prisma.PrismaClientValidationError) {
@@ -234,42 +265,6 @@ export async function getSellersHandler(search, limit, cursor) {
     finally {
         await prisma.$disconnect();
     }
-}
-
-async function querySellers(search, limit, cursor) {
-    const where = {
-        user: {
-            username: search ? {
-                contains: search,
-                mode: 'insensitive'
-            } : undefined
-        }
-    };
-
-    const select = {
-        user: {
-            select: {
-                username: true,
-                profilePicURL: true,
-                country: true,
-                status: true,
-            }
-        },
-        sellerLevel: {
-            select: {
-                name: true
-            }
-        },
-        summary: true,
-        sellerID: true
-    };
-
-    const options = {
-        orderBy: { sellerID: 'asc' }
-    };
-
-    const result = await getPaginatedData(where, select, "seller", limit, { sellerID: cursor }, "sellerID", options);
-    return result;
 }
 
 export async function getReviewsHandler(req) {
@@ -330,7 +325,7 @@ export async function getReviewsHandler(req) {
                 ...result, 
                 averages: averages,
                 starCounts: starCounts
-            } 
+            };
         }
 
         return result;

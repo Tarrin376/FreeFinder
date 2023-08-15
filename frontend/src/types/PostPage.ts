@@ -8,6 +8,7 @@ export type PostPage = {
     about: string,
     createdAt: Date,
     title: string,
+    hidden: boolean,
     workType: {
         name: string,
         jobCategory: {

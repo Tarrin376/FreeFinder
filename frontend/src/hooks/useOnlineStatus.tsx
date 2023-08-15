@@ -37,5 +37,5 @@ export function useOnlineStatus(): {
         onlineMessage,
         offlineMessage,
         closePopUp
-    }
+    };
 }

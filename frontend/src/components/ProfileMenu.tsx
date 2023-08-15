@@ -17,6 +17,7 @@ import { IMessage } from "src/models/IMessage";
 import Notifications from "./Notifications";
 import NavDropdown from "./NavDropdown";
 import DropdownElement from "./DropdownElement";
+import { useWindowSize } from "src/hooks/useWindowSize";
 
 interface ProfileMenuProps {
     logout: () => Promise<void>
@@ -31,29 +32,29 @@ function ProfileMenu({ logout }: ProfileMenuProps) {
     const [notificationsPopUp, setNotificationsPopUp] = useState<boolean>(false);
 
     const userContext = useContext(UserContext);
+    const windowSize = useWindowSize();
+
     const [globalUnreadMessages, setGlobalUnreadMessages] = useState<number>(userContext.userData.unreadMessages);
     const [unreadNotifications, setUnreadNotifications] = useState<number>(userContext.userData.unreadNotifications);
     const [group, setGroup] = useState<GroupPreview>();
     const navigate = useNavigate();
 
     async function toggleStatus(): Promise<void> {
-        const toggledStatus = userContext.userData.status === UserStatus.ONLINE ? UserStatus.OFFLINE : UserStatus.ONLINE;
-        if (disabled) {
-            return;
-        }
+        if (!disabled) {
+            const toggledStatus = userContext.userData.status === UserStatus.ONLINE ? UserStatus.BUSY : UserStatus.ONLINE;
+            setDisabled(true);
 
-        setDisabled(true);
-
-        try {
-            const response = await fetchUpdatedUser({ status: toggledStatus }, userContext.userData.username);
-            userContext.socket?.volatile.emit("update-user-status", userContext.userData.username, toggledStatus);
-            userContext.setUserData(response.userData);
-        } 
-        catch (_: any) {
-            // Ignore error message and try again the next time the user toggles their status.
-        } 
-        finally {
-            setDisabled(false);
+            try {
+                const response = await fetchUpdatedUser({ status: toggledStatus }, userContext.userData.username);
+                userContext.socket?.volatile.emit("update-user-status", userContext.userData.username, toggledStatus);
+                userContext.setUserData(response.userData);
+            } 
+            catch (_: any) {
+                // Ignore error message and try again the next time the user toggles their status.
+            } 
+            finally {
+                setDisabled(false);
+            }
         }
     }
 
@@ -89,6 +90,10 @@ function ProfileMenu({ logout }: ProfileMenuProps) {
         }
     }, [group]);
 
+    const updateUnreadNotifications = useCallback(() => {
+        setUnreadNotifications((cur) => cur + 1);
+    }, []);
+
     useEffect(() => {
         setGlobalUnreadMessages(userContext.userData.unreadMessages);
         setUnreadNotifications(userContext.userData.unreadNotifications);
@@ -96,14 +101,16 @@ function ProfileMenu({ logout }: ProfileMenuProps) {
 
     useEffect(() => {
         userContext.socket?.on("receive-message", updateGlobalUnreadMessages);
+        userContext.socket?.on("receive-notification", updateUnreadNotifications);
 
         return () => {
             userContext.socket?.off("receive-message", updateGlobalUnreadMessages);
+            userContext.socket?.off("receive-notification", updateUnreadNotifications);
         }
-    }, [userContext.socket, updateGlobalUnreadMessages]);
+    }, [userContext.socket, updateGlobalUnreadMessages, updateUnreadNotifications]);
 
     return (
-        <div className="flex gap-7 items-center z-30">
+        <div className={`flex ${windowSize <= 320 ? "gap-4" : "gap-7"} items-center z-30`}>
             <AnimatePresence>
                 {settingsPopUp && <AccountSettings setSettingsPopUp={setSettingsPopUp} />}
                 {updateSellerProfilePopUp && <ChangeSellerDetails setSellerProfilePopUp={setUpdateSellerProfilePopUp} />}
@@ -116,7 +123,7 @@ function ProfileMenu({ logout }: ProfileMenuProps) {
                     setGlobalUnreadMessages={setGlobalUnreadMessages}
                 />}
             </AnimatePresence>
-            <div className="flex gap-4 items-center">
+            <div className={`${windowSize <= 320 ? "gap-3" : "gap-4"} flex items-center`}>
                 <div className="w-fit h-fit relative cursor-pointer" onClick={viewMessages}>
                     <img src={ChatIcon} className="w-[29px] h-[29px]" alt="chat" />
                     {globalUnreadMessages > 0 && 
@@ -138,6 +145,7 @@ function ProfileMenu({ logout }: ProfileMenuProps) {
                         {notificationsPopUp && 
                         <Notifications 
                             toggleNotifications={toggleNotifications} 
+                            setUnreadNotifications={setUnreadNotifications}
                         />}
                     </AnimatePresence>
                 </div>
@@ -152,7 +160,7 @@ function ProfileMenu({ logout }: ProfileMenuProps) {
                         size={38}
                     />
                     <NavDropdown textStyles="max-w-[140px] text-ellipsis whitespace-nowrap overflow-hidden"
-                    title={userContext.userData.username} textSize={14}>
+                    title={windowSize > 600 ? userContext.userData.username : ""} textSize={14}>
                         <DropdownElement
                             text="Your balance"
                             action={viewBalance}
@@ -173,7 +181,7 @@ function ProfileMenu({ logout }: ProfileMenuProps) {
                             action={viewSettings}
                         />
                         <DropdownElement
-                            text={`Appear ${userContext.userData.status === UserStatus.ONLINE ? 'offline': 'online'}`}
+                            text={`Appear ${userContext.userData.status === UserStatus.ONLINE ? 'busy': 'online'}`}
                             action={toggleStatus}
                         />
                         <DropdownElement

@@ -13,6 +13,7 @@ import ErrorPopUp from "./ErrorPopUp";
 import { AnimatePresence } from "framer-motion";
 import { parseDate } from "../utils/parseDate";
 import { useCountdown } from "../hooks/useCountdown";
+import { SendNotification } from "src/types/SendNotification";
 
 interface OrderRequestProps {
     message: IMessage,
@@ -32,7 +33,7 @@ function OrderRequest({ message, seller, workType, groupID }: OrderRequestProps)
     async function updateOrderStatus(status: OrderRequestStatus): Promise<string | undefined> {
         try {
             setLoading(true);
-            const resp = await axios.put<{ updatedMessage: IMessage, sockets: string[], message: string }>
+            const resp = await axios.put<{ updatedMessage: IMessage, sockets: string[], notify: SendNotification | undefined, message: string }>
             (`/api/users/${userContext.userData.username}/order-requests/${message.orderRequest!.id}`, {
                 status: status
             });
@@ -46,6 +47,10 @@ function OrderRequest({ message, seller, workType, groupID }: OrderRequestProps)
                     socket, 
                     true
                 );
+            }
+
+            if (resp.data.notify) {
+                userContext.socket?.emit("send-notification", resp.data.notify.notification, resp.data.notify.socketID);
             }
 
             setStatus(status);

@@ -49,6 +49,7 @@ export const postProperties = {
     about: true,
     sellerID: true,
     postID: true,
+    hidden: true,
     workType: {
         select: {
             name: true,

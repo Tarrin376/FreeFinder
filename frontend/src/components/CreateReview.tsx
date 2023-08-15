@@ -10,10 +10,11 @@ import { MAX_REVIEW_CHARS } from "@freefinder/shared/dist/constants";
 
 interface CreateReviewProps {
     postID: string,
-    sellerID: string
+    sellerID: string,
+    hidden: boolean
 }
 
-function CreateReview({ postID, sellerID }: CreateReviewProps) {
+function CreateReview({ postID, sellerID, hidden }: CreateReviewProps) {
     const [serviceAsDescribed, setServiceAsDescribed] = useState<number>(1);
     const [sellerCommunication, setSellerCommunication] = useState<number>(1);
     const [serviceDelivery, setServiceDelivery] = useState<number>(1);
@@ -90,7 +91,7 @@ function CreateReview({ postID, sellerID }: CreateReviewProps) {
                 completedText="Review submitted"
                 defaultText="Submit review"
                 loadingText="Submitting review"
-                styles="side-btn h-[48px] w-full mt-6"
+                styles={`side-btn h-[48px] w-full mt-6 ${hidden ? "invalid-button" : ""}`}
                 textStyles="text-main-blue"
                 setErrorMessage={setErrorMessage}
                 loadingSvgSize={28}

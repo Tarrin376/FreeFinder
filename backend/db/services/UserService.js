@@ -259,6 +259,7 @@ export async function getUserPostsHandler(req) {
             startingPrice: true,
             title: true,
             postID: true,
+            hidden: true,
             images: {
                 select: {
                     url: true,
@@ -290,13 +291,13 @@ export async function getUserPostsHandler(req) {
             return {
                 ...post,
                 rating: postRatings[index]._avg.rating
-            }
+            };
         });
         
         return {
             ...result,
             next: posts
-        }
+        };
     }
     catch (err) {
         if (err instanceof DBError) {

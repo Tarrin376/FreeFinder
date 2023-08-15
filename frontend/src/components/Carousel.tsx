@@ -9,14 +9,15 @@ interface CarouselProps {
     btnSize: number,
     wrapperStyles: string,
     imageStyles?: string,
-    startIndex?: number
+    startIndex?: number,
 }
 
 function Carousel({ images, btnSize, wrapperStyles, imageStyles, startIndex }: CarouselProps) {
-    const clickedBtn = useRef<boolean>(false);
     const [index, setIndex] = useState<number>(0);
+
     const imageRefs = useRef<React.RefObject<HTMLDivElement>[]>(new Array(images.length).fill(0).map(_ => React.createRef()));
     const imageClasses = useRef<string[]>(new Array(images.length).fill(0).map((_, i) => i === 0 ? "translate-x-0" : "translate-x-full"));
+    const clickedBtn = useRef<boolean>(false);
 
     function nextSlide(){
         clickedBtn.current = true;
@@ -59,13 +60,13 @@ function Carousel({ images, btnSize, wrapperStyles, imageStyles, startIndex }: C
                 )
             })}
             {index > 0 &&
-            <button className="carousel-btn absolute top-1/2 translate-y-[-50%] left-3"
-            onClick={previousSlide} style={{width: btnSize, height: btnSize}}>
+            <button className="carousel-btn absolute top-1/2 translate-y-[-50%] left-3" onClick={previousSlide} 
+            style={{width: btnSize, height: btnSize}}>
                 <img src={BackIcon} alt="" style={{width: 0.50 * btnSize, height: 0.50 * btnSize}} />
             </button>}
             {index < images.length - 1 &&
-            <button className="carousel-btn absolute top-1/2 translate-y-[-50%] right-3"
-            onClick={nextSlide} style={{width: btnSize, height: btnSize}}>
+            <button className="carousel-btn absolute top-1/2 translate-y-[-50%] right-3" onClick={nextSlide} 
+            style={{width: btnSize, height: btnSize}}>
                 <img src={NextIcon} alt="" style={{width: 0.50 * btnSize, height: 0.50 * btnSize}} />
             </button>}
         </div>

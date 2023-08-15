@@ -10,6 +10,7 @@ export async function createReviewHandler(req) {
         const post = await prisma.post.findUnique({
             where: { postID: req.body.postID },
             select: {
+                hidden: true,
                 postedBy: {
                     select: {
                         userID: true
@@ -17,11 +18,15 @@ export async function createReviewHandler(req) {
                 }
             }
         });
-        
-        if (post.postedBy.userID === req.userData.userID) {
-            throw new DBError("You cannot write a review for your own service.", 403);
+
+        if (!post) {
+            throw new DBError("Service not found.", 404);
+        } else if (post.postedBy.userID === req.userData.userID) {
+            throw new DBError("You cannot write a review of your own service.", 403);
         } else if (!req.body.review || req.body.review.length > MAX_REVIEW_CHARS) {
             throw new DBError(`Review is empty or exceeds ${MAX_REVIEW_CHARS} characters.`, 400);
+        } else if (post.hidden) {
+            throw new DBError("You cannot write a review of a hidden service.", 403);
         }
 
         const serviceAsDescribed = parseInt(req.body.serviceAsDescribed);

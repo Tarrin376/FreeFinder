@@ -31,7 +31,7 @@ function AddUsersToGroup({ groupID, groupMembers, setToggleAddUsersPopUp }: AddU
 
             userContext.socket?.emit("update-members", [
                 ...groupMembers, 
-                ...addedUsers.map((user) => { return { user: user } })]
+                ...addedUsers.map((user) => { return { user: user }; })]
             , groupID);
             
             for (const socket of resp.data.sockets) {

@@ -78,6 +78,10 @@ io.on("connection", (socket) => {
         io.sockets.in(socketID).emit("receive-message", message, groupID, from, updateMessage);
     });
 
+    socket.on("send-notification", (notification, socketID) => {
+        socket.to(socketID).emit("receive-notification", notification);
+    });
+
     socket.on("join-message-group", (groupID) => {
         socket.join(groupID);
     });

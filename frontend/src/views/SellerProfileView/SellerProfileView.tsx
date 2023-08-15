@@ -58,14 +58,15 @@ function SellerProfileView() {
                                 </div>
                                 <div className="overflow-hidden flex-grow">
                                     <div className="flex items-center gap-2">
-                                        <p>{sellerDetails.user.username}</p>
-                                        <p className="text-[14px] seller-level"
-                                        style={sellerLevelTextStyles[sellerDetails.sellerLevel.name]}>
+                                        <p title={sellerDetails.user.username}>
+                                            {sellerDetails.user.username}
+                                        </p>
+                                        <p className="text-[14px] seller-level" style={sellerLevelTextStyles[sellerDetails.sellerLevel.name]}>
                                             {sellerDetails.sellerLevel.name}
                                         </p>
                                     </div>
-                                    <p className="text-[15px] text-side-text-gray mt-[2px] 
-                                    whitespace-nowrap text-ellipsis overflow-hidden">
+                                    <p className="text-[15px] text-side-text-gray mt-[2px] whitespace-nowrap text-ellipsis overflow-hidden"
+                                    title={sellerDetails.summary}>
                                         {sellerDetails.summary}
                                     </p>
                                     <p className="text-[15px] text-side-text-gray">
@@ -87,8 +88,12 @@ function SellerProfileView() {
                                 memberDate={sellerDetails.user.memberDate}
                             />
                             <div>
-                                <button className="main-btn block !h-[42px] mb-3 w-[155px]">Contact seller</button>
-                                <button className="red-btn w-[155px]">Report seller</button>
+                                <button className="main-btn block !h-[42px] mb-3 w-[155px]">
+                                    Contact seller
+                                </button>
+                                <button className="red-btn w-[155px]">
+                                    Report seller
+                                </button>
                             </div>
                         </div>
                     </div>
@@ -102,7 +107,7 @@ function SellerProfileView() {
                         />
                         {sellerDetails.skills.length > 0 &&
                         <>
-                             <p className="mt-3">
+                            <p className="mt-3">
                                 {`${sellerDetails.user.username}${sellerDetails.user.username[sellerDetails.user.username.length - 1] === 's' 
                                 ? "'" : "'s"} skills`}
                             </p>

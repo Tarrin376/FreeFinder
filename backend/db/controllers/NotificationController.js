@@ -1,4 +1,4 @@
-import { getNotificationsHandler, updateToReadHandler } from "../services/NotificationService.js";
+import { getNotificationsHandler, updateToReadHandler, updateAllToReadHandler } from "../services/NotificationService.js";
 
 export async function getNotifications(req, res) {
     try {
@@ -13,6 +13,16 @@ export async function getNotifications(req, res) {
 export async function updateToRead(req, res) {
     try {
         await updateToReadHandler(req);
+        res.json({ message: "success" });
+    }
+    catch (err) {
+        res.status(err.code).json({ message: err.message });
+    }
+}
+
+export async function updateAllToRead(req, res) {
+    try {
+        await updateAllToReadHandler(req);
         res.json({ message: "success" });
     }
     catch (err) {

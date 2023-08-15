@@ -37,7 +37,10 @@ export async function getSavedPostsHandler(req) {
     try {
         await checkUser(req.userData.userID, req.username);
         const where = {
-            post: { ...getPostFilters(req) }
+            post: { 
+                ...getPostFilters(req),
+                hidden: false
+            }
         };
     
         const select = {
@@ -69,6 +72,7 @@ export async function getSavedPostsHandler(req) {
                     startingPrice: true,
                     title: true,
                     postID: true,
+                    hidden: true,
                     images: {
                         select: {
                             url: true
@@ -111,13 +115,13 @@ export async function getSavedPostsHandler(req) {
             return {
                 ...cur.post,
                 rating: postRatings[index]._avg.rating
-            }
+            };
         });
     
         return {
             ...result,
             next: posts
-        }
+        };
     }
     catch (err) {
         if (err instanceof DBError) {
