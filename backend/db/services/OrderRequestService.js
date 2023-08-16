@@ -40,7 +40,8 @@ async function checkPackage(postID, type, sellerID) {
             post: {
                 select: {
                     sellerID: true,
-                    hidden: true
+                    hidden: true,
+                    title: true
                 }
             }
         }
@@ -55,7 +56,7 @@ async function checkPackage(postID, type, sellerID) {
     }
 
     return {
-        packageID: pkg.packageID,
+        pkg: pkg,
         subTotal: parseFloat(pkg.amount)
     };
 }
@@ -95,7 +96,7 @@ export async function sendOrderRequestHandler(req) {
 
         const user = await checkUser(req.userData.userID, req.username);
         const groupID = await checkMessageGroup(req.params.postID, req.userData.userID);
-        const { packageID, subTotal } = await checkPackage(req.params.postID, req.params.packageType, seller.sellerID);
+        const { pkg, subTotal } = await checkPackage(req.params.postID, req.params.packageType, seller.sellerID);
 
         const userBalance = parseFloat(user.balance);
         const total = subTotal + subTotal * SERVICE_FEE;
@@ -104,7 +105,7 @@ export async function sendOrderRequestHandler(req) {
             throw new DBError(`You are £${(total - userBalance).toFixed(2)} short! Please top up your balance to make this order request.`, 400);
         }
 
-        await checkOrderRequests(packageID, req.userData.userID);
+        await checkOrderRequests(pkg.packageID, req.userData.userID);
         const members = await prisma.groupMember.findMany({
             where: { groupID: groupID },
             select: {
@@ -134,7 +135,7 @@ export async function sendOrderRequestHandler(req) {
                     messageID: message.messageID,
                     userID: req.userData.userID,
                     sellerID: seller.sellerID,
-                    packageID: packageID,
+                    packageID: pkg.packageID,
                     status: "PENDING",
                     expires: expiryDate,
                     subTotal: subTotal,
@@ -182,7 +183,7 @@ export async function sendOrderRequestHandler(req) {
                     data: {
                         userID: req.params.seller,
                         title: `New order request`,
-                        text: `${req.userData.username} has requested a ${req.params.packageType} package order for service ID: ${req.params.postID}.`
+                        text: `${req.userData.username} has requested a ${req.params.packageType} package order for the service: '${pkg.post.title}'.`
                     }
                 });
 
@@ -219,22 +220,22 @@ export async function sendOrderRequestHandler(req) {
     }
 }
 
-function getNotificationMessage(status, seller, user, packageType, postID) {
+function getNotificationMessage(status, seller, user, packageType, title) {
     switch (status) {
         case "ACCEPTED":
             return {
                 title: "Order request accepted",
-                text: `${seller} accepted your ${packageType} package order request for service ID: ${postID}.`
+                text: `${seller} accepted your ${packageType} package order request for the service: '${title}'.`
             };
         case "DECLINED":
             return {
                 title: "Order request declined",
-                text: `${seller} declined your ${packageType} package order request for service ID: ${postID}.`
+                text: `${seller} declined your ${packageType} package order request for the service: '${title}'.`
             };
         case "CANCELLED":
             return {
                 title: "Order request cancelled",
-                text: `${user} cancelled their ${packageType} package order request for service ID: ${postID}.` 
+                text: `${user} cancelled their ${packageType} package order request for the service: '${title}'.` 
             };
         default:
             throw new DBError(`Unknown order request status: ${status}.`, 400);
@@ -258,7 +259,12 @@ async function getOrderRequest(orderRequestID) {
             package: {
                 select: { 
                     postID: true,
-                    type: true
+                    type: true,
+                    post: {
+                        select: {
+                            title: true
+                        }
+                    }
                 }
             },
             status: true,
@@ -354,7 +360,7 @@ export async function updateOrderRequestStatusHandler(req) {
                 orderRequest.seller.user.username, 
                 orderRequest.user.username,
                 orderRequest.package.type,
-                orderRequest.package.postID
+                orderRequest.package.post.title
             );
 
             updatedOrderRequest.subTotal = parseFloat(updatedOrderRequest.subTotal);

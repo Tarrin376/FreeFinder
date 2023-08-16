@@ -41,8 +41,8 @@ export async function updatePost(req, res) {
 
 export async function deletePost(req, res) {
     try {
-        await deletePostHandler(req.params.id, req.userData.userID);
-        res.json({ message: "success" });
+        const usersSaved = await deletePostHandler(req.params.id, req.userData.userID);
+        res.json({ usersSaved: usersSaved, message: "success" });
     }
     catch (err) {
         res.status(err.code).json({ message: err.message });

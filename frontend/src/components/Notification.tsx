@@ -2,6 +2,7 @@ import { useState, useContext } from "react";
 import axios from "axios";
 import { UserContext } from "src/providers/UserProvider";
 import { useTimeCreated } from "src/hooks/useTimeCreated";
+import { useNavigate } from "react-router-dom";
 
 interface NotificationProps {
     title: string,
@@ -9,14 +10,16 @@ interface NotificationProps {
     createdAt: Date,
     unread: boolean,
     notificationID: string,
+    navigateTo: string | null,
     setUnreadNotifications: React.Dispatch<React.SetStateAction<number>>,
     allRead: boolean
 }
 
-function Notification({ title, text, createdAt, unread, notificationID, setUnreadNotifications, allRead }: NotificationProps) {
+function Notification({ title, text, createdAt, unread, notificationID, navigateTo, setUnreadNotifications, allRead }: NotificationProps) {
     const [isUnread, setIsUnread] = useState<boolean>(unread);
     const userContext = useContext(UserContext);
     const timeCreated = useTimeCreated(createdAt);
+    const navigate = useNavigate();
 
     async function markAsRead(): Promise<void> {
         if (isUnread && !allRead) {
@@ -32,8 +35,15 @@ function Notification({ title, text, createdAt, unread, notificationID, setUnrea
         }
     }
 
+    function navigateToPage(): void {
+        if (navigateTo) {
+            navigate(navigateTo);
+        }
+    }
+
     return (
-        <div className="p-4 border-b border-light-border-gray" onMouseEnter={markAsRead}>
+        <div className="p-4 border-b border-light-border-gray cursor-pointer hover:bg-light-bg-gray transition-all duration-150 ease-linear" 
+        onMouseEnter={markAsRead} onClick={navigateToPage}>
             <div className="flex items-center gap-[10px]">
                 <div className={`w-[7px] h-[7px] rounded-full ${isUnread && !allRead ? "bg-main-blue" : "bg-side-text-gray"}`}>
                 </div>

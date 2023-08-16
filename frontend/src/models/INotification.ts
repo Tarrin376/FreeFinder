@@ -3,5 +3,6 @@ export interface INotification {
     title: string,
     text: string,
     createdAt: Date,
-    unread: boolean
+    unread: boolean,
+    navigateTo: string | null
 }

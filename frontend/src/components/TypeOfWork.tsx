@@ -62,7 +62,7 @@ function TypeOfWork({ selectedWork, updateSelectedWork }: TypeOfWorkProps) {
                 removeOption={removeWork}
                 wrapperStyles="mt-4"
                 styles="bg-very-light-pink"
-                textColour="#bf01ff"
+                textColour="#b600f3"
             />}
         </div>
     )

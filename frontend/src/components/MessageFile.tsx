@@ -19,7 +19,7 @@ function MessageFile({ file, sending }: MessageFileProps) {
                 <p className="text-sm text-main-blue">Uploading image</p>
                 <LoadingSvg 
                     size={20} 
-                    colour="#4E73F8" 
+                    colour="#4169f7" 
                 />
             </div> :
             <File fileType={file.fileType} fileName={file.name}>
@@ -35,7 +35,7 @@ function MessageFile({ file, sending }: MessageFileProps) {
                 <div className="flex-shrink-0">
                     <LoadingSvg 
                         size={20} 
-                        colour="#4E73F8" 
+                        colour="#4169f7" 
                     />
                 </div>}
             </File>}

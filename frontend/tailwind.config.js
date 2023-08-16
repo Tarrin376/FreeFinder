@@ -19,16 +19,16 @@ module.exports = {
             }
         },
         colors: {
-            'main-blue': '#4E73F8',
+            'main-blue': '#4169f7',
             'bg-light': '#fdfdfd',
-            'main-blue-hover': '#5a7df8',
+            'main-blue-hover': '#4E73F8',
             'main-white': '#fdfdfd',
             'light-gray': '#e1e3e8',
             'nav-search-gray': '#cdcdcd',
             'very-light-gray': '#eeeff3',
             'very-light-gray-hover': '#f2f3f6',
             'main-black': '#18193F',
-            'side-text-gray': '#8d8c91', // #9c9c9c old
+            'side-text-gray': '#7e7d82', // #9c9c9c old
             'main-black-hover': '#1e1f4f',
             'main-white-hover': '#fbfbfb',
             'error-red': '#fde4e4',
@@ -41,7 +41,7 @@ module.exports = {
             'highlight': '#e6ebff',
             'highlight-hover': '#e1e7ff',
             'very-light-pink': '#f7dfff',
-            'pink': '#bf01ff',
+            'pink': '#b600f3',
             'hover-light-gray': '#f7f7f7',
             'light-bg-gray': '#f5f6f8'
         },

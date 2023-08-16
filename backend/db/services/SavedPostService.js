@@ -20,7 +20,8 @@ export async function savePostHandler(postID, userID, username) {
     catch (err) {
         if (err instanceof DBError) {
             throw err;
-        } else if (err instanceof Prisma.PrismaClientKnownRequestError && err.code === 'P2002') {
+        } else if (err instanceof Prisma.PrismaClientKnownRequestError && (err.code === "P2002" || err.code === "P2025")) {
+            if (err.code === "P2025") throw new DBError("Service does not exist or has been deleted.", 404);
             // Ignore that the post has already been saved by the user.
         } else if (err instanceof Prisma.PrismaClientValidationError) {
             throw new DBError("Missing required fields or fields provided are invalid.", 400);
@@ -155,7 +156,7 @@ export async function deleteSavedPostHandler(postID, userID, username) {
         } else if (err instanceof Prisma.PrismaClientValidationError) {
             throw new DBError("Missing required fields or fields provided are invalid.", 400);
         } else if (err instanceof Prisma.PrismaClientKnownRequestError && err.code === "P2025") {
-            throw new DBError("Post not found.", 404);
+            throw new DBError("Service does not exist or has been deleted.", 404);
         } else {
             throw new DBError("Something went wrong. Please try again later.", 500);
         }

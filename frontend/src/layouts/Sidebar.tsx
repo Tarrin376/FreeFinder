@@ -75,7 +75,7 @@ function Sidebar(props: SidebarProps) {
                             <li>
                                 <SidebarDropdown title="Saved" styles="!pt-0">
                                     <SidebarDropdownElement
-                                        text="posts"
+                                        text="services"
                                         action={() => navigateToPage(`/${userContext.userData.username}/saved/posts`)}
                                     />
                                     <SidebarDropdownElement

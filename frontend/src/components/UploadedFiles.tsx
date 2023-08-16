@@ -15,7 +15,7 @@ function UploadedFiles({ uploadedFiles, removeFile }: UploadedFilesProps) {
                     <File fileType={data.file.type} fileName={data.file.name} key={index}>
                         <CloseSvg 
                             size={17} 
-                            colour="#8d8c91" 
+                            colour="#7e7d82" 
                             action={() => removeFile(data)}
                         />
                     </File>

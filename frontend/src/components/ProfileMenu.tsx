@@ -14,7 +14,7 @@ import MessagePreviews from "./MessagePreviews";
 import Count from "./Count";
 import { GroupPreview } from "src/types/GroupPreview";
 import { IMessage } from "src/models/IMessage";
-import Notifications from "./Notifications";
+import NotificationsWrapper from "../wrappers/NotificationsWrapper";
 import NavDropdown from "./NavDropdown";
 import DropdownElement from "./DropdownElement";
 import { useWindowSize } from "src/hooks/useWindowSize";
@@ -143,7 +143,7 @@ function ProfileMenu({ logout }: ProfileMenuProps) {
                     </div>
                     <AnimatePresence>
                         {notificationsPopUp && 
-                        <Notifications 
+                        <NotificationsWrapper 
                             toggleNotifications={toggleNotifications} 
                             setUnreadNotifications={setUnreadNotifications}
                         />}

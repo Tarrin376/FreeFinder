@@ -25,7 +25,7 @@ function ThumbnailImage({ imageData, thumbnail, changeThumbnail }: ThumbnailImag
                 <AnimatePresence>
                     {(imageData === thumbnail || useAsThumbnail) &&
                     <motion.div className={`w-full h-full absolute top-0 left-0 ${imageData === thumbnail ? 
-                    "bg-[#4e73f8cc]" : "bg-[#1d1d1dd2]"} flex items-center justify-center`} initial={{ opacity: 0 }} 
+                    "bg-[#4168f7ce]" : "bg-[#1d1d1dd2]"} flex items-center justify-center`} initial={{ opacity: 0 }} 
                     animate={{ opacity: 1 }} exit={{ opacity: 0 }} transition={{ duration: 0.2 }}>
                         <p className="text-main-white">
                             {imageData === thumbnail ? "Thumbnail selected" : "Select as thumbnail"}

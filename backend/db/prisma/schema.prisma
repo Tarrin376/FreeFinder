@@ -45,6 +45,7 @@ model Notification {
     text           String
     createdAt      DateTime @default(now())
     unread         Boolean  @default(true)
+    navigateTo     String?
 }
 
 model MessageGroup {

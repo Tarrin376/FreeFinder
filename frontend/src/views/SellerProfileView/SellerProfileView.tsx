@@ -103,7 +103,7 @@ function SellerProfileView() {
                             options={sellerDetails.languages} 
                             wrapperStyles="mt-2"
                             styles="bg-highlight"
-                            textColour="#4E73F8"
+                            textColour="#4169f7"
                         />
                         {sellerDetails.skills.length > 0 &&
                         <>
@@ -115,7 +115,7 @@ function SellerProfileView() {
                                 options={sellerDetails.skills} 
                                 wrapperStyles="mt-2"
                                 styles="bg-very-light-pink"
-                                textColour="#bf01ff"
+                                textColour="#b600f3"
                             />
                         </>}
                     </div>

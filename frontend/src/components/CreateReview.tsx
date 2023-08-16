@@ -95,7 +95,7 @@ function CreateReview({ postID, sellerID, hidden }: CreateReviewProps) {
                 textStyles="text-main-blue"
                 setErrorMessage={setErrorMessage}
                 loadingSvgSize={28}
-                loadingSvgColour="#4E73F8"
+                loadingSvgColour="#4169f7"
             />
         </div>
     )

@@ -3,5 +3,6 @@ export const notificationProperties = {
     title: true,
     text: true,
     createdAt: true,
-    unread: true
+    unread: true,
+    navigateTo: true
 };

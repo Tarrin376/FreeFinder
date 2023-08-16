@@ -61,7 +61,7 @@ function SearchLanguages({ updateLanguages, loading, selectedLanguages, searchBa
                 removeOption={removeLanguage}
                 wrapperStyles="mt-5"
                 styles="bg-highlight"
-                textColour="#4E73F8"
+                textColour="#4169f7"
             />}
         </div>
     )

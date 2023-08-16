@@ -10,9 +10,9 @@ function FileTypeIcon({ fileType }: FileTypeIconProps) {
     return (
         <FileIcon 
             extension={type} {...defaultStyles[type as DefaultExtensionType]} 
-            foldColor="#4E73F8"
-            glyphColor="#4E73F8"
-            labelColor="#4E73F8"
+            foldColor="#4169f7"
+            glyphColor="#4169f7"
+            labelColor="#4169f7"
             color="#ebebec"
         />
     )

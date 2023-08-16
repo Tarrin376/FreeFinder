@@ -92,7 +92,7 @@ function CreateGroup({ setCreateGroupPopUp, seller, initialServiceID }: CreateGr
                     textStyles="text-main-blue"
                     setErrorMessage={setErrorMessage}
                     loadingSvgSize={20}
-                    loadingSvgColour="#4E73F8"
+                    loadingSvgColour="#4169f7"
                     keepErrorMessage={true}
                 />}
                 <p className="mb-2 mt-4">Group Name</p>

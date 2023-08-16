@@ -121,7 +121,7 @@ function ChangeSellerDetails({ setSellerProfilePopUp }: ChangeSellerDetailsProps
                     options={skills}
                     removeOption={removeSkill}
                     styles="bg-very-light-pink"
-                    textColour="#bf01ff"
+                    textColour="#b600f3"
                     wrapperStyles="mt-4"
                 />
             </div>

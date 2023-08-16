@@ -297,22 +297,35 @@ export async function getPostHandler(postID) {
     }
 }
 
-function getSavedPostNotification(postID, seller, hidden) {
+function getSavedPostNotification(postTitle, seller, hidden) {
     if (hidden) {
         return {
             title: "A saved service has been hidden",
-            text: `${seller} has temporarily hidden their sevice: ${postID} from public view.`
+            text: `${seller} has temporarily hidden the sevice: '${postTitle}' from public view.`
         }
     } else {
         return {
             title: "A saved service has been unhidden",
-            text: `${seller} has made their service: ${postID} publicly available and is now accepting order requests!`
+            text: `${seller} has made the service: '${postTitle}' publicly available!`
         }
     }
 }
 
 export async function updatePostHandler(req) {
     try {
+        const saved = await prisma.savedPost.findMany({
+            where: { postID: req.params.id },
+            select: { 
+                user: { 
+                    select: { 
+                        socketID: true,
+                        userID: true,
+                        notificationSettings: true
+                    }
+                }
+            }
+        });
+
         return await prisma.$transaction(async (tx) => {
             if (req.body.newImage && req.body.imageURL) {
                 const image = await tx.postImage.findUnique({ 
@@ -374,31 +387,19 @@ export async function updatePostHandler(req) {
 
             const usersSaved = [];
             if (req.body.hidden !== undefined) {
-                const saved = await prisma.savedPost.findMany({
-                    where: { postID: req.params.id },
-                    select: { 
-                        user: { 
-                            select: { 
-                                socketID: true,
-                                userID: true,
-                                notificationSettings: true
-                            }
-                        }
-                    }
-                });
-
                 for (const savedPost of saved) {
                     if (savedPost.user.notificationSettings.savedServices) {
-                        const msg = getSavedPostNotification(req.params.id, updatedPost.postedBy.user.username, req.body.hidden);
-                        const notification = await prisma.notification.create({
+                        const msg = getSavedPostNotification(updatedPost.title, updatedPost.postedBy.user.username, req.body.hidden);
+                        const notification = await tx.notification.create({
                             select: notificationProperties,
                             data: {
                                 ...msg,
+                                navigateTo: `/posts/${req.params.id}`,
                                 userID: savedPost.user.userID
                             }
                         });
 
-                        await prisma.user.update({
+                        await tx.user.update({
                             where: { userID: savedPost.user.userID },
                             data: {
                                 unreadNotifications: { increment: 1 }
@@ -448,12 +449,13 @@ export async function updatePostHandler(req) {
 export async function deletePostHandler(postID, userID) {
     try {
         const post = await prisma.post.findUnique({ 
-            where: { postID: postID } 
+            where: { postID: postID }
         });
 
         const user = await prisma.user.findUnique({ 
             where: { userID: userID },
             select: {
+                username: true,
                 seller: {
                     select: {
                         sellerID: true
@@ -465,14 +467,56 @@ export async function deletePostHandler(postID, userID) {
         if (!user) {
             throw new DBError("User not found.", 404);
         } else if (!post) {
-            throw new DBError("Post not found.", 404);
+            throw new DBError("Service does not exist or has been deleted.", 404);
         } else if (post.sellerID !== user.seller.sellerID) {
             throw new DBError("You do not have authorization to delete this post.", 403);
         }
-        
-        await prisma.$transaction(async (tx) => {
+
+        const usersSaved = [];
+        const saved = await prisma.savedPost.findMany({
+            where: { postID: postID },
+            select: { 
+                user: { 
+                    select: { 
+                        socketID: true,
+                        userID: true,
+                        notificationSettings: true
+                    }
+                }
+            }
+        });
+
+        return await prisma.$transaction(async (tx) => {
+            for (const savedPost of saved) {
+                if (savedPost.user.notificationSettings.savedServices) {
+                    const notification = await tx.notification.create({
+                        select: notificationProperties,
+                        data: {
+                            title: "A saved service has been deleted",
+                            text: `${user.username} has permanently removed their service: '${post.title}'.`,
+                            userID: savedPost.user.userID
+                        }
+                    });
+    
+                    await tx.user.update({
+                        where: { userID: savedPost.user.userID },
+                        data: {
+                            unreadNotifications: { increment: 1 }
+                        }
+                    });
+
+                    if (savedPost.user.socketID) {
+                        usersSaved.push({
+                            socketID: savedPost.user.socketID,
+                            notification: notification
+                        });
+                    }
+                }
+            }
+
             await tx.post.delete({ where: { postID: postID } });
             await deleteCloudinaryResource(`FreeFinder/PostImages/${postID}`, "image", true);
+            return usersSaved;
         });
     }
     catch (err) {
@@ -480,8 +524,8 @@ export async function deletePostHandler(postID, userID) {
             throw err;
         } else if (err instanceof Prisma.PrismaClientValidationError) {
             throw new DBError("Missing required fields or fields provided are invalid.", 400);
-        } else if (err instanceof Prisma.PrismaClientKnownRequestError) {
-            if (err.code === "P2225") throw new DBError("Post not found.", 404);
+        } else if (err instanceof Prisma.PrismaClientKnownRequestError && (err.code == "P2025" || err.code === "P2003")) {
+            if (err.code === "P2025") throw new DBError("Service does not exist or has been deleted.", 404);
             else throw new DBError("You must complete all remaining orders for this service.", 400);
         } else {
             throw new DBError("Something went wrong. Please try again later.", 500);
@@ -593,7 +637,7 @@ export async function getSellerSummaryHandler(postID) {
         });
 
         if (!sellerSummary) {
-            throw new DBError("Service ID does not exist.", 404);
+            throw new DBError("Service does not exist or has been deleted.", 404);
         }
 
         const { userID, ...res } = sellerSummary.postedBy.user;

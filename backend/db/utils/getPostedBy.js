@@ -18,7 +18,7 @@ export async function getPostedBy(id) {
         });
         
         if (!post) {
-            throw new DBError("Post not found.", 404);
+            throw new DBError("Service does not exist or has been deleted.", 404);
         }
     
         return post.postedBy.userID;

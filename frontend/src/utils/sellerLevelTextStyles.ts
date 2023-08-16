@@ -2,8 +2,8 @@ export const sellerLevelTextStyles: {
     [key: string]: React.CSSProperties
 } = {
     "Newbie": { 
-        backgroundColor: "#f3ceff", 
-        color: "#bf01ff", 
+        backgroundColor: "#f7ddff", 
+        color: "#b600f3", 
     },
     "Amateur": {  
         backgroundColor: "#ccedff", 

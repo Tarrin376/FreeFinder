@@ -275,7 +275,7 @@ function PostView() {
                                 onClick={triggerFileUpload}>
                                     <button className="change relative w-full h-[85px] flex items-center 
                                     justify-center rounded-[8px] gap-2">
-                                        {state.addingImage && <LoadingSvg size={24} colour="#4E73F8" />}
+                                        {state.addingImage && <LoadingSvg size={24} colour="#4169f7" />}
                                         <span className="text-main-blue">{state.addingImage ? "Uploading" : "+ Add image"}</span>
                                     </button>
                                 </div>

@@ -57,6 +57,12 @@ function Post({ postInfo, index, canRemove, count, styles }: PostProps) {
         }
     }
 
+    function sendNotifications(users: SendNotification[]): void {
+        for (const user of users) {
+            userContext.socket?.emit("send-notification", user.notification, user.socketID);
+        }
+    }
+
     async function removePost(): Promise<string | undefined> {
         if (!canRemove || canRemove.deletingPost || !count) {
             return;
@@ -64,12 +70,14 @@ function Post({ postInfo, index, canRemove, count, styles }: PostProps) {
         
         try {
             canRemove.setDeletingPost(true);
-            if (canRemove.unsave) {
+
+            if (!canRemove.unsave) {
+                const resp = await axios.delete<{ usersSaved: SendNotification[], message: string }>(`${canRemove.removeURL}/${postInfo.postID}`);
+                sendNotifications(resp.data.usersSaved);
+            } else {
                 const saved = await savePost(true);
                 if (!saved) return;
                 else setRemove(true);
-            } else {
-                await axios.delete<{ message: string }>(`${canRemove.removeURL}/${postInfo.postID}`);
             }
             
             count.current -= 1;
@@ -90,12 +98,12 @@ function Post({ postInfo, index, canRemove, count, styles }: PostProps) {
 
         try {
             setHidingPost(true);
-            const resp = await axios.put<{ usersSaved: SendNotification[], message: string }>(`/api/posts/${postInfo.postID}`, { 
+            const resp = await axios.put<{ usersSaved: SendNotification[], message: string }>
+            (`/api/posts/${postInfo.postID}`, { 
                 hidden: !hide 
             });
 
-            console.log(resp.data);
-
+            sendNotifications(resp.data.usersSaved);
             setHide(!hide);
         }
         catch (err: any) {
@@ -190,7 +198,7 @@ function Post({ postInfo, index, canRemove, count, styles }: PostProps) {
                         {postInfo.postedBy.sellerLevel.name}
                     </span>
                     {seconds < 60 * 60 * 24 && 
-                    <span className="bg-[#e6ebff] text-[#4E73F8] inline-block text-[14px] px-3 rounded-[6px]">
+                    <span className="bg-[#e6ebff] text-[#4169f7] inline-block text-[14px] px-3 rounded-[6px]">
                         New
                     </span>}
                 </div>
