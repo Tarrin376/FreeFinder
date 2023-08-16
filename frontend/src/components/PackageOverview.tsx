@@ -18,13 +18,13 @@ function PackageOverview({ type, revisions, seller, workType, wrapperStyles, chi
 
     return (
         <div className={`${defaultStyles} ${wrapperStyles}`}>
-            <div className={`mb-2 flex items-center gap-3 relative ${styles}`}>
+            <div className={`mb-2 flex items-center gap-3 relative overflow-hidden ${styles}`}>
                 <ProfilePicAndStatus
                     profilePicURL={seller.profilePicURL}
                     username={seller.username}
                     size={42}
                 />
-                <p className="text-[15px]">
+                <p className="text-[15px] text-ellipsis whitespace-nowrap overflow-hidden">
                     {`${seller.username} (seller)`}
                 </p>
             </div>

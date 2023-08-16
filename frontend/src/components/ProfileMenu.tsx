@@ -110,7 +110,7 @@ function ProfileMenu({ logout }: ProfileMenuProps) {
     }, [userContext.socket, updateGlobalUnreadMessages, updateUnreadNotifications]);
 
     return (
-        <div className={`flex ${windowSize <= 320 ? "gap-4" : "gap-7"} items-center z-30`}>
+        <div className={`flex ${windowSize <= 320 ? "gap-4" : "gap-7"} items-center z-30 relative`}>
             <AnimatePresence>
                 {settingsPopUp && <AccountSettings setSettingsPopUp={setSettingsPopUp} />}
                 {updateSellerProfilePopUp && <ChangeSellerDetails setSellerProfilePopUp={setUpdateSellerProfilePopUp} />}
@@ -132,8 +132,8 @@ function ProfileMenu({ logout }: ProfileMenuProps) {
                         styles="absolute top-[-5px] right-[-6px]"
                     />}
                 </div>
-                <div className="w-fit relative">
-                    <div className="relative cursor-pointer" onClick={toggleNotifications}>
+                <div className={`w-fit ${windowSize >= 540 ? "relative" : ""}`}>
+                    <div className="cursor-pointer" onClick={toggleNotifications}>
                         <img src={NotificationIcon} className="w-[29px] h-[29px]" alt="notifications" />
                         {unreadNotifications > 0 &&
                         <span className="absolute top-0 right-[2px] flex h-[12px] w-[12px]">
@@ -150,7 +150,7 @@ function ProfileMenu({ logout }: ProfileMenuProps) {
                     </AnimatePresence>
                 </div>
             </div>
-            <div className="cursor-pointer relative">
+            <div className="relative">
                 <div className="flex gap-3 items-center">
                     <ProfilePicAndStatus 
                         profilePicURL={userContext.userData.profilePicURL} 
@@ -160,7 +160,7 @@ function ProfileMenu({ logout }: ProfileMenuProps) {
                         size={38}
                     />
                     <NavDropdown textStyles="max-w-[140px] text-ellipsis whitespace-nowrap overflow-hidden"
-                    title={windowSize > 600 ? userContext.userData.username : ""} textSize={14}>
+                    title={windowSize > 706 ? userContext.userData.username : ""} textSize={14}>
                         <DropdownElement
                             text="Your balance"
                             action={viewBalance}

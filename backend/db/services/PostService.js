@@ -297,16 +297,16 @@ export async function getPostHandler(postID) {
     }
 }
 
-function getSavedPostNotification(postTitle, seller, hidden) {
+function getSavedPostNotification(postID, seller, hidden) {
     if (hidden) {
         return {
             title: "A saved service has been hidden",
-            text: `${seller} has temporarily hidden the sevice: '${postTitle}' from public view.`
+            text: `${seller} has temporarily hidden the sevice: ${postID}.`
         }
     } else {
         return {
             title: "A saved service has been unhidden",
-            text: `${seller} has made the service: '${postTitle}' publicly available!`
+            text: `${seller} has made the service: ${postID} publicly available!`
         }
     }
 }
@@ -389,7 +389,7 @@ export async function updatePostHandler(req) {
             if (req.body.hidden !== undefined) {
                 for (const savedPost of saved) {
                     if (savedPost.user.notificationSettings.savedServices) {
-                        const msg = getSavedPostNotification(updatedPost.title, updatedPost.postedBy.user.username, req.body.hidden);
+                        const msg = getSavedPostNotification(updatedPost.postID, updatedPost.postedBy.user.username, req.body.hidden);
                         const notification = await tx.notification.create({
                             select: notificationProperties,
                             data: {
@@ -493,7 +493,7 @@ export async function deletePostHandler(postID, userID) {
                         select: notificationProperties,
                         data: {
                             title: "A saved service has been deleted",
-                            text: `${user.username} has permanently removed their service: '${post.title}'.`,
+                            text: `${user.username} has permanently removed the service: ${post.postID}.`,
                             userID: savedPost.user.userID
                         }
                     });

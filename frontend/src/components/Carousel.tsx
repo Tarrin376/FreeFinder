@@ -61,20 +61,20 @@ function Carousel({ images, btnSize, wrapperStyles, imageStyles, startIndex }: C
             })}
             {index > 0 &&
             <button className="carousel-btn absolute top-1/2 translate-y-[-50%] left-3" onClick={previousSlide} 
-            style={{width: btnSize, height: btnSize}}>
+            style={{ width: btnSize, height: btnSize }}>
                 <img 
                     src={BackIcon} 
                     alt="back" 
-                    style={{width: 0.50 * btnSize, height: 0.50 * btnSize}}
+                    style={{ width: 0.50 * btnSize, height: 0.50 * btnSize }}
                 />
             </button>}
             {index < images.length - 1 &&
             <button className="carousel-btn absolute top-1/2 translate-y-[-50%] right-3" onClick={nextSlide} 
-            style={{width: btnSize, height: btnSize}}>
+            style={{ width: btnSize, height: btnSize }}>
                 <img 
                     src={NextIcon} 
                     alt="next" 
-                    style={{width: 0.50 * btnSize, height: 0.50 * btnSize}} 
+                    style={{ width: 0.50 * btnSize, height: 0.50 * btnSize }} 
                 />
             </button>}
         </div>

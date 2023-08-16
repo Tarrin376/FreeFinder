@@ -1,21 +1,23 @@
-import TickIcon from "../assets/tick.svg";
+import TickSvg from "./TickSvg";
 
 interface MessageSentProps {
-    sendingMessage: boolean
+    sendingMessage: boolean,
+    colour: string
 }
 
-function MessageSent({ sendingMessage }: MessageSentProps) {
+function MessageSent({ sendingMessage, colour }: MessageSentProps) {
     return (
-        <div className="w-[25px] h-[14px] relative flex-shrink-0">
-            <img 
-                src={TickIcon} 
-                className="w-[16px] h-[16px] absolute right-0 top-0" 
-                alt="" 
+        <div className="flex-shrink-0 h-[16px] w-[32px] relative">
+            <TickSvg
+                size={16}
+                colour={colour}
+                styles="absolute bottom-0 right-[9px]"
             />
-            {!sendingMessage && <img 
-                src={TickIcon} 
-                className="w-[16px] h-[16px] absolute right-[9px] top-0" 
-                alt="" 
+            {!sendingMessage && 
+            <TickSvg
+                size={16}
+                colour={colour}
+                styles="absolute bottom-0 right-0"
             />}
         </div>
     )

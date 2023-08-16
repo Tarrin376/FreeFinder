@@ -12,6 +12,7 @@ import StarSvg from "./StarSvg";
 import { RatingAverages } from "../types/RatingAverages";
 import { StarCounts } from "../types/StarCounts";
 import Rating from "./Rating";
+import { useWindowSize } from "src/hooks/useWindowSize";
 
 interface ReviewsProps {
     url: string,
@@ -40,6 +41,7 @@ function Reviews({ url, reviewsRef }: ReviewsProps) {
     const [starCounts, setStarCounts] = useState<StarCounts>(INITIAL_STARS);
     const [allReviewsPopUp, setAllReviewsPopUp] = useState<boolean>(false);
     const [errorMessage, setErrorMessage] = useState<string>("");
+    const windowSize = useWindowSize();
 
     useEffect(() => {
         (async (): Promise<void> => {
@@ -59,7 +61,6 @@ function Reviews({ url, reviewsRef }: ReviewsProps) {
     if (!reviews) {
         return (
             <AnimatePresence>
-                <p>loading</p>
                 {errorMessage !== "" && 
                 <ErrorPopUp 
                     errorMessage={errorMessage} 
@@ -87,16 +88,20 @@ function Reviews({ url, reviewsRef }: ReviewsProps) {
                 />}
             </AnimatePresence>
             <div className="flex items-center gap-2 h-[52px] mb-3">
-                <h2 className="text-[1.3rem]">Ratings and reviews</h2>
+                <h2 className="text-[1.3rem]">
+                    Ratings and reviews
+                </h2>
                 {reviews.count > QUERY_LIMIT &&
                 <div className="w-[52px] h-full flex items-center justify-center 
                 hover:bg-hover-light-gray rounded-full cursor-pointer" onClick={() => setAllReviewsPopUp(true)}>
                     <img src={RightArrowIcon} alt="" className="w-[26px] h-[26px]" />
                 </div>}
             </div>
-            <div className="flex gap-7 items-end mb-6">
+            <div className={`flex ${windowSize >= 450 ? "gap-7" : "gap-5"} items-end mb-6`}>
                 <div className="w-fit">
-                    <p className="text-[3.7rem] mb-[-10px] text-center">{averages.rating ? averages.rating.toFixed(1) : 0}</p>
+                    <p className={`${windowSize >= 450 ? "text-[60px]" : "text-[50px]"} mb-[-10px] text-center`}>
+                        {averages.rating ? averages.rating.toFixed(1) : 0}
+                    </p>
                     <Rating 
                         rating={averages.rating ?? 0} 
                         size={16} 
@@ -110,7 +115,7 @@ function Reviews({ url, reviewsRef }: ReviewsProps) {
                         return (
                             <div className="flex items-center gap-3" key={index}>
                                 <p className="text-sm text-side-text-gray">{5 - index}</p>
-                                <div className="flex-grow rounded-full h-[14px] bg-very-light-gray">
+                                <div className="flex-grow rounded-full h-[13px] bg-very-light-gray">
                                     <div className="bg-main-blue h-full w-[200px] rounded-full" 
                                     style={{ width: reviews.count > 0 ? `calc(100% / ${(reviews.count)} * ${starCounts[4 - index]}` : '0px' }}>
                                     </div>

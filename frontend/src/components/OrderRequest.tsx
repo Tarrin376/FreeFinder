@@ -100,7 +100,7 @@ function OrderRequest({ message, seller, workType, groupID }: OrderRequestProps)
     }, [message.orderRequest]);
 
     return (
-        <div>
+        <div className="border border-light-border-gray rounded-[13px] shadow-post">
             <AnimatePresence>
                 {errorMessage !== "" &&
                 <ErrorPopUp
@@ -156,8 +156,7 @@ function OrderRequest({ message, seller, workType, groupID }: OrderRequestProps)
                         loadingSvgSize={20}
                         loadingSvgColour="#F43C3C"
                     />
-                </div> :
-                message.from.username === userContext.userData.username && status === OrderRequestStatus.PENDING &&
+                </div> : message.from.username === userContext.userData.username && status === OrderRequestStatus.PENDING &&
                 <Button
                     action={() => updateOrderStatus(OrderRequestStatus.CANCELLED)}
                     defaultText="Cancel request"

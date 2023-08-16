@@ -1,7 +1,7 @@
 import PopUpWrapper from "../wrappers/PopUpWrapper";
 import FileTypeIcon from "./FileTypeIcon";
-import TickIcon from "../assets/tick.svg";
 import { SUPPORTED_FILE_FORMATS } from "src/utils/checkFileType";
+import TickSvg from "./TickSvg";
 
 interface SupportedFileFormatsProps {
     setToggleSupportedFormats: React.Dispatch<React.SetStateAction<boolean>>
@@ -20,10 +20,10 @@ function SupportedFileFormats({ setToggleSupportedFormats }: SupportedFileFormat
                                 </div>
                                 <p className="text-side-text-gray text-[15px] break-all">{format}</p>
                             </div>
-                            <img 
-                                src={TickIcon} 
-                                className="w-[19px] h-[19px]" 
-                                alt="" 
+                            <TickSvg
+                                size={19}
+                                colour="#30ab4b"
+                                styles="flex-shrink-0"
                             />
                         </div>
                     )

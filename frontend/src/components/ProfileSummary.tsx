@@ -1,31 +1,34 @@
 import LocationIcon from "../assets/location.png";
 import UserIcon from "../assets/user.png";
 import StarGrayIcon from "../assets/star-gray.png";
+import ProfileSummaryItem from "./ProfileSummaryItem";
 
 interface ProfileSummaryProps {
-    styles?: string,
     country: string,
     memberDate: Date,
+    styles?: string
 }
 
-function ProfileSummary({ styles, country, memberDate }: ProfileSummaryProps) {
+function ProfileSummary({ country, memberDate, styles }: ProfileSummaryProps) {
+    const defaultStyles = `flex flex-col gap-2`;
+
     return (
-        <div className={styles}>
-            <div className="flex gap-2 items-center">
-                <img src={LocationIcon} width="20px" height="20px" alt="location" />
-                <p className="text-side-text-gray">Lives in</p>
-                <p className="ml-auto">{country}</p>
-            </div>
-            <div className="flex gap-2 items-center mt-2">
-                <img src={UserIcon} width="20px" height="20px" alt="location" />
-                <p className="text-side-text-gray">Member since</p>
-                <p className="ml-auto">{new Date(memberDate).toLocaleDateString()}</p>
-            </div>
-            <div className="flex gap-2 items-center mt-2">
-                <img src={StarGrayIcon} width="20px" height="20px" alt="location" />
-                <p className="text-side-text-gray">Clients served</p>
-                <p className="ml-auto">6</p>
-            </div>
+        <div className={`${defaultStyles} ${styles}`}>
+            <ProfileSummaryItem
+                image={LocationIcon}
+                itemKey="Lives in"
+                itemValue={country}
+            />
+            <ProfileSummaryItem
+                image={UserIcon}
+                itemKey="Member since"
+                itemValue={new Date(memberDate).toLocaleDateString()}
+            />
+            <ProfileSummaryItem
+                image={StarGrayIcon}
+                itemKey="Clients served"
+                itemValue={"6"}
+            />
         </div>
     )
 }

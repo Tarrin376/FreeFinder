@@ -10,6 +10,7 @@ import { FoundUsers } from "../../types/FoundUsers";
 import { UserContext } from "../../providers/UserProvider";
 import { AnimatePresence } from "framer-motion";
 import RequestOrder from "../../components/RequestOrder";
+import { useWindowSize } from "src/hooks/useWindowSize";
 
 interface PackagesProps {
     packages: IPackage[],
@@ -24,6 +25,7 @@ function Packages({ packages, seller, workType, postID, hidden }: PackagesProps)
     const [createGroupPopUp, setCreateGroupPopUp] = useState<boolean>(false);
     const [requestOrderPopUp, setRequestOrderPopUp] = useState<boolean>(false);
     const [curPkg, setCurPkg] = useState<IPackage>();
+    const windowSize = useWindowSize();
     
     useEffect(() => {
         const basicPkg = packages.find((x) => x.type === PackageTypes.BASIC);
@@ -48,8 +50,8 @@ function Packages({ packages, seller, workType, postID, hidden }: PackagesProps)
     }
 
     return (
-        <div className="bg-main-white rounded-[12px] border border-light-border-gray 
-        shadow-info-component w-full h-[605px] overflow-hidden">
+        <div className={`bg-main-white rounded-[12px] border border-light-border-gray 
+        shadow-info-component w-full ${windowSize < 1130 ? "max-h-[605px]" : "h-[605px]"} overflow-hidden`}>
             <AnimatePresence>
                 {createGroupPopUp &&
                 <CreateGroup
@@ -93,7 +95,7 @@ function Packages({ packages, seller, workType, postID, hidden }: PackagesProps)
                             </p>}
                         </div>
                         <div>
-                            <span className="text-[33px] mr-2">
+                            <span className={`${windowSize < 1320 ? "text-[28px]" : "text-[33px]"} mr-2`}>
                                 £{curPkg.amount.toFixed(2)}
                             </span>
                             <span className="text-sm text-side-text-gray">

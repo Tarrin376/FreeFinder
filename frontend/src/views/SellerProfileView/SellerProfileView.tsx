@@ -37,7 +37,7 @@ function SellerProfileView() {
     }, [location.pathname]);
 
     if (!sellerDetails) {
-        return <p>loading</p>
+        return <></>
     }
 
     return (
@@ -83,9 +83,9 @@ function SellerProfileView() {
                         <p>{sellerDetails.description}</p>
                         <div className="mt-5 flex items-end justify-between">
                             <ProfileSummary
-                                styles="w-[400px] bg-[#f8f8f8] p-3 rounded-[8px]"
                                 country={sellerDetails.user.country}
                                 memberDate={sellerDetails.user.memberDate}
+                                styles="w-[400px] bg-[#f8f8f8] p-3 rounded-[8px]"
                             />
                             <div>
                                 <button className="main-btn block !h-[42px] mb-3 w-[155px]">

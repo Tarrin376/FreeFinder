@@ -9,6 +9,7 @@ import axios, { AxiosError } from "axios";
 import { UserContext } from "src/providers/UserProvider";
 import { getAPIErrorMessage } from "src/utils/getAPIErrorMessage";
 import ErrorPopUp from "../components/ErrorPopUp";
+import MessageSent from "src/components/MessageSent";
 
 interface NotificationsWrapperProps {
     toggleNotifications: () => void,
@@ -40,15 +41,22 @@ function NotificationsWrapper({ toggleNotifications, setUnreadNotifications }: N
     return (
         <SidePopUpWrapper setIsOpen={toggleNotifications}>
             <div className="bg-main-white shadow-lg rounded-[8px] absolute top-full mt-[6px]
-            right-0 w-[400px] h-[500px] border border-light-border-gray flex flex-col">
+            right-0 w-[400px] h-[500px] max-w-[88vw] border border-light-border-gray flex flex-col">
                 <div className="flex-grow flex flex-col min-h-0 overflow-hidden">
                     <div className="flex items-center justify-between p-4 border-b border-light-border-gray">
                         <h2 className="text-[20px]">
                             Notifications
                         </h2>
-                        <span className="text-main-blue cursor-pointer text-[15px]" onClick={markAllAsRead}>
-                            Mark all as read
-                        </span>
+                        <div className="flex items-center gap-[3px]">
+                            {allRead &&
+                            <MessageSent
+                                sendingMessage={false}
+                                colour="#4169f7"
+                            />}
+                            <span className="text-main-blue cursor-pointer text-[15px]" onClick={markAllAsRead}>
+                                Mark all as read
+                            </span>
+                        </div>
                     </div>
                     <AnimatePresence>
                         {section === NotificationSections.settings && 
@@ -64,6 +72,7 @@ function NotificationsWrapper({ toggleNotifications, setUnreadNotifications }: N
                     {section === NotificationSections.allNotifications && 
                     <Notifications
                         setUnreadNotifications={setUnreadNotifications}
+                        toggleNotifications={toggleNotifications}
                         allRead={allRead}
                     />}
                 </div>

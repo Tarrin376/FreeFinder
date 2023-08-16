@@ -3,7 +3,6 @@ import { useEffect, useState, useContext, useReducer, useRef } from 'react';
 import { PostPage } from "../../types/PostPage";
 import ProfilePicAndStatus from "../../components/ProfilePicAndStatus";
 import AboutSeller from "./AboutSeller";
-import Packages from "./Packages";
 import axios, { AxiosError } from "axios";
 import { getAPIErrorMessage } from "../../utils/getAPIErrorMessage";
 import PageWrapper from "../../wrappers/PageWrapper";
@@ -18,14 +17,14 @@ import ErrorPopUp from "../../components/ErrorPopUp";
 import { AnimatePresence } from "framer-motion";
 import LoadingSvg from "../../components/LoadingSvg";
 import Reviews from "../../components/Reviews";
-import CreateReview from "../../components/CreateReview";
-import { scrollIntoView } from "../../utils/scrollIntoView";
 import StarSvg from "../../components/StarSvg";
 import ServiceID from "../../components/ServiceID";
 import { MAX_SERVICE_IMAGE_UPLOADS } from "@freefinder/shared/dist/constants";
 import { compressImage } from "src/utils/compressImage";
 import { IPostImage } from "src/models/IPostImage";
 import { useTimeCreated } from "src/hooks/useTimeCreated";
+import { useWindowSize } from "src/hooks/useWindowSize";
+import ReviewsAndPackages from "./ReviewsAndPackages";
 
 export type PostViewState = {
     about: string,
@@ -55,6 +54,7 @@ function PostView() {
 
     const location = useLocation();
     const navigate = useNavigate();
+    const windowSize = useWindowSize();
     const userContext = useContext(UserContext);
 
     const [state, dispatch] = useReducer((cur: PostViewState, payload: Partial<PostViewState>) => {
@@ -160,13 +160,13 @@ function PostView() {
 
     if (!state.postData) {
         return (
-            <p>loading</p>
+            <></>
         );
     }
 
     return (
         <div className="overflow-y-scroll h-[calc(100vh-90px)]">
-            <PageWrapper styles="p-[38px] pt-[58px]" locationStack={[
+            <PageWrapper styles={`${windowSize >= 560 ? "p-[38px]" : windowSize >= 400 ? "!px-5" : "!px-4"} pt-[58px]`} locationStack={[
                 state.postData.workType.jobCategory.name,
                 state.postData.workType.name,
                 state.postData.title
@@ -180,16 +180,16 @@ function PostView() {
                 </AnimatePresence>
                 <div className="flex gap-16">
                     <div className="flex-grow min-w-0">
-                        <div className="flex gap-3 items-center mb-3">
-                            {isOwner &&
+                        {isOwner &&
+                        <div className="flex gap-3 items-center mb-[10px]">
                             <p className="change" onClick={updateTitle}>
                                 {state.titleToggle ? "Confirm changes" : "Change"}
-                            </p>}
-                            {isOwner && state.titleToggle &&
+                            </p>
+                            {state.titleToggle &&
                             <p className="cancel-change" onClick={() => { dispatch({ titleToggle: false })}}>
                                 Cancel changes
                             </p>}
-                        </div>
+                        </div>}
                         {state.titleToggle ? 
                         <input
                             type="text" 
@@ -198,26 +198,27 @@ function PostView() {
                             maxLength={SERVICE_TITLE_LIMIT}
                             onChange={(e) => dispatch({ title: e.target.value })}
                         /> :
-                        <h1 className="text-[1.7rem] mb-3">
+                        <h1 className={`${windowSize >= 500 ? "text-[27px]" : "text-[23px]"} mb-3`}>
                             {state.postData.title}
                         </h1>}
-                        <div className="flex gap-3 items-center mb-5">
+                        <div className="flex gap-3 items-center mb-3">
                             <div className="relative">
                                 <ProfilePicAndStatus 
                                     profilePicURL={state.postData.postedBy.user.profilePicURL} 
                                     profileStatus={state.postData?.postedBy.user.status}
                                     action={navigateToProfile}
                                     username={state.postData.postedBy.user.username}
-                                    size={50}
+                                    size={windowSize >= 500 ? 50 : 45}
                                     statusRight={true}
                                 />
                             </div>
-                            <div>
-                                <div className="flex items-center gap-[10px]">
-                                    <p className="link !p-0" onClick={navigateToProfile}>
+                            <div className="flex-grow overflow-hidden">
+                                <div className="flex gap-[10px] items-center">
+                                    <p className="link !p-0 text-ellipsis whitespace-nowrap overflow-hidden" 
+                                    title={state.postData.postedBy.user.username} onClick={navigateToProfile}>
                                         {state.postData.postedBy.user.username}
                                     </p>
-                                    <div className="flex items-center gap-[5px]">
+                                    <div className="flex items-center gap-[5px] flex-shrink-0">
                                         <StarSvg 
                                             size={15} 
                                             backgroundColour="#18193F" 
@@ -226,11 +227,8 @@ function PostView() {
                                             {state.postData.postedBy.rating}
                                         </p>
                                     </div>
-                                    <p className="text-[15px] text-side-text-gray mt-[1px]">
-                                        ({0} reviews)
-                                    </p>
                                 </div>
-                                <p className="text-side-text-gray text-[15px] mt-[1px]">
+                                <p className={`text-side-text-gray text-[15px] ${windowSize >= 430 ? "mt-[1px]" : ""}`}>
                                     {`Posted ${timeCreated}`}
                                 </p>
                             </div>
@@ -254,7 +252,7 @@ function PostView() {
                                 This service has been hidden by the seller.
                             </p>}
                         </div>
-                        <div className="mt-5 whitespace-nowrap overflow-x-scroll relative pb-5" ref={imagesRef}>
+                        <div className="mt-6 whitespace-nowrap overflow-x-scroll relative pb-3 mb-7" ref={imagesRef}>
                             {state.postData.images.map((image: IPostImage, index: number) => {
                                 return (
                                     <PostImage
@@ -281,7 +279,13 @@ function PostView() {
                                 </div>
                             </>}
                         </div>
-                        <section className="mt-8 mb-10 w-full">
+                        {windowSize < 1130 &&
+                        <ReviewsAndPackages
+                            state={state}
+                            reviewsRef={reviewsRef}
+                            styles="w-full mb-8"
+                        />}
+                        <section className="mb-10 w-full">
                             <div className="flex items-center gap-3 mb-3">
                                 <h2 className="text-[1.3rem]">About this service</h2>
                                 {isOwner &&
@@ -322,30 +326,12 @@ function PostView() {
                             reviewsRef={reviewsRef}
                         />
                     </div>
-                    <div className="relative w-[390px] flex-shrink-0">
-                        <Packages 
-                            packages={state.postData.packages}
-                            postID={state.postData.postID}
-                            workType={state.postData.workType.name}
-                            hidden={state.postData.hidden}
-                            seller={{
-                                username: state.postData.postedBy.user.username,
-                                status: state.postData.postedBy.user.status,
-                                profilePicURL: state.postData.postedBy.user.profilePicURL,
-                                userID: state.postData.postedBy.user.userID
-                            }}
-                        />
-                        <button className="btn-primary text-main-white bg-main-black hover:bg-main-black-hover 
-                        w-full !h-[48px] mt-[26px] shadow-info-component" 
-                        onClick={() => scrollIntoView(reviewsRef)}>
-                            See seller reviews
-                        </button>
-                        <CreateReview 
-                            postID={state.postData.postID} 
-                            sellerID={state.postData.sellerID}
-                            hidden={state.postData.hidden}
-                        />
-                    </div>
+                    {windowSize >= 1130 &&
+                    <ReviewsAndPackages
+                        state={state}
+                        reviewsRef={reviewsRef}
+                        styles={windowSize < 1320 ? "w-[340px]" : "w-[390px]"}
+                    />}
                 </div>
             </PageWrapper>
         </div>

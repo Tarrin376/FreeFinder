@@ -112,19 +112,32 @@ export async function deleteMessageGroupHandler(req) {
             where: { groupID: req.params.groupID },
             select: { 
                 creatorID: true,
-                groupID: true
+                groupID: true,
+                members: {
+                    select: { 
+                        userID: true,
+                        unreadMessages: true
+                    }
+                }
             }
         });
 
         if (!group) {
             throw new DBError("Group does not exist.", 404);
-        }
-
-        if (group.creatorID !== req.userData.userID) {
+        } else if (group.creatorID !== req.userData.userID) {
             throw new DBError("You are not the creator of this group.", 403);
         }
 
         await prisma.$transaction(async (tx) => {
+            for (const member of group.members) {
+                await tx.user.update({
+                    where: { userID: member.userID },
+                    data: {
+                        unreadMessages: { decrement: member.unreadMessages }
+                    }
+                });
+            }
+
             await tx.messageGroup.delete({
                 where: { groupID: req.params.groupID }
             });

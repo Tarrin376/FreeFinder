@@ -7,10 +7,11 @@ import Notification from "./Notification";
 
 interface NotificationsProps {
     setUnreadNotifications: React.Dispatch<React.SetStateAction<number>>,
+    toggleNotifications: () => void,
     allRead: boolean
 }
 
-function Notifications({ setUnreadNotifications, allRead }: NotificationsProps) {
+function Notifications({ setUnreadNotifications, toggleNotifications, allRead }: NotificationsProps) {
     const userContext = useContext(UserContext);
     const [page, setPage] = useState<{ value: number }>({ value: 1 });
 
@@ -44,6 +45,7 @@ function Notifications({ setUnreadNotifications, allRead }: NotificationsProps) 
                         {...notification}
                         setUnreadNotifications={setUnreadNotifications}
                         allRead={allRead}
+                        toggleNotifications={toggleNotifications}
                         key={notification.notificationID}
                     />
                 )

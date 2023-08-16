@@ -37,11 +37,11 @@ async function checkPackage(postID, type, sellerID) {
         select: {
             packageID: true,
             amount: true,
+            postID: true,
             post: {
                 select: {
                     sellerID: true,
-                    hidden: true,
-                    title: true
+                    hidden: true
                 }
             }
         }
@@ -183,7 +183,8 @@ export async function sendOrderRequestHandler(req) {
                     data: {
                         userID: req.params.seller,
                         title: `New order request`,
-                        text: `${req.userData.username} has requested a ${req.params.packageType} package order for the service: '${pkg.post.title}'.`
+                        text: `${req.userData.username} has requested a ${req.params.packageType} package order for the service: ${pkg.postID}.`,
+                        navigateTo: `/posts/${pkg.postID}`
                     }
                 });
 
@@ -220,22 +221,22 @@ export async function sendOrderRequestHandler(req) {
     }
 }
 
-function getNotificationMessage(status, seller, user, packageType, title) {
+function getNotificationMessage(status, seller, user, packageType, postID) {
     switch (status) {
         case "ACCEPTED":
             return {
                 title: "Order request accepted",
-                text: `${seller} accepted your ${packageType} package order request for the service: '${title}'.`
+                text: `${seller} accepted your ${packageType} package order request for the service: ${postID}.`
             };
         case "DECLINED":
             return {
                 title: "Order request declined",
-                text: `${seller} declined your ${packageType} package order request for the service: '${title}'.`
+                text: `${seller} declined your ${packageType} package order request for the service: ${postID}.`
             };
         case "CANCELLED":
             return {
                 title: "Order request cancelled",
-                text: `${user} cancelled their ${packageType} package order request for the service: '${title}'.` 
+                text: `${user} cancelled their ${packageType} package order request for the service: ${postID}.` 
             };
         default:
             throw new DBError(`Unknown order request status: ${status}.`, 400);
@@ -259,12 +260,7 @@ async function getOrderRequest(orderRequestID) {
             package: {
                 select: { 
                     postID: true,
-                    type: true,
-                    post: {
-                        select: {
-                            title: true
-                        }
-                    }
+                    type: true
                 }
             },
             status: true,
@@ -360,7 +356,7 @@ export async function updateOrderRequestStatusHandler(req) {
                 orderRequest.seller.user.username, 
                 orderRequest.user.username,
                 orderRequest.package.type,
-                orderRequest.package.post.title
+                orderRequest.package.postID
             );
 
             updatedOrderRequest.subTotal = parseFloat(updatedOrderRequest.subTotal);
@@ -383,7 +379,8 @@ export async function updateOrderRequestStatusHandler(req) {
                     select: notificationProperties,
                     data: {
                         ...notificationMessage,
-                        userID: userID
+                        userID: userID,
+                        navigateTo: `/posts/${orderRequest.package.postID}`
                     }
                 });
 

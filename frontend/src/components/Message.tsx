@@ -65,38 +65,40 @@ function Message({ message, isLastMessage, sendingMessage, groupMembers, seller,
                         </p>
                     </div>
                     <div className="flex gap-[5px] items-end w-full">
-                        {isOwnMessage && <MessageSent sendingMessage={sendingMessage && isLastMessage} />}
+                        {isOwnMessage && 
+                        <MessageSent 
+                            sendingMessage={sendingMessage && isLastMessage}
+                            colour="#30ab4b"
+                        />}
+                        {message.orderRequest ?
+                            <OrderRequest 
+                            message={message} 
+                            seller={seller}
+                            workType={workType}
+                            groupID={groupID}
+                            key={message.messageID}
+                        /> : 
                         <div className={`rounded-[13px] p-[6px] px-4 ${isOwnMessage ? "rounded-tr-none bg-highlight self-end" : 
                         "bg-very-light-gray rounded-tl-none"} ${message.orderRequest ? "!bg-main-blue w-full" : "w-fit"}`}>
-                            {message.orderRequest ?
-                            <OrderRequest 
-                                message={message} 
-                                seller={seller}
-                                workType={workType}
-                                groupID={groupID}
-                                key={message.messageID}
-                            /> : 
-                            <>
-                                <Tags
-                                    isOwnMessage={isOwnMessage}
-                                    messageText={message.messageText}
-                                    groupMembers={groupMembers}
-                                    textStyles="text-[15px]"
-                                />
-                                {message.files.length > 0 &&
-                                <div className="mt-2 pb-[5px] flex flex-col gap-2 overflow-hidden">
-                                    {message.files.map((file: IMessageFile, index: number) => {
-                                        return (
-                                            <MessageFile 
-                                                file={file}
-                                                sending={sendingMessage && isLastMessage}
-                                                key={index}
-                                            />
-                                        )
-                                    })}
-                                </div>}
-                            </>}
-                        </div>
+                            <Tags
+                                isOwnMessage={isOwnMessage}
+                                messageText={message.messageText}
+                                groupMembers={groupMembers}
+                                textStyles="text-[15px]"
+                            />
+                            {message.files.length > 0 &&
+                            <div className="mt-2 pb-[5px] flex flex-col gap-2 overflow-hidden">
+                                {message.files.map((file: IMessageFile, index: number) => {
+                                    return (
+                                        <MessageFile 
+                                            file={file}
+                                            sending={sendingMessage && isLastMessage}
+                                            key={index}
+                                        />
+                                    )
+                                })}
+                            </div>}
+                        </div>}
                     </div>
                 </div>
             </div>

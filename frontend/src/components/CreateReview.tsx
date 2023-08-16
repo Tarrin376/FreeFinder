@@ -7,6 +7,7 @@ import { AnimatePresence } from "framer-motion";
 import Button from "./Button";
 import Rating from "./Rating";
 import { MAX_REVIEW_CHARS } from "@freefinder/shared/dist/constants";
+import { useWindowSize } from "src/hooks/useWindowSize";
 
 interface CreateReviewProps {
     postID: string,
@@ -21,6 +22,7 @@ function CreateReview({ postID, sellerID, hidden }: CreateReviewProps) {
     const [review, setReview] = useState<string>("");
     const userContext = useContext(UserContext);
     const [errorMessage, setErrorMessage] = useState<string>("");
+    const windowSize = useWindowSize();
 
     async function createNewReview(): Promise<string | undefined> {
         try {
@@ -46,7 +48,8 @@ function CreateReview({ postID, sellerID, hidden }: CreateReviewProps) {
     }
 
     return (
-        <div className="w-full mt-[58px] rounded-[12px] shadow-pop-up p-6 bg-main-blue sticky top-[58px]">
+        <div className={`w-full rounded-[12px] shadow-pop-up p-6 bg-main-blue sticky top-10 flex-grow 
+        ${windowSize >= 784 && windowSize < 1130 ? "flex flex-col" : "mt-10"}`}>
             <AnimatePresence>
                 {errorMessage !== "" &&
                 <ErrorPopUp 
@@ -54,35 +57,45 @@ function CreateReview({ postID, sellerID, hidden }: CreateReviewProps) {
                     setErrorMessage={setErrorMessage} 
                 />}
             </AnimatePresence>
-            <h1 className="text-[20px] text-main-white mb-3">Rate your experience</h1>
-            <h2 className="text-main-white mb-[2px]">Service as described</h2>
+            <h1 className="text-[20px] text-main-white mb-3">
+                Rate your experience
+            </h1>
+            <h2 className="text-main-white mb-[2px]">
+                Service as described
+            </h2>
             <Rating 
                 rating={serviceAsDescribed} 
                 setRating={setServiceAsDescribed}
                 size={20}
                 key="service as described"
             />
-            <h2 className="text-main-white mt-5 mb-[2px]">Seller communication</h2>
+            <h2 className="text-main-white mt-5 mb-[2px]">
+                Seller communication
+            </h2>
             <Rating 
                 rating={sellerCommunication} 
                 setRating={setSellerCommunication}
                 size={20}
                 key="seller communication"
             />
-            <h2 className="text-main-white mt-5 mb-[2px]">Service delivery</h2>
+            <h2 className="text-main-white mt-5 mb-[2px]">
+                Service delivery
+            </h2>
             <Rating 
                 rating={serviceDelivery} 
                 setRating={setServiceDelivery}
                 size={20}
                 key="service delivery"
             />
-            <h2 className="text-main-white mt-5">{`Review (max ${MAX_REVIEW_CHARS} characters)`}</h2>
+            <h2 className="text-main-white mt-5">
+                {`Review (max ${MAX_REVIEW_CHARS} characters)`}
+            </h2>
             <textarea 
-                className="search-bar bg-transparent text-main-white mt-2 
-                rounded-[8px] placeholder:text-[#fcfcfcec]" 
-                rows={9}
+                className={`search-bar bg-transparent text-main-white mt-2 rounded-[8px] placeholder:text-[#fcfcfcec] 
+                ${windowSize >= 784 && windowSize < 1130 ? "flex-grow" :""}`}
                 placeholder="Summarize your experience with this seller"
                 maxLength={MAX_REVIEW_CHARS}
+                rows={windowSize >= 1320 ? 9 : 6}
                 onChange={(e) => setReview(e.target.value)}
                 value={review}
             />

@@ -7,7 +7,7 @@ interface ServiceIDProps {
 }
 
 function ServiceID({ postID, textSize, styles }: ServiceIDProps) {
-    const defaultStyles = `flex items-center justify-between w-fit gap-4`;
+    const defaultStyles = `flex items-center justify-between w-fit max-w-full gap-4 overflow-hidden`;
 
     function copyServiceID() {
         navigator.clipboard.writeText(postID);
@@ -19,7 +19,7 @@ function ServiceID({ postID, textSize, styles }: ServiceIDProps) {
                 itemKey="Service ID"
                 itemValue={postID}
                 textSize={textSize}
-                styles="pt-[1px]"
+                styles="pt-[1px] text-ellipsis whitespace-nowrap overflow-hidden"
             />
             <button className="side-btn w-fit !h-[30px] rounded-[6px]" 
             style={{ fontSize: `${textSize}px` }} onClick={copyServiceID}>

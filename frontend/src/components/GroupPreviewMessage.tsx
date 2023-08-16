@@ -122,9 +122,14 @@ function GroupPreviewMessage({ group, selectedGroup, action, setGlobalUnreadMess
                                 />}
                             </div>
                         </div>}
-                        {unreadMessages > 0 ? <Count value={unreadMessages} /> : 
-                        lastMessage && lastMessage.from.username === userContext.userData.username &&
-                        <MessageSent sendingMessage={false} />}
+                        {unreadMessages > 0 ? 
+                        <Count 
+                            value={unreadMessages} 
+                        /> : lastMessage && lastMessage.from.username === userContext.userData.username &&
+                        <MessageSent 
+                            sendingMessage={false} 
+                            colour="#30ab4b"
+                        />}
                     </div>
                 </div>
             </div>

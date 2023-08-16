@@ -96,11 +96,12 @@ function Navbar() {
                     windowSize={windowSize}
                 />}
             </AnimatePresence>
-            <nav className="flex gap-8 items-center px-7 h-[90px] border-b border-b-light-border-gray bg-main-white">
+            <nav className={`flex gap-8 items-center ${windowSize >= 560 ? "px-7" : windowSize >= 400 ? "px-5" : "px-4"} 
+            h-[90px] border-b border-b-light-border-gray bg-main-white`}>
                 <ul className="flex items-center gap-7 list-none flex-grow">
                     {windowSize < 1610 && 
                     <HamburgerMenu
-                        size={30}
+                        size={28}
                         action={toggleSidebar}
                     />}
                     {(windowSize >= 450 || userContext.userData.username === "") &&

@@ -68,9 +68,9 @@ function AboutSeller(props: AboutSellerProps) {
             </div>
             {props.description !== "" && <p>{props.description}</p>}
             <ProfileSummary 
-                styles="mt-4 mb-4"
                 country={props.country}
                 memberDate={props.memberDate}
+                styles="mt-4 mb-4"
             />
             <p>{`${props.username} speaks`}</p>
             <Options 

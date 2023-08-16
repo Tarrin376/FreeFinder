@@ -12,7 +12,7 @@ function Dropdown({ toggleDropdown, styles, children }: DropdownProps) {
 
     return (
         <SidePopUpWrapper setIsOpen={toggleDropdown}>
-            <div className={`${defaultStyles} ${styles}`} onClick={toggleDropdown}>
+            <div className={`${defaultStyles} ${styles}`}>
                 {children}
             </div>
         </SidePopUpWrapper>
