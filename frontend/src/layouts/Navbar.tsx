@@ -29,7 +29,6 @@ function Navbar() {
     const [accountCreated, setAccountCreated] = useState<boolean>(false);
     const userContext = useContext<IUserContext>(UserContext);
     const [savedSellersPopUp, setSavedSellersPopUp] = useState<boolean>(false);
-    const [savedDropdown, setSavedDropdown] = useState<boolean>(false);
     const [sidebar, setSidebar] = useState<boolean>(false);
     const windowSize = useWindowSize();
 
@@ -69,10 +68,6 @@ function Navbar() {
         }
     }
 
-    function toggleSavedDropdown(): void {
-        setSavedDropdown((cur) => !cur);
-    }
-
     function toggleSidebar(): void {
         setSidebar((cur) => !cur);
     }
@@ -97,9 +92,7 @@ function Navbar() {
                     setSignUp={setSignUp}
                     setSavedSellersPopUp={setSavedSellersPopUp}
                     toggleSidebar={toggleSidebar}
-                    toggleSavedDropdown={toggleSavedDropdown}
                     logout={logout}
-                    savedDropdown={savedDropdown}
                     windowSize={windowSize}
                 />}
             </AnimatePresence>

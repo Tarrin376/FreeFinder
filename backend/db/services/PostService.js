@@ -20,6 +20,7 @@ import {
     MAX_SERVICE_IMAGE_UPLOADS
 } from '@freefinder/shared/dist/constants.js';
 import Validator from '@freefinder/shared/dist/validator.js';
+import { notificationProperties } from '../utils/notificationProperties.js';
 
 async function checkPackages(packages) {
     try {
@@ -296,6 +297,20 @@ export async function getPostHandler(postID) {
     }
 }
 
+function getSavedPostNotification(postID, seller, hidden) {
+    if (hidden) {
+        return {
+            title: "A saved service has been hidden",
+            text: `${seller} has temporarily hidden their sevice: ${postID} from public view.`
+        }
+    } else {
+        return {
+            title: "A saved service has been unhidden",
+            text: `${seller} has made their service: ${postID} publicly available and is now accepting order requests!`
+        }
+    }
+}
+
 export async function updatePostHandler(req) {
     try {
         return await prisma.$transaction(async (tx) => {
@@ -356,15 +371,61 @@ export async function updatePostHandler(req) {
                     hidden: req.body.hidden
                 }
             });
-            
+
+            const usersSaved = [];
+            if (req.body.hidden !== undefined) {
+                const saved = await prisma.savedPost.findMany({
+                    where: { postID: req.params.id },
+                    select: { 
+                        user: { 
+                            select: { 
+                                socketID: true,
+                                userID: true,
+                                notificationSettings: true
+                            }
+                        }
+                    }
+                });
+
+                for (const savedPost of saved) {
+                    if (savedPost.user.notificationSettings.savedServices) {
+                        const msg = getSavedPostNotification(req.params.id, updatedPost.postedBy.user.username, req.body.hidden);
+                        const notification = await prisma.notification.create({
+                            select: notificationProperties,
+                            data: {
+                                ...msg,
+                                userID: savedPost.user.userID
+                            }
+                        });
+
+                        await prisma.user.update({
+                            where: { userID: savedPost.user.userID },
+                            data: {
+                                unreadNotifications: { increment: 1 }
+                            }
+                        });
+
+                        if (savedPost.user.socketID) {
+                            usersSaved.push({
+                                socketID: savedPost.user.socketID,
+                                notification: notification
+                            });
+                        }
+                    }
+                }
+            }
+
             return {
-                ...updatedPost,
-                packages: updatedPost.packages.map((pkg) => {
-                    return {
-                        ...pkg,
-                        amount: parseInt(pkg.amount)
-                    };
-                })
+                usersSaved: usersSaved,
+                post: {
+                    ...updatedPost,
+                    packages: updatedPost.packages.map((pkg) => {
+                        return {
+                            ...pkg,
+                            amount: parseInt(pkg.amount)
+                        };
+                    })
+                }
             };
         }, {
             timeout: 10000

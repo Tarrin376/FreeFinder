@@ -19,6 +19,7 @@ import { AnimatePresence } from 'framer-motion';
 import { useTimeCreated } from 'src/hooks/useTimeCreated';
 import HideIcon from "../assets/hide.png";
 import UnhideIcon from "../assets/unhide.png";
+import { SendNotification } from 'src/types/SendNotification';
 
 interface PostProps {
     postInfo: IPost,
@@ -89,7 +90,12 @@ function Post({ postInfo, index, canRemove, count, styles }: PostProps) {
 
         try {
             setHidingPost(true);
-            await axios.put<{ message: string }>(`/api/posts/${postInfo.postID}`, { hidden: !hide });
+            const resp = await axios.put<{ usersSaved: SendNotification[], message: string }>(`/api/posts/${postInfo.postID}`, { 
+                hidden: !hide 
+            });
+
+            console.log(resp.data);
+
             setHide(!hide);
         }
         catch (err: any) {

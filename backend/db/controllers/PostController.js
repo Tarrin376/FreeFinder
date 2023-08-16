@@ -31,8 +31,8 @@ export async function getPost(req, res) {
 
 export async function updatePost(req, res) {
     try {
-        const updatedPost = await updatePostHandler(req);
-        res.json({ post: updatedPost, message: "success" });
+        const result = await updatePostHandler(req);
+        res.json({ ...result, message: "success" });
     }
     catch (err) {
         res.status(err.code).json({ message: err.message });

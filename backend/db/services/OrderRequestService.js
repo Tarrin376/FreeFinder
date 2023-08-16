@@ -48,9 +48,7 @@ async function checkPackage(postID, type, sellerID) {
 
     if (!pkg) {
         throw new DBError("Service or package does not exist.", 404);
-    }
-
-    if (pkg.post.sellerID !== sellerID) {
+    } else if (pkg.post.sellerID !== sellerID) {
         throw new DBError("This seller does not own this service.", 400);
     } else if (pkg.post.hidden) {
         throw new DBError("You cannot request an order for a hidden service.", 403);

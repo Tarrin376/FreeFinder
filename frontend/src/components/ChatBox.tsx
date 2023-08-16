@@ -26,7 +26,6 @@ import { MatchedMembers } from "../types/MatchedMembers";
 import { useArrowNavigation } from "../hooks/useArrowNavigation";
 import { FoundUsers } from "../types/FoundUsers";
 import Messages from "./Messages";
-import { INotification } from "src/models/INotification";
 import { SendNotification } from "src/types/SendNotification";
 
 interface ChatBoxProps {

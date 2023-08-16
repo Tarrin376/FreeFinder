@@ -4,17 +4,16 @@ import { UserContext } from "../providers/UserProvider";
 import AccountOptions from "../components/AccountOptions";
 import SearchSellers from "../components/SearchSellers";
 import { useNavigate } from "react-router-dom";
-import DropdownIcon from "../assets/dropdown.png";
 import CloseSvg from "../components/CloseSvg";
+import SidebarDropdown from "src/components/SidebarDropdown";
+import SidebarDropdownElement from "src/components/SidebarDropdownElement";
 
 interface SidebarProps {
     setLogIn: React.Dispatch<React.SetStateAction<boolean>>,
     setSignUp: React.Dispatch<React.SetStateAction<boolean>>,
     setSavedSellersPopUp: React.Dispatch<React.SetStateAction<boolean>>,
     toggleSidebar: () => void,
-    toggleSavedDropdown: () => void,
     logout: () => Promise<void>,
-    savedDropdown: boolean,
     windowSize: number
 }
 
@@ -47,47 +46,50 @@ function Sidebar(props: SidebarProps) {
                         toggleSidebar={props.toggleSidebar}
                     />
                     <ul className="list-none overflow-y-scroll h-[calc(100vh-206px)] pr-[8px]">
-                        {props.windowSize <= 681 && 
+                        {props.windowSize < 865 && 
                         <>
-                            <li className="sidebar-item" onClick={() => navigateToPage('posts/all')}>Browse all</li>
+                            <li className="sidebar-item" onClick={() => navigateToPage('posts/all')}>
+                                Browse all
+                            </li>
                             {userContext.userData.seller &&
                             <>
-                                <li className="sidebar-item">Client orders</li>
+                                <li className="sidebar-item">
+                                    Client orders
+                                </li>
                             </>}
                         </>}
-                        {userContext.userData.userID !== "" && props.windowSize <= 1005 &&
+                        {userContext.userData.userID !== "" && props.windowSize < 1200 &&
                         <>
-                            <li className="sidebar-item">My orders</li>
                             <li>
-                                <div className="sidebar-item flex items-center justify-between" 
-                                onClick={props.toggleSavedDropdown}>
-                                    <span>Saved</span>
-                                    <img 
-                                        src={DropdownIcon} 
-                                        className={`w-[15px] h-[15px] transition-all duration-200 
-                                        ease-linear ${props.savedDropdown ? "rotate-180" : ""}`}
-                                        alt="" 
+                                <SidebarDropdown title="Orders">
+                                    <SidebarDropdownElement
+                                        text="My orders"
+                                        action={() => navigate(`/${userContext.userData.username}/saved/posts`)}
                                     />
-                                </div>
-                                {props.savedDropdown &&
-                                <div className="mt-3">
-                                    <p className="p-3 cursor-pointer hover:bg-hover-light-gray rounded-[8px] 
-                                    transition-all ease-out duration-100" 
-                                    onClick={() => navigateToPage(`/${userContext.userData.username}/saved/posts`)}>
-                                        posts
-                                    </p>
-                                    <p className="p-3 cursor-pointer hover:bg-hover-light-gray rounded-[8px] 
-                                    transition-all ease-out duration-100" onClick={() => {
-                                        props.toggleSidebar();
-                                        props.setSavedSellersPopUp(true);
-                                    }}>
-                                        sellers
-                                    </p>
-                                </div>}
+                                    <SidebarDropdownElement
+                                        text="Order requests"
+                                        action={() => props.setSavedSellersPopUp(true)}
+                                    />
+                                </SidebarDropdown>
                             </li>
-                            <li className={`sidebar-item ${props.savedDropdown ? "pt-6 pb-9" : "pb-9"}`}
+                            <li>
+                                <SidebarDropdown title="Saved" styles="!pt-0">
+                                    <SidebarDropdownElement
+                                        text="posts"
+                                        action={() => navigateToPage(`/${userContext.userData.username}/saved/posts`)}
+                                    />
+                                    <SidebarDropdownElement
+                                        text="sellers"
+                                        action={() => {
+                                            props.toggleSidebar();
+                                            props.setSavedSellersPopUp(true);
+                                        }}
+                                    />
+                                </SidebarDropdown>
+                            </li>
+                            <li className="sidebar-item !pt-0"
                             onClick={() => navigateToPage(`${userContext.userData.username}/posts`)}>
-                                My posts
+                                My services
                             </li>
                         </>}
                     </ul>

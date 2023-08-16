@@ -24,8 +24,8 @@ interface NotificationSettingsProps {
 
 function NotificationSettings({ updateSection }: NotificationSettingsProps) {
     const userContext = useContext(UserContext);
-
     const [errorMessage, setErrorMessage] = useState<string>("");
+    
     const [state, dispatch] = useReducer((cur: NotificationSettingsState, payload: Partial<NotificationSettingsState>) => {
         return { ...cur, ...payload };
     }, {
@@ -96,7 +96,7 @@ function NotificationSettings({ updateSection }: NotificationSettingsProps) {
                     toggle={state.savedServices} 
                     updateToggle={(value: boolean) => updateNotificationSettings({ savedServices: value })} 
                     title="Saved services"
-                    text="Notify me when one of my saved services is temporarily hidden or is permanently removed by the seller."
+                    text="Notify me when one of my saved services is updated, temporarily hidden, or permanently removed by the seller."
                     styles="mt-4"
                 />
             </div>
