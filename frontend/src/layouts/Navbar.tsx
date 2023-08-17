@@ -127,11 +127,11 @@ function Navbar() {
                             <NavDropdown title="Orders" textSize={16}>
                                 <DropdownElement
                                     text="My orders"
-                                    action={() => navigate(`/${userContext.userData.username}/saved/posts`)}
+                                    action={() => console.log("yo")}
                                 />
                                 <DropdownElement
                                     text="Order requests"
-                                    action={() => setSavedSellersPopUp(true)}
+                                    action={() => console.log("yo")}
                                 />
                             </NavDropdown>
                         </li>

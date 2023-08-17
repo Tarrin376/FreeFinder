@@ -28,15 +28,9 @@ function SellerExperience({ level, nextLevel, nextLevelXP, sellerXP }: SellerExp
                     items-center justify-center" style={{ width: `calc(100% / ${nextLevelXP} * ${sellerXP})`}}>
                     </div>
                 </div>
-                <div className="flex items-center justify-between mt-3">
-                    <p className="bg-highlight text-main-blue w-fit text-sm px-3 py-[1px] rounded-[6px]">
-                        {`${sellerXP} xp`}
-                    </p>
-                    {nextLevel !== level &&
-                    <p className="bg-highlight text-main-blue w-fit text-sm px-3 py-[1px] rounded-[6px]">
-                        {`${nextLevelXP} xp`}
-                    </p>}
-                </div>
+                <p className="bg-highlight text-main-blue w-fit text-sm px-3 py-[1px] rounded-[6px] mt-3 ml-auto">
+                    {`${sellerXP} / ${nextLevelXP}`}
+                </p>
             </div>
         </div>
     )

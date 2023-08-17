@@ -112,7 +112,9 @@ function MessagePreviews({ setMessagesPopUp, group, setGroup, setGlobalUnreadMes
                         <div className="flex items-center justify-between w-full mb-4">
                             <div className="flex items-center gap-2">
                                 <img src={AllMessagesIcon} className="w-[16px] h-[16px]" alt="" />
-                                <p className="text-side-text-gray text-[15px]">{`All messages (${groupCount})`}</p>
+                                <p className="text-side-text-gray text-[15px]">
+                                    {`All messages (${groupCount})`}
+                                </p>
                             </div>
                             <img 
                                 src={AddGroupIcon} 

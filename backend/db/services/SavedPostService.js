@@ -38,6 +38,7 @@ export async function getSavedPostsHandler(req) {
     try {
         await checkUser(req.userData.userID, req.username);
         const where = {
+            userID: req.userData.userID,
             post: { 
                 ...getPostFilters(req),
                 hidden: false
@@ -118,7 +119,7 @@ export async function getSavedPostsHandler(req) {
                 rating: postRatings[index]._avg.rating
             };
         });
-    
+
         return {
             ...result,
             next: posts
