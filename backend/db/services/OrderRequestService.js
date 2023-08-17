@@ -6,6 +6,8 @@ import { messageProperties } from '../utils/messageProperties.js';
 import { SERVICE_FEE, VALID_DURATION_DAYS } from '@freefinder/shared/dist/constants.js';
 import { notificationProperties } from '../utils/notificationProperties.js';
 
+const FIRST_ORDER_REQ_XP = 100;
+
 async function checkMessageGroup(postID, userID) {
     const messageGroup = await prisma.messageGroup.findUnique({
         where: {
@@ -81,6 +83,7 @@ export async function sendOrderRequestHandler(req) {
             where: { userID: req.params.seller },
             select: { 
                 sellerID: true,
+                hadFirstOrderRequest: true,
                 user: {
                     select: {
                         notificationSettings: true,
@@ -169,6 +172,41 @@ export async function sendOrderRequestHandler(req) {
             orderRequest.subTotal = parseFloat(orderRequest.subTotal);
             orderRequest.total = parseFloat(orderRequest.total);
 
+            let firstOrderRequest = undefined;
+            if (!seller.hadFirstOrderRequest) {
+                await tx.seller.update({
+                    where: { userID: req.params.seller },
+                    data: { 
+                        hadFirstOrderRequest: true,
+                        sellerXP: { increment: FIRST_ORDER_REQ_XP }
+                    }
+                });
+
+                if (seller.user.notificationSettings.rewards) {
+                    const notification = await tx.notification.create({
+                        select: notificationProperties,
+                        data: {
+                            userID: req.params.seller,
+                            title: `Congrats on your first order request!`,
+                            text: `You received your first order request from ${req.userData.username}. Keep it up!`,
+                            xp: FIRST_ORDER_REQ_XP
+                        }
+                    });
+
+                    await tx.user.update({
+                        where: { userID: req.params.seller },
+                        data: {
+                            unreadNotifications: { increment: 1 }
+                        }
+                    });
+
+                    firstOrderRequest = {
+                        socketID: seller.user.socketID,
+                        notification: notification
+                    }
+                }
+            }
+
             const result = {
                 newMessage: {
                     ...message,
@@ -197,6 +235,7 @@ export async function sendOrderRequestHandler(req) {
 
                 return {
                     ...result,
+                    firstOrderRequest: firstOrderRequest,
                     notify: {
                         socketID: seller.user.socketID,
                         notification: notification
@@ -204,7 +243,10 @@ export async function sendOrderRequestHandler(req) {
                 };
             }
 
-            return result;
+            return {
+                ...result,
+                firstOrderRequest: firstOrderRequest
+            }
         });
     }
     catch (err) {

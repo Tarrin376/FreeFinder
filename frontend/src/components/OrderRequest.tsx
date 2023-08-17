@@ -100,7 +100,7 @@ function OrderRequest({ message, seller, workType, groupID }: OrderRequestProps)
     }, [message.orderRequest]);
 
     return (
-        <div className="border border-light-border-gray rounded-[13px] shadow-post">
+        <div className="border border-light-border-gray rounded-[13px] shadow-post w-full">
             <AnimatePresence>
                 {errorMessage !== "" &&
                 <ErrorPopUp

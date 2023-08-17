@@ -1,4 +1,4 @@
-import { useRef, createContext, useState, cloneElement, useReducer, useCallback } from 'react';
+import { useRef, createContext, useState, cloneElement, useReducer, useCallback, useEffect } from 'react';
 import { MAX_SERVICE_PRICE, MAX_SERVICE_DELIVERY_DAYS } from '@freefinder/shared/dist/constants';
 import { usePaginateData } from '../hooks/usePaginateData';
 import { IPost } from '../models/IPost';
@@ -17,6 +17,7 @@ import PostsSidebar from 'src/components/PostsSidebar';
 import FiltersPopUp from 'src/components/FiltersPopUp';
 import { useWindowSize } from 'src/hooks/useWindowSize';
 import AddIcon from "../assets/add.png";
+import FiltersButton from 'src/components/FiltersButton';
 
 interface FilterPostsProviderProps {
     children: React.ReactElement,
@@ -84,11 +85,15 @@ function FilterPostsProvider({ children, urlPrefix }: FilterPostsProviderProps) 
     const getModifiedFiltersCount = useCallback((): number => {
         let count = 0;
         for (const key of Object.keys(state)) {
-            const curValue = state[key as keyof FilterPostsProviderState];
-            const defaultValue = defaultStateValues[key as keyof FilterPostsProviderState];
+            const keyValue = key as keyof FilterPostsProviderState;
 
-            if ((Array.isArray(curValue) && curValue.length > 0) || (!Array.isArray(curValue) && curValue !== defaultValue)) {
-                count++;
+            if (keyValue !== "search" && keyValue !== "searchOption" && keyValue !== "sort") {
+                const curValue = state[keyValue];
+                const defaultValue = defaultStateValues[keyValue];
+
+                if ((Array.isArray(curValue) && curValue.length > 0) || (!Array.isArray(curValue) && curValue !== defaultValue)) {
+                    count++;
+                }
             }
         }
 
@@ -158,6 +163,12 @@ function FilterPostsProvider({ children, urlPrefix }: FilterPostsProviderProps) 
             country: "Any country"
         });
     }
+
+    useEffect(() => {
+        if (windowSize < 1015) {
+            posts.resetState();
+        }
+    }, [state.sort]);
     
     return (
         <>
@@ -186,11 +197,18 @@ function FilterPostsProvider({ children, urlPrefix }: FilterPostsProviderProps) 
                 />}
             </AnimatePresence>
             <div className="flex">
-                {windowSize >= 1180 ?
+                {windowSize < 1015 &&
+                <div>
+                    <FiltersButton
+                        toggleFiltersPopUp={toggleFiltersPopUp}
+                        modifiedFiltersCount={modifiedFiltersCount}
+                        styles="!fixed bottom-5 left-5 z-30 shadow-post"
+                    />
+                </div>}
+                {windowSize >= 1245 ?
                 <PostsSidebar
                     loading={posts.loading}
                     updatePostServicePopUp={updatePostServicePopUp}
-                    searchHandler={searchHandler}
                     dispatch={dispatch}
                     state={state}
                     clearFilters={clearFilters}
@@ -201,33 +219,29 @@ function FilterPostsProvider({ children, urlPrefix }: FilterPostsProviderProps) 
                         <img src={AddIcon} alt="" className="w-[25px] h-[25px]" />
                     </button>
                 </div>}
-                <div className="flex-grow">
-                    <div className="border-b border-b-light-border-gray bg-white">
-                        <MainFiltersBar
-                            dispatch={dispatch}
-                            state={state}
-                            loading={posts.loading}
-                            searchHandler={searchHandler}
-                            toggleFiltersPopUp={toggleFiltersPopUp}
-                            modifiedFiltersCount={modifiedFiltersCount}
-                        />
-                    </div>
-                    <div className="h-[calc(100vh-180px)] overflow-y-scroll" ref={pageRef}>
-                        <FilterPostsContext.Provider value={{ 
-                            setPage, search: state.search, 
-                            endpoint: `/api${urlPrefix}${location.pathname}`,
-                            cursor, 
-                            posts, 
-                            page
-                        }}>
-                            {cloneElement(children, { 
-                                posts: posts.data, 
-                                loading: posts?.loading,
-                                count: posts?.count
-                            })}
-                        </FilterPostsContext.Provider>
-                    </div>
-                </div>
+                <MainFiltersBar
+                    dispatch={dispatch}
+                    state={state}
+                    loading={posts.loading}
+                    searchHandler={searchHandler}
+                    toggleFiltersPopUp={toggleFiltersPopUp}
+                    modifiedFiltersCount={modifiedFiltersCount}
+                    pageRef={pageRef}
+                >
+                    <FilterPostsContext.Provider value={{ 
+                        setPage, search: state.search, 
+                        endpoint: `/api${urlPrefix}${location.pathname}`,
+                        cursor: cursor, 
+                        posts: posts, 
+                        page: page
+                    }}>
+                        {cloneElement(children, { 
+                            posts: posts.data, 
+                            loading: posts?.loading,
+                            count: posts?.count
+                        })}
+                    </FilterPostsContext.Provider>
+                </MainFiltersBar>
             </div>
         </>
     )

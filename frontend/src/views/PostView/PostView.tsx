@@ -147,10 +147,10 @@ function PostView() {
             }
             catch (err: any) {
                 const errorMessage = getAPIErrorMessage(err as AxiosError<{ message: string }>);
-                setErrorMessage(errorMessage);
+                navigate("/error", { state: { title: "Failed to retrieve this service...", errorMessage: errorMessage } });
             }
         })();
-    }, [location.pathname]);
+    }, [location.pathname, navigate]);
 
     useEffect(() => {
         if (!state.addingImage && imagesRef.current) {
@@ -166,7 +166,7 @@ function PostView() {
 
     return (
         <div className="overflow-y-scroll h-[calc(100vh-90px)]">
-            <PageWrapper styles={`${windowSize >= 560 ? "p-[38px]" : windowSize >= 400 ? "!px-5" : "!px-4"} pt-[58px]`} locationStack={[
+            <PageWrapper styles={windowSize >= 560 ? "p-[38px]" : ""} locationStack={[
                 state.postData.workType.jobCategory.name,
                 state.postData.workType.name,
                 state.postData.title

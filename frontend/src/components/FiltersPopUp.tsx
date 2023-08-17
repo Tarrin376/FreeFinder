@@ -1,6 +1,8 @@
 import PopUpWrapper from "src/wrappers/PopUpWrapper";
 import { FilterPostsProviderState } from "src/providers/FilterPostsProvider";
 import Filters from "./Filters";
+import { useState } from "react";
+import MessageSent from "./MessageSent";
 
 interface FiltersPopUpProps {
     loading: boolean,
@@ -15,10 +17,18 @@ interface FiltersPopUpProps {
 }
 
 function FiltersPopUp(props: FiltersPopUpProps) {
+    const [cleared, setCleared] = useState<boolean>(false);
+
     function applyFilters(): void {
         props.setModifiedFiltersCount(props.getModifiedFiltersCount());
         props.searchHandler();
         props.toggleFiltersPopUp();
+    }
+
+    function clear(): void {
+        props.clearFilters();
+        setCleared(true);
+        setTimeout(() => setCleared(false), 3000);
     }
 
     return (
@@ -29,10 +39,16 @@ function FiltersPopUp(props: FiltersPopUpProps) {
                 state={props.state}
             />
             <div className="flex items-center justify-between">
-                <span className="underline font-bold text-main-blue cursor-pointer" 
-                onClick={props.clearFilters}>
-                    Clear all
-                </span>
+                <div className="flex items-center">
+                    <span className="text-main-blue cursor-pointer" onClick={clear}>
+                        Clear all
+                    </span>
+                    {cleared &&
+                    <MessageSent
+                        sendingMessage={false}
+                        colour="#4169f7"
+                    />}
+                </div>
                 <button className="main-btn w-fit" onClick={applyFilters}>
                     Apply filters
                 </button>

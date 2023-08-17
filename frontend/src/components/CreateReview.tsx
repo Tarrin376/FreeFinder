@@ -105,7 +105,7 @@ function CreateReview({ postID, sellerID, hidden }: CreateReviewProps) {
                 defaultText="Submit review"
                 loadingText="Submitting review"
                 styles={`side-btn h-[48px] w-full mt-6 ${hidden ? "invalid-button" : ""}`}
-                textStyles="text-main-blue"
+                textStyles={hidden ? "text-disabled-gray" : "text-main-blue"}
                 setErrorMessage={setErrorMessage}
                 loadingSvgSize={28}
                 loadingSvgColour="#4169f7"

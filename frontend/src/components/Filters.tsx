@@ -7,6 +7,7 @@ import SellerLevels from "./SellerLevels";
 import TypeOfWork from "./TypeOfWork";
 import ExtraFilters from "./ExtraFilters";
 import { FilterPostsProviderState } from "src/providers/FilterPostsProvider";
+import { useWindowSize } from "src/hooks/useWindowSize";
 
 interface FiltersProps {
     loading: boolean,
@@ -15,9 +16,12 @@ interface FiltersProps {
 }
 
 function Filters({ loading, dispatch, state }: FiltersProps) {
+    const windowSize = useWindowSize();
+
     return (
         <div>
-            <div className="flex items-center justify-between gap-3 pb-5 mb-5 min-[1561px]:hidden border-b border-light-border-gray">
+            {windowSize < 1650 &&
+            <div className="flex items-center justify-between gap-3 pb-5 mb-5 border-b border-light-border-gray">
                 <Price
                     value={state.min} 
                     maxValue={MAX_SERVICE_PRICE}
@@ -31,7 +35,7 @@ function Filters({ loading, dispatch, state }: FiltersProps) {
                     text="max price" 
                     updateValue={(cur: number) => dispatch({ max: cur })}
                 />
-            </div>
+            </div>}
             <div className="border-b border-light-border-gray pb-5 mb-5">
                 <CountriesDropdown 
                     country={state.country}

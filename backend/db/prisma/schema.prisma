@@ -46,6 +46,7 @@ model Notification {
     createdAt      DateTime @default(now())
     unread         Boolean  @default(true)
     navigateTo     String?
+    xp             Int      @default(0)
 }
 
 model MessageGroup {
@@ -122,22 +123,23 @@ model HelpfulReview {
 }
 
 model Seller {
-    sellerID      String         @id @default(uuid())
-    user          User           @relation(fields: [userID], references: [userID], onDelete: Cascade)
-    userID        String         @unique
-    rating        Float
-    orders        Order[]
-    posts         Post[]
-    description   String
-    summary       String
-    languages     String[]       @default(["english"])
-    skills        String[]       @default([])
-    sellerLevel   SellerLevel    @relation(fields: [sellerLevelID], references: [id])
-    sellerLevelID String
-    sellerXP      Int            @default(0)
-    reviews       Review[]
-    savedSellers  SavedSeller[]
-    orderRequests OrderRequest[]
+    sellerID             String         @id @default(uuid())
+    user                 User           @relation(fields: [userID], references: [userID], onDelete: Cascade)
+    userID               String         @unique
+    rating               Float
+    orders               Order[]
+    posts                Post[]
+    description          String
+    summary              String
+    languages            String[]       @default(["english"])
+    skills               String[]       @default([])
+    sellerLevel          SellerLevel    @relation(fields: [sellerLevelID], references: [id])
+    sellerLevelID        String
+    sellerXP             Int            @default(0)
+    reviews              Review[]
+    savedSellers         SavedSeller[]
+    orderRequests        OrderRequest[]
+    hadFirstOrderRequest Boolean        @default(false)
 }
 
 model SellerLevel {

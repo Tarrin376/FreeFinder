@@ -18,7 +18,7 @@
         @apply focus:outline-2 focus:!outline-error-text focus:border-transparent border-b border-error-text bg-hover-light-gray
     }
     .invalid-button {
-        @apply btn-primary !bg-[#575757] hover:!bg-[#575757] !border-none pointer-events-none !text-disabled-gray opacity-50;
+        @apply btn-primary !bg-[#a0a0a0] hover:!bg-[#a0a0a0] !border-none pointer-events-none !text-disabled-gray;
     }
     .settings-selection {
         @apply border-b-[3px] border-b-main-black cursor-pointer pb-4;

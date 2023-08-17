@@ -160,7 +160,9 @@ export async function deleteImageHandler(req) {
             }
         });
 
-        if (req.userData.userID !== post.postedBy.userID) {
+        if (!post) {
+            throw new DBError("Service does not exist or has been deleted.", 404);
+        } else if (req.userData.userID !== post.postedBy.userID) {
             throw new DBError("You are not authorized to delete this image.", 403);
         } else if (post._count.images === 1) {
             throw new DBError("You must have at least 1 image in your post.", 400);
@@ -220,7 +222,9 @@ export async function addImageHandler(req) {
             }
         });
         
-        if (req.userData.userID !== post.postedBy.userID) {
+        if (!post) {
+            throw new DBError("Service does not exist or has been deleted.", 404);
+        } else if (req.userData.userID !== post.postedBy.userID) {
             throw new DBError("You are not authorized to add this image.", 403);
         } else if (post._count.images === MAX_SERVICE_IMAGE_UPLOADS) {
             throw new DBError(`You cannot have more than ${MAX_SERVICE_IMAGE_UPLOADS} images for one service.`, 400);
@@ -274,6 +278,10 @@ export async function getPostHandler(postID) {
             where: { postID: postID },
             select: { ...postProperties }
         });
+
+        if (!postData) {
+            throw new DBError("Service does not exist or has been deleted.", 404);
+        }
         
         return {
             ...postData,
@@ -286,7 +294,9 @@ export async function getPostHandler(postID) {
         };
     }
     catch (err) {
-        if (err instanceof Prisma.PrismaClientValidationError) {
+        if (err instanceof DBError) {
+            throw err;
+        } else if (err instanceof Prisma.PrismaClientValidationError) {
             throw new DBError("Missing required fields or fields provided are invalid.", 400);
         } else {
             throw new DBError("Something went wrong. Please try again later.", 500);

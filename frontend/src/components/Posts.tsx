@@ -34,8 +34,7 @@ function Posts({ noResultsFoundTitle, posts, loading, count, canRemove, title }:
                 Finding services...
             </h1> :
             <h1 className="text-side-text-gray mb-5">
-                {`${loading ? "Loading results for" : `${count.current}
-                ${count.current === 1 ? " result" : " results"} found`}`}
+                {`${count.current} ${count.current === 1 ? " service" : " service"} available`}
             </h1>}
             {(loading || posts.length > 0) && 
             <PostsWrapper>

@@ -20,7 +20,7 @@ export async function createReviewHandler(req) {
         });
 
         if (!post) {
-            throw new DBError("Service not found.", 404);
+            throw new DBError("Service does not exist or has been deleted.", 404);
         } else if (post.postedBy.userID === req.userData.userID) {
             throw new DBError("You cannot write a review of your own service.", 403);
         } else if (!req.body.review || req.body.review.length > MAX_REVIEW_CHARS) {

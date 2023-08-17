@@ -8,13 +8,12 @@ import Filters from "./Filters";
 interface PostsSidebarProps {
     loading: boolean,
     updatePostServicePopUp: (val: boolean) => void,
-    searchHandler: () => void,
     dispatch: React.Dispatch<Partial<FilterPostsProviderState>>,
     state: FilterPostsProviderState,
     clearFilters: () => void
 }
 
-function PostsSidebar({ loading, updatePostServicePopUp, searchHandler, dispatch, state, clearFilters }: PostsSidebarProps) {
+function PostsSidebar({ loading, updatePostServicePopUp, dispatch, state, clearFilters }: PostsSidebarProps) {
     const userContext = useContext(UserContext);
     const nextLevelXP = userContext.userData.seller?.sellerLevel.nextLevel?.xpRequired ?? userContext.userData.seller?.sellerXP ?? 0;
     const nextLevel = userContext.userData.seller?.sellerLevel.nextLevel?.name ?? "";
@@ -27,17 +26,12 @@ function PostsSidebar({ loading, updatePostServicePopUp, searchHandler, dispatch
                 Create new post
             </button>
             {userContext.userData.seller &&
-            <>
-                <h2 className="text-[18px] mb-[22px]">
-                    Your experience
-                </h2>
-                <SellerExperience
-                    level={userContext.userData.seller.sellerLevel.name}
-                    nextLevel={nextLevel}
-                    sellerXP={userContext.userData.seller.sellerXP}
-                    nextLevelXP={nextLevelXP}
-                />
-            </>}
+            <SellerExperience
+                level={userContext.userData.seller.sellerLevel.name}
+                nextLevel={nextLevel}
+                sellerXP={userContext.userData.seller.sellerXP}
+                nextLevelXP={nextLevelXP}
+            />}
             <h2 className="text-[18px] mb-[22px]">
                 Filters
                 <span className="text-[15px] underline text-main-blue ml-2 cursor-pointer font-bold" 
@@ -45,8 +39,8 @@ function PostsSidebar({ loading, updatePostServicePopUp, searchHandler, dispatch
                     Clear all
                 </span>
             </h2>
-            <div className="overflow-y-scroll pr-[8px]" 
-            style={{ maxHeight: userContext.userData.seller ? "calc(100vh - 483px)" : "calc(100% - 175px)" }}>
+            <div className="overflow-y-scroll pr-[8px]" style={{ maxHeight: userContext.userData.seller ? 
+            "calc(100vh - 483px)" : "calc(100% - 175px)" }}>
                 <Filters 
                     loading={loading}
                     dispatch={dispatch}

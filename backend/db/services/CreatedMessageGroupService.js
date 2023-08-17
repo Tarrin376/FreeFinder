@@ -62,7 +62,7 @@ export async function createMessageGroupHandler(req) {
         });
 
         if (!post) {
-            throw new DBError("Service not found.", 404);
+            throw new DBError("Service does not exist or has been deleted.", 404);
         } else if (post.postedBy.userID === req.userData.userID) {
             throw new DBError("You cannot create a message group for your own service.", 400);
         } else if (post.hidden) {
@@ -122,6 +122,19 @@ export async function deleteMessageGroupHandler(req) {
             }
         });
 
+        const pendingOrderRequests = await prisma.orderRequest.findMany({
+            select: { 
+                userID: true,
+                total: true
+            },
+            where: {
+                status: "PENDING",
+                message: {
+                    groupID: req.params.groupID
+                }
+            }
+        });
+
         if (!group) {
             throw new DBError("Group does not exist.", 404);
         } else if (group.creatorID !== req.userData.userID) {
@@ -134,6 +147,15 @@ export async function deleteMessageGroupHandler(req) {
                     where: { userID: member.userID },
                     data: {
                         unreadMessages: { decrement: member.unreadMessages }
+                    }
+                });
+            }
+
+            for (const orderRequest of pendingOrderRequests) {
+                await tx.user.update({
+                    where: { userID: orderRequest.userID },
+                    data: {
+                        balance: { increment: parseFloat(orderRequest.total) }
                     }
                 });
             }

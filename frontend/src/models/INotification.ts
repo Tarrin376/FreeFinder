@@ -4,5 +4,6 @@ export interface INotification {
     text: string,
     createdAt: Date,
     unread: boolean,
-    navigateTo: string | null
+    navigateTo: string | null,
+    xp: number
 }

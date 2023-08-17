@@ -34,7 +34,13 @@ function RequestOrder({ curPkg, postID, seller, workType, setRequestOrderPopUp }
         }
 
         try {
-            const resp = await axios.post<{ newMessage: IMessage, sockets: string[], notify: SendNotification | undefined, message: string }>
+            const resp = await axios.post<{ 
+                newMessage: IMessage, 
+                sockets: string[], 
+                notify: SendNotification | undefined,
+                firstOrderRequest: SendNotification | undefined,
+                message: string 
+            }>
             (`/api/users/${userContext.userData.username}/order-requests/${seller.userID}/${postID}/${curPkg.type}`);
 
             for (const socket of resp.data.sockets) {
@@ -49,6 +55,10 @@ function RequestOrder({ curPkg, postID, seller, workType, setRequestOrderPopUp }
 
             if (resp.data.notify) {
                 userContext.socket?.emit("send-notification", resp.data.notify.notification, resp.data.notify.socketID);
+            }
+
+            if (resp.data.firstOrderRequest) {
+                userContext.socket?.emit("send-notification", resp.data.firstOrderRequest.notification, resp.data.firstOrderRequest.socketID);
             }
         }
         catch (err: any) {

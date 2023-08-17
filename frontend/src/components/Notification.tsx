@@ -11,6 +11,7 @@ interface NotificationProps {
     unread: boolean,
     notificationID: string,
     navigateTo: string | null,
+    xp: number,
     setUnreadNotifications: React.Dispatch<React.SetStateAction<number>>,
     toggleNotifications: () => void
     allRead: boolean
@@ -55,6 +56,7 @@ function Notification(props: NotificationProps) {
             </div>
             <p className="text-sm text-side-text-gray mt-[6px] pl-[17px]">
                 {props.text}
+                {props.xp > 0 && <span className="text-main-blue text-sm">{` +${props.xp}xp`}</span>}
             </p>
             <p className="text-sm text-side-text-gray font-bold mt-[6px] pl-[17px]">
                 {timeCreated}

@@ -10,20 +10,20 @@ interface SortByProps {
 
 function SortBy({ sort, updateSort }: SortByProps) {
     return (
-        <div className="relative h-full">
-            <NavDropdown styles="absolute top-1/2 translate-y-[-50%] left-1/2 translate-x-[-50%] w-fit" textSize={16} title={sort}>
-                {Object.keys(sortPosts).map((param: string, index: number) => {
-                    return (
-                        <DropdownElement
-                            text={param}
-                            action={() => updateSort(param as sortPostsOption)}
-                            key={index}
-                        />
-                    )
-                })}
-            </NavDropdown>
-            <div className="collapse px-[12px]">
-                {Object.keys(sortPosts).reduce((acc, cur) => cur.length > acc.length ? cur : acc, "")}
+        <div className={`relative h-full flex items-center w-fit`}>
+            <div className="flex items-center gap-2">
+                <span className="text-side-text-gray">Sort by:</span>
+                <NavDropdown textSize={16} title={sort}>
+                    {Object.keys(sortPosts).map((param: string, index: number) => {
+                        return (
+                            <DropdownElement
+                                text={param}
+                                action={() => updateSort(param as sortPostsOption)}
+                                key={index}
+                            />
+                        )
+                    })}
+                </NavDropdown>
             </div>
         </div>
     );
