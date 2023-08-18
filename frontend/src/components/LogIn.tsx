@@ -7,6 +7,7 @@ import { IUser } from "../models/IUser";
 import { getAPIErrorMessage } from "../utils/getAPIErrorMessage";
 import Button from "./Button";
 import { UserStatus } from "src/enums/UserStatus";
+import { MAX_PASS_LENGTH, MAX_EMAIL_LENGTH, MAX_USERNAME_LENGTH } from "@freefinder/shared/dist/constants";
 
 interface LogInProps {
     setLogIn: React.Dispatch<React.SetStateAction<boolean>>,
@@ -65,12 +66,14 @@ function LogIn({ setLogIn, setSignUp }: LogInProps) {
                         <input 
                             type="text" 
                             placeholder="Your email or username" 
-                            className="search-bar" onChange={(e) => setUsernameOrEmail(e.target.value)} 
+                            maxLength={Math.max(MAX_EMAIL_LENGTH, MAX_USERNAME_LENGTH)}
+                            className="search-bar" onChange={(e) => setUsernameOrEmail(e.target.value)}
                         />
                         <input 
                             type="password" 
                             placeholder="Password" 
                             autoComplete="password" 
+                            maxLength={MAX_PASS_LENGTH}
                             className="search-bar" onChange={(e) => setPassword(e.target.value)} 
                         />
                     </div>

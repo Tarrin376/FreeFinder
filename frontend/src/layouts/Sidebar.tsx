@@ -27,7 +27,7 @@ function Sidebar(props: SidebarProps) {
     }
 
     return (
-        <motion.div className="fixed top-0 left-0 w-[100vw] h-[100vh] bg-main-white flex flex-col gap-4 z-40"
+        <motion.div className="fixed top-0 left-0 w-[100vw] h-[100vh] bg-main-white flex flex-col gap-4 z-50"
         initial={{ x: `-100%` }} animate={{ x: 0 }} exit={{ x: '-100%' }} transition={{ duration: 0.2 }}>
             <div className="w-full h-full relative p-4">
                 <div className="flex-grow">

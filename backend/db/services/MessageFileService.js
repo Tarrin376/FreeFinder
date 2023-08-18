@@ -3,7 +3,8 @@ import { prisma } from '../index.js';
 import { DBError } from '../customErrors/DBError.js';
 import { checkUser } from '../utils/checkUser.js';
 import { cloudinary } from '../index.js';
-import { MAX_FILE_BYTES, MAX_MESSAGE_FILE_UPLOADS } from '@freefinder/shared/dist/constants.js';
+import { MAX_MESSAGE_FILE_UPLOADS } from '@freefinder/shared/dist/constants.js';
+import { uploadFile } from '../utils/uploadFile.js';
 
 export async function addMessageFileHandler(req) {
     try {
@@ -24,8 +25,7 @@ export async function addMessageFileHandler(req) {
             folder: `FreeFinder/MessageFiles/${message.groupID}/${req.messageID}`,
             tags: [fileExtension],
             resource_type: "raw",
-            public_id: req.body.name,
-            max_bytes: MAX_FILE_BYTES
+            public_id: req.body.name
         });
 
         const newFile = await prisma.messageFile.create({
@@ -33,8 +33,8 @@ export async function addMessageFileHandler(req) {
                 messageID: req.messageID,
                 url: result.secure_url,
                 name: req.body.name,
-                fileType: req.body.fileType,
-                fileSize: req.body.fileSize,
+                fileType: fileExtension,
+                fileSize: result.bytes
             },
             select: {
                 url: true,
@@ -44,9 +44,33 @@ export async function addMessageFileHandler(req) {
             }
         });
 
+        // const upload = await uploadFile(
+        //     req.body.file, 
+        //     `FreeFinder/MessageFiles/${message.groupID}/${req.messageID}/${req.body.name}`, 
+        //     MAX_FILE_BYTES, 
+        //     req.body.fileType
+        // );
+
+        // const newFile = await prisma.messageFile.create({
+        //     data: {
+        //         messageID: req.messageID,
+        //         url: upload.secure_url,
+        //         name: req.body.name,
+        //         fileType: req.body.fileType,
+        //         fileSize: upload.bytes,
+        //     },
+        //     select: {
+        //         url: true,
+        //         name: true,
+        //         fileType: true,
+        //         fileSize: true,
+        //     }
+        // });
+
         return newFile;
     }
     catch (err) {
+        console.log(err);
         if (err instanceof DBError) {
             throw err;
         } else if (err instanceof Prisma.PrismaClientValidationError) {

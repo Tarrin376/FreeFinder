@@ -25,6 +25,7 @@ import { IPostImage } from "src/models/IPostImage";
 import { useTimeCreated } from "src/hooks/useTimeCreated";
 import { useWindowSize } from "src/hooks/useWindowSize";
 import ReviewsAndPackages from "./ReviewsAndPackages";
+import InfoPopUp from "src/components/InfoPopUp";
 
 export type PostViewState = {
     about: string,
@@ -50,7 +51,9 @@ function PostView() {
     const addImageFileRef = useRef<HTMLInputElement>(null);
     const reviewsRef = useRef<HTMLDivElement>(null);
     const imagesRef = useRef<HTMLDivElement>(null);
+
     const [errorMessage, setErrorMessage] = useState<string>("");
+    const [infoMessage, setInfoMessage] = useState<string>("");
 
     const location = useLocation();
     const navigate = useNavigate();
@@ -117,6 +120,13 @@ function PostView() {
         }
     }
 
+    function copyServiceID(): void {
+        if (state.postData) {
+            navigator.clipboard.writeText(state.postData.postID);
+            setInfoMessage("Copied to clipboard.");
+        }
+    }
+
     async function updateTitle() {
         if (state.titleToggle && state.title.length > 0) {
             await updatePost({ title: state.title });
@@ -177,6 +187,12 @@ function PostView() {
                         errorMessage={errorMessage} 
                         setErrorMessage={setErrorMessage} 
                     />}
+                    {infoMessage !== "" &&
+                    <InfoPopUp
+                        message={infoMessage}
+                        closePopUp={() => setInfoMessage("")}
+                        styles="bg-main-blue"
+                    />}
                 </AnimatePresence>
                 <div className="flex gap-16">
                     <div className="flex-grow min-w-0">
@@ -233,16 +249,21 @@ function PostView() {
                                 </p>
                             </div>
                         </div>
+                        {windowSize >= 510 ?
                         <ServiceID
+                            action={copyServiceID}
                             postID={state.postData.postID}
                             textSize={15}
                             styles="mb-4"
-                        />
+                        /> : 
+                        <button className="side-btn w-fit !h-[30px] rounded-[6px] text-[15px] mb-4" onClick={copyServiceID}>
+                            Copy service ID
+                        </button>}
                         <div className="w-full relative overflow-hidden bg-very-light-gray rounded-[12px] border 
                         border-light-border-gray shadow-info-component">
                             <Carousel
                                 images={state.postData.images}
-                                btnSize={50}
+                                btnSize={windowSize >= 620 ? 50 : windowSize >= 420 ? 40 : 35}
                                 wrapperStyles="pb-[56.25%]"
                                 imageStyles="object-contain object-center"
                                 startIndex={state.index}

@@ -11,15 +11,18 @@ import Tags from "./Tags";
 import axios from "axios";
 import { IUser } from "src/models/IUser";
 import Count from "./Count";
+import { useWindowSize } from "src/hooks/useWindowSize";
+import { MIN_DUAL_WIDTH } from "./MessagePreviews";
 
 interface GroupPreviewMessageProps {
     group: GroupPreview,
     selectedGroup: GroupPreview | undefined,
+    showChat: boolean,
     action: (group: GroupPreview) => void,
     setGlobalUnreadMessages: React.Dispatch<React.SetStateAction<number>>
 }
 
-function GroupPreviewMessage({ group, selectedGroup, action, setGlobalUnreadMessages }: GroupPreviewMessageProps) {
+function GroupPreviewMessage({ group, selectedGroup, showChat, action, setGlobalUnreadMessages }: GroupPreviewMessageProps) {
     const userContext = useContext(UserContext);
     const [lastMessage, setLastMessage] = useState<IMessage>(group.lastMessage);
 
@@ -28,6 +31,7 @@ function GroupPreviewMessage({ group, selectedGroup, action, setGlobalUnreadMess
     })!.unreadMessages);
 
     const usersTyping = useUsersTyping(group.groupID);
+    const windowSize = useWindowSize();
     const isOwnMessage = lastMessage && lastMessage.from.username === userContext.userData.username;
 
     const clearUnreadMessages = useCallback(async (): Promise<void> => {
@@ -50,14 +54,14 @@ function GroupPreviewMessage({ group, selectedGroup, action, setGlobalUnreadMess
         }
 
         setLastMessage(message);
-        if (selectedGroup?.groupID !== group.groupID) {
+        if (selectedGroup?.groupID !== group.groupID || (windowSize < MIN_DUAL_WIDTH && !showChat)) {
             setUnreadMessages((cur) => cur + 1);
             return;
         } else {
             await clearUnreadMessages();
         }
         
-    }, [group.groupID, selectedGroup?.groupID, clearUnreadMessages]);
+    }, [group.groupID, selectedGroup?.groupID, clearUnreadMessages, showChat, windowSize]);
 
     useEffect(() => {
         userContext.socket?.on("receive-message", showNewMessages);
@@ -69,14 +73,15 @@ function GroupPreviewMessage({ group, selectedGroup, action, setGlobalUnreadMess
 
     useEffect(() => {
         (async () => {
-            if (selectedGroup?.groupID === group.groupID && unreadMessages > 0) {
+            if (selectedGroup?.groupID === group.groupID && unreadMessages > 0 
+            && (windowSize >= MIN_DUAL_WIDTH || showChat)) {
                 await clearUnreadMessages();
             }
         })();
     }, [selectedGroup, group.groupID, clearUnreadMessages, unreadMessages]);
 
     return (
-        <div className={`w-full flex items-center justify-between p-2 ${group.groupID === selectedGroup?.groupID ? 
+        <div className={`w-full flex items-center justify-between p-2 ${group.groupID === selectedGroup?.groupID && windowSize >= MIN_DUAL_WIDTH ? 
         "bg-hover-light-gray" : "hover:bg-hover-light-gray"} rounded-[6px] cursor-pointer transition-all ease-out duration-100 
         overflow-hidden flex-shrink-0`} onClick={() => action(group)}>
             <div className="flex items-center gap-3 overflow-hidden w-full">

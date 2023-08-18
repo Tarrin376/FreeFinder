@@ -13,6 +13,8 @@ import MessageFile from "./MessageFile";
 import OrderRequest from "./OrderRequest";
 import { FoundUsers } from "../types/FoundUsers";
 import DateOccurred from "./DateOccurred";
+import { useWindowSize } from "src/hooks/useWindowSize";
+import { MIN_DUAL_WIDTH } from "./MessagePreviews";
 
 interface MessageProps {
     message: IMessage,
@@ -26,10 +28,12 @@ interface MessageProps {
 }
 
 function Message({ message, isLastMessage, sendingMessage, groupMembers, seller, workType, groupID, firstMessageOfDay }: MessageProps) {
-    const userContext = useContext(UserContext);
-    const isOwnMessage = message.from.username === userContext.userData.username;
     const date = useRef<string>(new Date(message.createdAt).toLocaleDateString());
     const [errorMessage, setErrorMessage] = useState<string>("");
+    const userContext = useContext(UserContext);
+    
+    const isOwnMessage = message.from.username === userContext.userData.username;
+    const windowSize = useWindowSize();
     
     return (
         <div className="w-full">
@@ -38,7 +42,7 @@ function Message({ message, isLastMessage, sendingMessage, groupMembers, seller,
                 date={date.current} 
                 dateBgColour="#fdfdfd"
             />}
-            <div className={`flex gap-3 items-start w-full ${isOwnMessage ? "flex-row-reverse" : ""}`}>
+            <div className={`flex gap-3 w-full items-start ${isOwnMessage ? "flex-row-reverse" : ""}`}>
                 <AnimatePresence>
                     {errorMessage !== "" && 
                     <ErrorPopUp 
@@ -46,25 +50,38 @@ function Message({ message, isLastMessage, sendingMessage, groupMembers, seller,
                         setErrorMessage={setErrorMessage}
                     />}
                 </AnimatePresence>
+                {windowSize >= 515 &&
                 <div className="w-fit h-fit relative flex-shrink-0">
                     <ProfilePicAndStatus
                         profilePicURL={message.from.profilePicURL}
                         profileStatus={message.from.status}
-                        size={47}
+                        size={windowSize < MIN_DUAL_WIDTH ? 37 : 47}
                         username={message.from.username}
                         statusRight={!isOwnMessage}
                     />
-                </div>
+                </div>}
                 <div className={`flex flex-col gap-[5px] ${isOwnMessage ? "items-end" : "items-start"} ${message.orderRequest ? "flex-grow" : ""}`}>
                     <div className={`flex items-center gap-2 ${isOwnMessage ? "flex-row-reverse" : ""}`}>
-                        <p className="text-[15px]">
-                            {isOwnMessage ? "You" : message.from.username}
-                        </p>
-                        <p className="text-sm text-side-text-gray">
+                        {windowSize < 515 &&
+                        <div className="flex-shrink-0">
+                            <ProfilePicAndStatus
+                                profilePicURL={message.from.profilePicURL}
+                                profileStatus={message.from.status}
+                                size={28}
+                                username={message.from.username}
+                                statusRight={!isOwnMessage}
+                            />
+                        </div>}
+                        <div>
+                            <p className="text-[15px] text-ellipsis whitespace-nowrap overflow-hidden">
+                                {isOwnMessage ? "You" : message.from.username}
+                            </p>
+                        </div>
+                        <p className="text-sm text-side-text-gray flex-shrink-0">
                             {getTime(message.createdAt)}
                         </p>
                     </div>
-                    <div className="flex gap-[5px] items-end w-full">
+                    <div className={`flex gap-[5px] items-end ${isOwnMessage ? "justify-end" : "justify-start"} w-full`}>
                         {isOwnMessage && 
                         <MessageSent 
                             sendingMessage={sendingMessage && isLastMessage}
@@ -78,8 +95,9 @@ function Message({ message, isLastMessage, sendingMessage, groupMembers, seller,
                             groupID={groupID}
                             key={message.messageID}
                         /> : 
-                        <div className={`rounded-[13px] p-[6px] px-4 ${isOwnMessage ? "rounded-tr-none bg-highlight self-end" : 
-                        "bg-very-light-gray rounded-tl-none"} ${message.orderRequest ? "!bg-main-blue w-full" : "w-fit"}`}>
+                        <div className={`${windowSize >= 515 ? "rounded-[13px]" : "!rounded-[13px]"} 
+                        p-[6px] px-4 ${isOwnMessage ? "rounded-tr-none bg-highlight self-end" : "bg-very-light-gray rounded-tl-none"} 
+                        ${message.orderRequest ? "!bg-main-blue w-full" : "w-fit"}`}>
                             <Tags
                                 isOwnMessage={isOwnMessage}
                                 messageText={message.messageText}

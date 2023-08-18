@@ -15,7 +15,7 @@ function InfoPopUp({ message, closePopUp, styles }: InfoPopUpProps) {
     useEffect(() => {
         setTimeout(() => {
             closePopUp();
-        }, 7000);
+        }, 6000);
     }, [closePopUp]);
 
     return (

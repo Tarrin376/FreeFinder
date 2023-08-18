@@ -43,7 +43,7 @@ function AttachFiles({ uploadedFiles, updateUploadedFiles, setErrorMessage }: At
 
     return (
         <motion.div className="absolute bottom-[calc(100%-30px)] right-[14px] z-20 border border-light-border-gray rounded-[8px]
-        bg-main-white w-[300px] h-[300px] flex flex-col justify-between gap-3 p-3 shadow-pop-up" 
+        bg-main-white w-[250px] h-[250px] flex flex-col justify-between gap-3 p-3 shadow-pop-up" 
         initial={{ opacity: 0 }} animate={{ opacity: 1 }} exit={{ opacity: 0 }} transition={{ duration: 0.1 }}>
             <DragAndDrop handleDrop={handleDrop} styles="!rounded-[6px]">
                 <div className="absolute top-[50%] left-[50%] translate-x-[-50%] translate-y-[-50%]">
@@ -51,9 +51,9 @@ function AttachFiles({ uploadedFiles, updateUploadedFiles, setErrorMessage }: At
                     <p className="text-center text-sm">Drag and Drop files here</p>
                 </div>
             </DragAndDrop>
-            <div className="flex items-center justify-between gap-5">
+            <div>
                 <input type="file" className="hidden" ref={fileRef} onChange={uploadFile} />
-                <p className="text-side-text-gray text-sm">Files uploaded:
+                <p className="text-side-text-gray text-sm mb-3">Files uploaded:
                     <span className={`${uploadedFiles.length === MAX_MESSAGE_FILE_UPLOADS ? 'text-error-text' : 'text-light-green'} text-sm`}>
                         {` ${uploadedFiles.length} / ${MAX_MESSAGE_FILE_UPLOADS}`}
                     </span>

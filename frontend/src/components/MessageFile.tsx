@@ -25,11 +25,8 @@ function MessageFile({ file, sending }: MessageFileProps) {
             <File fileType={file.fileType} fileName={file.name}>
                 {!sending ?
                 <a href={file.url} download={file.name} target="_blank" rel="noreferrer">
-                    <button className="main-btn w-fit !h-[30px] rounded-[6px]">
-                        <div className="flex items-center justify-center gap-1">
-                            <img src={DownloadIcon} className="w-[16px] h-[16px]" alt="" />
-                            <span className="text-sm text-main-white">Download</span>
-                        </div>
+                    <button className="main-btn !p-2 w-fit !h-[30px] rounded-[6px] flex-shrink-0" title={`download '${file.name}'`}>
+                        <img src={DownloadIcon} className="min-w-[16px] min-h-[16px]" alt="Download" />
                     </button>
                 </a> : 
                 <div className="flex-shrink-0">

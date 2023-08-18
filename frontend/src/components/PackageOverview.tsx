@@ -25,25 +25,26 @@ function PackageOverview({ type, revisions, seller, workType, wrapperStyles, chi
                     size={42}
                 />
                 <p className="text-[15px] text-ellipsis whitespace-nowrap overflow-hidden">
-                    {`${seller.username} (seller)`}
+                    {seller.username}
                 </p>
             </div>
             <KeyPair
                 itemKey="Package type"
                 itemValue={capitalizeWord(type)}
-                styles="mb-[2px]"
+                styles="mb-[2px] whitespace-pre-wrap"
                 textSize={15}
             />
             <KeyPair
                 itemKey="Work type"
                 itemValue={workType}
-                styles="mb-[2px]"
+                styles="mb-[2px] whitespace-pre-wrap"
                 textSize={15}
             />
             <KeyPair
                 itemKey="Number of revisions"
                 itemValue={`${revisions}`}
                 textSize={15}
+                styles="whitespace-pre-wrap"
             />
             {children}
         </div>

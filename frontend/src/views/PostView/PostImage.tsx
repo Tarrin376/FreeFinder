@@ -77,46 +77,44 @@ function PostImage(props: PostImageProps) {
     }
 
     return (
-        <>
-            <div className={`inline-block w-[140px] ${props.index > 0 ? "ml-3" : ""}`}>
+        <div className={`inline-block w-[140px] ${props.index > 0 ? "ml-3" : ""}`}>
+            <AnimatePresence>
+                {errorMessage !== "" &&
+                <ErrorPopUp
+                    errorMessage={errorMessage}
+                    setErrorMessage={setErrorMessage}
+                />}
+            </AnimatePresence>
+            <div className="w-full h-[85px] relative" onClick={props.action}>
+                <img 
+                    className="rounded-[8px] object-contain cursor-pointer w-full h-full
+                    bg-very-light-gray border border-light-border-gray absolute top-0 left-0"
+                    src={props.images[props.index].url} 
+                    alt="" 
+                    key={props.index}
+                />
                 <AnimatePresence>
-                    {errorMessage !== "" &&
-                    <ErrorPopUp
-                        errorMessage={errorMessage}
-                        setErrorMessage={setErrorMessage}
-                    />}
+                    {(updatingImage || removingImage) &&
+                    <motion.div className="w-full h-full rounded-[8px] flex items-center gap-2
+                    justify-center bg-[#1d1d1db7] absolute top-0 left-0" initial={{ opacity: 0 }}
+                    animate={{ opacity: 1 }} exit={{ opacity: 0 }} transition={{ duration: 0.2 }}>
+                        <LoadingSvg size={24} />
+                        <p className="text-main-white">{updatingImage ? "Updating" : "Removing"}</p>
+                    </motion.div>}
                 </AnimatePresence>
-                <div className="w-full h-[85px] relative" onClick={props.action}>
-                    <img 
-                        className="rounded-[8px] object-contain cursor-pointer w-full h-full
-                        bg-very-light-gray border border-light-border-gray absolute top-0 left-0"
-                        src={props.images[props.index].url} 
-                        alt="" 
-                        key={props.index}
-                    />
-                    <AnimatePresence>
-                        {(updatingImage || removingImage) &&
-                        <motion.div className="w-full h-full rounded-[8px] flex items-center gap-2
-                        justify-center bg-[#1d1d1db7] absolute top-0 left-0" initial={{ opacity: 0 }}
-                        animate={{ opacity: 1 }} exit={{ opacity: 0 }} transition={{ duration: 0.2 }}>
-                            <LoadingSvg size={24} />
-                            <p className="text-main-white">{updatingImage ? "Updating" : "Removing"}</p>
-                        </motion.div>}
-                    </AnimatePresence>
-                </div>
-                {props.isOwner &&
-                <>
-                    <input type='file' ref={changeImageFileRef} className="hidden" onChange={changeImage} />
-                    <button className="change mt-3 mb-2 w-full" onClick={triggerFileUpload}>
-                        Change
-                    </button>
-                    {props.images.length > 1 &&
-                    <button className="cancel-change w-full" onClick={removeImage}>
-                        Remove
-                    </button>}
-                </>}
             </div>
-        </>
+            {props.isOwner &&
+            <>
+                <input type='file' ref={changeImageFileRef} className="hidden" onChange={changeImage} />
+                <button className="change mt-3 mb-2 w-full" onClick={triggerFileUpload}>
+                    Change
+                </button>
+                {props.images.length > 1 &&
+                <button className="cancel-change w-full" onClick={removeImage}>
+                    Remove
+                </button>}
+            </>}
+        </div>
     )
 }
 

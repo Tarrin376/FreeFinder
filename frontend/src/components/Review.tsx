@@ -79,7 +79,7 @@ function Review({ reviewInfo, hideActions }: ReviewProps) {
                     <p>{reviewInfo.reviewer.username}</p>
                 </div>
                 {!hideActions &&
-                <Actions>
+                <Actions size={50}>
                     <p className="whitespace-nowrap link">
                         Flag inappropriate
                     </p>

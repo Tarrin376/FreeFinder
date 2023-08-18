@@ -10,7 +10,14 @@ import { userProperties } from '../utils/userProperties.js';
 import { getPaginatedData } from '../utils/getPaginatedData.js';
 import { getAvgRatings } from '../utils/getAvgRatings.js';
 import { uploadFile } from '../utils/uploadFile.js';
-import { MAX_DEPOSIT, MIN_PASS_LENGTH, MAX_PASS_LENGTH, EMAIL_REGEX, MAX_PROFILE_PIC_BYTES } from '@freefinder/shared/dist/constants.js';
+import { 
+    MAX_DEPOSIT, 
+    MIN_PASS_LENGTH, 
+    MAX_PASS_LENGTH, 
+    EMAIL_REGEX, 
+    MAX_PROFILE_PIC_BYTES, 
+    MAX_EMAIL_LENGTH 
+} from '@freefinder/shared/dist/constants.js';
 
 export async function updatePasswordHandler(req) {
     try {
@@ -46,8 +53,8 @@ export async function registerUserHandler(userData) {
     try {
         if (!userData.password || userData.password < MIN_PASS_LENGTH || userData.password > MAX_PASS_LENGTH) {
             throw new DBError(`Password must be between ${MIN_PASS_LENGTH} and ${MAX_PASS_LENGTH} characters long.`, 400);
-        } else if (!userData.email || userData.email.match(EMAIL_REGEX) === null) {
-            throw new DBError("Email address must be provided and valid.", 400);
+        } else if (!userData.email || userData.email.match(EMAIL_REGEX) === null || userData.email.length > MAX_EMAIL_LENGTH) {
+            throw new DBError("Email address provided is invalid.", 400);
         }
 
         await prisma.user.create({

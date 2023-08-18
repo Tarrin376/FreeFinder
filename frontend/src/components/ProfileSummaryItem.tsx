@@ -6,10 +6,10 @@ interface ProfileSummaryItemProps {
 
 function ProfileSummaryItem({ image, itemKey, itemValue }: ProfileSummaryItemProps) {
     return (
-        <div className="flex gap-2 items-center">
+        <div className="flex gap-3 items-center">
             <img src={image} width="20px" height="20px" alt="location" />
-            <p className="text-side-text-gray">{itemKey}</p>
-            <p className="ml-auto">{itemValue}</p>
+            <p className="text-side-text-gray flex-shrink-0">{itemKey}</p>
+            <p className="ml-auto text-ellipsis whitespace-nowrap overflow-hidden">{itemValue}</p>
         </div>
     )
 }

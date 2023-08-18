@@ -11,6 +11,7 @@ export declare const MIN_PASS_LENGTH: number;
 export declare const MAX_PASS_LENGTH: number;
 export declare const MIN_USERNAME_LENGTH: number;
 export declare const MAX_USERNAME_LENGTH: number;
+export declare const MAX_EMAIL_LENGTH = 320;
 export declare const EMAIL_REGEX: RegExp;
 export declare const MAX_PROFILE_PIC_BYTES: number;
 export declare const MAX_SERVICE_PRICE: number;

@@ -5,7 +5,6 @@ import GroupMembers from "./GroupMembers";
 import { useState, useContext, useEffect, useCallback } from "react";
 import { AnimatePresence } from "framer-motion";
 import ErrorPopUp from "./ErrorPopUp";
-import CloseSvg from "./CloseSvg";
 import axios, { AxiosError } from "axios";
 import { UserContext } from "../providers/UserProvider";
 import { getAPIErrorMessage } from "../utils/getAPIErrorMessage";
@@ -14,22 +13,33 @@ import Button from "./Button";
 import AddUserIcon from "../assets/AddGroup.png";
 import AddUsersToGroup from "./AddUsersToGroup";
 import ServiceID from "./ServiceID";
+import { useWindowSize } from "src/hooks/useWindowSize";
+import Arrow from "./Arrow";
+import GroupMembersCount from "./GroupMembersCount";
+import InfoPopUp from "./InfoPopUp";
+import { MIN_DUAL_WIDTH } from "./MessagePreviews";
+import VisibleGroupMember from "./VisibleGroupMember";
 
 interface ChatProps {
     group: GroupPreview,
     setAllGroups: React.Dispatch<React.SetStateAction<GroupPreview[]>>,
     setGroupCount: React.Dispatch<React.SetStateAction<number>>,
-    setGroup: React.Dispatch<React.SetStateAction<GroupPreview | undefined>>
+    setGroup: React.Dispatch<React.SetStateAction<GroupPreview | undefined>>,
+    setShowChat: React.Dispatch<React.SetStateAction<boolean>>
 }
 
 const VISIBLE_MEMBERS = 2;
+const SHOW_SERVICE_ID_WIDTH = 575;
 
-function Chat({ group, setAllGroups, setGroupCount, setGroup }: ChatProps) {
+function Chat({ group, setAllGroups, setGroupCount, setGroup, setShowChat }: ChatProps) {
     const [toggleGroupMembers, setToggleGroupMembers] = useState<boolean>(false);
     const [errorMessage, setErrorMessage] = useState<string>("");
     const [groupMembers, setGroupMembers] = useState<GroupPreview["members"]>(group.members);
     const [toggleAddUsersPopUp, setToggleAddUsersPopUp] = useState<boolean>(false);
+    const [infoMessage, setInfoMessage] = useState<string>("");
+
     const userContext = useContext(UserContext);
+    const windowSize = useWindowSize();
 
     async function removeUser(userID: string): Promise<string | undefined> {
         try {
@@ -50,6 +60,18 @@ function Chat({ group, setAllGroups, setGroupCount, setGroup }: ChatProps) {
 
     function removeGroupMember(userID: string) {
         setGroupMembers((members) => members.filter((member) => member.user.userID !== userID));
+    }
+
+    function copyServiceID(): void {
+        navigator.clipboard.writeText(group.postID);
+        setInfoMessage("Copied to clipboard.");
+    }
+
+    async function removeVisibleGroupMember(userID: string): Promise<void> {
+        const errorMessage = await removeUser(userID);
+        if (errorMessage) {
+            setErrorMessage(errorMessage);
+        }
     }
 
     async function deleteGroup(): Promise<string | undefined> {
@@ -129,56 +151,55 @@ function Chat({ group, setAllGroups, setGroupCount, setGroup }: ChatProps) {
                     groupMembers={groupMembers}
                     setToggleAddUsersPopUp={setToggleAddUsersPopUp}
                 />}
+                {infoMessage !== "" &&
+                <InfoPopUp
+                    message={infoMessage}
+                    closePopUp={() => setInfoMessage("")}
+                    styles="bg-main-blue"
+                />}
             </AnimatePresence>
-            <div className="bg-transparent pl-5 w-full flex items-center justify-between flex-shrink-0 gap-5">
-                <div className="flex items-center gap-4 overflow-hidden">
+            <div className={`bg-transparent w-full min-w-0 flex items-center justify-between gap-5 
+            ${windowSize >= MIN_DUAL_WIDTH ? "pl-5" : ""} ${windowSize < SHOW_SERVICE_ID_WIDTH ? "pb-5 border-b border-light-border-gray" : ""} 
+            ${windowSize < 500 ? "!pb-4" : ""}`}>
+                <div className="flex items-center gap-4 overflow-hidden flex-grow">
+                    {windowSize < MIN_DUAL_WIDTH && 
+                    <Arrow
+                        action={() => setShowChat(false)}
+                        direction="left"
+                        alt="back"
+                        size={45}
+                    />}
+                    {windowSize >= 500 &&
                     <ProfilePicAndStatus
                         profilePicURL=""
-                        size={47}
+                        size={windowSize >= MIN_DUAL_WIDTH ? 47 : 40}
                         username={group.groupName}
-                    />
-                    <div>
-                        <p className="text-[17px] font-bold text-ellipsis whitespace-nowrap overflow-hidden mb-1" title={group.groupName}>
-                            {group.groupName}
-                        </p>
-                    </div>
+                    />}
+                    <p className="text-[17px] text-ellipsis whitespace-nowrap overflow-hidden" title={group.groupName}>
+                        {group.groupName}
+                    </p>
                 </div>
-                <div className="flex items-center gap-2 flex-shrink-0">
-                    <div className="inline-flex relative" onMouseLeave={() => setToggleGroupMembers(false)}>
-                        {groupMembers.slice(0, VISIBLE_MEMBERS).map((member, index) => {
+                <div className="flex items-center gap-4 flex-shrink-0">
+                    <div className="flex relative" onMouseLeave={() => setToggleGroupMembers(false)}>
+                        {windowSize >= SHOW_SERVICE_ID_WIDTH && groupMembers.slice(0, VISIBLE_MEMBERS).map((member) => {
                             return (
-                                <div className="w-fit h-fit relative ml-[-12px] outline outline-[3px] outline-main-white rounded-full" key={index}>
-                                    <ProfilePicAndStatus
-                                        profilePicURL={member.user.profilePicURL}
-                                        size={47}
-                                        username={member.user.username}
-                                        key={index}
-                                    />
-                                    {member.user.username !== userContext.userData.username && userContext.userData.userID === group.creatorID &&
-                                    <button className="bg-error-text text-main-white rounded-full w-[18px] h-[18px] border-2 border-main-white
-                                    absolute top-[30px] left-[0px] flex items-center justify-center cursor-pointer"
-                                    onClick={async () => {
-                                        const errorMessage = await removeUser(member.user.userID);
-                                        if (errorMessage) {
-                                            setErrorMessage(errorMessage);
-                                        }
-                                    }}>
-                                        <CloseSvg 
-                                            size={12}
-                                            colour="#fdfdfd" 
-                                        />
-                                    </button>}
-                                </div>
+                                <VisibleGroupMember
+                                    creatorID={group.creatorID}
+                                    profilePicURL={member.user.profilePicURL}
+                                    username={member.user.username}
+                                    action={() => removeVisibleGroupMember(member.user.userID)}
+                                    key={member.user.userID}
+                                />
                             )
                         })}
                         {groupMembers.length > VISIBLE_MEMBERS &&
-                        <div className="w-[47px] h-[47px] rounded-full outline outline-[3px] outline-main-white 
-                        bg-very-light-gray flex items-center justify-center ml-[-13px] cursor-pointer z-10" 
-                        onMouseEnter={() => setToggleGroupMembers(true)}>
-                            <p className="text-[18px] text-side-text-gray">
-                                {`+${groupMembers.length - VISIBLE_MEMBERS}`}
-                            </p>
-                        </div>}
+                        <GroupMembersCount
+                            action={() => setToggleGroupMembers(true)}
+                            numMembers={groupMembers.length}
+                            visibleMembers={VISIBLE_MEMBERS}
+                            size={windowSize >= MIN_DUAL_WIDTH ? 47 : 40}
+                            styles="ml-[-13px] z-10"
+                        />}
                         <AnimatePresence>
                             {toggleGroupMembers &&
                             <GroupMembers 
@@ -196,7 +217,12 @@ function Chat({ group, setAllGroups, setGroupCount, setGroup }: ChatProps) {
                         onClick={() => setToggleAddUsersPopUp(true)}
                         alt=""
                     />}
-                    <Actions>
+                    <Actions size={45}>
+                        {windowSize < SHOW_SERVICE_ID_WIDTH &&
+                        <button className="bg-transparent border-none whitespace-nowrap"
+                        onClick={copyServiceID}>
+                            Copy service ID
+                        </button>}
                         {group.creatorID === userContext.userData.userID ?
                         <Button
                             action={deleteGroup}
@@ -221,13 +247,15 @@ function Chat({ group, setAllGroups, setGroupCount, setGroup }: ChatProps) {
                     </Actions>
                 </div>
             </div>
-            <div className="p-5 py-3 pr-0 bg-transparent border-b border-light-border-gray">
+            {windowSize >= SHOW_SERVICE_ID_WIDTH &&
+            <div className={`${windowSize >= MIN_DUAL_WIDTH ? "pl-5" : ""} py-3 pr-0 bg-transparent border-b border-light-border-gray w-full`}>
                 <ServiceID
+                    action={copyServiceID}
                     postID={group.postID}
                     textSize={14}
                     styles="w-fit"
                 />
-            </div>
+            </div>}
             <ChatBox 
                 seller={group.seller}
                 workType={group.workType}

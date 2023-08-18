@@ -5,7 +5,7 @@ import axios, { AxiosError } from "axios";
 import { getAPIErrorMessage } from "../utils/getAPIErrorMessage";
 import Button from "./Button";
 import CountriesDropdown from "./CountriesDropdown";
-import { EMAIL_REGEX } from "@freefinder/shared/dist/constants";
+import { EMAIL_REGEX, MAX_EMAIL_LENGTH } from "@freefinder/shared/dist/constants";
 import Validator from "@freefinder/shared/dist/validator";
 
 interface SignUpProps {
@@ -72,7 +72,7 @@ function SignUp({ setLogIn, setSignUp, setAccountCreated }: SignUpProps) {
 
     function checkEmail(e: React.ChangeEvent<HTMLInputElement>, isFirst: boolean): void {
         const email = e.target.value;
-        const errorMessage = email.match(EMAIL_REGEX) !== null ? "" : "Please use a valid email address.";
+        const errorMessage = email.match(EMAIL_REGEX) !== null && email.length <= MAX_EMAIL_LENGTH ? "" : "Please use a valid email address.";
 
         if (!isFirst) {
             dispatch({

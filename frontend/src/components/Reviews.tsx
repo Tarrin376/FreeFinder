@@ -1,4 +1,3 @@
-import RightArrowIcon from "../assets/right-arrow.png";
 import { useEffect, useState } from "react";
 import axios, { AxiosError } from "axios";
 import { getAPIErrorMessage } from "../utils/getAPIErrorMessage";
@@ -13,6 +12,7 @@ import { RatingAverages } from "../types/RatingAverages";
 import { StarCounts } from "../types/StarCounts";
 import Rating from "./Rating";
 import { useWindowSize } from "src/hooks/useWindowSize";
+import Arrow from "./Arrow";
 
 interface ReviewsProps {
     url: string,
@@ -92,10 +92,12 @@ function Reviews({ url, reviewsRef }: ReviewsProps) {
                     Ratings and reviews
                 </h2>
                 {reviews.count > QUERY_LIMIT &&
-                <div className="w-[52px] h-full flex items-center justify-center 
-                hover:bg-hover-light-gray rounded-full cursor-pointer" onClick={() => setAllReviewsPopUp(true)}>
-                    <img src={RightArrowIcon} alt="" className="w-[26px] h-[26px]" />
-                </div>}
+                <Arrow
+                    action={() => setAllReviewsPopUp(true)}
+                    direction="right"
+                    alt="See all reviews"
+                    size={52}
+                />}
             </div>
             <div className={`flex ${windowSize >= 450 ? "gap-7" : "gap-5"} items-end mb-6`}>
                 <div className="w-fit">
@@ -144,11 +146,11 @@ function Reviews({ url, reviewsRef }: ReviewsProps) {
                 />
             </div>
             <div className="flex gap-7 flex-col">
-                {reviews.next.map((review: IReview, index: number) => {
+                {reviews.next.map((review: IReview) => {
                     return (
                         <Review 
                             reviewInfo={review} 
-                            key={index} 
+                            key={review.reviewID} 
                         />
                     )
                 })}

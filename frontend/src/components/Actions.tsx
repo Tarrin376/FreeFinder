@@ -5,17 +5,22 @@ import { motion } from "framer-motion";
 import OutsideClickHandler from "react-outside-click-handler";
 
 interface ActionsProps {
-    children: React.ReactNode
+    children: React.ReactNode,
+    size: number
 }
 
-function Actions({ children }: ActionsProps) {
+function Actions({ children, size }: ActionsProps) {
     const [toggleActions, setToggleActions] = useState<boolean>(false);
     
     return (
-        <div className="w-[50px] h-[50px] relative z-10">
+        <div className="relative z-10" style={{ width: `${size}px`, height: `${size}px` }}>
             <div className="w-full h-full hover:bg-hover-light-gray flex items-center justify-center rounded-full cursor-pointer" 
             onClick={() => setToggleActions((cur) => !cur)}>
-                <img src={ActionsIcon} className="w-[27px] h-[27px]" alt="" />
+                <img 
+                    src={ActionsIcon} 
+                    style={{ width: `${Math.floor(size * 0.5)}px`, height: `${Math.floor(size * 0.5)}px` }}
+                    alt="" 
+                />
             </div>
             <AnimatePresence>
                 {toggleActions &&

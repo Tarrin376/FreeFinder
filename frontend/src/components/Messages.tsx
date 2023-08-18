@@ -10,13 +10,12 @@ interface MessagesProps {
     groupMembers: GroupPreview["members"],
     seller: FoundUsers[number],
     workType: string,
-    groupID: string,
-    pageRef: React.RefObject<HTMLDivElement>
+    groupID: string
 }
 
-function Messages({ messages, sendingMessage, groupMembers, seller, workType, groupID, pageRef }: MessagesProps) {
+function Messages({ messages, sendingMessage, groupMembers, seller, workType, groupID }: MessagesProps) {
     return (
-        <div className="bg-transparent flex-grow overflow-y-scroll w-full flex flex-col-reverse items-end gap-6 p-4" ref={pageRef}>
+        <>
             {messages.map((message: IMessage, index: number) => {
                 const date = new Date(message.createdAt).toLocaleDateString();
                 const prevDate = index < messages.length - 1 ? new Date(messages[index + 1].createdAt).toLocaleDateString() : undefined;
@@ -35,7 +34,7 @@ function Messages({ messages, sendingMessage, groupMembers, seller, workType, gr
                     />
                 )
             })}
-        </div>
+        </>
     )
 }
 

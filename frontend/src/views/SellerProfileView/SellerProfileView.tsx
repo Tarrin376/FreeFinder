@@ -83,7 +83,6 @@ function SellerProfileView() {
                         <p>{sellerDetails.description}</p>
                         <div className="mt-5 flex items-end justify-between">
                             <ProfileSummary
-                                country={sellerDetails.user.country}
                                 memberDate={sellerDetails.user.memberDate}
                                 styles="w-[400px] bg-[#f8f8f8] p-3 rounded-[8px]"
                             />
@@ -98,7 +97,7 @@ function SellerProfileView() {
                         </div>
                     </div>
                     <div className="mt-7 pt-5 border-t border-t-light-border-gray">
-                        <p>{`${sellerDetails.user.username} speaks`}</p>
+                        <p>Seller speaks</p>
                         <Options 
                             options={sellerDetails.languages} 
                             wrapperStyles="mt-2"

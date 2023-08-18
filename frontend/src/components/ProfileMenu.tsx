@@ -110,7 +110,7 @@ function ProfileMenu({ logout }: ProfileMenuProps) {
     }, [userContext.socket, updateGlobalUnreadMessages, updateUnreadNotifications]);
 
     return (
-        <div className={`flex ${windowSize <= 320 ? "gap-4" : "gap-7"} items-center z-50 relative`}>
+        <div className={`flex ${windowSize <= 320 ? "gap-4" : "gap-7"} items-center z-40 relative`}>
             <AnimatePresence>
                 {settingsPopUp && <AccountSettings setSettingsPopUp={setSettingsPopUp} />}
                 {updateSellerProfilePopUp && <ChangeSellerDetails setSellerProfilePopUp={setUpdateSellerProfilePopUp} />}

@@ -27,6 +27,9 @@ import { useArrowNavigation } from "../hooks/useArrowNavigation";
 import { FoundUsers } from "../types/FoundUsers";
 import Messages from "./Messages";
 import { SendNotification } from "src/types/SendNotification";
+import { useWindowSize } from "src/hooks/useWindowSize";
+import { MIN_DUAL_WIDTH } from "./MessagePreviews";
+import { compressImage } from "src/utils/compressImage";
 
 interface ChatBoxProps {
     seller: FoundUsers[number],
@@ -81,6 +84,7 @@ function ChatBox({ seller, workType, groupID, groupMembers }: ChatBoxProps) {
     const messages = usePaginateData<{}, IMessage, PaginationResponse<IMessage>>(pageRef, cursor, url, page, setPage, {}, true);
     const selectedIndex = useArrowNavigation<MatchedMembers[number]>(suggestionsRef, inputRef, state.matchedMembers, 53, TAG_SUGGESTIONS_HEIGHT);
     const usersTyping = useUsersTyping(groupID);
+    const windowSize = useWindowSize();
 
     async function addMessageFiles(messageID: string): Promise<{
         failed: FailedUpload[],
@@ -89,22 +93,22 @@ function ChatBox({ seller, workType, groupID, groupMembers }: ChatBoxProps) {
         const failed: FailedUpload[] = [];
         const succeeded: IMessageFile[] = [];
 
-        for (let i = 0; i < state.uploadedFiles.length; i++) {
+        for (const uploadedFile of state.uploadedFiles) {
             try {
+                const compressed = uploadedFile.file.type.startsWith("/image") ? await compressImage(uploadedFile.file) : uploadedFile.base64Str;
                 const resp = await axios.post<{ newFile: IMessageFile, message: string }>
                 (`/api/users/${userContext.userData.username}/message-groups/${groupID}/messages/${messageID}/files`, {
-                    file: state.uploadedFiles[i].base64Str,
-                    name: state.uploadedFiles[i].file.name,
-                    fileType: state.uploadedFiles[i].file.type,
-                    fileSize: state.uploadedFiles[i].file.size
+                    file: compressed,
+                    name: uploadedFile.file.name
                 });
 
                 succeeded.push(resp.data.newFile);
             }
             catch (err: any) {
                 const errorMessage = getAPIErrorMessage(err as AxiosError<{ message: string }>);
+                console.log(errorMessage);
                 failed.push({
-                    fileData: state.uploadedFiles[i], 
+                    fileData: uploadedFile, 
                     errorMessage: errorMessage
                 });
             }
@@ -202,6 +206,8 @@ function ChatBox({ seller, workType, groupID, groupMembers }: ChatBoxProps) {
                 ...state.newMessages
             ] });
         }
+
+
     }, [state.newMessages]);
 
     function handleKeyDown(e: React.KeyboardEvent<HTMLInputElement>): void {
@@ -293,6 +299,7 @@ function ChatBox({ seller, workType, groupID, groupMembers }: ChatBoxProps) {
 
     useEffect(() => {
         userContext.socket?.on("receive-message", showMessage);
+        
         return () => {
             userContext.socket?.off("receive-message", showMessage);
         }
@@ -312,16 +319,18 @@ function ChatBox({ seller, workType, groupID, groupMembers }: ChatBoxProps) {
                     setErrorMessage={setErrorMessage} 
                 />}
             </AnimatePresence>
-            <Messages
-                messages={state.newMessages}
-                sendingMessage={state.sendingMessage}
-                groupMembers={groupMembers}
-                seller={seller}
-                workType={workType}
-                groupID={groupID}
-                pageRef={pageRef}
-            />
-            <div className="pl-3 pt-3 flex-shrink-0 relative">
+            <div className={`flex-grow overflow-y-scroll bg-transparent w-full flex flex-col-reverse items-end gap-6 
+            ${windowSize >= MIN_DUAL_WIDTH ? "p-4" : "py-4 pr-[8px]"}`} ref={pageRef}>
+                <Messages
+                    messages={state.newMessages}
+                    sendingMessage={state.sendingMessage}
+                    groupMembers={groupMembers}
+                    seller={seller}
+                    workType={workType}
+                    groupID={groupID}
+                />
+            </div>
+            <div className={`${windowSize >= MIN_DUAL_WIDTH ? "pl-4" : ""} pt-2 flex-shrink-0 relative`}>
                 <AnimatePresence>
                     {state.toggleEmojiPicker ?
                     <motion.div className="absolute bottom-[calc(100%-30px)] right-[14px] z-20 shadow-pop-up rounded-[8px]" 
@@ -374,11 +383,9 @@ function ChatBox({ seller, workType, groupID, groupMembers }: ChatBoxProps) {
                                 uploadedFiles={state.uploadedFiles}
                                 removeFile={removeFile}
                             />}
-                            <p className="text-side-text-gray text-sm">
-                                {`View supported file formats `}
-                                <span className="text-main-blue text-sm underline cursor-pointer" onClick={() => setToggleSupportedFormats(true)}>
-                                    here
-                                </span>
+                            <p className="text-main-blue text-sm cursor-pointer" 
+                            onClick={() => setToggleSupportedFormats(true)}>
+                                Supported formats
                             </p>
                         </div>
                         <div className="flex items-center flex-shrink-0">
