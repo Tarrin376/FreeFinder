@@ -7,6 +7,7 @@ import { AxiosError } from "axios";
 import Button from "../../components/Button";
 import { UserContext } from '../../providers/UserProvider';
 import Validator from "@freefinder/shared/dist/validator";
+import TextBoxErrorMessage from 'src/components/TextBoxErrorMessage';
 
 function UserProfile() {
     const userContext = useContext(UserContext);
@@ -52,9 +53,10 @@ function UserProfile() {
                         value={username} onChange={(e) => setUsername(e.target.value)} 
                         maxLength={20}
                     />
-                    <p className="text-box-error-message">
-                        {validUsername}
-                    </p>
+                    {validUsername !== "" &&
+                    <TextBoxErrorMessage
+                        error={validUsername}
+                    />}
                 </div>
                 <div>
                     <p className="mb-2">Country</p>

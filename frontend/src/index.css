@@ -20,12 +20,6 @@
     .invalid-button {
         @apply btn-primary !bg-[#a0a0a0] hover:!bg-[#a0a0a0] !border-none pointer-events-none !text-disabled-gray;
     }
-    .settings-selection {
-        @apply border-b-[3px] border-b-main-black cursor-pointer pb-4;
-    }
-    .settings-unselected {
-        @apply pb-4 cursor-pointer;
-    }
     .loading {
         @apply animate-pulse bg-very-light-gray rounded-[8px];
     }
@@ -38,9 +32,6 @@
     .side-btn {
         @apply bg-main-white border text-main-blue border-light-border-gray btn-primary w-fit px-4
         hover:bg-main-white-hover h-[42px];
-    }
-    .text-box-error-message {
-        @apply text-error-text mt-1 text-[15px];
     }
     .carousel-btn {
         @apply btn-primary !p-0 bg-main-white rounded-full shadow-profile-page-container border border-light-border-gray 
@@ -76,9 +67,6 @@
     .sidebar-item {
         @apply pt-9 link;
     }
-    .dot {
-        @apply w-[6px] h-[6px] rounded-full bg-side-text-gray opacity-0 animate-user-typing;
-    }
     .dropdown {
         @apply border border-light-border-gray bg-main-white rounded-[8px] p-3 absolute shadow-post top-full right-0;
     }
@@ -86,7 +74,7 @@
 
 @layer base {
     * {
-        @apply box-border text-main-black font-railway text-[16px];
+        @apply box-border text-main-black font-railway;
     }
     html {
         overflow-y: hidden;

@@ -67,14 +67,16 @@ function LogIn({ setLogIn, setSignUp }: LogInProps) {
                             type="text" 
                             placeholder="Your email or username" 
                             maxLength={Math.max(MAX_EMAIL_LENGTH, MAX_USERNAME_LENGTH)}
-                            className="search-bar" onChange={(e) => setUsernameOrEmail(e.target.value)}
+                            className="search-bar" 
+                            onChange={(e) => setUsernameOrEmail(e.target.value)}
                         />
                         <input 
                             type="password" 
                             placeholder="Password" 
                             autoComplete="password" 
                             maxLength={MAX_PASS_LENGTH}
-                            className="search-bar" onChange={(e) => setPassword(e.target.value)} 
+                            className="search-bar" 
+                            onChange={(e) => setPassword(e.target.value)} 
                         />
                     </div>
                     <Button
@@ -89,7 +91,8 @@ function LogIn({ setLogIn, setSignUp }: LogInProps) {
                         keepErrorMessage={true}
                     />
                 </form>
-                <p className="mt-6 text-side-text-gray text-[15px]">Dont yet have an account? 
+                <p className="mt-6 text-side-text-gray text-[15px]">
+                    Dont yet have an account? 
                     <span className="text-main-blue ml-2 cursor-pointer hover:text-main-black" onClick={openSignUp}>
                         Sign Up
                     </span>

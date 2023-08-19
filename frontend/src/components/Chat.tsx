@@ -19,19 +19,19 @@ import GroupMembersCount from "./GroupMembersCount";
 import InfoPopUp from "./InfoPopUp";
 import { MIN_DUAL_WIDTH } from "./MessagePreviews";
 import VisibleGroupMember from "./VisibleGroupMember";
+import OutsideClickHandler from "react-outside-click-handler";
 
 interface ChatProps {
     group: GroupPreview,
     setAllGroups: React.Dispatch<React.SetStateAction<GroupPreview[]>>,
     setGroupCount: React.Dispatch<React.SetStateAction<number>>,
-    setGroup: React.Dispatch<React.SetStateAction<GroupPreview | undefined>>,
-    setShowChat: React.Dispatch<React.SetStateAction<boolean>>
+    setGroup: React.Dispatch<React.SetStateAction<GroupPreview | undefined>>
 }
 
 const VISIBLE_MEMBERS = 2;
 const SHOW_SERVICE_ID_WIDTH = 575;
 
-function Chat({ group, setAllGroups, setGroupCount, setGroup, setShowChat }: ChatProps) {
+function Chat({ group, setAllGroups, setGroupCount, setGroup }: ChatProps) {
     const [toggleGroupMembers, setToggleGroupMembers] = useState<boolean>(false);
     const [errorMessage, setErrorMessage] = useState<string>("");
     const [groupMembers, setGroupMembers] = useState<GroupPreview["members"]>(group.members);
@@ -161,10 +161,10 @@ function Chat({ group, setAllGroups, setGroupCount, setGroup, setShowChat }: Cha
             <div className={`bg-transparent w-full min-w-0 flex items-center justify-between gap-5 
             ${windowSize >= MIN_DUAL_WIDTH ? "pl-5" : ""} ${windowSize < SHOW_SERVICE_ID_WIDTH ? "pb-5 border-b border-light-border-gray" : ""} 
             ${windowSize < 500 ? "!pb-4" : ""}`}>
-                <div className="flex items-center gap-4 overflow-hidden flex-grow">
+                <div className="flex items-center gap-4 overflow-hidden">
                     {windowSize < MIN_DUAL_WIDTH && 
                     <Arrow
-                        action={() => setShowChat(false)}
+                        action={() => setGroup(undefined)}
                         direction="left"
                         alt="back"
                         size={45}
@@ -179,37 +179,39 @@ function Chat({ group, setAllGroups, setGroupCount, setGroup, setShowChat }: Cha
                         {group.groupName}
                     </p>
                 </div>
-                <div className="flex items-center gap-4 flex-shrink-0">
-                    <div className="flex relative" onMouseLeave={() => setToggleGroupMembers(false)}>
-                        {windowSize >= SHOW_SERVICE_ID_WIDTH && groupMembers.slice(0, VISIBLE_MEMBERS).map((member) => {
-                            return (
-                                <VisibleGroupMember
-                                    creatorID={group.creatorID}
-                                    profilePicURL={member.user.profilePicURL}
-                                    username={member.user.username}
-                                    action={() => removeVisibleGroupMember(member.user.userID)}
-                                    key={member.user.userID}
-                                />
-                            )
-                        })}
-                        {groupMembers.length > VISIBLE_MEMBERS &&
-                        <GroupMembersCount
-                            action={() => setToggleGroupMembers(true)}
-                            numMembers={groupMembers.length}
-                            visibleMembers={VISIBLE_MEMBERS}
-                            size={windowSize >= MIN_DUAL_WIDTH ? 47 : 40}
-                            styles="ml-[-13px] z-10"
-                        />}
-                        <AnimatePresence>
-                            {toggleGroupMembers &&
-                            <GroupMembers 
-                                groupMembers={groupMembers} 
-                                creatorID={group.creatorID}
-                                removeUser={removeUser}
-                                setErrorMessage={setErrorMessage}
+                <div className="flex items-center gap-4">
+                    <OutsideClickHandler onOutsideClick={() => setToggleGroupMembers(false)}>
+                        <div className="flex relative">
+                            {windowSize >= SHOW_SERVICE_ID_WIDTH && groupMembers.slice(0, VISIBLE_MEMBERS).map((member) => {
+                                return (
+                                    <VisibleGroupMember
+                                        creatorID={group.creatorID}
+                                        profilePicURL={member.user.profilePicURL}
+                                        username={member.user.username}
+                                        action={() => removeVisibleGroupMember(member.user.userID)}
+                                        key={member.user.userID}
+                                    />
+                                )
+                            })}
+                            {groupMembers.length > VISIBLE_MEMBERS &&
+                            <GroupMembersCount
+                                action={() => setToggleGroupMembers(true)}
+                                numMembers={groupMembers.length}
+                                visibleMembers={VISIBLE_MEMBERS}
+                                size={windowSize >= MIN_DUAL_WIDTH ? 47 : 40}
+                                styles="ml-[-13px] z-10"
                             />}
-                        </AnimatePresence>
-                    </div>
+                            <AnimatePresence>
+                                {toggleGroupMembers &&
+                                <GroupMembers 
+                                    groupMembers={groupMembers} 
+                                    creatorID={group.creatorID}
+                                    removeUser={removeUser}
+                                    setErrorMessage={setErrorMessage}
+                                />}
+                            </AnimatePresence>
+                        </div>
+                    </OutsideClickHandler>
                     {group.creatorID === userContext.userData.userID && 
                     <img 
                         src={AddUserIcon} 

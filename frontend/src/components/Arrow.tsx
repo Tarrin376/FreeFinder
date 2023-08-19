@@ -11,7 +11,7 @@ interface ArrowProps {
 function Arrow({ action, direction, size, alt }: ArrowProps) {
     const rotate = useRef<number>(0);
     const defaultStyles = `flex items-center justify-center 
-    hover:bg-hover-light-gray rounded-full cursor-pointer`;
+    hover:bg-hover-light-gray rounded-full cursor-pointer flex-shrink-0`;
 
     const calculateRotation = useCallback((): number => {
         switch (direction) {

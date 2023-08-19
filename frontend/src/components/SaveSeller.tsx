@@ -12,10 +12,11 @@ interface SaveSellerProps {
     sellerID: string,
     isSaved?: boolean,
     action?: (saved: boolean) => Promise<void>,
-    hideSaveMessage?: boolean
+    hideSaveMessage?: boolean,
+    styles?: string
 }
 
-function SaveSeller({ svgSize, sellerID, isSaved, action, hideSaveMessage }: SaveSellerProps) {
+function SaveSeller({ svgSize, sellerID, isSaved, action, hideSaveMessage, styles }: SaveSellerProps) {
     const userContext = useContext(UserContext);
     const [errorMessage, setErrorMessage] = useState<string>("");
 
@@ -34,7 +35,7 @@ function SaveSeller({ svgSize, sellerID, isSaved, action, hideSaveMessage }: Sav
     }
     
     return (
-        <>
+        <div className={styles}>
             <AnimatePresence>
                 {errorMessage !== "" &&
                 <ErrorPopUp
@@ -49,7 +50,7 @@ function SaveSeller({ svgSize, sellerID, isSaved, action, hideSaveMessage }: Sav
                 isSaved={isSaved}
                 hideSaveMessage={hideSaveMessage}
             />
-        </>
+        </div>
     )
 }
 

@@ -5,6 +5,7 @@ import { getAPIErrorMessage } from "../../utils/getAPIErrorMessage";
 import Button from "../../components/Button";
 import { UserContext } from '../../providers/UserProvider';
 import { MIN_PASS_LENGTH, MAX_PASS_LENGTH } from "@freefinder/shared/dist/constants";
+import TextBoxErrorMessage from 'src/components/TextBoxErrorMessage';
 
 function ChangePassword() {
     const [currentPass, setCurrentPass] = useState<string>("");
@@ -67,9 +68,9 @@ function ChangePassword() {
                         autoComplete="current-password" 
                     />
                     {!validCurrentPass && currentPass !== "" &&
-                    <p className="text-box-error-message">
-                        {`Password must be between ${MIN_PASS_LENGTH} and ${MAX_PASS_LENGTH} characters long.`}
-                    </p>}
+                    <TextBoxErrorMessage
+                        error={`Password must be between ${MIN_PASS_LENGTH} and ${MAX_PASS_LENGTH} characters long.`}
+                    />}
                 </div>
                 <div>
                     <p className="mb-2">New password</p>
@@ -81,25 +82,25 @@ function ChangePassword() {
                         autoComplete="new-password"
                     />
                     {!validNewPass && newPass !== "" &&
-                    <p className="text-box-error-message">
-                        {`Password must be between ${MIN_PASS_LENGTH} and ${MAX_PASS_LENGTH} characters long.`}
-                    </p>}
+                    <TextBoxErrorMessage
+                        error={`Password must be between ${MIN_PASS_LENGTH} and ${MAX_PASS_LENGTH} characters long.`}
+                    />}
                 </div>
                 <div>
                     <p className="mb-2">Confirm new password</p>
                     <input 
                         type="password" 
-                        className={`search-bar ${(validConfirmNewPass || confirmNewPass === "")
-                        && confirmNewPass === newPass ? '' : 'invalid-input'}`} 
+                        className={`search-bar ${confirmNewPass === "" || (validConfirmNewPass && confirmNewPass === newPass) ? '' : 'invalid-input'}`} 
                         placeholder="Re-enter your new password"
                         onChange={(e) => updatePass(e.target.value, setValidConfirmNewPass, setConfirmNewPass)}
                         autoComplete="new-password"
                     />
-                    <p className="text-box-error-message">
-                        {!validConfirmNewPass && confirmNewPass !== "" ? 
-                        `Password must be between ${MIN_PASS_LENGTH} and ${MAX_PASS_LENGTH} characters long.` : 
-                        confirmNewPass !== newPass ? "Passwords do not match." : ""}
-                    </p>
+                    {(confirmNewPass !== "" && (!validConfirmNewPass || confirmNewPass !== newPass)) &&
+                    <TextBoxErrorMessage
+                        error={confirmNewPass !== newPass ? 
+                        "Passwords do not match." : 
+                        `Password must be between ${MIN_PASS_LENGTH} and ${MAX_PASS_LENGTH} characters long.`}
+                    />}
                 </div>
                 <Button
                     action={updatePassword}

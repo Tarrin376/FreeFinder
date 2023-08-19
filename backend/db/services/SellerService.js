@@ -7,6 +7,7 @@ import { getAvgRatings } from '../utils/getAvgRatings.js';
 import { countReviewRating } from '../utils/countReviewRating.js';
 import { userProperties } from '../utils/userProperties.js';
 import { MAX_SELLER_DESC_CHARS, MAX_SELLER_SUMMARY_CHARS, MAX_SELLER_SKILLS } from "@freefinder/shared/dist/constants.js";
+import { sellerLevelProperties } from '../utils/sellerLevelProperties.js';
 
 export async function findSeller(userID) {
     try {
@@ -141,6 +142,7 @@ export async function getSellerDetailsHandler(sellerID) {
             select: {
                 rating: true,
                 sellerID: true,
+                sellerXP: true,
                 posts: {
                     take: 10,
                     select: {
@@ -184,11 +186,7 @@ export async function getSellerDetailsHandler(sellerID) {
                 summary: true,
                 languages: true,
                 skills: true,
-                sellerLevel: {
-                    select: {
-                        name: true
-                    }
-                },
+                ...sellerLevelProperties,
                 user: {
                     select: {
                         profilePicURL: true,

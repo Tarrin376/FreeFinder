@@ -36,7 +36,7 @@ function AboutSeller(props: AboutSellerProps) {
     return (
         <section className="border border-light-border-gray bg-transparent rounded-[12px] p-6 w-full">
             <div className="flex justify-between mb-4 gap-5">
-                <div className="flex items-center gap-5 overflow-hidden">
+                <div className="flex items-center gap-4 overflow-hidden">
                     {windowSize >= 500 &&
                     <ProfilePicAndStatus 
                         profilePicURL={props.profilePicURL} 

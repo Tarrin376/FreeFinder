@@ -133,7 +133,7 @@ function ProfileMenu({ logout }: ProfileMenuProps) {
                     />}
                 </div>
                 <div className={`w-fit ${windowSize >= 540 ? "relative" : ""}`}>
-                    <div className="cursor-pointer" onClick={toggleNotifications}>
+                    <div className="cursor-pointer relative" onClick={toggleNotifications}>
                         <img src={NotificationIcon} className="w-[29px] h-[29px]" alt="notifications" />
                         {unreadNotifications > 0 &&
                         <span className="absolute top-0 right-[2px] flex h-[12px] w-[12px]">

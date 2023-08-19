@@ -158,7 +158,7 @@ function Package(props: PackageProps) {
                     value={props.pkgState.deliveryTime > 0 ? props.pkgState.deliveryTime : ""} 
                 />
                 <h3 className="mb-2">Amount of revisions</h3>
-                <ul className="items-center w-fit text-sm flex bg-hover-light-gray rounded-[8px] px-2 mb-4">
+                <ul className="items-center w-fit text-sm flex flex-wrap bg-hover-light-gray rounded-[8px] px-2 mb-4">
                     {REVISIONS.map((times: string, index: number) => {
                         return (
                             <RevisionListItem

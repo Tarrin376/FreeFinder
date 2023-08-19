@@ -35,7 +35,6 @@ function MessagePreviews({ setMessagesPopUp, group, setGroup, setGlobalUnreadMes
 
     const [allGroups, setAllGroups] = useState<GroupPreview[]>([]);
     const [groupCount, setGroupCount] = useState<number>(0);
-    const [showChat, setShowChat] = useState<boolean>(false);
 
     function openCreateGroupPopUp() {
         setCreateGroupPopUp(true);
@@ -82,7 +81,7 @@ function MessagePreviews({ setMessagesPopUp, group, setGroup, setGlobalUnreadMes
     }, [messageGroups.data, messageGroups.count]);
 
     useEffect(() => {
-        if (!group && allGroups.length > 0) {
+        if (!group && allGroups.length > 0 && windowSize >= 835) {
             setGroup(allGroups[0]);
         }
     }, [group, allGroups, setGroup]);
@@ -114,8 +113,8 @@ function MessagePreviews({ setMessagesPopUp, group, setGroup, setGlobalUnreadMes
                     />}
                 </AnimatePresence>
                 <div className="flex flex-grow">
-                    <div className={`flex flex-col ${(windowSize < MIN_DUAL_WIDTH && showChat ? "hidden" : "")} 
-                    ${windowSize < MIN_DUAL_WIDTH && !showChat ? "flex-grow" : "w-[290px] border-r border-light-border-gray pr-3"} flex-shrink-0`}>
+                    <div className={`flex flex-col ${(windowSize < MIN_DUAL_WIDTH && group ? "hidden" : "")} 
+                    ${windowSize < MIN_DUAL_WIDTH && !group ? "flex-grow" : "w-[290px] border-r border-light-border-gray pr-3"} flex-shrink-0`}>
                         <div className="flex items-center justify-between w-full mb-4">
                             <div className="flex items-center gap-2">
                                 <img src={AllMessagesIcon} className="w-[16px] h-[16px]" alt="" />
@@ -134,13 +133,11 @@ function MessagePreviews({ setMessagesPopUp, group, setGroup, setGlobalUnreadMes
                             allGroups={allGroups}
                             pageRef={pageRef}
                             group={group}
-                            showChat={showChat}
                             setGroup={setGroup}
-                            setShowChat={setShowChat}
                             setGlobalUnreadMessages={setGlobalUnreadMessages}
                         />
                     </div>
-                    {(windowSize >= MIN_DUAL_WIDTH || showChat) &&
+                    {(windowSize >= MIN_DUAL_WIDTH || group) &&
                     <>
                         {group ? 
                         <Chat 
@@ -148,7 +145,6 @@ function MessagePreviews({ setMessagesPopUp, group, setGroup, setGlobalUnreadMes
                             setAllGroups={setAllGroups}
                             setGroupCount={setGroupCount}
                             setGroup={setGroup}
-                            setShowChat={setShowChat}
                             key={group.groupID} 
                         /> : 
                         <div className="flex-grow flex items-center justify-center">

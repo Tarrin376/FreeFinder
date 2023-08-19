@@ -7,6 +7,7 @@ import Button from "./Button";
 import CountriesDropdown from "./CountriesDropdown";
 import { EMAIL_REGEX, MAX_EMAIL_LENGTH } from "@freefinder/shared/dist/constants";
 import Validator from "@freefinder/shared/dist/validator";
+import TextBoxErrorMessage from "./TextBoxErrorMessage";
 
 interface SignUpProps {
     setLogIn: React.Dispatch<React.SetStateAction<boolean>>,
@@ -133,9 +134,9 @@ function SignUp({ setLogIn, setSignUp, setAccountCreated }: SignUpProps) {
                             onChange={(e) => checkEmail(e, true)}
                         />
                         {state.emailFirst !== "" && 
-                        <p className="text-box-error-message">
-                            {state.emailFirstErrorMessage}
-                        </p>}
+                        <TextBoxErrorMessage 
+                            error={state.emailFirstErrorMessage} 
+                        />}
                         <input 
                             type="email" 
                             placeholder="Confirm your email" 
@@ -147,9 +148,9 @@ function SignUp({ setLogIn, setSignUp, setAccountCreated }: SignUpProps) {
                             }}
                         />
                         {state.emailSecond !== "" && 
-                        <p className="text-box-error-message">
-                            {state.emailSecondErrorMessage}
-                        </p>}
+                        <TextBoxErrorMessage 
+                            error={state.emailSecondErrorMessage} 
+                        />}
                         <input 
                             type="text" 
                             placeholder="Create a username" 
@@ -158,9 +159,9 @@ function SignUp({ setLogIn, setSignUp, setAccountCreated }: SignUpProps) {
                             onChange={(e) => validateUsername(e)} 
                         />
                         {state.usernameErrorMessage !== "" && state.username !== "" && 
-                        <p className="text-box-error-message">
-                            {state.usernameErrorMessage}
-                        </p>}
+                        <TextBoxErrorMessage 
+                            error={state.usernameErrorMessage} 
+                        />}
                         <input 
                             type="password" 
                             placeholder="Create a password" 
@@ -168,9 +169,9 @@ function SignUp({ setLogIn, setSignUp, setAccountCreated }: SignUpProps) {
                             onChange={(e) => checkPassword(e)} 
                         />
                         {state.password !== "" && 
-                        <p className="text-box-error-message">
-                            {state.passwordErrorMessage}
-                        </p>}
+                        <TextBoxErrorMessage 
+                            error={state.passwordErrorMessage} 
+                        />}
                         <div className="mt-3">
                             <CountriesDropdown 
                                 country={country}

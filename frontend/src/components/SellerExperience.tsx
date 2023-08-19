@@ -1,20 +1,46 @@
-import { sellerLevelTextStyles } from "../utils/sellerLevelTextStyles"
+import { sellerLevelTextStyles } from "../utils/sellerLevelTextStyles";
+import { useEffect, useContext, useCallback } from "react";
+import { INotification } from "src/models/INotification";
+import { UserContext } from "src/providers/UserProvider";
 
 interface SellerExperienceProps {
     level: string,
     nextLevel: string,
     sellerXP: number,
-    nextLevelXP: number
+    nextLevelXP: number,
+    text?: string,
+    styles?: string
 }
 
-function SellerExperience({ level, nextLevel, nextLevelXP, sellerXP }: SellerExperienceProps) {
+function SellerExperience({ level, nextLevel, nextLevelXP, sellerXP, text, styles }: SellerExperienceProps) {
+    const userContext = useContext(UserContext);
+
+    const updateSellerXP = useCallback((notification: INotification) => {
+        userContext.setUserData({
+            ...userContext.userData,
+            seller: userContext.userData.seller ? {
+                ...userContext.userData.seller,
+                sellerXP: userContext.userData.seller.sellerXP + notification.xp
+            } : null
+        });
+    }, [userContext]);
+
+    useEffect(() => {
+        userContext.socket?.on("receive-notification", updateSellerXP);
+
+        return () => {
+            userContext.socket?.off("receive-notification", updateSellerXP);
+        }
+    }, [userContext.socket, updateSellerXP]);
+
     return (
-        <div>
+        <div className={styles}>
+            {text &&
             <h2 className="text-[18px] mb-[22px]">
-                Your experience
-            </h2>
-            <div className="mb-7">
-                <div className="flex items-center justify-between w-full mb-3">
+                {text}
+            </h2>}
+            <div>
+                <div className="flex items-center justify-between w-full mb-[10px]">
                     <p className="text-sm seller-level" style={sellerLevelTextStyles[level]}>
                         {level}
                     </p>
@@ -23,12 +49,13 @@ function SellerExperience({ level, nextLevel, nextLevelXP, sellerXP }: SellerExp
                         {nextLevel}
                     </p>}
                 </div>
-                <div className="rounded-full w-full bg-very-light-gray h-[16px] overflow-hidden">
+                <div className="rounded-full w-full bg-very-light-gray h-[14px] overflow-hidden">
                     <div className="bg-gradient-to-r from-main-blue to-light-green h-full rounded-full flex 
-                    items-center justify-center" style={{ width: `calc(100% / ${nextLevelXP} * ${sellerXP})`}}>
+                    items-center justify-center transition duration-300 ease-linear" 
+                    style={{ width: `calc(100% / ${nextLevelXP} * ${sellerXP})`}}>
                     </div>
                 </div>
-                <p className="bg-highlight text-main-blue w-fit text-sm px-3 py-[1px] rounded-[6px] mt-3 ml-auto">
+                <p className="bg-highlight text-main-blue w-fit text-sm px-3 py-[1px] rounded-[6px] mt-[10px] ml-auto">
                     {`${sellerXP} / ${nextLevelXP}`}
                 </p>
             </div>

@@ -8,6 +8,7 @@ import Button from "./Button";
 import Rating from "./Rating";
 import { MAX_REVIEW_CHARS } from "@freefinder/shared/dist/constants";
 import { useWindowSize } from "src/hooks/useWindowSize";
+import { SendNotification } from "src/types/SendNotification";
 
 interface CreateReviewProps {
     postID: string,
@@ -26,7 +27,8 @@ function CreateReview({ postID, sellerID, hidden }: CreateReviewProps) {
 
     async function createNewReview(): Promise<string | undefined> {
         try {
-            await axios.post<{ message: string }>(`/api/reviews/${userContext.userData.username}`, {
+            const resp = await axios.post<{ notify: SendNotification | undefined, message: string }>
+            (`/api/reviews/${userContext.userData.username}`, {
                 serviceAsDescribed: serviceAsDescribed,
                 sellerCommunication: sellerCommunication,
                 serviceDelivery: serviceDelivery,
@@ -34,6 +36,10 @@ function CreateReview({ postID, sellerID, hidden }: CreateReviewProps) {
                 sellerID: sellerID,
                 postID: postID
             });
+
+            if (resp.data.notify) {
+                userContext.socket?.emit("send-notification", resp.data.notify.notification, resp.data.notify.socketID);
+            }
 
             setServiceAsDescribed(1);
             setSellerCommunication(1);

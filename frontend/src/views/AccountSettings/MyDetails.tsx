@@ -6,6 +6,7 @@ import { getAPIErrorMessage } from "../../utils/getAPIErrorMessage";
 import { AxiosError } from "axios";
 import Button from "../../components/Button";
 import { UserContext } from '../../providers/UserProvider';
+import TextBoxErrorMessage from 'src/components/TextBoxErrorMessage';
 
 function MyDetails() {
     const [firstEmail, setFirstEmail] = useState<string>("");
@@ -54,9 +55,10 @@ function MyDetails() {
                         placeholder="Change email address"
                         onChange={(e) => emailChangeHandler(e.target.value, setValidFirst, setFirstEmail)} 
                     />
-                    <p className="text-box-error-message">
-                        {!validFirst && firstEmail !== "" ? "Please use a valid email address" : ""}
-                    </p>
+                    {!validFirst && firstEmail !== "" &&
+                    <TextBoxErrorMessage
+                        error="Please use a valid email address"
+                    />}
                 </div>
                 <div>
                     <p className="mb-2">Confirm email address</p>
@@ -69,10 +71,10 @@ function MyDetails() {
                             return false;
                         }}
                     />
-                    <p className="text-box-error-message">
-                        {!validSecond && secondEmail !== "" ? "Please use a valid email address" : 
-                        firstEmail !== secondEmail ? "Email address does not match" : ""}
-                    </p>
+                    {((!validSecond && secondEmail !== "") || firstEmail !== secondEmail) &&
+                    <TextBoxErrorMessage
+                        error={firstEmail === secondEmail ? "Please use a valid email address" : "Email address does not match"}
+                    />}
                 </div>
                 <Button
                     action={updateDetails}

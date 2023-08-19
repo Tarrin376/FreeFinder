@@ -41,7 +41,7 @@ function NotificationsWrapper({ toggleNotifications, setUnreadNotifications }: N
     return (
         <SidePopUpWrapper setIsOpen={toggleNotifications}>
             <div className="bg-main-white shadow-lg rounded-[8px] absolute top-full mt-[6px]
-            right-0 w-[400px] h-[500px] max-w-[88vw] border border-light-border-gray flex flex-col">
+            right-0 w-[400px] h-[550px] max-w-[90vw] border border-light-border-gray flex flex-col">
                 <div className="flex-grow flex flex-col min-h-0 overflow-hidden">
                     <div className="flex items-center justify-between p-4 border-b border-light-border-gray">
                         <h2 className="text-[20px]">

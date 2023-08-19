@@ -17,7 +17,6 @@ import PostsSidebar from 'src/components/PostsSidebar';
 import FiltersPopUp from 'src/components/FiltersPopUp';
 import { useWindowSize } from 'src/hooks/useWindowSize';
 import AddIcon from "../assets/add.png";
-import FiltersButton from 'src/components/FiltersButton';
 
 interface FilterPostsProviderProps {
     children: React.ReactElement,
@@ -197,14 +196,6 @@ function FilterPostsProvider({ children, urlPrefix }: FilterPostsProviderProps) 
                 />}
             </AnimatePresence>
             <div className="flex">
-                {windowSize < 1015 &&
-                <div>
-                    <FiltersButton
-                        toggleFiltersPopUp={toggleFiltersPopUp}
-                        modifiedFiltersCount={modifiedFiltersCount}
-                        styles="!fixed bottom-5 left-5 z-30 shadow-post"
-                    />
-                </div>}
                 {windowSize >= 1245 ?
                 <PostsSidebar
                     loading={posts.loading}
@@ -214,9 +205,10 @@ function FilterPostsProvider({ children, urlPrefix }: FilterPostsProviderProps) 
                     clearFilters={clearFilters}
                 /> : 
                 <div>
-                    <button className="main-btn flex items-center justify-center rounded-full w-[55px] !h-[55px] 
-                    fixed bottom-5 right-5 z-30 shadow-post" onClick={() => updatePostServicePopUp(true)}>
-                        <img src={AddIcon} alt="" className="w-[25px] h-[25px]" />
+                    <button className={`main-btn flex items-center justify-center rounded-full w-[50px] !h-[50px] z-30 shadow-post fixed 
+                    ${windowSize < 560 ? windowSize < 400 ? "right-3 bottom-3" : "right-5 bottom-5" : "right-7 bottom-7"}`} 
+                    onClick={() => updatePostServicePopUp(true)}>
+                        <img src={AddIcon} alt="" className="w-[21px] h-[21px]" />
                     </button>
                 </div>}
                 <MainFiltersBar

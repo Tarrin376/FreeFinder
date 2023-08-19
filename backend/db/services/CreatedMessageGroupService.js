@@ -122,7 +122,7 @@ export async function deleteMessageGroupHandler(req) {
             }
         });
 
-        const pendingOrderRequests = await prisma.orderRequest.findMany({
+        const pendingOrderRequest = await prisma.orderRequest.findFirst({
             select: { 
                 userID: true,
                 total: true
@@ -151,15 +151,15 @@ export async function deleteMessageGroupHandler(req) {
                 });
             }
 
-            for (const orderRequest of pendingOrderRequests) {
+            if (pendingOrderRequest) {
                 await tx.user.update({
-                    where: { userID: orderRequest.userID },
+                    where: { userID: pendingOrderRequest.userID },
                     data: {
-                        balance: { increment: parseFloat(orderRequest.total) }
+                        balance: { increment: parseFloat(pendingOrderRequest.total) }
                     }
                 });
             }
-
+            
             await tx.messageGroup.delete({
                 where: { groupID: req.params.groupID }
             });

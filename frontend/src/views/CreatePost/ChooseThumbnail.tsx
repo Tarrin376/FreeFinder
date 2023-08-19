@@ -19,7 +19,7 @@ function ChooseThumbnail({ dispatch, updatePostServicePopUp, uploadedImages, thu
     }
 
     return (
-        <PopUpWrapper setIsOpen={updatePostServicePopUp} title="Choose thumbnail" styles="flex flex-col">
+        <PopUpWrapper setIsOpen={updatePostServicePopUp} title="Choose thumbnail" styles="flex flex-col" firstChildStyles="pb-0">
             <div>
                 {uploadedImages.length > 0 &&
                 <div className="flex flex-col gap-5 flex-grow overflow-y-scroll pr-[8px] max-h-[570px]">
@@ -35,7 +35,7 @@ function ChooseThumbnail({ dispatch, updatePostServicePopUp, uploadedImages, thu
                     })}
                 </div>}
                 {thumbnail !== undefined && 
-                <p className="text-side-text-gray mt-5">
+                <p className="text-side-text-gray my-5">
                     Selected file:
                     <span className="text-main-blue">{` ${thumbnail.file.name}`}</span>
                 </p>}

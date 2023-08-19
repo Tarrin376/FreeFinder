@@ -182,7 +182,7 @@ export async function sendOrderRequestHandler(req) {
                     }
                 });
 
-                if (seller.user.notificationSettings.rewards) {
+                if (seller.user.notificationSettings.rewards !== false) {
                     const notification = await tx.notification.create({
                         select: notificationProperties,
                         data: {
@@ -215,13 +215,13 @@ export async function sendOrderRequestHandler(req) {
                 sockets: members.map((member) => member.user.socketID).filter((socket) => socket !== null)
             };
             
-            if (seller.user.notificationSettings.orderRequests) {
+            if (seller.user.notificationSettings.orderRequests !== false) {
                 const notification = await tx.notification.create({
                     select: notificationProperties,
                     data: {
                         userID: req.params.seller,
                         title: `New order request`,
-                        text: `${req.userData.username} has requested a ${req.params.packageType} package order for the service: ${pkg.postID}.`,
+                        text: `${req.userData.username} has requested a ${req.params.packageType.toLowerCase()} package order for the service: ${pkg.postID}.`,
                         navigateTo: `/posts/${pkg.postID}`
                     }
                 });
@@ -268,17 +268,17 @@ function getNotificationMessage(status, seller, user, packageType, postID) {
         case "ACCEPTED":
             return {
                 title: "Order request accepted",
-                text: `${seller} accepted your ${packageType} package order request for the service: ${postID}.`
+                text: `${seller} accepted your ${packageType.toLowerCase()} package order request for the service: ${postID}.`
             };
         case "DECLINED":
             return {
                 title: "Order request declined",
-                text: `${seller} declined your ${packageType} package order request for the service: ${postID}.`
+                text: `${seller} declined your ${packageType.toLowerCase()} package order request for the service: ${postID}.`
             };
         case "CANCELLED":
             return {
                 title: "Order request cancelled",
-                text: `${user} cancelled their ${packageType} package order request for the service: ${postID}.` 
+                text: `${user} cancelled their ${packageType.toLowerCase()} package order request for the service: ${postID}.` 
             };
         default:
             throw new DBError(`Unknown order request status: ${status}.`, 400);
@@ -412,8 +412,8 @@ export async function updateOrderRequestStatusHandler(req) {
                 sockets: members.map((member) => member.user.socketID).filter((socket) => socket !== null) 
             };
             
-            if ((req.body.status === "CANCELLED" && orderRequest.seller.user.notificationSettings.orderRequests) || 
-            (req.body.status !== "CANCELLED" && orderRequest.user.notificationSettings.orderRequests)) {
+            if ((req.body.status === "CANCELLED" && orderRequest.seller.user.notificationSettings.orderRequests !== false) || 
+            (req.body.status !== "CANCELLED" && orderRequest.user.notificationSettings.orderRequests !== false)) {
                 const userID = req.body.status === "CANCELLED" ? orderRequest.seller.user.userID : orderRequest.userID;
                 const socketID = req.body.status === "CANCELLED" ? orderRequest.seller.user.socketID : orderRequest.user.socketID;
 

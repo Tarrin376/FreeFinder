@@ -77,7 +77,7 @@ function Seller(props: SellerProps) {
                                 word={props.username}
                                 substring={props.searchQuery}
                                 foundAt={props.username.toLowerCase().indexOf(props.searchQuery.toLowerCase())}
-                                styles="hover:!px-0 [&>span]:hover:text-main-blue"
+                                styles="hover:!px-0"
                                 action={props.navigateToProfile}
                             />
                             <p className="text-[13px] seller-level"

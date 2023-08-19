@@ -1,5 +1,6 @@
 import { UserStatus } from "../enums/UserStatus";
 import { TNotificationSettings } from "src/types/TNotificationSettings";
+import { ISellerLevel } from "./ISellerLevel";
 
 export interface IUser {
     username: string,
@@ -18,12 +19,6 @@ export interface IUser {
         skills: string[],
         sellerXP: number,
         summary: string,
-        sellerLevel: {
-            name: string,
-            nextLevel: {
-                xpRequired: number,
-                name: string,
-            }
-        }
+        sellerLevel: ISellerLevel
     } | null
 }

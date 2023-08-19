@@ -398,7 +398,7 @@ export async function updatePostHandler(req) {
             const usersSaved = [];
             if (req.body.hidden !== undefined) {
                 for (const savedPost of saved) {
-                    if (savedPost.user.notificationSettings.savedServices) {
+                    if (savedPost.user.notificationSettings.savedServices !== false) {
                         const msg = getSavedPostNotification(updatedPost.postID, updatedPost.postedBy.user.username, req.body.hidden);
                         const notification = await tx.notification.create({
                             select: notificationProperties,
@@ -498,7 +498,7 @@ export async function deletePostHandler(postID, userID) {
 
         return await prisma.$transaction(async (tx) => {
             for (const savedPost of saved) {
-                if (savedPost.user.notificationSettings.savedServices) {
+                if (savedPost.user.notificationSettings.savedServices !== false) {
                     const notification = await tx.notification.create({
                         select: notificationProperties,
                         data: {

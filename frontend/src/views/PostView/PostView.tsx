@@ -197,13 +197,13 @@ function PostView() {
                 <div className="flex gap-16">
                     <div className="flex-grow min-w-0">
                         {isOwner &&
-                        <div className="flex gap-3 items-center mb-[10px]">
+                        <div className="flex gap-2 items-center mb-[10px]">
                             <p className="change" onClick={updateTitle}>
-                                {state.titleToggle ? "Confirm changes" : "Change"}
+                                {state.titleToggle ? "Confirm" : "Change"}
                             </p>
                             {state.titleToggle &&
                             <p className="cancel-change" onClick={() => { dispatch({ titleToggle: false })}}>
-                                Cancel changes
+                                Cancel
                             </p>}
                         </div>}
                         {state.titleToggle ? 
@@ -214,7 +214,7 @@ function PostView() {
                             maxLength={SERVICE_TITLE_LIMIT}
                             onChange={(e) => dispatch({ title: e.target.value })}
                         /> :
-                        <h1 className={`${windowSize >= 500 ? "text-[27px]" : "text-[23px]"} mb-3`}>
+                        <h1 className={`${windowSize >= 500 ? "text-[27px]" : "text-[21px]"} mb-3`}>
                             {state.postData.title}
                         </h1>}
                         <div className="flex gap-3 items-center mb-3">
@@ -295,7 +295,9 @@ function PostView() {
                                     <button className="change relative w-full h-[85px] flex items-center 
                                     justify-center rounded-[8px] gap-2">
                                         {state.addingImage && <LoadingSvg size={24} colour="#4169f7" />}
-                                        <span className="text-main-blue">{state.addingImage ? "Uploading" : "+ Add image"}</span>
+                                        <span className="text-main-blue text-[15px]">
+                                            {state.addingImage ? "Uploading" : "+ Add image"}
+                                        </span>
                                     </button>
                                 </div>
                             </>}
@@ -307,15 +309,15 @@ function PostView() {
                             styles="w-full mb-8"
                         />}
                         <section className="mb-10 w-full">
-                            <div className="flex items-center gap-3 mb-3">
-                                <h2 className="text-[1.3rem]">About this service</h2>
+                            <div className="flex items-center gap-2 mb-3">
+                                <h2 className="text-[1.3rem] mr-1">About this service</h2>
                                 {isOwner &&
                                 <p className="change" onClick={updateAbout}>
-                                    {state.aboutToggle ? "Confirm changes" : "Change"}
+                                    {state.aboutToggle ? "Confirm" : "Change"}
                                 </p>}
                                 {isOwner && state.aboutToggle &&
                                 <p className="cancel-change" onClick={() => dispatch({ aboutToggle: false })}>
-                                    Cancel changes
+                                    Cancel
                                 </p>}
                             </div>
                             {state.aboutToggle ? 

@@ -10,6 +10,8 @@ import { UserContext } from "../../providers/UserProvider";
 import ChangeProfilePicture from "../../components/ChangeProfilePicture";
 import KeyPair from "src/components/KeyPair";
 import { AccountSections } from "src/enums/AccountSections";
+import SettingsSelection from "src/components/SettingsSelection";
+import { useWindowSize } from "src/hooks/useWindowSize";
 
 interface SettingsProps {
     setSettingsPopUp: React.Dispatch<React.SetStateAction<boolean>>,
@@ -30,6 +32,7 @@ const INITIAL_STATE: AccountSettingsState = {
 function AccountSettings({ setSettingsPopUp }: SettingsProps) {
     const [errorMessage, setErrorMessage] = useState<string>("");
     const userContext = useContext(UserContext);
+    const windowSize = useWindowSize();
 
     const [state, dispatch] = useReducer((state: AccountSettingsState, payload: Partial<AccountSettingsState>) => {
         return { ...state, ...payload };
@@ -68,7 +71,7 @@ function AccountSettings({ setSettingsPopUp }: SettingsProps) {
                             username={userContext.userData.username}
                             setErrorMessage={setErrorMessage} 
                             loading={state.loading} 
-                            size={80}
+                            size={windowSize >= 450 ? 80 : 70}
                         />
                         {!state.loading &&
                         <ChangeProfilePicture
@@ -95,23 +98,31 @@ function AccountSettings({ setSettingsPopUp }: SettingsProps) {
                     </div>
                 </div>
                 <div className="mt-8 mb-5">
-                    <ul className="border-b border-b-nav-search-gray flex justify-between mt-5 list-none">
-                        <li className={state.option === AccountSections.details ? "settings-selection" : "settings-unselected"}
-                        onClick={() => updateOption(AccountSections.details)}>
-                            My details
-                        </li>
-                        <li className={state.option === AccountSections.profile ? "settings-selection" : "settings-unselected"}
-                        onClick={() => updateOption(AccountSections.profile)}>
-                            Profile
-                        </li>
-                        <li className={state.option === AccountSections.password ? "settings-selection" : "settings-unselected"}
-                        onClick={() => updateOption(AccountSections.password)}>
-                            Password
-                        </li>
-                        <li className={state.option === AccountSections.dangerZone ? "settings-selection" : "settings-unselected"}
-                        onClick={() => updateOption(AccountSections.dangerZone)}>
-                            Danger Zone
-                        </li>
+                    <ul className="border-b border-b-nav-search-gray flex justify-between gap-6 mt-5 list-none overflow-x-scroll">
+                        <SettingsSelection
+                            currentOption={state.option}
+                            option={AccountSections.details}
+                            updateOption={updateOption}
+                            text="My details"
+                        />
+                        <SettingsSelection
+                            currentOption={state.option}
+                            option={AccountSections.profile}
+                            updateOption={updateOption}
+                            text="Profile"
+                        />
+                        <SettingsSelection
+                            currentOption={state.option}
+                            option={AccountSections.password}
+                            updateOption={updateOption}
+                            text="Password"
+                        />
+                        <SettingsSelection
+                            currentOption={state.option}
+                            option={AccountSections.dangerZone}
+                            updateOption={updateOption}
+                            text="Danger Zone"
+                        />
                     </ul>
                 </div>
                 {getOption()}

@@ -1,5 +1,4 @@
-import { UserStatus } from "../enums/UserStatus"
-import { ISellerLevel } from "../models/ISellerLevel"
+import { UserStatus } from "../enums/UserStatus";
 
 export type PostedBy = {
     user: {
@@ -9,5 +8,7 @@ export type PostedBy = {
     },
     rating: number,
     sellerID: string,
-    sellerLevel: ISellerLevel
+    sellerLevel: {
+        name: string
+    }
 }

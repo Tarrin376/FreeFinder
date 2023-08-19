@@ -6,15 +6,12 @@ interface AllGroupsProps {
     allGroups: GroupPreview[],
     pageRef: React.RefObject<HTMLDivElement>,
     group: GroupPreview | undefined,
-    showChat: boolean,
     setGroup: React.Dispatch<React.SetStateAction<GroupPreview | undefined>>,
-    setShowChat: React.Dispatch<React.SetStateAction<boolean>>,
     setGlobalUnreadMessages: React.Dispatch<React.SetStateAction<number>>
 }
 
-function AllGroups({ allGroups, pageRef, group, showChat, setGroup, setShowChat, setGlobalUnreadMessages }: AllGroupsProps) {
+function AllGroups({ allGroups, pageRef, group, setGroup, setGlobalUnreadMessages }: AllGroupsProps) {
     function updateMessageGroup(nextGroup: GroupPreview) {
-        setShowChat(true);
         setGroup(nextGroup);
     }
 
@@ -25,7 +22,6 @@ function AllGroups({ allGroups, pageRef, group, showChat, setGroup, setShowChat,
                     <GroupPreviewMessage 
                         group={msgGroup}
                         selectedGroup={group}
-                        showChat={showChat}
                         action={updateMessageGroup}
                         setGlobalUnreadMessages={setGlobalUnreadMessages}
                         key={msgGroup.groupID}

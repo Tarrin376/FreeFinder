@@ -68,7 +68,8 @@ export async function registerUserHandler(userData) {
                     "mentionsAndReplies": true,
                     "orderRequests": true,
                     "rewards": true,
-                    "savedServices": true
+                    "savedServices": true,
+                    "newReviews": true
                 }
             }
         });

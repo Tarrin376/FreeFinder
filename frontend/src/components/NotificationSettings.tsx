@@ -15,7 +15,8 @@ type NotificationSettingsState = {
     mentionsAndReplies: boolean,
     orderRequests: boolean,
     rewards: boolean,
-    savedServices: boolean
+    savedServices: boolean,
+    newReviews: boolean
 }
 
 interface NotificationSettingsProps {
@@ -32,7 +33,8 @@ function NotificationSettings({ updateSection }: NotificationSettingsProps) {
         mentionsAndReplies: userContext.userData.notificationSettings?.mentionsAndReplies ?? true,
         orderRequests: userContext.userData.notificationSettings?.orderRequests ?? true,
         rewards: userContext.userData.notificationSettings?.rewards ?? true,
-        savedServices: userContext.userData.notificationSettings?.savedServices ?? true
+        savedServices: userContext.userData.notificationSettings?.savedServices ?? true,
+        newReviews: userContext.userData.notificationSettings?.newReviews ?? true
     });
 
     async function updateNotificationSettings(updatedSettings: Partial<NotificationSettingsState>): Promise<void> {
@@ -97,6 +99,13 @@ function NotificationSettings({ updateSection }: NotificationSettingsProps) {
                     updateToggle={(value: boolean) => updateNotificationSettings({ savedServices: value })} 
                     title="Saved services"
                     text="Notify me when one of my saved services is updated, temporarily hidden, or permanently removed by the seller."
+                    styles="mt-4"
+                />
+                <ToggleSwitch 
+                    toggle={state.newReviews} 
+                    updateToggle={(value: boolean) => updateNotificationSettings({ newReviews: value })} 
+                    title="New reviews"
+                    text="Let me know when first time reviewers review my services."
                     styles="mt-4"
                 />
             </div>

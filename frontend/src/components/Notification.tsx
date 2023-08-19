@@ -31,8 +31,8 @@ function Notification(props: NotificationProps) {
                 props.setUnreadNotifications((cur) => cur - 1);
             }
             catch (err: any) {
-                setIsUnread(true);
                 // Ignore failure to update notification and try again when the user hovers over the component.
+                setIsUnread(true);
             }
         }
     }
@@ -56,8 +56,11 @@ function Notification(props: NotificationProps) {
             </div>
             <p className="text-sm text-side-text-gray mt-[6px] pl-[17px]">
                 {props.text}
-                {props.xp > 0 && <span className="text-main-blue text-sm">{` +${props.xp}xp`}</span>}
             </p>
+            {props.xp > 0 && 
+            <p className="text-main-blue text-sm mt-[6px] pl-[17px]">
+                {` +${props.xp}xp`}
+            </p>}
             <p className="text-sm text-side-text-gray font-bold mt-[6px] pl-[17px]">
                 {timeCreated}
             </p>

@@ -13,6 +13,7 @@ import { parseFiles } from "../../utils/parseFiles";
 import { MAX_FILE_BYTES, MAX_SERVICE_IMAGE_UPLOADS } from "@freefinder/shared/dist/constants";
 import { CreatePostReducerAction } from "./CreatePost";
 import { SUPPORTED_IMAGE_FORMATS } from "../../utils/checkImageType";
+import { useWindowSize } from "src/hooks/useWindowSize";
 
 interface UploadPostFilesProps {
     dispatch: React.Dispatch<CreatePostReducerAction>
@@ -24,6 +25,7 @@ interface UploadPostFilesProps {
 function UploadPostFiles({ dispatch, updatePostServicePopUp, uploadedImages, thumbnail }: UploadPostFilesProps) {
     const inputFileRef = useRef<HTMLInputElement>(null);
     const [errorMessage, setErrorMessage] = useState<string>("");
+    const windowSize = useWindowSize();
 
     async function handleDrop(files: FileList): Promise<void> {
         const { failed, allFiles } = await parseFiles(files, uploadedImages, MAX_FILE_BYTES, MAX_SERVICE_IMAGE_UPLOADS, checkImageType);
@@ -65,7 +67,7 @@ function UploadPostFiles({ dispatch, updatePostServicePopUp, uploadedImages, thu
     }
 
     return (
-        <PopUpWrapper setIsOpen={updatePostServicePopUp} title="Upload post images">
+        <PopUpWrapper setIsOpen={updatePostServicePopUp} title="Upload post images" firstChildStyles="pb-0">
             <div>
                 <DragAndDrop handleDrop={handleDrop}>
                     <div className="absolute top-[50%] left-[50%] translate-x-[-50%] translate-y-[-50%]">
@@ -74,11 +76,11 @@ function UploadPostFiles({ dispatch, updatePostServicePopUp, uploadedImages, thu
                         <p className="underline cursor-pointer text-center" onClick={triggerFileUpload}>Choose file</p>
                     </div>
                 </DragAndDrop>
-                <div className="flex items-center justify-between mt-5">
+                <div className={`flex mt-5 ${windowSize < 450 ? "flex-col" : "items-center justify-between"}`}>
                     <p className="text-side-text-gray">Supported formats: {SUPPORTED_IMAGE_FORMATS.join(", ")}</p>
-                    <p className="text-side-text-gray">{`Max size: ${MAX_FILE_BYTES / 1000000}MB`}</p>
+                    <p className="text-side-text-gray mt-[2px]">{`Max size: ${MAX_FILE_BYTES / 1000000}MB`}</p>
                 </div>
-                <p className="text-side-text-gray mt-2">Files uploaded:
+                <p className="text-side-text-gray mt-[2px] mb-5">Files uploaded:
                     <span className={uploadedImages.length === MAX_SERVICE_IMAGE_UPLOADS ? 'text-error-text' : 'text-light-green'}>
                         {` ${uploadedImages.length} / ${MAX_SERVICE_IMAGE_UPLOADS}`}
                     </span>
@@ -91,16 +93,16 @@ function UploadPostFiles({ dispatch, updatePostServicePopUp, uploadedImages, thu
                     styles="mt-4"
                 />}
                 {uploadedImages.length > 0 &&
-                <div className="max-h-[250px] items-center overflow-y-scroll mt-5 pr-[8px] flex flex-col gap-[15px]">
+                <div className="max-h-[250px] items-center overflow-y-scroll pr-[8px] flex flex-col gap-[15px] my-5">
                     {uploadedImages.map((image: FileData, index: number) => {
                         return (
                             <UploadedImage file={image.file} key={index} description="You can download this file to verify that it is the correct one.">
                                 <a href={URL.createObjectURL(image.file)} download={image.file.name}>
-                                    <button className="side-btn w-[120px]">
+                                    <button className="side-btn w-full">
                                         Download
                                     </button>
                                 </a>
-                                <button className="red-btn w-[120px]" onClick={() => deleteImage(image)}>
+                                <button className="red-btn w-full" onClick={() => deleteImage(image)}>
                                     Remove
                                 </button>
                             </UploadedImage>

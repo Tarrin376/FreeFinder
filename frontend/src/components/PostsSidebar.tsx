@@ -31,6 +31,8 @@ function PostsSidebar({ loading, updatePostServicePopUp, dispatch, state, clearF
                 nextLevel={nextLevel}
                 sellerXP={userContext.userData.seller.sellerXP}
                 nextLevelXP={nextLevelXP}
+                text="Your experience"
+                styles="mb-7"
             />}
             <h2 className="text-[18px] mb-[22px]">
                 Filters

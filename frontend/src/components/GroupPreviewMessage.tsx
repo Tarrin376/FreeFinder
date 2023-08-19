@@ -17,12 +17,11 @@ import { MIN_DUAL_WIDTH } from "./MessagePreviews";
 interface GroupPreviewMessageProps {
     group: GroupPreview,
     selectedGroup: GroupPreview | undefined,
-    showChat: boolean,
     action: (group: GroupPreview) => void,
     setGlobalUnreadMessages: React.Dispatch<React.SetStateAction<number>>
 }
 
-function GroupPreviewMessage({ group, selectedGroup, showChat, action, setGlobalUnreadMessages }: GroupPreviewMessageProps) {
+function GroupPreviewMessage({ group, selectedGroup, action, setGlobalUnreadMessages }: GroupPreviewMessageProps) {
     const userContext = useContext(UserContext);
     const [lastMessage, setLastMessage] = useState<IMessage>(group.lastMessage);
 
@@ -54,14 +53,14 @@ function GroupPreviewMessage({ group, selectedGroup, showChat, action, setGlobal
         }
 
         setLastMessage(message);
-        if (selectedGroup?.groupID !== group.groupID || (windowSize < MIN_DUAL_WIDTH && !showChat)) {
+        if (selectedGroup?.groupID !== group.groupID) {
             setUnreadMessages((cur) => cur + 1);
             return;
         } else {
             await clearUnreadMessages();
         }
         
-    }, [group.groupID, selectedGroup?.groupID, clearUnreadMessages, showChat, windowSize]);
+    }, [group.groupID, selectedGroup?.groupID, clearUnreadMessages]);
 
     useEffect(() => {
         userContext.socket?.on("receive-message", showNewMessages);
@@ -73,8 +72,7 @@ function GroupPreviewMessage({ group, selectedGroup, showChat, action, setGlobal
 
     useEffect(() => {
         (async () => {
-            if (selectedGroup?.groupID === group.groupID && unreadMessages > 0 
-            && (windowSize >= MIN_DUAL_WIDTH || showChat)) {
+            if (selectedGroup?.groupID === group.groupID && unreadMessages > 0) {
                 await clearUnreadMessages();
             }
         })();

@@ -7,7 +7,7 @@ interface HighlightedSubstringProps {
 }
 
 function HighlightedSubstring({ styles, action, word, substring, foundAt }: HighlightedSubstringProps) {
-    const defaultStyles = `cursor-pointer transition-all ease-linear duration-100 whitespace-nowrap text-ellipsis overflow-hidden hover:px-2`;
+    const defaultStyles = `cursor-pointer transition-all ease-linear duration-100 [&>span]:hover:text-main-blue`;
     const chars = word.split('');
 
     function clickHandler(): void {

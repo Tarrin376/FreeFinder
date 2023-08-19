@@ -158,9 +158,6 @@ function CreatePost({ updatePostServicePopUp, resetState }: CreatePostProps) {
             const errorMessage = getAPIErrorMessage(err as AxiosError<{ message: string }>);
             return errorMessage;
         }
-        finally {
-            dispatch({ payload: { createdPost: true } });
-        }
     }
 
     async function addPostImages(postID: string): Promise<FailedUpload[]> {
@@ -185,7 +182,10 @@ function CreatePost({ updatePostServicePopUp, resetState }: CreatePostProps) {
         }
 
         dispatch({
-            payload: { failedUploads: failed }
+            payload: { 
+                failedUploads: failed, 
+                createdPost: true
+            }
         });
 
         return failed;

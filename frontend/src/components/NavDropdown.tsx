@@ -13,14 +13,13 @@ interface NavDropdownProps {
 
 function NavDropdown({ title, textSize, textStyles, styles, children }: NavDropdownProps) {
     const [dropdown, setDropdown] = useState<boolean>(false);
-    const defaultStyles = `cursor-pointer relative z-20`;
 
     function toggleDropdown(): void {
         setDropdown((cur) => !cur);
     }
 
     return (
-        <div className={`${defaultStyles} ${styles}`}>
+        <div className={`cursor-pointer relative ${styles}`}>
             <div className={`flex items-center ${title === "" ? "" : "gap-2"}`} onClick={toggleDropdown}>
                 <span className={textStyles} style={{ fontSize: `${textSize}px` }} title={title}>
                     {title}

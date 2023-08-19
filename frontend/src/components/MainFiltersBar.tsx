@@ -24,9 +24,9 @@ function MainFiltersBar({ dispatch, state, loading, searchHandler, toggleFilters
 
     return (
         <div className="flex-grow">
-            <div className={`h-[90px] max-w-[1430px] border-b border-b-light-border-gray 
-            bg-white m-auto flex items-center ${windowSize >= 615 ? "px-7" : "pl-7"}`}>
-                <div className="flex flex-grow items-center gap-6 border-r border-light-border-gray h-full pr-6">
+            <div className={`h-[90px] max-w-[1430px] border-b border-b-light-border-gray bg-white m-auto flex items-center 
+            ${windowSize >= 615 ? "px-7" : "pl-7"} ${windowSize < 560 ? windowSize < 400 ? "!px-3" : "!px-5" : ""}`}>
+                <div className={`flex flex-grow items-center gap-6 ${windowSize >= 560 ? "border-r border-light-border-gray pr-6" : ""} h-full`}>
                     <div className="flex items-center flex-grow">
                         <img src={SearchIcon} alt="" className="w-5 h-5" />
                         <input
@@ -37,7 +37,7 @@ function MainFiltersBar({ dispatch, state, loading, searchHandler, toggleFilters
                             value={state.search}
                         />
                     </div>
-                    <NavDropdown title={state.searchOption} textSize={16}>
+                    <NavDropdown title={windowSize >= 430 ? state.searchOption : ""} textSize={16}>
                         <DropdownElement
                             text="Work type"
                             action={() => dispatch({ searchOption: "Work type" })}
@@ -73,6 +73,7 @@ function MainFiltersBar({ dispatch, state, loading, searchHandler, toggleFilters
                     <SortBy 
                         sort={state.sort} 
                         updateSort={(nextSort) => dispatch({ sort: nextSort })}
+                        text="Sort by:"
                     />
                 </div>}
                 {windowSize < 1245 && windowSize >= 1015 &&
@@ -93,10 +94,16 @@ function MainFiltersBar({ dispatch, state, loading, searchHandler, toggleFilters
             </div>
             <div className="h-[calc(100vh-180px)] overflow-y-scroll" ref={pageRef}>
                 {windowSize < 1015 &&
-                <div className={`w-fit h-fit pt-7 ${windowSize < 560 ? windowSize < 400 ? "px-4" : "px-5" : "px-7"} pb-0`}>
+                <div className={`w-full h-fit pt-7 flex justify-between items-center 
+                ${windowSize < 560 ? windowSize < 400 ? "px-3" : "px-5" : "px-7"} pb-0`}>
                     <SortBy 
                         sort={state.sort} 
                         updateSort={(nextSort) => dispatch({ sort: nextSort })}
+                        text={windowSize >= 340 ? "Sort by:" : ""}
+                    />
+                    <FiltersButton
+                        toggleFiltersPopUp={toggleFiltersPopUp}
+                        modifiedFiltersCount={modifiedFiltersCount}
                     />
                 </div>}
                 {children}

@@ -5,14 +5,18 @@ import DropdownElement from './DropdownElement';
 
 interface SortByProps {
     sort: sortPostsOption,
-    updateSort: (nextSort: sortPostsOption) => void
+    updateSort: (nextSort: sortPostsOption) => void,
+    text: string
 }
 
-function SortBy({ sort, updateSort }: SortByProps) {
+function SortBy({ sort, updateSort, text }: SortByProps) {
     return (
         <div className={`relative h-full flex items-center w-fit`}>
             <div className="flex items-center gap-2">
-                <span className="text-side-text-gray">Sort by:</span>
+                {text !== "" &&
+                <span className="text-side-text-gray">
+                    {text}
+                </span>}
                 <NavDropdown textSize={16} title={sort}>
                     {Object.keys(sortPosts).map((param: string, index: number) => {
                         return (

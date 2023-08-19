@@ -98,7 +98,7 @@ export async function sendMessageHandler(req) {
             const mentioned = [];
 
             for (const member of mentionedMembers) {
-                if (member.user.username !== req.username && member.user.notificationSettings.mentionsAndReplies) {
+                if (member.user.username !== req.username && member.user.notificationSettings.mentionsAndReplies !== false) {
                     const notification = await tx.notification.create({
                         select: notificationProperties,
                         data: {

@@ -11,9 +11,16 @@ export async function createReviewHandler(req) {
             where: { postID: req.body.postID },
             select: {
                 hidden: true,
+                postID: true,
                 postedBy: {
                     select: {
-                        userID: true
+                        userID: true,
+                        user: {
+                            select: {
+                                notificationSettings: true,
+                                socketID: true
+                            }
+                        }
                     }
                 }
             }
@@ -24,7 +31,7 @@ export async function createReviewHandler(req) {
         } else if (post.postedBy.userID === req.userData.userID) {
             throw new DBError("You cannot write a review of your own service.", 403);
         } else if (!req.body.review || req.body.review.length > MAX_REVIEW_CHARS) {
-            throw new DBError(`Review is empty or exceeds ${MAX_REVIEW_CHARS} characters.`, 400);
+            throw new DBError(`Review is empty or is more than ${MAX_REVIEW_CHARS} characters long.`, 400);
         } else if (post.hidden) {
             throw new DBError("You cannot write a review of a hidden service.", 403);
         }
@@ -38,8 +45,16 @@ export async function createReviewHandler(req) {
             throw new DBError("Ratings must be between 1 and 5.", 400);
         }
 
-        await prisma.$transaction([
-            prisma.review.updateMany({
+        const oldReview = await prisma.review.findFirst({
+            where: {
+                reviewerID: req.userData.userID,
+                postID: req.body.postID
+            }
+        });
+
+        return await prisma.$transaction(async (tx) => {
+            const rating = parseFloat(((serviceAsDescribed + sellerCommunication + serviceDelivery) / 3).toFixed(1));
+            await tx.review.updateMany({
                 where: {
                     reviewerID: req.userData.userID,
                     postID: req.body.postID,
@@ -48,20 +63,48 @@ export async function createReviewHandler(req) {
                 data: {
                     isOldReview: true
                 }
-            }),
-            prisma.review.create({
+            });
+
+            await tx.review.create({
                 data: {
                     reviewerID: req.userData.userID,
                     sellerID: req.body.sellerID,
                     reviewBody: req.body.review,
-                    rating: (serviceAsDescribed + sellerCommunication + serviceDelivery) / 3,
+                    rating: rating,
                     serviceAsDescribed: serviceAsDescribed,
                     sellerCommunication: sellerCommunication,
                     serviceDelivery: serviceDelivery,
                     postID: req.body.postID
                 }
-            })
-        ]);
+            });
+
+            if (!oldReview && rating >= 3.5) {
+                const gainedXP = rating >= 4.7 ? 100 : rating >= 4 ? 50 : 25;
+                await tx.seller.update({
+                    where: { userID: post.postedBy.userID },
+                    data: {
+                        sellerXP: { increment: gainedXP }
+                    }
+                });
+
+                if (post.postedBy.user.notificationSettings.newReviews !== false) {
+                    const notification = await tx.notification.create({
+                        data: {
+                            userID: post.postedBy.userID,
+                            title: `You received a new review!`,
+                            text: `Your service: ${post.postID} received a rating of ${rating}/5 from ${req.params.username}. Have a look what they said!`,
+                            xp: gainedXP,
+                            navigateTo: `/posts/${post.postID}`
+                        }
+                    });
+    
+                    return {
+                        notification: notification,
+                        socketID: post.postedBy.user.socketID
+                    }
+                }
+            }
+        });
     }
     catch (err) {
         if (err instanceof DBError) {

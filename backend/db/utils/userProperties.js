@@ -1,3 +1,5 @@
+import { sellerLevelProperties } from "./sellerLevelProperties.js"
+
 export const userProperties = {
     seller: {
         select: {
@@ -7,17 +9,7 @@ export const userProperties = {
             skills: true,
             sellerXP: true,
             summary: true,
-            sellerLevel: {
-                select: {
-                    name: true,
-                    nextLevel: {
-                        select: {
-                            xpRequired: true,
-                            name: true,
-                        }
-                    }
-                }
-            }
+            ...sellerLevelProperties
         }
     },
     username: true,

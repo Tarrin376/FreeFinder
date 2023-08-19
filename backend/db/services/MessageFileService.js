@@ -44,33 +44,9 @@ export async function addMessageFileHandler(req) {
             }
         });
 
-        // const upload = await uploadFile(
-        //     req.body.file, 
-        //     `FreeFinder/MessageFiles/${message.groupID}/${req.messageID}/${req.body.name}`, 
-        //     MAX_FILE_BYTES, 
-        //     req.body.fileType
-        // );
-
-        // const newFile = await prisma.messageFile.create({
-        //     data: {
-        //         messageID: req.messageID,
-        //         url: upload.secure_url,
-        //         name: req.body.name,
-        //         fileType: req.body.fileType,
-        //         fileSize: upload.bytes,
-        //     },
-        //     select: {
-        //         url: true,
-        //         name: true,
-        //         fileType: true,
-        //         fileSize: true,
-        //     }
-        // });
-
         return newFile;
     }
     catch (err) {
-        console.log(err);
         if (err instanceof DBError) {
             throw err;
         } else if (err instanceof Prisma.PrismaClientValidationError) {

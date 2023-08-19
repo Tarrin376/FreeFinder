@@ -1,3 +1,5 @@
+import TypingDot from "./TypingDot";
+
 interface TypingProps {
     usersTyping: string[],
     textStyles?: string,
@@ -17,11 +19,11 @@ function Typing({ usersTyping, textStyles, dotStyles }: TypingProps) {
             <div className="flex gap-[4px]">
                 {new Array(3).fill(0).map((_, index) => {
                     return (
-                        <span 
-                            className={`dot ${dotStyles}`}
-                            style={{ animationDelay: `${0.2 * index}s` }}
-                            key={index}>
-                        </span>
+                        <TypingDot
+                            index={index}
+                            styles={dotStyles}
+                            key={index}
+                        />
                     )
                 })}
             </div>
