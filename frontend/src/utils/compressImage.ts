@@ -1,5 +1,4 @@
 import imageCompression, { Options } from "browser-image-compression";
-import { parseFileBase64 } from "./parseFileBase64";
 
 const imageCompressionOptions: Options = {
     maxSizeMB: 1,
@@ -7,11 +6,12 @@ const imageCompressionOptions: Options = {
     maxWidthOrHeight: 1920
 }
 
-export async function compressImage(image: File): Promise<unknown> {
+export async function compressImage(image: File): Promise<File> {
     try {
-        return await parseFileBase64(await imageCompression(image, imageCompressionOptions));
+        const file = await imageCompression(image, imageCompressionOptions);
+        return file;
     }
     catch (err) {
-        throw new Error("Failed to compress image.");
+        throw new Error("Only image files allowed.");
     }
 }

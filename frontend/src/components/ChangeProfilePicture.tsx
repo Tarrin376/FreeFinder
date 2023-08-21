@@ -32,7 +32,7 @@ function ChangeProfilePicture({ loading, updateLoading }: ChangeProfilePicturePr
         updateProfilePic("");
     }
 
-    async function updateProfilePic(profilePic: string | unknown): Promise<void> {
+    async function updateProfilePic(profilePic: File | ""): Promise<void> {
         if (!setErrorMessage || loading) {
             return;
         }

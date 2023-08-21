@@ -1,7 +1,6 @@
 import { cloudinary } from "../index.js";
 import { DBError } from "../customErrors/DBError.js";
-import { deleteCloudinaryResource } from "./deleteCloudinaryResource.js";
-import axios from "axios";
+import { SUPPORTED_IMAGE_FORMATS, SUPPORTED_FILE_FORMATS } from "@freefinder/shared/dist/constants.js";
 
 const imageTransformation = {
     eager: [{ 
@@ -12,50 +11,37 @@ const imageTransformation = {
     }
 }
 
-export async function uploadFile(newFile, url, max_bytes, type) {
+export async function uploadFile(file, url, max_bytes, isImage, tags) {
     try {
-        if (type === "image") {
-            const result = await cloudinary.api.resource(url);
-            const imageContent = await axios.get(result.secure_url, { responseType: 'arraybuffer' });
-            const base64FileData = Buffer.from(imageContent.data).toString('base64');
-            return await uploader(newFile, url, max_bytes, type, { result: result, base64FileData: base64FileData });
-        } else {
-            return await uploader(newFile, url, max_bytes, type);
-        }
-    }
-    catch (err) {
-        if (err instanceof DBError) {
-            throw err;
-        } else if (err.error) {
-            if (err.error.http_code === 404) return await uploader(newFile, url, max_bytes, type);
-            else throw new DBError(err.error.message, err.error.http_code || 500);
-        } else {
-            throw new DBError("Something went wrong. Please try again later.", 500);
-        }
-    }
-}
-
-async function uploader(newFile, url, max_bytes, type, prevImage) {
-    try {
-        const upload = await cloudinary.uploader.upload(newFile, { 
-            public_id: url, 
-            resource_type: type,
-            eager: type === "image" ? imageTransformation.eager : undefined,
-            transformation: type === "image" ? imageTransformation.transformation : undefined
-        });
-    
-        if (upload.bytes > max_bytes) {
-            await deleteCloudinaryResource(url, type);
-            if (prevImage) {
-                await cloudinary.uploader.upload(`data:image/jpeg;base64,${prevImage.base64FileData}`, {
-                    public_id: prevImage.result.public_id,
-                    resource_type: "image",
-                    ...imageTransformation
-                });
+        if (isImage) {
+            if (!file.mimetype.startsWith("image/")) {
+                throw new DBError("Only image files allowed.", 400);
+            } else if (!SUPPORTED_IMAGE_FORMATS.includes(file.mimetype.substring(6))) {
+                throw new DBError("Image format is not supported.", 400);
             }
+        } else if (!Object.keys(SUPPORTED_FILE_FORMATS).includes(file.mimetype)) {
+            throw new DBError("File format is not supported.", 400);
+        }
 
+        if (file.size > max_bytes) {
             throw new DBError(`File must not exceed ${max_bytes / 1000000}MB in size.`, 400);
         }
+
+        const upload = await new Promise((resolve, reject) => {
+            cloudinary.uploader.upload_stream({
+                public_id: url, 
+                resource_type: isImage ? "image" : "raw",
+                eager: isImage ? imageTransformation.eager : undefined,
+                transformation: isImage ? imageTransformation.transformation : undefined,
+                tags: tags
+            }, (error, result) => {
+                if (error) {
+                    reject(new DBError(error.message, error.http_code || 500));
+                } else {
+                    resolve(result);
+                }
+            }).end(file.buffer);
+        });
     
         return upload;
     }
@@ -63,7 +49,7 @@ async function uploader(newFile, url, max_bytes, type, prevImage) {
         if (err instanceof DBError) {
             throw err;
         } else if (err.error) {
-            throw new DBError(err.error.message, err.http_code || 500);
+            throw new DBError(err.error.message, err.error.http_code || 500);
         } else {
             throw new DBError("Something went wrong. Please try again later.", 500);
         }

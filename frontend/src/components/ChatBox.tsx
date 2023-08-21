@@ -15,7 +15,6 @@ import EmojiIcon from "../assets/emoji.png";
 import EmojiPicker from "emoji-picker-react";
 import { motion } from "framer-motion";
 import AttachFiles from "./AttachFiles";
-import { FileData } from "../types/FileData";
 import UploadedFiles from "./UploadedFiles";
 import { GroupPreview } from "../types/GroupPreview";
 import TagSuggestions from "./TagSuggestions";
@@ -45,7 +44,7 @@ export type ChatBoxState = {
     toggleTagSuggestions: boolean,
     tag: string,
     newMessages: IMessage[],
-    uploadedFiles: FileData[],
+    uploadedFiles: File[],
     failedUploads: FailedUpload[],
     matchedMembers: MatchedMembers
 }
@@ -95,20 +94,21 @@ function ChatBox({ seller, workType, groupID, groupMembers }: ChatBoxProps) {
 
         for (const uploadedFile of state.uploadedFiles) {
             try {
-                const compressed = uploadedFile.file.type.startsWith("/image") ? await compressImage(uploadedFile.file) : uploadedFile.base64Str;
-                const resp = await axios.post<{ newFile: IMessageFile, message: string }>
-                (`/api/users/${userContext.userData.username}/message-groups/${groupID}/messages/${messageID}/files`, {
-                    file: compressed,
-                    name: uploadedFile.file.name
+                const compressed = uploadedFile.type.startsWith("/image") ? await compressImage(uploadedFile) : uploadedFile;
+                const formData = new FormData();
+                formData.append("file", compressed);
+
+                const resp = await axios.post<{ file: IMessageFile, message: string }>
+                (`/api/users/${userContext.userData.username}/message-groups/${groupID}/messages/${messageID}/files`, formData, {
+                    headers: { 'Content-Type': 'multipart/form-data' }
                 });
 
-                succeeded.push(resp.data.newFile);
+                succeeded.push(resp.data.file);
             }
             catch (err: any) {
                 const errorMessage = getAPIErrorMessage(err as AxiosError<{ message: string }>);
-                console.log(errorMessage);
                 failed.push({
-                    fileData: uploadedFile, 
+                    file: uploadedFile, 
                     errorMessage: errorMessage
                 });
             }
@@ -131,9 +131,9 @@ function ChatBox({ seller, workType, groupID, groupMembers }: ChatBoxProps) {
             files: state.uploadedFiles.map((x) => {
                 return {
                     url: "",
-                    name: x.file.name,
-                    fileType: x.file.type,
-                    fileSize: x.file.size
+                    name: x.name,
+                    fileType: x.type,
+                    fileSize: x.size
                 };
             }),
             messageText: message,
@@ -155,7 +155,7 @@ function ChatBox({ seller, workType, groupID, groupMembers }: ChatBoxProps) {
 
     async function sendMessage(e: React.FormEvent<HTMLFormElement>): Promise<void> {
         e.preventDefault();
-        if (!inputRef.current || state.sendingMessage || (inputRef.current.value === "" && state.uploadedFiles.length === 0)) {
+        if (!inputRef.current || state.sendingMessage || (inputRef.current.value === "")) {
             return;
         }
 
@@ -281,8 +281,8 @@ function ChatBox({ seller, workType, groupID, groupMembers }: ChatBoxProps) {
         });
     }
 
-    function removeFile(file: FileData): void {
-        dispatch({ uploadedFiles: state.uploadedFiles.filter((x: FileData) => x !== file) });
+    function removeFile(file: File): void {
+        dispatch({ uploadedFiles: state.uploadedFiles.filter((x: File) => x !== file) });
     }
 
     const showMessage = useCallback((message: IMessage, id: string, from: string, updateMessage: boolean) => {

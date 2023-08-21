@@ -2,14 +2,14 @@ import { motion } from "framer-motion";
 import { useRef } from "react";
 import DragAndDrop from "./DragAndDrop";
 import StorageIcon from "../assets/storage.png";
-import { FileData } from "../types/FileData";
-import { parseFiles } from "../utils/parseFiles";
+import { checkFiles } from "../utils/checkFiles";
 import { checkFileType } from "../utils/checkFileType";
 import { MAX_FILE_BYTES, MAX_MESSAGE_FILE_UPLOADS } from "@freefinder/shared/dist/constants";
+import { getUniqueArray } from "src/utils/getUniqueArray";
 
 interface AttachFileProps {
-    uploadedFiles: FileData[],
-    updateUploadedFiles: (files: FileData[]) => void,
+    uploadedFiles: File[],
+    updateUploadedFiles: (files: File[]) => void,
     setErrorMessage: React.Dispatch<React.SetStateAction<string>>
 }
 
@@ -17,7 +17,8 @@ function AttachFiles({ uploadedFiles, updateUploadedFiles, setErrorMessage }: At
     const fileRef = useRef<HTMLInputElement>(null);
 
     async function handleDrop(files: FileList): Promise<void> {
-        const { failed, allFiles } = await parseFiles(files, uploadedFiles, MAX_FILE_BYTES, MAX_MESSAGE_FILE_UPLOADS, checkFileType);
+        const { failed, allFiles } = await checkFiles(files, uploadedFiles, MAX_FILE_BYTES, MAX_MESSAGE_FILE_UPLOADS, checkFileType);
+        const uniqueFiles = getUniqueArray<File, string>(allFiles, x => x.name);
 
         if (failed > 0) {
             setErrorMessage(`Failed to upload ${failed} ${failed === 1 ? "file" : "files"}. 
@@ -26,7 +27,7 @@ function AttachFiles({ uploadedFiles, updateUploadedFiles, setErrorMessage }: At
             setErrorMessage("");
         }
 
-        updateUploadedFiles(allFiles);
+        updateUploadedFiles(uniqueFiles);
     }
 
     function triggerFileUpload(): void {
@@ -48,7 +49,9 @@ function AttachFiles({ uploadedFiles, updateUploadedFiles, setErrorMessage }: At
             <DragAndDrop handleDrop={handleDrop} styles="!rounded-[6px]">
                 <div className="absolute top-[50%] left-[50%] translate-x-[-50%] translate-y-[-50%]">
                     <img src={StorageIcon} className="block m-auto w-[35px] h-[35px] mb-3" alt="storage" />
-                    <p className="text-center text-sm">Drag and Drop files here</p>
+                    <p className="text-center text-sm">
+                        Drag and Drop files here
+                    </p>
                 </div>
             </DragAndDrop>
             <div>

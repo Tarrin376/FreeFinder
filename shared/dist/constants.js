@@ -21,3 +21,22 @@ export const ABOUT_SERVICE_LIMIT = 1150;
 export const SERVICE_TITLE_LIMIT = 100;
 export const REVISIONS = ["1", "2", "3", "4", "5", "unlimited"];
 export const MAX_SERVICE_IMAGE_UPLOADS = 20;
+export const SUPPORTED_IMAGE_FORMATS = [
+    'png',
+    'jpeg',
+    'webp'
+];
+export const SUPPORTED_FILE_FORMATS = {
+    "image": "image",
+    "video": "video",
+    "audio": "audio",
+    "text/csv": "csv",
+    "text/plain": "txt",
+    "application/json": "json",
+    "application/msword": "doc",
+    "application/vnd.openxmlformats-officedocument.wordprocessingml.document": "docx",
+    "application/vnd.ms-powerpoint": "ppt",
+    "application/vnd.openxmlformats-officedocument.presentationml.presentation": "pptx",
+    "application/vnd.ms-excel": "xls",
+    "application/vnd.openxmlformats-officedocument.spreadsheetml.sheet": "xlsx"
+};

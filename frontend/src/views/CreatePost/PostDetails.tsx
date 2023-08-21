@@ -78,8 +78,13 @@ function PostDetails({ dispatch, jobCategory, setErrorMessage, ...props }: PostD
 
     async function retryFileUpload(upload: FailedUpload): Promise<string | undefined> {
         try {
-            const compressedImage = await compressImage(upload.fileData.file);
-            await axios.post<{ updatedPost: PostPage, message: string }>(`/api/posts/${props.postID}`, { image: compressedImage });
+            const compressedImage = await compressImage(upload.file);
+            const formData = new FormData();
+            formData.append("file", compressedImage);
+
+            await axios.post<{ updatedPost: PostPage, message: string }>(`/api/posts/${props.postID}`, formData, {
+                headers: { 'Content-Type': 'multipart/form-data' }
+            });
         }
         catch (err: any) {
             const errorMessage = getAPIErrorMessage(err as AxiosError<{ message: string }>);
@@ -94,9 +99,7 @@ function PostDetails({ dispatch, jobCategory, setErrorMessage, ...props }: PostD
 
         dispatch({
             payload: { 
-                failedUploads: props.failedUploads.filter((x: FailedUpload) => {
-                    return x.fileData.base64Str !== upload.fileData.base64Str
-                })
+                failedUploads: props.failedUploads.filter((x: FailedUpload) => x.file !== upload.file)
             }
         });
     }

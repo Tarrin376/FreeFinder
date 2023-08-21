@@ -161,13 +161,19 @@ export async function authenticateUserHandler(usernameOrEmail, password) {
 export async function updateUserHandler(req) {
     try {
         await checkUser(req.userData.userID, req.username);
-        let result = undefined;
+        let result = "";
+
+        if (!req.body.update) {
+            throw new DBError("No updated user data was provided.", 400);
+        }
+
+        const update = typeof req.body.update === "string" ? JSON.parse(req.body.update) : req.body.update;
         
-        if (req.body.profilePic === "") {
+        if (req.body.deleteProfilePic === "true") {
             await deleteCloudinaryResource(`FreeFinder/ProfilePictures/${req.userData.userID}`, "image");
             result = "";
-        } else if (req.body.profilePic) {
-            result = await uploadFile(req.body.profilePic, `FreeFinder/ProfilePictures/${req.userData.userID}`, MAX_PROFILE_PIC_BYTES, "image");
+        } else if (req.file) {
+            result = await uploadFile(req.file, `FreeFinder/ProfilePictures/${req.userData.userID}`, MAX_PROFILE_PIC_BYTES, true);
         }
 
         const updatedUser = await prisma.user.update({
@@ -175,12 +181,12 @@ export async function updateUserHandler(req) {
             where: { userID: req.userData.userID },
             data: {
                 profilePicURL: result ? result.eager[0].secure_url : result,
-                username: req.body.username,
-                country: req.body.country,
-                status: req.body.status,
-                email: req.body.email,
-                socketID: req.body.socketID,
-                notificationSettings: req.body.notificationSettings
+                username: update.username,
+                country: update.country,
+                status: update.status,
+                email: update.email,
+                socketID: update.socketID,
+                notificationSettings: update.notificationSettings
             }
         });
         
@@ -207,8 +213,8 @@ export async function deleteUserHandler(req) {
         await checkUser(req.userData.userID, req.username);
         await prisma.$transaction(async (tx) => {
             await tx.user.delete({ where: { userID: req.userData.userID } });
-            await deleteCloudinaryResource(`FreeFinder/ProfilePictures/${req.userData.userID}`, "image");
             await deleteCloudinaryResource(`FreeFinder/PostImages/${req.userData.userID}`, "image", true);
+            await deleteCloudinaryResource(`FreeFinder/ProfilePictures/${req.userData.userID}`, "image");
         });
     }
     catch (err) {

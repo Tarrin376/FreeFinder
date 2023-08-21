@@ -17,9 +17,9 @@ import { cookieJwtSign } from '../middleware/cookieJwtSign.js';
 export async function authenticateUser(req, res) {
     try {
         const user = await authenticateUserHandler(req.body.usernameOrEmail, req.body.password);
-        req.body = { status: "ONLINE", socketID: req.body.socketID };
-        req.userData = user;
+        req.body.update = { status: "ONLINE", socketID: req.body.socketID };
         req.username = user.username;
+        req.userData = user;
 
         const updatedUser = await updateUserHandler(req);
         const sign = await cookieJwtSign(res, updatedUser);
@@ -32,7 +32,7 @@ export async function authenticateUser(req, res) {
 
 export async function jwtAuthenticateUser(req, res) {
     try {
-        req.body = { status: "ONLINE", socketID: req.body.socketID };
+        req.body.update = { status: "ONLINE", socketID: req.body.socketID };
         req.username = req.userData.username;
 
         const updatedUser = await updateUserHandler(req);
@@ -46,7 +46,7 @@ export async function jwtAuthenticateUser(req, res) {
 
 export async function deleteUserSession(req, res) {
     try {
-        req.body = { status: "OFFLINE", socketID: null };
+        req.body.update = { status: "OFFLINE", socketID: null };
         req.username = req.userData.username;
 
         await updateUserHandler(req);

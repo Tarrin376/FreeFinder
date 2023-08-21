@@ -2,12 +2,15 @@ import { Prisma } from '@prisma/client';
 import { prisma } from '../index.js';
 import { DBError } from '../customErrors/DBError.js';
 import { checkUser } from '../utils/checkUser.js';
-import { cloudinary } from '../index.js';
-import { MAX_MESSAGE_FILE_UPLOADS } from '@freefinder/shared/dist/constants.js';
+import { MAX_MESSAGE_FILE_UPLOADS, MAX_FILE_BYTES } from '@freefinder/shared/dist/constants.js';
 import { uploadFile } from '../utils/uploadFile.js';
 
 export async function addMessageFileHandler(req) {
     try {
+        if (!req.file) {
+            throw new DBError("File not provided.", 400);
+        }
+        
         await checkUser(req.userData.userID, req.username);
         const message = await prisma.message.findUnique({
             where: { messageID: req.messageID },
@@ -20,21 +23,22 @@ export async function addMessageFileHandler(req) {
             throw new DBError(`You cannot send more than ${MAX_MESSAGE_FILE_UPLOADS} files in one message.`, 400);
         }
 
-        const fileExtension = req.body.name.split('.').pop().toLowerCase();
-        const result = await cloudinary.uploader.upload(req.body.file, { 
-            folder: `FreeFinder/MessageFiles/${message.groupID}/${req.messageID}`,
-            tags: [fileExtension],
-            resource_type: "raw",
-            public_id: req.body.name
-        });
+        const fileExtension = req.file.originalname.split('.').pop().toLowerCase();
+        const result = await uploadFile(
+            req.file, 
+            `FreeFinder/MessageFiles/${message.groupID}/${req.messageID}/${req.file.originalname}`, 
+            MAX_FILE_BYTES,
+            req.file.mimetype.startsWith("image/"),
+            [fileExtension]
+        );
 
         const newFile = await prisma.messageFile.create({
             data: {
                 messageID: req.messageID,
                 url: result.secure_url,
-                name: req.body.name,
+                name: req.file.originalname,
                 fileType: fileExtension,
-                fileSize: result.bytes
+                fileSize: req.file.size
             },
             select: {
                 url: true,

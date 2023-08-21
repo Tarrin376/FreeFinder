@@ -9,6 +9,8 @@ import PostView from './views/PostView/PostView';
 import FilterPostsProvider from './providers/FilterPostsProvider';
 import BrowseAllView from './views/BrowseAll/BrowseAllView';
 import SellerProfileView from './views/SellerProfileView/SellerProfileView';
+import MyOrdersView from './views/MyOrdersView/MyOrdersView';
+import ClientOrdersView from './views/ClientOrdersView/ClientOrdersView';
 
 function App() {
     return (
@@ -27,13 +29,15 @@ function App() {
                             <Route path="posts/all" element={
                                 <FilterPostsProvider key={`posts`} urlPrefix="">
                                     <BrowseAllView />
-                                </FilterPostsProvider>
-                            } />
+                                </FilterPostsProvider>} 
+                            />
                             <Route path=":username?/posts" element={
                                 <FilterPostsProvider key={`my-posts`} urlPrefix="/users">
                                     <MyPostsView />
                                 </FilterPostsProvider>} 
                             />
+                            <Route path=":username?/my-orders" element={<MyOrdersView />} />
+                            <Route path=":username?/client-orders" element={<ClientOrdersView />} />
                             <Route path="posts/:id" element={<PostView />} />
                             <Route path="*" element={
                                 <ErrorView 

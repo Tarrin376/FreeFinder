@@ -6,20 +6,17 @@ import { CreatePostSections } from "../../enums/CreatePostSections";
 import ErrorMessage from "../../components/ErrorMessage";
 import { useState } from "react";
 import UploadedImage from "../../components/UploadedImage";
-import { getUniqueArray } from "../../utils/getUniqueArray";
 import { checkImageType } from "../../utils/checkImageType";
-import { FileData } from "../../types/FileData";
-import { parseFiles } from "../../utils/parseFiles";
-import { MAX_FILE_BYTES, MAX_SERVICE_IMAGE_UPLOADS } from "@freefinder/shared/dist/constants";
+import { checkFiles } from "../../utils/checkFiles";
+import { MAX_FILE_BYTES, MAX_SERVICE_IMAGE_UPLOADS, SUPPORTED_IMAGE_FORMATS } from "@freefinder/shared/dist/constants";
 import { CreatePostReducerAction } from "./CreatePost";
-import { SUPPORTED_IMAGE_FORMATS } from "../../utils/checkImageType";
 import { useWindowSize } from "src/hooks/useWindowSize";
 
 interface UploadPostFilesProps {
     dispatch: React.Dispatch<CreatePostReducerAction>
     updatePostServicePopUp: (val: boolean) => void,
-    uploadedImages: FileData[],
-    thumbnail: FileData | undefined
+    uploadedImages: File[],
+    thumbnail: File | undefined
 }
 
 function UploadPostFiles({ dispatch, updatePostServicePopUp, uploadedImages, thumbnail }: UploadPostFilesProps) {
@@ -28,7 +25,7 @@ function UploadPostFiles({ dispatch, updatePostServicePopUp, uploadedImages, thu
     const windowSize = useWindowSize();
 
     async function handleDrop(files: FileList): Promise<void> {
-        const { failed, allFiles } = await parseFiles(files, uploadedImages, MAX_FILE_BYTES, MAX_SERVICE_IMAGE_UPLOADS, checkImageType);
+        const { failed, allFiles } = await checkFiles(files, uploadedImages, MAX_FILE_BYTES, MAX_SERVICE_IMAGE_UPLOADS, checkImageType);
 
         if (failed > 0) {
             setErrorMessage(`Failed to upload ${failed} ${failed === 1 ? "file" : "files"}. Please check that the file formats are 
@@ -38,7 +35,7 @@ function UploadPostFiles({ dispatch, updatePostServicePopUp, uploadedImages, thu
         }
 
         dispatch({ 
-            payload: { uploadedImages: [...getUniqueArray<FileData, unknown>(allFiles, (x: FileData) => x.base64Str)] } 
+            payload: { uploadedImages: allFiles } 
         });
     }
 
@@ -54,7 +51,7 @@ function UploadPostFiles({ dispatch, updatePostServicePopUp, uploadedImages, thu
         }
     }
 
-    function deleteImage(image: FileData): void {
+    function deleteImage(image: File): void {
         if (image === thumbnail) {
             dispatch({
                 payload: { thumbnail: undefined }
@@ -94,10 +91,10 @@ function UploadPostFiles({ dispatch, updatePostServicePopUp, uploadedImages, thu
                 />}
                 {uploadedImages.length > 0 &&
                 <div className="max-h-[250px] items-center overflow-y-scroll pr-[8px] flex flex-col gap-[15px] my-5">
-                    {uploadedImages.map((image: FileData, index: number) => {
+                    {uploadedImages.map((image: File, index: number) => {
                         return (
-                            <UploadedImage file={image.file} key={index} description="You can download this file to verify that it is the correct one.">
-                                <a href={URL.createObjectURL(image.file)} download={image.file.name}>
+                            <UploadedImage file={image} key={index} description="You can download this file to verify that it is the correct one.">
+                                <a href={URL.createObjectURL(image)} download={image.name}>
                                     <button className="side-btn w-full">
                                         Download
                                     </button>

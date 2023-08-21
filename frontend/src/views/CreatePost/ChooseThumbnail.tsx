@@ -1,18 +1,17 @@
 import PopUpWrapper from "../../wrappers/PopUpWrapper";
 import { CreatePostSections } from "../../enums/CreatePostSections";
-import { FileData } from "../../types/FileData";
 import { CreatePostReducerAction } from "./CreatePost";
 import ThumbnailImage from "./ThumbnailImage";
 
 interface ChooseThumbnailProps {
     dispatch: React.Dispatch<CreatePostReducerAction>,
     updatePostServicePopUp: (val: boolean) => void,
-    uploadedImages: FileData[],
-    thumbnail: FileData | undefined
+    uploadedImages: File[],
+    thumbnail: File | undefined
 }
 
 function ChooseThumbnail({ dispatch, updatePostServicePopUp, uploadedImages, thumbnail }: ChooseThumbnailProps) {
-    function changeThumbnail(newThumbnail: FileData) {
+    function changeThumbnail(newThumbnail: File) {
         dispatch({
             payload: { thumbnail: newThumbnail }
         });
@@ -23,10 +22,10 @@ function ChooseThumbnail({ dispatch, updatePostServicePopUp, uploadedImages, thu
             <div>
                 {uploadedImages.length > 0 &&
                 <div className="flex flex-col gap-5 flex-grow overflow-y-scroll pr-[8px] max-h-[570px]">
-                    {uploadedImages.map((imageData: FileData, index: number) => {
+                    {uploadedImages.map((file: File, index: number) => {
                         return (
                             <ThumbnailImage
-                                imageData={imageData}
+                                file={file}
                                 thumbnail={thumbnail}
                                 changeThumbnail={changeThumbnail}
                                 key={index}
@@ -37,7 +36,7 @@ function ChooseThumbnail({ dispatch, updatePostServicePopUp, uploadedImages, thu
                 {thumbnail !== undefined && 
                 <p className="text-side-text-gray my-5">
                     Selected file:
-                    <span className="text-main-blue">{` ${thumbnail.file.name}`}</span>
+                    <span className="text-main-blue">{` ${thumbnail.name}`}</span>
                 </p>}
             </div>
             <div className="flex gap-3 justify-end">

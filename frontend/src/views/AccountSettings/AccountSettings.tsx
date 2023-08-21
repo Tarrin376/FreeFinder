@@ -10,8 +10,9 @@ import { UserContext } from "../../providers/UserProvider";
 import ChangeProfilePicture from "../../components/ChangeProfilePicture";
 import KeyPair from "src/components/KeyPair";
 import { AccountSections } from "src/enums/AccountSections";
-import SettingsSelection from "src/components/SettingsSelection";
+import Selection from "src/components/Selection";
 import { useWindowSize } from "src/hooks/useWindowSize";
+import { ClientOrdersSections } from "src/enums/ClientOrdersSections";
 
 interface SettingsProps {
     setSettingsPopUp: React.Dispatch<React.SetStateAction<boolean>>,
@@ -38,8 +39,8 @@ function AccountSettings({ setSettingsPopUp }: SettingsProps) {
         return { ...state, ...payload };
     }, INITIAL_STATE);
 
-    function updateOption(next: AccountSections): void {
-        dispatch({ option: next });
+    function updateOption(next: AccountSections | ClientOrdersSections): void {
+        dispatch({ option: next as AccountSections });
     }
 
     function getOption(): React.ReactElement<any> {
@@ -99,25 +100,25 @@ function AccountSettings({ setSettingsPopUp }: SettingsProps) {
                 </div>
                 <div className="mt-8 mb-5">
                     <ul className="border-b border-b-nav-search-gray flex justify-between gap-6 mt-5 list-none overflow-x-scroll">
-                        <SettingsSelection
+                        <Selection<AccountSections>
                             currentOption={state.option}
                             option={AccountSections.details}
                             updateOption={updateOption}
                             text="My details"
                         />
-                        <SettingsSelection
+                        <Selection<AccountSections>
                             currentOption={state.option}
                             option={AccountSections.profile}
                             updateOption={updateOption}
                             text="Profile"
                         />
-                        <SettingsSelection
+                        <Selection<AccountSections>
                             currentOption={state.option}
                             option={AccountSections.password}
                             updateOption={updateOption}
                             text="Password"
                         />
-                        <SettingsSelection
+                        <Selection<AccountSections>
                             currentOption={state.option}
                             option={AccountSections.dangerZone}
                             updateOption={updateOption}

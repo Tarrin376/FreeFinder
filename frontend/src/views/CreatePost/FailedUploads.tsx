@@ -14,7 +14,7 @@ function FailedUploads({ ignoreUpload, retryFileUpload, setErrorMessage, failedU
         <div className="max-h-[250px] items-center overflow-y-scroll mt-5 mb-5 pr-[8px] flex flex-col gap-[15px]">
             {failedUploads.map((upload: FailedUpload, index: number) => {
                 return (
-                    <UploadedImage file={upload.fileData.file} key={index} description={upload.errorMessage} error={true}>
+                    <UploadedImage file={upload.file} key={index} description={upload.errorMessage} error={true}>
                         <button className="bg-main-white border-2 border-light-border-gray btn-primary w-[120px] px-3
                         hover:bg-main-white-hover" onClick={() => ignoreUpload(upload)}>
                             Ignore

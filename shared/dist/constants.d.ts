@@ -1,8 +1,8 @@
-export declare const SERVICE_FEE: number;
-export declare const VALID_DURATION_DAYS: number;
-export declare const MAX_DEPOSIT: number;
-export declare const MAX_FILE_BYTES: number;
-export declare const MAX_MESSAGE_FILE_UPLOADS: number;
+export declare const SERVICE_FEE = 0.05;
+export declare const VALID_DURATION_DAYS = 4;
+export declare const MAX_DEPOSIT = 500;
+export declare const MAX_FILE_BYTES = 5000000;
+export declare const MAX_MESSAGE_FILE_UPLOADS = 3;
 export declare const MAX_SELLER_DESC_CHARS = 650;
 export declare const MAX_SELLER_SUMMARY_CHARS = 50;
 export declare const MAX_SELLER_SKILLS = 15;
@@ -21,4 +21,19 @@ export declare const ABOUT_SERVICE_LIMIT = 1150;
 export declare const SERVICE_TITLE_LIMIT = 100;
 export declare const REVISIONS: string[];
 export declare const MAX_SERVICE_IMAGE_UPLOADS = 20;
+export declare const SUPPORTED_IMAGE_FORMATS: string[];
+export declare const SUPPORTED_FILE_FORMATS: {
+    image: string;
+    video: string;
+    audio: string;
+    "text/csv": string;
+    "text/plain": string;
+    "application/json": string;
+    "application/msword": string;
+    "application/vnd.openxmlformats-officedocument.wordprocessingml.document": string;
+    "application/vnd.ms-powerpoint": string;
+    "application/vnd.openxmlformats-officedocument.presentationml.presentation": string;
+    "application/vnd.ms-excel": string;
+    "application/vnd.openxmlformats-officedocument.spreadsheetml.sheet": string;
+};
 //# sourceMappingURL=constants.d.ts.map

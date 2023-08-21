@@ -10,7 +10,6 @@ import { FailedUpload } from '../../types/FailedUploaded';
 import { UserContext } from '../../providers/UserProvider';
 import { PackageTypes } from '../../enums/PackageTypes';
 import { CreatePostSections } from '../../enums/CreatePostSections';
-import { FileData } from '../../types/FileData';
 import { IUser } from '../../models/IUser';
 import { compressImage } from 'src/utils/compressImage';
 
@@ -32,8 +31,8 @@ export type CreatePostState = {
     standard: PackageState,
     superior: PackageState,
     section: CreatePostSections,
-    uploadedImages: FileData[],
-    thumbnail: FileData | undefined,
+    uploadedImages: File[],
+    thumbnail: File | undefined,
     failedUploads: FailedUpload[],
     createdPost: boolean,
     title: string,
@@ -112,12 +111,11 @@ function CreatePost({ updatePostServicePopUp, resetState }: CreatePostProps) {
         }
     }
 
-    async function constructPost(): Promise<PostData> {
-        const post: PostData = { 
+    async function constructPost(): Promise<Omit<PostData, "thumbnail">> {
+        const post: Omit<PostData, "thumbnail"> = { 
             about: state.about.trim(), 
             title: state.title.trim(),
             workType: state.workType,
-            thumbnail: await compressImage(state.thumbnail!.file),
             packages: [constructPackage(state.basic, PackageTypes.BASIC)]
         };
 
@@ -132,13 +130,21 @@ function CreatePost({ updatePostServicePopUp, resetState }: CreatePostProps) {
     }
 
     async function createPost(): Promise<string | undefined> {
-        const post: PostData = await constructPost();
+        const post = await constructPost();
+        const compressedImage = await compressImage(state.thumbnail!);
+
+        const formData = new FormData();
+        formData.append("file", compressedImage);
+        formData.append("post", JSON.stringify(post));
 
         try {
-            const resp = await axios.post<{ postID: string, seller: IUser["seller"], message: string }>(`/api/posts`, post);
-            postID.current = resp.data.postID;
+            const resp = await axios.post<{ postID: string, seller: IUser["seller"], message: string }>(`/api/posts`, formData, {
+                headers: { 'Content-Type': 'multipart/form-data' }
+            });
 
+            postID.current = resp.data.postID;
             const failed = await addPostImages(resp.data.postID);
+            
             if (failed.length === 0) {
                 setErrorMessage("");
                 updatePostServicePopUp(false);
@@ -166,16 +172,19 @@ function CreatePost({ updatePostServicePopUp, resetState }: CreatePostProps) {
         for (let i = 0; i < state.uploadedImages.length; i++) {
             try {
                 if (state.uploadedImages[i] !== state.thumbnail) {
-                    const compressed = await compressImage(state.uploadedImages[i].file);
-                    await axios.post<{ secure_url: string, message: string }>(`/api/posts/${postID}`, {
-                        image: compressed
+                    const compressed = await compressImage(state.uploadedImages[i]);
+                    const formData = new FormData();
+                    formData.append("file", compressed);
+
+                    await axios.post<{ message: string }>(`/api/posts/${postID}`, formData, {
+                        headers: { 'Content-Type': 'multipart/form-data' }
                     });
                 }
             }
             catch (err: any) {
                 const errorMessage = getAPIErrorMessage(err as AxiosError<{ message: string }>);
                 failed.push({
-                    fileData: state.uploadedImages[i], 
+                    file: state.uploadedImages[i], 
                     errorMessage: errorMessage
                 });
             }

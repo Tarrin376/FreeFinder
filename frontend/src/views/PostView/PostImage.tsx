@@ -40,10 +40,13 @@ function PostImage(props: PostImageProps) {
 
             setUpdatingImage(true);
             const compressedImage = await compressImage(changeImageFileRef.current.files[0]);
+            const formData = new FormData();
 
-            const resp = await axios.put<{ post: PostPage, message: string }>(`/api${location.pathname}`, {
-                newImage: compressedImage,
-                imageURL: props.images[props.index].url
+            formData.append("file", compressedImage);
+            formData.append("imageURL", props.images[props.index].url);
+
+            const resp = await axios.put<{ post: PostPage, message: string }>(`/api${location.pathname}`, formData, {
+                headers: { 'Content-Type': 'multipart/form-data' }
             });
             
             props.dispatch({ postData: resp.data.post });

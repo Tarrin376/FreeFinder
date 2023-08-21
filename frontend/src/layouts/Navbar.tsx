@@ -116,24 +116,15 @@ function Navbar() {
                         </li>
                         {userContext.userData.seller &&
                         <>
-                            <li className="nav-item">
+                            <li className="nav-item" onClick={(e) => goToPage(e, `${userContext.userData.username}/client-orders`)}>
                                 Client orders
                             </li>
                         </>}
                     </>}
                     {userContext.userData.userID !== "" && windowSize >= 1200 &&
                     <>
-                        <li>
-                            <NavDropdown title="Orders" textSize={16}>
-                                <DropdownElement
-                                    text="My orders"
-                                    action={() => console.log("yo")}
-                                />
-                                <DropdownElement
-                                    text="Order requests"
-                                    action={() => console.log("yo")}
-                                />
-                            </NavDropdown>
+                        <li className="nav-item" onClick={(e) => goToPage(e, `${userContext.userData.username}/my-orders`)}>
+                            My orders
                         </li>
                         <li>
                             <NavDropdown title="Saved" textSize={16}>

@@ -20,3 +20,5 @@ export declare const MAX_SERVICE_REVISIONS: number;
 export declare const MAX_SERVICE_FEATURES: number;
 export declare const REVISIONS: string[];
 export declare const MAX_SERVICE_IMAGE_UPLOADS: number;
+export declare const SUPPORTED_IMAGE_FORMATS: string[];
+export declare const SUPPORTED_FILE_FORMATS: Record<string, string>;

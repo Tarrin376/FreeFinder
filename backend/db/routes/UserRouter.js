@@ -5,6 +5,7 @@ import messageGroupRouter from './MessageGroupRouter.js';
 import orderRequestRouter from './OrderRequestRouter.js';
 import notificationRouter from './NotificationRouter.js';
 import { cookieJwtAuth } from '../middleware/cookieJwtAuth.js';
+import { upload } from '../middleware/upload.js';
 import 
 { 
     registerUser,
@@ -45,7 +46,7 @@ userRouter.post('/session', authenticateUser);
 userRouter.delete('/session', cookieJwtAuth, deleteUserSession);
 userRouter.post('/jwt-auth', cookieJwtAuth, jwtAuthenticateUser);
 
-userRouter.put('/:username', cookieJwtAuth, updateUser);
+userRouter.put('/:username', cookieJwtAuth, upload.single('file'), updateUser);
 userRouter.delete('/:username', cookieJwtAuth, deleteUser);
 
 userRouter.put('/:username/password', cookieJwtAuth, updatePassword);

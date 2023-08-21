@@ -1,6 +1,6 @@
 import PopUpWrapper from "../wrappers/PopUpWrapper";
 import FileTypeIcon from "./FileTypeIcon";
-import { SUPPORTED_FILE_FORMATS } from "src/utils/checkFileType";
+import { SUPPORTED_FILE_FORMATS } from "@freefinder/shared/dist/constants";
 import TickSvg from "./TickSvg";
 
 interface SupportedFileFormatsProps {

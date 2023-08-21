@@ -1,6 +1,4 @@
-import { FileData } from "./FileData";
-
 export type FailedUpload = {
-    fileData: FileData,
+    file: File,
     errorMessage: string
 }

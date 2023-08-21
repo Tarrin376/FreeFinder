@@ -75,7 +75,7 @@ function PostView() {
 
     async function updatePost(data: Partial<{ title: string, about: string }>) {
         try {
-            const resp = await axios.put<{ post: PostPage, message: string }>(`/api${location.pathname}`, data);
+            const resp = await axios.put<{ post: PostPage, message: string }>(`/api${location.pathname}`, { update: data });
             dispatch({ postData: resp.data.post });
             setErrorMessage("");
         }
@@ -95,9 +95,12 @@ function PostView() {
             dispatch({ addingImage: true });
             const compressedImage = await compressImage(addImageFileRef.current.files[0]);
 
+            const formData = new FormData();
+            formData.append("file", compressedImage);
+
             const resp = await axios.post<{ updatedPost: PostPage, message: string }>
-            (`/api${location.pathname}`, {
-                image: compressedImage
+            (`/api${location.pathname}`, formData, {
+                headers: { 'Content-Type': 'multipart/form-data' }
             });
             
             dispatch({

@@ -22,8 +22,10 @@ export function useToggleAwayStatus(): void {
                 canCheck.current = false;
                 if (userContext.userData.status === UserStatus.AWAY) {
                     const setToOnline = await axios.put<{ userData: IUser, message: string }>
-                    (`/api/users/${userContext.userData.username}`, { 
-                        status: prevStatus.current
+                    (`/api/users/${userContext.userData.username}`, {
+                        update: {
+                            status: prevStatus.current
+                        }
                     });
                     
                     userContext.socket?.volatile.emit("update-user-status", userContext.userData.username, prevStatus.current);
@@ -52,7 +54,9 @@ export function useToggleAwayStatus(): void {
                     userContext.userData.status !== UserStatus.AWAY) {
                         const setToAway = await axios.put<{ userData: IUser, message: string }>
                         (`/api/users/${userContext.userData.username}`, { 
-                            status: UserStatus.AWAY 
+                            update: {
+                                status: UserStatus.AWAY 
+                            }
                         });
                         
                         userContext.socket?.volatile.emit("update-user-status", userContext.userData.username, UserStatus.AWAY);

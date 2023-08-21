@@ -1,8 +1,4 @@
-export const SUPPORTED_IMAGE_FORMATS = [
-    'png',
-    'jpeg',
-    'webp'
-];
+import { SUPPORTED_IMAGE_FORMATS } from "@freefinder/shared/dist/constants";
 
 export function checkImageType(file: File, maxBytes: number): boolean {
     if (!file.type.startsWith("image/")) {
