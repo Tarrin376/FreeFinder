@@ -8,6 +8,7 @@ Technologies used:
 - React (with Typescript)
 - Node.js
 - Cloudinary
+- Framer Motion
 - Socket IO
 - Prisma
 - Tailwind CSS
