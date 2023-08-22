@@ -1,4 +1,4 @@
-# FreeFinder
+# FreeFinder (ongoing project)
 
 ### A full stack job posting web app that offers the ability to communicate with sellers in real-time. You can receive real-time notifications to keep up to date with your saved services, new order requests, and much more! Users are able to request orders and invite multiple users to a chat group for group projects, among many other features!
 
