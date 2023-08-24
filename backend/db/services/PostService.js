@@ -21,6 +21,7 @@ import {
 } from '@freefinder/shared/dist/constants.js';
 import Validator from '@freefinder/shared/dist/validator.js';
 import { notificationProperties } from '../utils/notificationProperties.js';
+import fs from 'fs';
 
 async function checkPackages(packages) {
     try {
@@ -243,6 +244,15 @@ export async function addImageHandler(req) {
 
         const uuid = uuidv4();
         const result = await uploadFile(req.file, `FreeFinder/PostImages/${req.params.id}/${uuid}`, MAX_FILE_BYTES, true);
+        const sizes = req.body.sizes ? typeof req.body.sizes === "string" ? JSON.parse(req.body.sizes) : req.body.sizes : undefined;
+
+        if (sizes) {
+            fs.appendFile('fileCompressionAnalysis.txt', `${sizes.oldSize},${sizes.newSize}\n`, (err) => {
+                if (err) {
+                    throw new DBError("Failed to add file sizes to file.", 500);
+                }
+            });
+        }
 
         return await prisma.$transaction(async (tx) => {
             await tx.postImage.create({

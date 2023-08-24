@@ -161,7 +161,7 @@ export async function authenticateUserHandler(usernameOrEmail, password) {
 export async function updateUserHandler(req) {
     try {
         await checkUser(req.userData.userID, req.username);
-        let result = "";
+        let result = undefined;
 
         if (!req.body.update) {
             throw new DBError("No updated user data was provided.", 400);
@@ -189,6 +189,8 @@ export async function updateUserHandler(req) {
                 notificationSettings: update.notificationSettings
             }
         });
+
+        console.log(updatedUser);
         
         return updatedUser;
     }

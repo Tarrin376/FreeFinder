@@ -175,6 +175,10 @@ function CreatePost({ updatePostServicePopUp, resetState }: CreatePostProps) {
                     const compressed = await compressImage(state.uploadedImages[i]);
                     const formData = new FormData();
                     formData.append("file", compressed);
+                    formData.append("sizes", JSON.stringify({
+                        oldSize: state.uploadedImages[i].size,
+                        newSize: compressed.size
+                    }));
 
                     await axios.post<{ message: string }>(`/api/posts/${postID}`, formData, {
                         headers: { 'Content-Type': 'multipart/form-data' }
