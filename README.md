@@ -14,7 +14,7 @@ Technologies used:
 - Tailwind CSS
 
 ![Snippet showing 'browse all' page](image.png)
-![Snippet showing 'messages' pop up](image-2.png)
+![Snippet showing 'messages' pop up](image-1.png)
 
 ## Setting up the project locally
 
