@@ -14,6 +14,9 @@ import pkg from 'cloudinary';
 import { PrismaClient } from '@prisma/client';
 import jwt from 'jsonwebtoken';
 import { DBError } from './customErrors/DBError.js';
+import dotenv from 'dotenv';
+
+dotenv.config();
 
 export const prisma = new PrismaClient();
 export const cloudinary = pkg.v2;

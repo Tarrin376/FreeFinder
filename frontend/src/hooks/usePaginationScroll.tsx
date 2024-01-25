@@ -2,8 +2,8 @@ import { useEffect } from "react";
 
 export const MOD = 5;
 
-export function usePaginationScroll(pageRef: React.RefObject<HTMLDivElement>, loading: boolean, 
-    reachedBottom: boolean, goToNextPage: () => void, page: number, reverseScroll?: boolean): void {
+export function usePaginationScroll(pageRef: React.RefObject<HTMLDivElement>, loading: boolean, reachedBottom: boolean, 
+    goToNextPage: () => void, page: number, reverseScroll?: boolean): void {
 
     function loadMoreContent(): void {
         if (!pageRef.current) {

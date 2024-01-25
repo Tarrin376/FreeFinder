@@ -90,7 +90,8 @@ function FilterPostsProvider({ children, urlPrefix }: FilterPostsProviderProps) 
                 const curValue = state[keyValue];
                 const defaultValue = defaultStateValues[keyValue];
 
-                if ((Array.isArray(curValue) && curValue.length > 0) || (!Array.isArray(curValue) && curValue !== defaultValue)) {
+                if ((Array.isArray(curValue) && curValue.length > 0) || 
+                (!Array.isArray(curValue) && curValue !== defaultValue)) {
                     count++;
                 }
             }

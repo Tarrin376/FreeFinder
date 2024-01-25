@@ -99,8 +99,10 @@ function Post({ postInfo, index, canRemove, count, styles }: PostProps) {
         try {
             setHidingPost(true);
             const resp = await axios.put<{ usersSaved: SendNotification[], message: string }>
-            (`/api/posts/${postInfo.postID}`, { 
-                hidden: !hide 
+            (`/api/posts/${postInfo.postID}`, {
+                update: {
+                    hidden: !hide 
+                }
             });
 
             sendNotifications(resp.data.usersSaved);
@@ -146,8 +148,8 @@ function Post({ postInfo, index, canRemove, count, styles }: PostProps) {
                 imageStyles="object-cover w-full h-full"
             />
             {canRemove && !canRemove.unsave &&
-            <button className="right-3 top-3 absolute z-10 bg-[#000000ab] hover:bg-[#0e0e0eab] 
-            btn-primary h-fit rounded-[6px] px-[12px]" onClick={toggleHidePost}>
+            <button className="right-3 top-3 absolute z-10 bg-[#000000ab] hover:bg-[#0e0e0eab] btn-primary h-fit 
+            rounded-[6px] px-[12px]" onClick={toggleHidePost}>
                 <div className="flex items-center gap-2">
                     <span className="text-main-white text-[15px]">{hide ? "Unhide" : "Hide"}</span>
                     <img src={hide ? UnhideIcon : HideIcon} className="w-[17px] h-[17px]" alt="" />
@@ -182,7 +184,9 @@ function Post({ postInfo, index, canRemove, count, styles }: PostProps) {
                                     styles="mb-[2px]" 
                                     backgroundColour="#18193F" 
                                 />
-                                <p className="text-[15px]">{postInfo.rating ? postInfo.rating.toFixed(1) : 0}</p>
+                                <p className="text-[15px]">
+                                    {postInfo.rating ? postInfo.rating.toFixed(1) : 0}
+                                </p>
                             </div>
                         </div>
                         <p className="text-side-text-gray text-[15px]">
@@ -194,7 +198,8 @@ function Post({ postInfo, index, canRemove, count, styles }: PostProps) {
                     {`Posted ${timeCreated}`}
                 </p>
                 <div className="mt-[4px] mb-[10px]">
-                    <span className="text-[14px] seller-level mr-2 inline-block" style={sellerLevelTextStyles[postInfo.postedBy.sellerLevel.name]}>
+                    <span className="text-[14px] seller-level mr-2 inline-block" 
+                    style={sellerLevelTextStyles[postInfo.postedBy.sellerLevel.name]}>
                         {postInfo.postedBy.sellerLevel.name}
                     </span>
                     {seconds < 60 * 60 * 24 && 

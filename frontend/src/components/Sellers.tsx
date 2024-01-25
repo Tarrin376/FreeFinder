@@ -35,9 +35,12 @@ function Sellers({ search, url, setSellersPopUp, savedSellers, option }: Sellers
     }
 
     function getTitle(): string {
-        if (savedSellers) return `Your saved sellers (${sellers.count.current})`;
-        else return `${sellers.loading ? "Loading results" : `${sellers.count.current}
-        ${sellers.count.current === 1 ? " result" : " results"}`} found for '${search}'`;
+        if (!savedSellers) {
+            return `${sellers.loading ? "Loading results" : `${sellers.count.current}
+            ${sellers.count.current === 1 ? " result" : " results"}`} found for '${search}'`;
+        }
+        
+        return `Your saved sellers (${sellers.count.current})`;
     }
 
     return (

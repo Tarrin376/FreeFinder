@@ -4,6 +4,7 @@ import savedSellerRouter from './SavedSellerRouter.js';
 import messageGroupRouter from './MessageGroupRouter.js';
 import orderRequestRouter from './OrderRequestRouter.js';
 import notificationRouter from './NotificationRouter.js';
+import orderRouter from './OrderRouter.js';
 import { cookieJwtAuth } from '../middleware/cookieJwtAuth.js';
 import { upload } from '../middleware/upload.js';
 import 
@@ -18,8 +19,7 @@ import
     getUserPosts,
     getBalance,
     addToBalance,
-    searchUsers,
-    createOrder
+    searchUsers
 } from '../controllers/UserController.js';
 
 const userRouter = Router();
@@ -34,10 +34,9 @@ userRouter.use('/:username/saved/sellers', savedSellerRouter);
 userRouter.use('/:username/message-groups', messageGroupRouter);
 userRouter.use('/:username/order-requests', orderRequestRouter);
 userRouter.use('/:username/notifications', notificationRouter);
+userRouter.use('/:username/orders', orderRouter);
 
 userRouter.post('/:username/posts', cookieJwtAuth, getUserPosts);
-
-userRouter.post('/:username/orders', cookieJwtAuth, createOrder);
 
 userRouter.post('/', registerUser);
 userRouter.get('/', searchUsers);

@@ -1,4 +1,4 @@
-import { createWorkTypesHandler } from "../services/workTypeService.js";
+import { createWorkTypesHandler } from "../services/WorkTypeService.js";
 
 export async function createWorkTypes(req, res) {
     try {

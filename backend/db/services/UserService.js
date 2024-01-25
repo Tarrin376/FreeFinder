@@ -189,8 +189,6 @@ export async function updateUserHandler(req) {
                 notificationSettings: update.notificationSettings
             }
         });
-
-        console.log(updatedUser);
         
         return updatedUser;
     }
@@ -373,73 +371,6 @@ export async function addToBalanceHandler(req) {
             throw err;
         } else if (err instanceof Prisma.PrismaClientKnownRequestError && err.code === "P2025") {
             throw new DBError("User not found.", 404);
-        } else if (err instanceof Prisma.PrismaClientValidationError) {
-            throw new DBError("Missing required fields or fields provided are invalid.", 400);
-        } else {
-            throw new DBError("Something went wrong. Please try again later.", 500);
-        }
-    }
-    finally {
-        await prisma.$disconnect();
-    }
-}
-
-export async function createOrderHandler(req) {
-    try {
-        await checkUser(req.userData.userID, req.username);
-        const orderRequest = await prisma.orderRequest.findUnique({
-            where: { id: req.body.orderRequestID },
-            select: { 
-                status: true,
-                sellerID: true,
-                total: true,
-                subTotal: true,
-                packageID: true,
-                seller: {
-                    select: {
-                        userID: true
-                    }
-                },
-                package: {
-                    select: {
-                        deliveryTime: true
-                    }
-                }
-            }
-        });
-
-        if (!orderRequest) {
-            throw new DBError("Order request not found.", 404);
-        } else if (orderRequest.seller.userID !== req.userData.userID) {
-            throw new DBError("You are not authorized to accept this order request.", 403);
-        } else if (orderRequest.status !== "PENDING") {
-            throw new DBError("Action has already been taken on this order request.", 409);
-        }
-
-        const date = new Date();
-        const deliveryEndDate = new Date(date.setDate(date.getDate() + orderRequest.package.deliveryTime));
-
-        await prisma.$transaction([
-            prisma.orderRequest.update({
-                where: { id: req.body.orderRequestID },
-                data: { status: "ACCEPTED" }
-            }),
-            prisma.order.create({
-                data: {
-                    clientID: req.userData.userID,
-                    sellerID: orderRequest.sellerID,
-                    status: "PENDING",
-                    total: orderRequest.total,
-                    subTotal: orderRequest.subTotal,
-                    packageID: orderRequest.packageID,
-                    deliveryEndDate: deliveryEndDate
-                }
-            })
-        ]);
-    }
-    catch (err) {
-        if (err instanceof DBError) {
-            throw err;
         } else if (err instanceof Prisma.PrismaClientValidationError) {
             throw new DBError("Missing required fields or fields provided are invalid.", 400);
         } else {

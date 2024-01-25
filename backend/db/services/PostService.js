@@ -84,37 +84,39 @@ export async function createPostHandler(req) {
                         connect: { name: post.workType }
                     },
                     packages: {
-                        create: [
-                            {
-                                deliveryTime: post.packages[0].deliveryTime,
-                                revisions: post.packages[0].revisions,
-                                description: post.packages[0].description,
-                                features: post.packages[0].features,
-                                amount: post.packages[0].amount,
-                                type: post.packages[0].type,
-                                title: post.packages[0].title,
-                            },
-                            post.packages.length >= 2 ?
-                            {
-                                deliveryTime: post.packages[1].deliveryTime,
-                                revisions: post.packages[1].revisions,
-                                description: post.packages[1].description,
-                                features: post.packages[1].features,
-                                amount: post.packages[1].amount,
-                                type: post.packages[1].type,
-                                title: post.packages[1].title,
-                            } : undefined,
-                            post.packages.length === 3 ?
-                            {
-                                deliveryTime: post.packages[2].deliveryTime,
-                                revisions: post.packages[2].revisions,
-                                description: post.packages[2].description,
-                                features: post.packages[2].features,
-                                amount: post.packages[2].amount,
-                                type: post.packages[2].type,
-                                title: post.packages[2].title,
-                            } : undefined
-                        ]
+                        createMany: {
+                            data: [
+                                {
+                                    deliveryTime: post.packages[0].deliveryTime,
+                                    revisions: post.packages[0].revisions,
+                                    description: post.packages[0].description,
+                                    features: post.packages[0].features,
+                                    amount: post.packages[0].amount,
+                                    type: post.packages[0].type,
+                                    title: post.packages[0].title,
+                                },
+                                post.packages.length >= 2 ?
+                                {
+                                    deliveryTime: post.packages[1].deliveryTime,
+                                    revisions: post.packages[1].revisions,
+                                    description: post.packages[1].description,
+                                    features: post.packages[1].features,
+                                    amount: post.packages[1].amount,
+                                    type: post.packages[1].type,
+                                    title: post.packages[1].title,
+                                } : undefined,
+                                post.packages.length === 3 ?
+                                {
+                                    deliveryTime: post.packages[2].deliveryTime,
+                                    revisions: post.packages[2].revisions,
+                                    description: post.packages[2].description,
+                                    features: post.packages[2].features,
+                                    amount: post.packages[2].amount,
+                                    type: post.packages[2].type,
+                                    title: post.packages[2].title,
+                                } : undefined
+                            ].filter((x) => x != undefined)
+                        }
                     }
                 }
             });
