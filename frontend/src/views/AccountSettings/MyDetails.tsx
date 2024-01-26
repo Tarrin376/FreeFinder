@@ -1,12 +1,12 @@
 import { useState, useContext } from 'react';
-import ErrorMessage from "../../components/ErrorMessage";
+import ErrorMessage from "../../components/Error/ErrorMessage";
 import { EMAIL_REGEX } from '@freefinder/shared/dist/constants';
 import { fetchUpdatedUser } from "../../utils/fetchUpdatedUser";
 import { getAPIErrorMessage } from "../../utils/getAPIErrorMessage";
 import { AxiosError } from "axios";
 import Button from "../../components/Button";
 import { UserContext } from '../../providers/UserProvider';
-import TextBoxErrorMessage from 'src/components/TextBoxErrorMessage';
+import TextBoxErrorMessage from 'src/components/Error/TextBoxErrorMessage';
 
 function MyDetails() {
     const [firstEmail, setFirstEmail] = useState<string>("");

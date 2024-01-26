@@ -1,11 +1,11 @@
 import PopUpWrapper from "../../wrappers/PopUpWrapper";
 import { useRef } from 'react';
-import DragAndDrop from "../../components/DragAndDrop";
+import DragAndDrop from "../../components/File/DragAndDrop";
 import Storage from '../../assets/storage.png';
 import { CreatePostSections } from "../../enums/CreatePostSections";
-import ErrorMessage from "../../components/ErrorMessage";
+import ErrorMessage from "../../components/Error/ErrorMessage";
 import { useState } from "react";
-import UploadedImage from "../../components/UploadedImage";
+import UploadedImage from "../../components/File/UploadedImage";
 import { checkImageType } from "../../utils/checkImageType";
 import { checkFiles } from "../../utils/checkFiles";
 import { MAX_FILE_BYTES, MAX_SERVICE_IMAGE_UPLOADS, SUPPORTED_IMAGE_FORMATS } from "@freefinder/shared/dist/constants";

@@ -1,5 +1,5 @@
 import Packages from "./Packages";
-import CreateReview from "src/components/CreateReview";
+import CreateReview from "src/components/Review/CreateReview";
 import { PostViewState } from "./PostView";
 import { scrollIntoView } from "src/utils/scrollIntoView";
 import { useWindowSize } from "src/hooks/useWindowSize";

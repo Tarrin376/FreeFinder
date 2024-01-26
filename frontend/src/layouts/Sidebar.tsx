@@ -1,12 +1,12 @@
 import { motion } from "framer-motion";
 import { useContext } from "react";
 import { UserContext } from "../providers/UserProvider";
-import AccountOptions from "../components/AccountOptions";
-import SearchSellers from "../components/SearchSellers";
+import AccountOptions from "../components/Account/AccountOptions";
+import SearchSellers from "../components/Seller/SearchSellers";
 import { useNavigate } from "react-router-dom";
 import CloseSvg from "../components/CloseSvg";
-import SidebarDropdown from "src/components/SidebarDropdown";
-import SidebarDropdownElement from "src/components/SidebarDropdownElement";
+import SidebarDropdown from "src/components/Dropdown/SidebarDropdown";
+import SidebarDropdownElement from "src/components/Dropdown/SidebarDropdownElement";
 
 interface SidebarProps {
     setLogIn: React.Dispatch<React.SetStateAction<boolean>>,

@@ -1,7 +1,7 @@
 import { useLocation } from "react-router-dom";
 import { useEffect, useState, useContext, useReducer, useRef } from 'react';
 import { PostPage } from "../../types/PostPage";
-import ProfilePicAndStatus from "../../components/ProfilePicAndStatus";
+import ProfilePicAndStatus from "../../components/Profile/ProfilePicAndStatus";
 import AboutSeller from "./AboutSeller";
 import axios, { AxiosError } from "axios";
 import { getAPIErrorMessage } from "../../utils/getAPIErrorMessage";
@@ -10,14 +10,14 @@ import Carousel from "../../components/Carousel";
 import parse from "html-react-parser";
 import { useNavigate } from "react-router-dom";
 import { UserContext } from "../../providers/UserProvider";
-import TextEditor from "../../components/TextEditor";
+import TextEditor from "../../components/TextEditor/TextEditor";
 import { ABOUT_SERVICE_LIMIT, SERVICE_TITLE_LIMIT } from "@freefinder/shared/dist/constants";
 import PostImage from "./PostImage";
-import ErrorPopUp from "../../components/ErrorPopUp";
+import ErrorPopUp from "../../components/Error/ErrorPopUp";
 import { AnimatePresence } from "framer-motion";
 import LoadingSvg from "../../components/LoadingSvg";
-import Reviews from "../../components/Reviews";
-import StarSvg from "../../components/StarSvg";
+import Reviews from "../../components/Review/Reviews";
+import StarSvg from "../../components/Review/StarSvg";
 import ServiceID from "../../components/ServiceID";
 import { MAX_SERVICE_IMAGE_UPLOADS } from "@freefinder/shared/dist/constants";
 import { compressImage } from "src/utils/compressImage";
@@ -120,13 +120,6 @@ function PostView() {
     function triggerFileUpload(): void {
         if (addImageFileRef.current) {
             addImageFileRef.current.click();
-        }
-    }
-
-    function copyServiceID(): void {
-        if (state.postData) {
-            navigator.clipboard.writeText(state.postData.postID);
-            setInfoMessage("Copied to clipboard.");
         }
     }
 
@@ -252,16 +245,14 @@ function PostView() {
                                 </p>
                             </div>
                         </div>
-                        {windowSize >= 510 ?
                         <ServiceID
-                            action={copyServiceID}
+                            data={state.postData.postID}
+                            setInfoMessage={setInfoMessage}
                             postID={state.postData.postID}
                             textSize={15}
+                            hideText={windowSize < 510}
                             styles="mb-4"
-                        /> : 
-                        <button className="side-btn w-fit !h-[30px] rounded-[6px] text-[15px] mb-4" onClick={copyServiceID}>
-                            Copy service ID
-                        </button>}
+                        />
                         <div className="w-full relative overflow-hidden bg-very-light-gray rounded-[12px] border 
                         border-light-border-gray shadow-info-component">
                             <Carousel

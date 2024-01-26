@@ -1,17 +1,17 @@
 interface KeyPairProps {
     itemKey: string,
     itemValue: string,
-    styles?: string,
     textSize: number
+    styles?: string,
 }
 
-function KeyPair({ itemKey, itemValue, styles, textSize }: KeyPairProps) {
+function KeyPair({ itemKey, itemValue, textSize, styles }: KeyPairProps) {
     const defaultStyles = `text-ellipsis whitespace-nowrap overflow-hidden`;
     
     return (
         <p className={`${defaultStyles} ${styles}`} style={{ fontSize: `${textSize}px` }}>
             {`${itemKey}:`}
-            <span className="text-main-blue" style={{ fontSize: `${textSize}px` }} title={itemValue}>
+            <span className="text-main-blue" style={{ fontSize: `${textSize}px`, marginLeft: '3px' }} title={itemValue}>
                 {` ${itemValue}`}
             </span>
         </p>

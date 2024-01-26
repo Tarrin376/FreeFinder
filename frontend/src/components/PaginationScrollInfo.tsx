@@ -2,9 +2,10 @@ import { PaginateData } from "../types/PaginateData";
 import { IPost } from "../models/IPost";
 import { MOD } from "../hooks/usePaginationScroll";
 import { SellerData } from "../types/SellerData";
+import { IOrder } from "src/models/IOrder";
 
 interface PostScrollInfoProps {
-    data: PaginateData<IPost | SellerData>,
+    data: PaginateData<IPost | SellerData | IOrder>,
     page: number,
     styles?: string
 }

@@ -1,4 +1,4 @@
-import Posts from "../../components/Posts";
+import Posts from "../../components/Post/Posts";
 import { IPost } from "src/models/IPost";
 
 interface BrowseAllViewProps {

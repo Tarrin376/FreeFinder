@@ -5,17 +5,18 @@ import { useLocation } from "react-router-dom";
 import { getAPIErrorMessage } from "../../utils/getAPIErrorMessage";
 import { useNavigateErrorPage } from "../../hooks/useNavigateErrorPage";
 import PageWrapper from "../../wrappers/PageWrapper";
-import ProfilePicAndStatus from "../../components/ProfilePicAndStatus";
+import ProfilePicAndStatus from "../../components/Profile/ProfilePicAndStatus";
 import { sellerLevelTextStyles } from "../../utils/sellerLevelTextStyles";
-import Post from "../../components/Post";
+import Post from "../../components/Post/Post";
 import { IPost } from "../../models/IPost";
-import ProfileSummary from "../../components/ProfileSummary";
+import ProfileSummary from "../../components/Profile/ProfileSummary";
 import Options from "../../components/Options";
-import SaveSeller from "../../components/SaveSeller";
+import SaveSeller from "../../components/Seller/SaveSeller";
 import { UserContext } from "../../providers/UserProvider";
-import Reviews from "../../components/Reviews";
+import Reviews from "../../components/Review/Reviews";
 import { useWindowSize } from "src/hooks/useWindowSize";
-import SellerExperience from "src/components/SellerExperience";
+import SellerExperience from "src/components/Seller/SellerExperience";
+import UserStatusText from "src/components/Profile/UserStatus";
 
 function SellerProfileView() {
     const [sellerDetails, setSellerDetails] = useState<SellerProfile>();
@@ -67,6 +68,10 @@ function SellerProfileView() {
                                         <p title={sellerDetails.user.username}>
                                             {sellerDetails.user.username}
                                         </p>
+                                        <UserStatusText 
+                                            profileStatus={sellerDetails.user.status}
+                                            username={sellerDetails.user.username}
+                                        />
                                         <p className="text-[14px] seller-level" style={sellerLevelTextStyles[sellerDetails.sellerLevel.name]}>
                                             {sellerDetails.sellerLevel.name}
                                         </p>

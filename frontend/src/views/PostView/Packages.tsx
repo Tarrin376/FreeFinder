@@ -5,11 +5,11 @@ import RevisionsIcon from '../../assets/revisions.png';
 import FeatureIcon from '../../assets/feature.png';
 import { PackageTypes } from "../../enums/PackageTypes";
 import { capitalizeWord } from "../../utils/capitalizeWord";
-import CreateGroup from "../../components/CreateGroup";
+import CreateGroup from "../../components/MessageGroup/CreateGroup";
 import { FoundUsers } from "../../types/FoundUsers";
 import { UserContext } from "../../providers/UserProvider";
 import { AnimatePresence } from "framer-motion";
-import RequestOrder from "../../components/RequestOrder";
+import RequestOrder from "../../components/Order/RequestOrder";
 import { useWindowSize } from "src/hooks/useWindowSize";
 
 interface PackagesProps {

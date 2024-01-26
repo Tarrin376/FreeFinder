@@ -3,7 +3,7 @@ import { IUser } from '../models/IUser';
 import axios from "axios";
 import io, { Socket } from "socket.io-client";
 import { UserStatus } from '../enums/UserStatus';
-import ErrorPopUp from '../components/ErrorPopUp';
+import ErrorPopUp from '../components/Error/ErrorPopUp';
 import { AnimatePresence } from 'framer-motion';
 
 export interface IUserContext {

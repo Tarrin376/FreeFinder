@@ -20,7 +20,7 @@ module.exports = {
         },
         colors: {
             'main-blue': '#4169f7',
-            'bg-light': '#fdfdfd',
+            'bg-light': '#fcfcfc',
             'main-blue-hover': '#4E73F8',
             'main-white': '#fdfdfd',
             'light-gray': '#e1e3e8',

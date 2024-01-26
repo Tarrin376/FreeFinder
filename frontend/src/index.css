@@ -50,7 +50,7 @@
         @apply !bg-main-black !text-main-white hover:!text-main-white;
     }
     .seller-level {
-        @apply w-fit px-[12px] rounded-[6px];
+        @apply w-fit px-2 rounded-[6px];
     }
     .link {
         @apply hover:text-main-blue cursor-pointer transition-all ease-out duration-200;

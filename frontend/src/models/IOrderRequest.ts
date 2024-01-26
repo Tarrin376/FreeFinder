@@ -1,4 +1,4 @@
-import { OrderRequestStatus } from "../enums/OrderRequestStatus"
+import { OrderRequestStatus } from "../enums/OrderRequestStatus";
 
 export interface IOrderRequest {
     status: OrderRequestStatus,

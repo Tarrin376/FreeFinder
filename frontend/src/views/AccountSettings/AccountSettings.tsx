@@ -1,13 +1,13 @@
 import PopUpWrapper from "../../wrappers/PopUpWrapper";
-import ProfilePicAndStatus from "../../components/ProfilePicAndStatus";
+import ProfilePicAndStatus from "../../components/Profile/ProfilePicAndStatus";
 import { useState, useContext, useReducer } from 'react';
-import ErrorMessage from "../../components/ErrorMessage";
+import ErrorMessage from "../../components/Error/ErrorMessage";
 import MyDetails from "./MyDetails";
 import UserProfile from "./UserProfile";
 import ChangePassword from "./ChangePassword";
 import DangerZone from "./DangerZone";
 import { UserContext } from "../../providers/UserProvider";
-import ChangeProfilePicture from "../../components/ChangeProfilePicture";
+import ChangeProfilePicture from "../../components/Profile/ChangeProfilePicture";
 import KeyPair from "src/components/KeyPair";
 import { AccountSections } from "src/enums/AccountSections";
 import Selection from "src/components/Selection";

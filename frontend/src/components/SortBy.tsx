@@ -1,7 +1,7 @@
 import { sortPosts } from '../utils/sortPosts';
-import NavDropdown from './NavDropdown';
+import NavDropdown from './Dropdown/NavDropdown';
 import { sortPostsOption } from 'src/types/sortPostsOption';
-import DropdownElement from './DropdownElement';
+import DropdownElement from './Dropdown/DropdownElement';
 
 interface SortByProps {
     sort: sortPostsOption,

@@ -6,7 +6,7 @@ import { useLocation } from "react-router-dom";
 import { getAPIErrorMessage } from "../../utils/getAPIErrorMessage";
 import { AnimatePresence } from "framer-motion";
 import { motion } from "framer-motion";
-import ErrorPopUp from "../../components/ErrorPopUp";
+import ErrorPopUp from "../../components/Error/ErrorPopUp";
 import LoadingSvg from "../../components/LoadingSvg";
 import { PostViewState } from "./PostView";
 import { compressImage } from "src/utils/compressImage";

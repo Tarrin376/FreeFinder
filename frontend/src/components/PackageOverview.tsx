@@ -1,6 +1,6 @@
 import { FoundUsers } from "../types/FoundUsers";
 import KeyPair from "./KeyPair";
-import ProfilePicAndStatus from "./ProfilePicAndStatus";
+import ProfilePicAndStatus from "./Profile/ProfilePicAndStatus";
 import { capitalizeWord } from "../utils/capitalizeWord";
 
 interface PackageOverviewProps {

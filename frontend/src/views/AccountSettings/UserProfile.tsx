@@ -1,13 +1,13 @@
 import { useState, useContext } from 'react';
-import ErrorMessage from "../../components/ErrorMessage";
-import CountriesDropdown from "../../components/CountriesDropdown";
+import ErrorMessage from "../../components/Error/ErrorMessage";
+import CountriesDropdown from "../../components/Dropdown/CountriesDropdown";
 import { fetchUpdatedUser } from "../../utils/fetchUpdatedUser";
 import { getAPIErrorMessage } from "../../utils/getAPIErrorMessage";
 import { AxiosError } from "axios";
 import Button from "../../components/Button";
 import { UserContext } from '../../providers/UserProvider';
 import Validator from "@freefinder/shared/dist/validator";
-import TextBoxErrorMessage from 'src/components/TextBoxErrorMessage';
+import TextBoxErrorMessage from 'src/components/Error/TextBoxErrorMessage';
 
 function UserProfile() {
     const userContext = useContext(UserContext);

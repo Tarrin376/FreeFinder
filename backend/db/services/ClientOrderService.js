@@ -26,6 +26,7 @@ export async function getClientOrdersHandler(req) {
             subTotal: true,
             deliveryEndDate: true,
             createdAt: true,
+            orderID: true,
             client: {
                 select: {
                     username: true,
@@ -40,7 +41,8 @@ export async function getClientOrdersHandler(req) {
                     type: true,
                     post: {
                         select: {
-                            title: true
+                            title: true,
+                            postID: true
                         }
                     }
                 }
@@ -51,7 +53,7 @@ export async function getClientOrdersHandler(req) {
             orderID: req.body.cursor
         } : {};
 
-        const result = await getPaginatedData(
+        const orders = await getPaginatedData(
             where, 
             select, 
             "order", 
@@ -61,7 +63,17 @@ export async function getClientOrdersHandler(req) {
             {}
         );
 
-        return result;
+        return {
+            ...orders,
+            next: orders.next.map((order) => {
+                const { client, ...rest } = order;
+                return { 
+                    ...rest, 
+                    user: { ...client },
+                    isClientOrder: true
+                };
+            })
+        }
     }
     catch (err) {
         if (err instanceof DBError) {

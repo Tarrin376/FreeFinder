@@ -8,7 +8,8 @@ interface PageWrapperProps {
 
 function PageWrapper({ children, styles, locationStack }: PageWrapperProps) {
     const windowSize = useWindowSize();
-    const defaultStyles = `max-w-[1430px] m-auto p-7 min-h-[calc(100vh-90px)] ${windowSize < 560 ? windowSize < 400 ? "!px-3" : "!px-5" : ""}`;
+    const defaultStyles = `max-w-[1330px] m-auto p-7 min-h-[calc(100vh-90px)] 
+    ${windowSize < 560 ? windowSize < 400 ? "!px-3" : "!px-5" : ""}`;
 
     return (
         <div className={`${defaultStyles} ${styles}`}>

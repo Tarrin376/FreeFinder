@@ -1,27 +1,27 @@
 import { useState, useContext, useRef } from 'react';
-import SignUp from '../components/SignUp';
-import LogIn from '../components/LogIn';
-import AccountCreated from '../components/AccountCreated';
+import SignUp from '../components/Account/SignUp';
+import LogIn from '../components/Account/LogIn';
+import AccountCreated from '../components/Account/AccountCreated';
 import { IUserContext, UserContext } from '../providers/UserProvider';
 import { Outlet } from 'react-router-dom';
-import ProfileMenu from '../components/ProfileMenu';
+import ProfileMenu from '../components/Profile/ProfileMenu';
 import { useNavigate } from 'react-router-dom';
-import SearchSellers from '../components/SearchSellers';
+import SearchSellers from '../components/Seller/SearchSellers';
 import { useToggleAwayStatus } from '../hooks/useToggleAwayStatus';
-import Sellers from '../components/Sellers';
+import Sellers from '../components/Seller/Sellers';
 import { AnimatePresence } from "framer-motion";
 import { SellerOptions } from '../enums/SellerOptions';
 import { useWindowSize } from '../hooks/useWindowSize';
 import HamburgerMenu from '../components/HamburgerMenu';
 import Sidebar from './Sidebar';
-import AccountOptions from '../components/AccountOptions';
+import AccountOptions from '../components/Account/AccountOptions';
 import { INITIAL_STATE } from '../providers/UserProvider';
 import axios from "axios";
 import OnlineStatus from '../components/OnlineStatus';
-import NavDropdown from '../components/NavDropdown';
+import NavDropdown from '../components/Dropdown/NavDropdown';
 import { NavElement } from '../types/NavElement';
 import { UserStatus } from 'src/enums/UserStatus';
-import DropdownElement from 'src/components/DropdownElement';
+import DropdownElement from 'src/components/Dropdown/DropdownElement';
 
 function Navbar() {
     const [signUp, setSignUp] = useState<boolean>(false);

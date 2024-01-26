@@ -4,6 +4,6 @@ import { cookieJwtAuth } from '../middleware/cookieJwtAuth.js';
 
 const clientOrderRouter = Router();
 
-clientOrderRouter.get('/', cookieJwtAuth, getClientOrders);
+clientOrderRouter.post('/', cookieJwtAuth, getClientOrders);
 
 export default clientOrderRouter;

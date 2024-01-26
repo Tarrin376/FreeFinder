@@ -1,5 +1,5 @@
 import { useState, useContext } from 'react';
-import ErrorMessage from "../../components/ErrorMessage";
+import ErrorMessage from "../../components/Error/ErrorMessage";
 import { INITIAL_STATE } from "../../providers/UserProvider";
 import axios, { AxiosError } from "axios";
 import { getAPIErrorMessage } from "../../utils/getAPIErrorMessage";

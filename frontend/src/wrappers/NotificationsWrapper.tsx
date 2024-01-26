@@ -2,14 +2,14 @@ import SidePopUpWrapper from "src/wrappers/SidePopUpWrapper";
 import SettingsIcon from "../assets/settings.png";
 import { NotificationSections } from "src/enums/NotificationSections";
 import { useState, useContext } from "react";
-import Notifications from "../components/Notifications";
-import NotificationSettings from "../components/NotificationSettings";
+import Notifications from "../components/Notification/Notifications";
+import NotificationSettings from "../components/Notification/NotificationSettings";
 import { AnimatePresence } from "framer-motion";
 import axios, { AxiosError } from "axios";
 import { UserContext } from "src/providers/UserProvider";
 import { getAPIErrorMessage } from "src/utils/getAPIErrorMessage";
-import ErrorPopUp from "../components/ErrorPopUp";
-import MessageSent from "src/components/MessageSent";
+import ErrorPopUp from "../components/Error/ErrorPopUp";
+import MessageSent from "src/components/Message/MessageSent";
 
 interface NotificationsWrapperProps {
     toggleNotifications: () => void,

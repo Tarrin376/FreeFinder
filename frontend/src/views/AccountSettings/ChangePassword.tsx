@@ -1,11 +1,11 @@
 import { useState, useContext } from 'react';
-import ErrorMessage from "../../components/ErrorMessage";
+import ErrorMessage from "../../components/Error/ErrorMessage";
 import axios, { AxiosError } from "axios";
 import { getAPIErrorMessage } from "../../utils/getAPIErrorMessage";
 import Button from "../../components/Button";
 import { UserContext } from '../../providers/UserProvider';
 import { MIN_PASS_LENGTH, MAX_PASS_LENGTH } from "@freefinder/shared/dist/constants";
-import TextBoxErrorMessage from 'src/components/TextBoxErrorMessage';
+import TextBoxErrorMessage from 'src/components/Error/TextBoxErrorMessage';
 
 function ChangePassword() {
     const [currentPass, setCurrentPass] = useState<string>("");

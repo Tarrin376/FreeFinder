@@ -1,8 +1,8 @@
-import ProfilePicAndStatus from "../../components/ProfilePicAndStatus";
+import ProfilePicAndStatus from "../../components/Profile/ProfilePicAndStatus";
 import Options from "../../components/Options";
 import { sellerLevelTextStyles } from "../../utils/sellerLevelTextStyles";
-import ProfileSummary from "../../components/ProfileSummary";
-import SaveSeller from "../../components/SaveSeller";
+import ProfileSummary from "../../components/Profile/ProfileSummary";
+import SaveSeller from "../../components/Seller/SaveSeller";
 import { useNavigate } from "react-router-dom";
 import { useContext } from "react";
 import { UserContext } from "../../providers/UserProvider";

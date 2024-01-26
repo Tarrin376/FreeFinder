@@ -5,6 +5,6 @@ import { createOrder, getOrders } from '../controllers/OrderController.js';
 const orderRouter = Router();
 
 orderRouter.post('/', cookieJwtAuth, createOrder);
-orderRouter.get('/', cookieJwtAuth, getOrders);
+orderRouter.post('/my-orders', cookieJwtAuth, getOrders);
 
 export default orderRouter;

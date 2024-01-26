@@ -7,14 +7,14 @@ import { useLocation } from 'react-router-dom';
 import CreatePost from '../views/CreatePost/CreatePost';
 import { FilterPosts } from '../types/FilterPosts';
 import { AnimatePresence } from "framer-motion";
-import ErrorPopUp from '../components/ErrorPopUp';
+import ErrorPopUp from '../components/Error/ErrorPopUp';
 import { PaginationResponse } from '../types/PaginateResponse';
-import MainFiltersBar from '../components/MainFiltersBar';
+import MainFiltersBar from '../components/Filters/MainFiltersBar';
 import { SearchOption } from 'src/types/SearchOptions';
 import { PostArgs } from 'src/types/PostArgs';
 import { sortPostsOption } from 'src/types/sortPostsOption';
-import PostsSidebar from 'src/components/PostsSidebar';
-import FiltersPopUp from 'src/components/FiltersPopUp';
+import PostsSidebar from 'src/components/Post/PostsSidebar';
+import FiltersPopUp from 'src/components/Filters/FiltersPopUp';
 import { useWindowSize } from 'src/hooks/useWindowSize';
 import AddIcon from "../assets/add.png";
 
