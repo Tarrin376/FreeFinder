@@ -73,7 +73,7 @@ function SignUp({ setLogIn, setSignUp, setAccountCreated }: SignUpProps) {
 
     function checkEmail(e: React.ChangeEvent<HTMLInputElement>, isFirst: boolean): void {
         const email = e.target.value;
-        const errorMessage = email.match(EMAIL_REGEX) !== null && email.length <= MAX_EMAIL_LENGTH ? "" : "Please use a valid email address.";
+        const errorMessage = email.match(EMAIL_REGEX) != null && email.length <= MAX_EMAIL_LENGTH ? "" : "Please use a valid email address.";
 
         if (!isFirst) {
             dispatch({

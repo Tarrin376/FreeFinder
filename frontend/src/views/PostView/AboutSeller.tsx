@@ -52,7 +52,7 @@ function AboutSeller(props: AboutSellerProps) {
                             <p className="link whitespace-nowrap text-ellipsis overflow-hidden" onClick={navigateToProfile}>
                                 {props.username}
                             </p>
-                            <p className="text-[14px] seller-level" style={sellerLevelTextStyles[props.sellerLevel]}>
+                            <p className="text-sm seller-level" style={sellerLevelTextStyles[props.sellerLevel]}>
                                 {props.sellerLevel}
                             </p>
                         </div>

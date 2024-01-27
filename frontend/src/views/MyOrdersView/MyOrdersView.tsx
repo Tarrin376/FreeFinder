@@ -5,6 +5,8 @@ import { IOrder } from "src/models/IOrder";
 import { PaginationResponse } from "src/types/PaginateResponse";
 import { UserContext } from "src/providers/UserProvider";
 import Order from "src/components/Order/Order";
+import PaginationScrollInfo from "src/components/PaginationScrollInfo";
+import NoResultsFound from "src/components/NoResultsFound";
 
 function MyOrdersView() {
     const userContext = useContext(UserContext);
@@ -34,6 +36,16 @@ function MyOrdersView() {
                     )
                 })}
             </div>
+            <PaginationScrollInfo 
+                data={orders} 
+                page={page.value}
+                styles="mt-7 mb-7"
+            />
+            {!orders.loading && orders.data.length === 0 &&
+            <NoResultsFound
+                title={"Sorry, we could not find any orders."}
+                message="If you are searching for an order, please check your filters and try again."
+            />}
         </PageWrapper>
     )
 }

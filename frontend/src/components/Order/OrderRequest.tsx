@@ -34,7 +34,7 @@ function OrderRequest({ message, seller, workType, groupID }: OrderRequestProps)
         try {
             setLoading(true);
             const resp = await axios.put<{ updatedMessage: IMessage, sockets: string[], notify: SendNotification | undefined, message: string }>
-            (`/api/users/${userContext.userData.username}/order-requests/${message.orderRequest!.id}`, {
+            (`/api/users/${userContext.userData.username}/order-requests/${message.orderRequest?.id}`, {
                 status: status
             });
 
@@ -54,24 +54,6 @@ function OrderRequest({ message, seller, workType, groupID }: OrderRequestProps)
             }
 
             setStatus(status);
-        }
-        catch (err: any) {
-            const errorMessage = getAPIErrorMessage(err as AxiosError<{ message: string }>);
-            return errorMessage;
-        }
-        finally {
-            setLoading(false);
-        }
-    }
-
-    async function acceptOrderRequest(): Promise<string | undefined> {
-        try {
-            setLoading(true);
-            await axios.post<{ message: string }>(`/api/users/${userContext.userData.username}/orders`, { 
-                orderRequestID: message.orderRequest!.id
-            });
-
-            setStatus(OrderRequestStatus.ACCEPTED);
         }
         catch (err: any) {
             const errorMessage = getAPIErrorMessage(err as AxiosError<{ message: string }>);
@@ -138,7 +120,7 @@ function OrderRequest({ message, seller, workType, groupID }: OrderRequestProps)
                 {seller.username === userContext.userData.username && (status === OrderRequestStatus.PENDING || loading) ?
                 <div className="mt-5 flex items-center gap-3">
                     <Button
-                        action={acceptOrderRequest}
+                        action={() => updateOrderStatus(OrderRequestStatus.ACCEPTED)}
                         defaultText="Accept"
                         loadingText="Accepting request"
                         styles={`bg-light-green side-btn border-none min-w-[110px] hover:bg-light-green-hover ${loading ? "pointer-events-none" : ""}`}

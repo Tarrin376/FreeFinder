@@ -41,7 +41,7 @@ function Seller(props: SellerProps) {
         try {
             props.canRemove.setDeletingSeller(true);
             await axios.delete<{ message: string }>(`/api/users/${userContext.userData.username}/saved/sellers/${props.sellerID}`);
-            props.canRemove.count.current -= 1;
+            props.canRemove.count.current--;
             setRemove(true);
         }
         catch (err: any) {
@@ -85,11 +85,11 @@ function Seller(props: SellerProps) {
                                 {props.sellerLevel}
                             </p>
                         </div>
-                        <p className="text-[14px] text-side-text-gray whitespace-nowrap text-ellipsis overflow-hidden mt-[2px]"
-                        title={props.summary}>
+                        <p className="text-sm text-side-text-gray whitespace-nowrap text-ellipsis 
+                        overflow-hidden mt-[2px]" title={props.summary}>
                             {props.summary}
                         </p>
-                        <p className="text-[14px] text-side-text-gray">
+                        <p className="text-sm text-side-text-gray">
                             {props.country}
                         </p>
                     </div>

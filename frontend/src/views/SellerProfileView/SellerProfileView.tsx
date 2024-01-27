@@ -72,7 +72,7 @@ function SellerProfileView() {
                                             profileStatus={sellerDetails.user.status}
                                             username={sellerDetails.user.username}
                                         />
-                                        <p className="text-[14px] seller-level" style={sellerLevelTextStyles[sellerDetails.sellerLevel.name]}>
+                                        <p className="text-sm seller-level" style={sellerLevelTextStyles[sellerDetails.sellerLevel.name]}>
                                             {sellerDetails.sellerLevel.name}
                                         </p>
                                     </div>

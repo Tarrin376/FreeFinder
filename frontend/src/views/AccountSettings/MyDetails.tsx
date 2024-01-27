@@ -19,7 +19,7 @@ function MyDetails() {
     function emailChangeHandler(input: string, setValid: React.Dispatch<React.SetStateAction<boolean>>,
         setEmail: React.Dispatch<React.SetStateAction<string>>): void {
 
-        setValid(input.match(EMAIL_REGEX) !== null);
+        setValid(input.match(EMAIL_REGEX) != null);
         setEmail(input);
     }
 

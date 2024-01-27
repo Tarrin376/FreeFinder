@@ -54,7 +54,8 @@ function SellerExperience({ level, nextLevel, nextLevelXP, sellerXP, text, style
                     transition duration-300 ease-linear" style={{ width: `calc(100% / ${nextLevelXP} * ${sellerXP})`}}>
                     </div>
                 </div>
-                <p className="bg-highlight text-main-blue w-fit text-sm px-3 py-[1px] rounded-[6px] mt-[10px] ml-auto">
+                <p className="bg-highlight text-main-blue border border-[#4169f7] w-fit text-sm 
+                px-3 py-[1px] rounded-[6px] mt-[10px] ml-auto">
                     {`${sellerXP} / ${nextLevelXP}`}
                 </p>
             </div>

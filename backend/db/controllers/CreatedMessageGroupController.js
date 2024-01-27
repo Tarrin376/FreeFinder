@@ -7,8 +7,8 @@ import {
 
 export async function createMessageGroup(req, res) {
     try {
-        const { group, sockets } = await createMessageGroupHandler(req);
-        res.json({ group: group, sockets: sockets, message: "success" });
+        const result = await createMessageGroupHandler(req);
+        res.json({ ...result, message: "success" });
     }
     catch (err) {
         res.status(err.code).json({ message: err.message });
@@ -27,8 +27,8 @@ export async function deleteMessageGroup(req, res) {
 
 export async function updateMessageGroup(req, res) {
     try {
-        const { group, sockets } = await updateMessageGroupHandler(req);
-        res.json({ group: group, sockets: sockets, message: "success" });
+        const result = await updateMessageGroupHandler(req);
+        res.json({ ...result, message: "success" });
     }
     catch (err) {
         res.status(err.code).json({ message: err.message });

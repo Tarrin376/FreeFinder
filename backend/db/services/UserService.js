@@ -66,7 +66,7 @@ export async function registerUserHandler(userData) {
                 status: 'ONLINE',
                 notificationSettings: {
                     "mentionsAndReplies": true,
-                    "orderRequests": true,
+                    "orders": true,
                     "rewards": true,
                     "savedServices": true,
                     "newReviews": true

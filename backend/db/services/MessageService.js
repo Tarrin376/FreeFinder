@@ -156,7 +156,7 @@ export async function sendMessageHandler(req) {
     
             return {
                 newMessage: newMessage,
-                sockets: members.map((member) => member.user.socketID).filter((socket) => socket !== null),
+                sockets: members.map((member) => member.user.socketID).filter((socket) => socket != null),
                 mentioned: mentioned
             };
         });

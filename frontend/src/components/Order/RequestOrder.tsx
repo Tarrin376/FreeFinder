@@ -40,8 +40,7 @@ function RequestOrder({ curPkg, postID, seller, workType, setRequestOrderPopUp }
                 notify: SendNotification | undefined,
                 firstOrderRequest: SendNotification | undefined,
                 message: string 
-            }>
-            (`/api/users/${userContext.userData.username}/order-requests/${seller.userID}/${postID}/${curPkg.type}`);
+            }>(`/api/users/${userContext.userData.username}/order-requests/${seller.userID}/${postID}/${curPkg.type}`);
 
             for (const socket of resp.data.sockets) {
                 userContext.socket?.emit(
@@ -53,7 +52,7 @@ function RequestOrder({ curPkg, postID, seller, workType, setRequestOrderPopUp }
                 );
             }
 
-            if (resp.data.notify) {
+            if (resp.data.notify != null) {
                 userContext.socket?.emit("send-notification", resp.data.notify.notification, resp.data.notify.socketID);
             }
 

@@ -23,7 +23,7 @@ function Options({ options, removeOption, wrapperStyles, styles, textColour }: O
                 return (
                     <div className={`option ${removeOption ? "cursor-pointer" : ""} ${styles}`} 
                     onClick={() => remove(cur)} key={index}>
-                        <p className="text-[14px]" style={{ color: textColour }}>{cur}</p>
+                        <p className="text-sm" style={{ color: textColour }}>{cur}</p>
                         {removeOption && 
                         <div className="min-w-[15px]">
                             <CloseSvg 

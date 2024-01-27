@@ -6,25 +6,25 @@ import { prisma } from '../index.js';
 import { groupPreviewProperties } from '../utils/groupPreviewProperties.js';
 import { formatGroup } from '../utils/formatGroup.js';
 
-async function addMembers(members, groupID, tx) {
+async function addMembers(members, group, tx, userID, username, createGroup) {
     let allMembers = [];
-
     for (const member of members) {
-        const socket = await prisma.user.findUnique({
+        const user = await prisma.user.findUnique({
             where: { username: member },
-            select: { socketID: true }
+            select: { 
+                socketID: true,
+                notificationSettings: true,
+                userID: true
+            }
         });
 
         const newMember = await tx.groupMember.create({
             data: {
-                group: {
-                    connect: { groupID: groupID }
-                },
-                user: {
-                    connect: { username: member }
-                }
+                group: { connect: { groupID: group.groupID } },
+                user: { connect: { username: member } }
             },
             select: {
+                unreadMessages: true,
                 user: {
                     select: {
                         username: true,
@@ -32,15 +32,37 @@ async function addMembers(members, groupID, tx) {
                         status: true,
                         userID: true
                     }
-                },
-                unreadMessages: true
+                }
             }
         });
 
-        allMembers.push({
-            member: newMember,
-            socketID: socket.socketID
-        });
+        if (user.notificationSettings.mentionsAndReplies && user.userID !== userID && createGroup) {
+            const notification = await tx.notification.create({
+                data: {
+                    userID: user.userID,
+                    title: "Added to new group",
+                    text: `You were added into the group '${group.groupName}' by ${username}. Say hello to everyone!`
+                }
+            });
+
+            await tx.user.update({
+                where: { userID: user.userID },
+                data: {
+                    unreadNotifications: { increment: 1 }
+                }
+            });
+
+            allMembers.push({
+                member: newMember,
+                notification: notification,
+                socketID: user.socketID
+            });
+        } else {
+            allMembers.push({
+                member: newMember,
+                socketID: user.socketID
+            });
+        }
     }
 
     return allMembers;
@@ -79,13 +101,18 @@ export async function createMessageGroupHandler(req) {
                 }
             });
 
-            const allMembers = await addMembers(req.body.members, group.groupID, tx);
+            const allMembers = await addMembers(req.body.members, group, tx, req.userData.userID, req.username, true);
             return {
                 group: {
                     ...formatGroup(group),
                     members: allMembers.map((x) => x.member)
                 },
-                sockets: allMembers.map((x) => x.socketID).filter((socketID) => socketID !== null)
+                notis: allMembers.map((x) => {
+                    return {
+                        socketID: x.socketID,
+                        notification: x.notification
+                    }
+                }).filter((x) => x.socketID != null)
             };
         });
     }
@@ -193,13 +220,13 @@ export async function updateMessageGroupHandler(req) {
             });
     
             if (req.body.members) {
-                const allMembers = await addMembers(req.body.members, group.groupID, tx);
+                const allMembers = await addMembers(req.body.members, group, tx);
                 return {
                     group: {
                         ...formatGroup(group),
                         members: [...group.members, ...allMembers.map((x) => x.member)]
                     },
-                    sockets: allMembers.map((x) => x.socketID).filter((socketID) => socketID !== null)
+                    sockets: allMembers.map((x) => x.socketID).filter((socketID) => socketID != null)
                 };
             }
     

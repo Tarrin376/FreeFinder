@@ -13,7 +13,7 @@ import { AnimatePresence } from "framer-motion";
 
 type NotificationSettingsState = {
     mentionsAndReplies: boolean,
-    orderRequests: boolean,
+    orders: boolean,
     rewards: boolean,
     savedServices: boolean,
     newReviews: boolean
@@ -31,7 +31,7 @@ function NotificationSettings({ updateSection }: NotificationSettingsProps) {
         return { ...cur, ...payload };
     }, {
         mentionsAndReplies: userContext.userData.notificationSettings?.mentionsAndReplies ?? true,
-        orderRequests: userContext.userData.notificationSettings?.orderRequests ?? true,
+        orders: userContext.userData.notificationSettings?.orders ?? true,
         rewards: userContext.userData.notificationSettings?.rewards ?? true,
         savedServices: userContext.userData.notificationSettings?.savedServices ?? true,
         newReviews: userContext.userData.notificationSettings?.newReviews ?? true
@@ -81,10 +81,10 @@ function NotificationSettings({ updateSection }: NotificationSettingsProps) {
                     text="Show all mentions and replies from my group chats."
                 />
                 <ToggleSwitch 
-                    toggle={state.orderRequests} 
-                    updateToggle={(value: boolean) => updateNotificationSettings({ orderRequests: value })} 
-                    title="Order requests"
-                    text="Give me updates on order requests that I have made and received."
+                    toggle={state.orders} 
+                    updateToggle={(value: boolean) => updateNotificationSettings({ orders: value })} 
+                    title="Orders"
+                    text="Give me updates on orders and order requests that I have made or received."
                     styles="mt-4"
                 />
                 <ToggleSwitch 

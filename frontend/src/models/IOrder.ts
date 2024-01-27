@@ -11,9 +11,13 @@ export interface IOrder {
     isClientOrder: boolean,
     package: {
         type: PackageTypes,
+        revisions: string,
         post: {
             title: string,
-            postID: string
+            postID: string,
+            workType: {
+                name: string
+            }
         }
     },
     user: {

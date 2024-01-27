@@ -18,7 +18,7 @@ function UserStatusText({ profileStatus, username }: UserStatusProps) {
 
     return (
         <div>
-            <p className={`text-[14px] ${textStatusColour} border rounded-[6px] px-2 ${borderStatusColour}`}>
+            <p className={`text-sm ${textStatusColour} border rounded-[6px] px-2 ${borderStatusColour} w-fit`}>
                 {capitalizeWord(status)}
             </p>
         </div>

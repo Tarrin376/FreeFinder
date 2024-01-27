@@ -44,7 +44,7 @@ function AttachFiles({ uploadedFiles, updateUploadedFiles, setErrorMessage }: At
 
     return (
         <motion.div className="absolute bottom-[calc(100%-30px)] right-[14px] z-20 border border-light-border-gray rounded-[8px]
-        bg-main-white w-[250px] h-[250px] flex flex-col justify-between gap-3 p-3 shadow-pop-up" 
+        bg-main-white w-[300px] h-[300px] flex flex-col justify-between gap-3 p-3 shadow-pop-up" 
         initial={{ opacity: 0 }} animate={{ opacity: 1 }} exit={{ opacity: 0 }} transition={{ duration: 0.1 }}>
             <DragAndDrop handleDrop={handleDrop} styles="!rounded-[6px]">
                 <div className="absolute top-[50%] left-[50%] translate-x-[-50%] translate-y-[-50%]">

@@ -1,9 +1,19 @@
-import { getClientOrdersHandler } from '../services/ClientOrderService.js';
+import { getClientOrdersHandler, cancelClientOrderHandler } from '../services/ClientOrderService.js';
 
 export async function getClientOrders(req, res) {
     try {
         const orders = await getClientOrdersHandler(req);
         res.json({ ...orders, message: "success" });
+    }
+    catch (err) {
+        res.status(err.code).json({ message: err.message });
+    }
+}
+
+export async function cancelClientOrder(req, res) {
+    try {
+        const result = await cancelClientOrderHandler(req);
+        res.json({ notify: result, message: "success" });
     }
     catch (err) {
         res.status(err.code).json({ message: err.message });

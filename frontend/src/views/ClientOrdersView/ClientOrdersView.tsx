@@ -45,7 +45,7 @@ function ClientOrdersView() {
             />
             {!clientOrders.loading && clientOrders.data.length === 0 &&
             <NoResultsFound 
-                title={"Looks like you have no orders..."}
+                title={"Sorry, we could not find any client orders."}
                 message="If you are searching for an order, please check your filters and try again."
             />}
         </PageWrapper>

@@ -6,7 +6,7 @@ import { capitalizeWord } from "../utils/capitalizeWord";
 interface PackageOverviewProps {
     type: string,
     revisions: string,
-    seller: FoundUsers[number],
+    seller: Omit<FoundUsers[number], 'userID'>,
     workType: string,
     wrapperStyles?: string,
     children?: React.ReactNode,

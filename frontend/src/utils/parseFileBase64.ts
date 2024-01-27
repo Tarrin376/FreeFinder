@@ -3,7 +3,7 @@ export function parseFileBase64(file: File): Promise<unknown> {
         try {
             const reader = new FileReader();
             reader.onloadend = () => {
-                if (reader.result !== null) resolve(reader.result);
+                if (reader.result != null) resolve(reader.result);
                 else reject("File could not be parsed.");
             };
 

@@ -39,10 +39,16 @@ export async function getClientOrdersHandler(req) {
             package: {
                 select: {
                     type: true,
+                    revisions: true,
                     post: {
                         select: {
                             title: true,
-                            postID: true
+                            postID: true,
+                            workType: {
+                                select: {
+                                    name: true
+                                }
+                            }
                         }
                     }
                 }
@@ -82,6 +88,97 @@ export async function getClientOrdersHandler(req) {
             throw new DBError("Missing required fields or fields provided are invalid.", 400);
         } else if (err instanceof Prisma.PrismaClientKnownRequestError && err.code === "P2025") {
             throw new DBError("Seller not found.", 404);
+        } else {
+            throw new DBError("Something went wrong. Please try again later.", 500);
+        }
+    }
+    finally {
+        await prisma.$disconnect();
+    }
+}
+
+export async function cancelClientOrderHandler(req) {
+    try {
+        const seller = await prisma.seller.findUnique({ 
+            where: { sellerID: req.sellerID },
+            select: { 
+                user: {
+                    select: {
+                        userID: true,
+                        username: true
+                    }
+                }
+            }
+        });
+
+        if (req.userData.userID !== seller.user.userID) {
+            throw new DBError("You are not authorized to perform this action.", 403);
+        }
+
+        const order = await prisma.order.findUnique({
+            where: { orderID: req.params.id },
+            select: { 
+                client: {
+                    select: {
+                        userID: true,
+                        username: true,
+                        socketID: true,
+                        notificationSettings: true
+                    }
+                },
+                total: true,
+                package: {
+                    select: {
+                        type: true,
+                        postID: true
+                    }
+                }
+            }
+        });
+
+        return await prisma.$transaction(async (tx) => {
+            await tx.user.update({
+                where: { userID: order.client.userID },
+                data: {
+                    balance: { increment: order.total }
+                }
+            });
+
+            await tx.order.delete({
+                where: {
+                    orderID: req.params.id
+                }
+            });
+            
+            if (order.client.notificationSettings.orders) {
+                const notification = await tx.notification.create({
+                    data: {
+                        userID: order.client.userID,
+                        title: "Order cancellation",
+                        text: `${seller.user.username} cancelled your ${order.package.type.toLowerCase()} package order for the service: ${order.package.postID}.`,
+                        navigateTo: `/${order.client.username}/my-orders`
+                    }
+                });
+
+                await tx.user.update({
+                    where: { userID: order.client.userID },
+                    data: {
+                        unreadNotifications: { increment: 1 }
+                    }
+                });
+    
+                return {
+                    notification: notification,
+                    socketID: order.client.socketID
+                }
+            }
+        });
+    }
+    catch (err) {
+        if (err instanceof DBError) {
+            throw err;
+        } else if (err instanceof Prisma.PrismaClientKnownRequestError && err.code === "P2025") {
+            throw new DBError("Seller or order not found.", 404);
         } else {
             throw new DBError("Something went wrong. Please try again later.", 500);
         }

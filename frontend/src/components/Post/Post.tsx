@@ -80,7 +80,7 @@ function Post({ postInfo, index, canRemove, count, styles }: PostProps) {
                 else setRemove(true);
             }
             
-            count.current -= 1;
+            count.current--;
         }
         catch (err: any) {
             const errorMessage = getAPIErrorMessage(err as AxiosError<{ message: string }>);
@@ -198,12 +198,13 @@ function Post({ postInfo, index, canRemove, count, styles }: PostProps) {
                     {`Posted ${timeCreated}`}
                 </p>
                 <div className="mt-[4px] mb-[10px]">
-                    <span className="text-[14px] seller-level mr-2 inline-block" 
+                    <span className="text-sm seller-level mr-2 inline-block" 
                     style={sellerLevelTextStyles[postInfo.postedBy.sellerLevel.name]}>
                         {postInfo.postedBy.sellerLevel.name}
                     </span>
                     {seconds < 60 * 60 * 24 && 
-                    <span className="bg-[#e6ebff] text-[#4169f7] inline-block text-[14px] px-3 rounded-[6px]">
+                    <span className="bg-[#e6ebff] text-[#4169f7] border border-[#4169f7] 
+                    inline-block text-sm px-3 rounded-[6px]">
                         New
                     </span>}
                 </div>

@@ -9,11 +9,17 @@ import Button from "../Button";
 import { UserContext } from "../../providers/UserProvider";
 import AddPeople from "./AddPeople";
 import { GroupPreview } from "../../types/GroupPreview";
+import { SendNotification } from "src/types/SendNotification";
+import { INotification } from "src/models/INotification";
 
 interface CreateGroupProps {
     setCreateGroupPopUp: React.Dispatch<React.SetStateAction<boolean>>,
     seller?: FoundUsers[number],
     initialServiceID?: string
+}
+
+type OptionalNotificaton = SendNotification & {
+    notification?: INotification
 }
 
 function CreateGroup({ setCreateGroupPopUp, seller, initialServiceID }: CreateGroupProps) {
@@ -47,15 +53,18 @@ function CreateGroup({ setCreateGroupPopUp, seller, initialServiceID }: CreateGr
 
     async function createNewGroup(): Promise<string | undefined> {
         try {
-            const resp = await axios.post<{ group: GroupPreview, sockets: string[], message: string }>
+            const resp = await axios.post<{ group: GroupPreview, notis: OptionalNotificaton[], message: string }>
             (`/api/users/${userContext.userData.username}/message-groups/created`, {
                 members: [userContext.userData.username, ...addedUsers.map((user) => user.username)],
                 groupName: groupName,
                 postID: serviceID
             });
 
-            for (const socketID of resp.data.sockets) {
-                userContext.socket?.emit("added-to-group", socketID, resp.data.group);
+            for (const noti of resp.data.notis) {
+                userContext.socket?.emit("added-to-group", noti.socketID, resp.data.group);
+                if (noti.notification != null) {
+                    userContext.socket?.emit("send-notification", noti.notification, noti.socketID);
+                }
             }
         }
         catch (err: any) {

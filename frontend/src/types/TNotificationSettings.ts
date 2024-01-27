@@ -1,6 +1,6 @@
 export type TNotificationSettings = {
     mentionsAndReplies?: boolean
-    orderRequests?: boolean
+    orders?: boolean
     rewards?: boolean
     savedServices?: boolean,
     newReviews?: boolean

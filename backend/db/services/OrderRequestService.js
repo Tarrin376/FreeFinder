@@ -1,4 +1,4 @@
-import { Prisma } from '@prisma/client';
+import { OrderStatus, Prisma } from '@prisma/client';
 import { DBError } from '../customErrors/DBError.js';
 import { checkUser } from '../utils/checkUser.js';
 import { prisma } from '../index.js';
@@ -7,6 +7,65 @@ import { SERVICE_FEE, VALID_DURATION_DAYS } from '@freefinder/shared/dist/consta
 import { notificationProperties } from '../utils/notificationProperties.js';
 
 const FIRST_ORDER_REQ_XP = 100;
+
+export async function createOrderHandler(req, tx) {
+    try {
+        const orderRequest = await tx.orderRequest.findUnique({
+            where: { id: req.params.id },
+            select: { 
+                status: true,
+                sellerID: true,
+                total: true,
+                subTotal: true,
+                packageID: true,
+                userID: true,
+                sellerID: true,
+                seller: {
+                    select: {
+                        userID: true
+                    }
+                },
+                package: {
+                    select: {
+                        deliveryTime: true
+                    }
+                }
+            }
+        });
+
+        if (!orderRequest) {
+            throw new DBError("Order request not found.", 404);
+        } else if (orderRequest.seller.userID !== req.userData.userID) {
+            throw new DBError("You are not authorized to accept this order request.", 403);
+        } else if (orderRequest.status !== "PENDING") {
+            throw new DBError("Action has already been taken on this order request.", 409);
+        }
+
+        const date = new Date();
+        const deliveryEndDate = new Date(date.setDate(date.getDate() + orderRequest.package.deliveryTime));
+
+        await tx.order.create({
+            data: {
+                clientID: orderRequest.userID,
+                sellerID: orderRequest.sellerID,
+                status: "PENDING",
+                total: orderRequest.total,
+                subTotal: orderRequest.subTotal,
+                packageID: orderRequest.packageID,
+                deliveryEndDate: deliveryEndDate
+            }
+        });
+    }
+    catch (err) {
+        if (err instanceof DBError) {
+            throw err;
+        } else if (err instanceof Prisma.PrismaClientValidationError) {
+            throw new DBError("Missing required fields or fields provided are invalid.", 400);
+        } else {
+            throw new DBError("Something went wrong. Please try again later.", 500);
+        }
+    }
+}
 
 async function checkMessageGroup(postID, userID) {
     const messageGroup = await prisma.messageGroup.findUnique({
@@ -212,10 +271,10 @@ export async function sendOrderRequestHandler(req) {
                     ...message,
                     orderRequest: orderRequest,
                 },
-                sockets: members.map((member) => member.user.socketID).filter((socket) => socket !== null)
+                sockets: members.map((member) => member.user.socketID).filter((socket) => socket != null)
             };
             
-            if (seller.user.notificationSettings.orderRequests !== false) {
+            if (seller.user.notificationSettings.orders !== false) {
                 const notification = await tx.notification.create({
                     select: notificationProperties,
                     data: {
@@ -359,6 +418,10 @@ export async function updateOrderRequestStatusHandler(req) {
         });
 
         return await prisma.$transaction(async (tx) => {
+            if (req.body.status === "ACCEPTED") {
+                await createOrderHandler(req, tx);
+            }
+
             const updatedOrderRequest = await tx.orderRequest.update({
                 select: { ...messageProperties.orderRequest.select },
                 where: { id: req.params.id },
@@ -409,11 +472,11 @@ export async function updateOrderRequestStatusHandler(req) {
                     ...message,
                     orderRequest: updatedOrderRequest
                 },
-                sockets: members.map((member) => member.user.socketID).filter((socket) => socket !== null) 
+                sockets: members.map((member) => member.user.socketID).filter((socket) => socket != null) 
             };
             
-            if ((req.body.status === "CANCELLED" && orderRequest.seller.user.notificationSettings.orderRequests !== false) || 
-            (req.body.status !== "CANCELLED" && orderRequest.user.notificationSettings.orderRequests !== false)) {
+            if ((req.body.status === "CANCELLED" && orderRequest.seller.user.notificationSettings.orders !== false) || 
+            (req.body.status !== "CANCELLED" && orderRequest.user.notificationSettings.orders !== false)) {
                 const userID = req.body.status === "CANCELLED" ? orderRequest.seller.user.userID : orderRequest.userID;
                 const socketID = req.body.status === "CANCELLED" ? orderRequest.seller.user.socketID : orderRequest.user.socketID;
 
