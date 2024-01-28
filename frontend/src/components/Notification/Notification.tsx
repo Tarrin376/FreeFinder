@@ -45,7 +45,8 @@ function Notification(props: NotificationProps) {
     }
 
     return (
-        <div className="p-4 border-b border-light-border-gray cursor-pointer hover:bg-light-bg-gray transition-all duration-150 ease-linear" 
+        <div className={`p-4 border-b border-light-border-gray transition-all duration-150 ease-linear
+        ${props.navigateTo ? "cursor-pointer hover:bg-light-bg-gray" : ""}`}
         onMouseEnter={markAsRead} onClick={navigateToPage}>
             <div className="flex items-center gap-[10px]">
                 <div className={`w-[7px] h-[7px] rounded-full ${isUnread && !props.allRead ? "bg-main-blue" : "bg-side-text-gray"}`}>
@@ -64,6 +65,10 @@ function Notification(props: NotificationProps) {
             <p className="text-sm text-side-text-gray font-bold mt-[6px] pl-[17px]">
                 {timeCreated}
             </p>
+            {props.navigateTo && 
+            <p className="text-main-blue text-sm mt-[6px] pl-[17px]">
+                Show more
+            </p>}
         </div>
     )
 }

@@ -148,8 +148,8 @@ function Post({ postInfo, index, canRemove, count, styles }: PostProps) {
                 imageStyles="object-cover w-full h-full"
             />
             {canRemove && !canRemove.unsave &&
-            <button className="right-3 top-3 absolute z-10 bg-[#000000ab] hover:bg-[#0e0e0eab] btn-primary h-fit 
-            rounded-[6px] px-[12px]" onClick={toggleHidePost}>
+            <button className="right-3 top-3 absolute z-10 bg-[#000000ab] hover:bg-[#0e0e0eab] 
+            btn-primary h-fit rounded-[6px] px-[12px]" onClick={toggleHidePost}>
                 <div className="flex items-center gap-2">
                     <span className="text-main-white text-[15px]">{hide ? "Unhide" : "Hide"}</span>
                     <img src={hide ? UnhideIcon : HideIcon} className="w-[17px] h-[17px]" alt="" />
@@ -174,8 +174,8 @@ function Post({ postInfo, index, canRemove, count, styles }: PostProps) {
                     />
                     <div className="flex-grow overflow-hidden">
                         <div className="flex justify-between gap-3">
-                            <p className="whitespace-nowrap text-ellipsis overflow-hidden link cursor-pointer" 
-                            onClick={navigateToProfile} title={postInfo.postedBy.user.username}>
+                            <p className="whitespace-nowrap text-ellipsis overflow-hidden link" onClick={navigateToProfile} 
+                            title={postInfo.postedBy.user.username}>
                                 {postInfo.postedBy.user.username}
                             </p>
                             <div className="flex items-center justify-end gap-[5px]">

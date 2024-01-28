@@ -48,7 +48,7 @@ export async function createOrderHandler(req, tx) {
             data: {
                 clientID: orderRequest.userID,
                 sellerID: orderRequest.sellerID,
-                status: "PENDING",
+                status: "ACTIVE",
                 total: orderRequest.total,
                 subTotal: orderRequest.subTotal,
                 packageID: orderRequest.packageID,
@@ -281,7 +281,6 @@ export async function sendOrderRequestHandler(req) {
                         userID: req.params.seller,
                         title: `New order request`,
                         text: `${req.userData.username} has requested a ${req.params.packageType.toLowerCase()} package order for the service: ${pkg.postID}.`,
-                        navigateTo: `/posts/${pkg.postID}`
                     }
                 });
 
@@ -485,7 +484,7 @@ export async function updateOrderRequestStatusHandler(req) {
                     data: {
                         ...notificationMessage,
                         userID: userID,
-                        navigateTo: `/posts/${orderRequest.package.postID}`
+                        navigateTo: `/${userID}/${userID === orderRequest.userID ? "my-orders" : "client-orders"}/`
                     }
                 });
 

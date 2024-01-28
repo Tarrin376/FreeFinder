@@ -14,6 +14,7 @@ import { SendNotification } from "src/types/SendNotification";
 
 interface CancelOrderPopUpProps {
     setCancelOrderPopUp: React.Dispatch<React.SetStateAction<boolean>>,
+    setRemove: React.Dispatch<React.SetStateAction<boolean>>,
     postID: string,
     packageType: PackageTypes,
     revisions: string,
@@ -22,7 +23,7 @@ interface CancelOrderPopUpProps {
     seller: Omit<FoundUsers[number], 'userID'>
 }
 
-function CancelOrderPopUp({ setCancelOrderPopUp, postID, packageType, revisions, workType, orderID, seller }: CancelOrderPopUpProps) {
+function CancelOrderPopUp({ setCancelOrderPopUp, setRemove, postID, packageType, revisions, workType, orderID, seller }: CancelOrderPopUpProps) {
     const [errorMessage, setErrorMessage] = useState<string>("");
     const [checked, setChecked] = useState<boolean>(false);
     const userContext = useContext(UserContext);
@@ -81,9 +82,13 @@ function CancelOrderPopUp({ setCancelOrderPopUp, postID, packageType, revisions,
                 textStyles={checked ? "text-error-text" : "text-main-white"}
                 setErrorMessage={setErrorMessage}
                 loadingSvgSize={28}
+                loadingSvgColour="#F43C3C"
                 completedText="Order cancelled"
                 keepErrorMessage={true}
-                whenComplete={() => setCancelOrderPopUp(false)}
+                whenComplete={() => { 
+                    setCancelOrderPopUp(false);
+                    setRemove(true);
+                }}
             />
         </PopUpWrapper>
     )

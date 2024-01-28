@@ -1,5 +1,5 @@
 export const enum OrderStatus {
     COMPLETED = "COMPLETED",
-    PENDING = "PENDING",
+    ACTIVE = "ACTIVE",
     CANCELLED = "CANCELLED"
 }

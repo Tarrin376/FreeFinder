@@ -35,6 +35,7 @@ model User {
     notificationSettings Json
     notifications        Notification[]
     unreadNotifications  Int             @default(0)
+    reports              Report[]
 }
 
 model Notification {
@@ -140,6 +141,7 @@ model Seller {
     savedSellers         SavedSeller[]
     orderRequests        OrderRequest[]
     hadFirstOrderRequest Boolean        @default(false)
+    reports              Report[]
 }
 
 model SellerLevel {
@@ -264,6 +266,15 @@ model SavedPost {
     @@id([userID, postID])
 }
 
+model Report {
+    reportID    String @id @default(uuid())
+    seller      Seller @relation(fields: [sellerID], references: [sellerID], onDelete: Cascade)
+    sellerID    String
+    user        User   @relation(fields: [userID], references: [userID], onDelete: Cascade)
+    userID      String
+    description String
+}
+
 enum UserStatus {
     ONLINE
     OFFLINE
@@ -273,7 +284,7 @@ enum UserStatus {
 
 enum OrderStatus {
     COMPLETED
-    PENDING
+    ACTIVE
     CANCELLED
 }
 

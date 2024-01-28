@@ -4,6 +4,7 @@ import savedSellerRouter from './SavedSellerRouter.js';
 import messageGroupRouter from './MessageGroupRouter.js';
 import orderRequestRouter from './OrderRequestRouter.js';
 import notificationRouter from './NotificationRouter.js';
+import reportRouter from './ReportRouter.js';
 import orderRouter from './OrderRouter.js';
 import { cookieJwtAuth } from '../middleware/cookieJwtAuth.js';
 import { upload } from '../middleware/upload.js';
@@ -35,6 +36,7 @@ userRouter.use('/:username/message-groups', messageGroupRouter);
 userRouter.use('/:username/order-requests', orderRequestRouter);
 userRouter.use('/:username/notifications', notificationRouter);
 userRouter.use('/:username/orders', orderRouter);
+userRouter.use('/:username/reports', reportRouter);
 
 userRouter.post('/:username/posts', cookieJwtAuth, getUserPosts);
 

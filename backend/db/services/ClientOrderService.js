@@ -15,6 +15,7 @@ export async function getClientOrdersHandler(req) {
         }
 
         const where = {
+            status: "ACTIVE",
             seller: {
                 userID: req.userData.userID
             }
@@ -33,7 +34,12 @@ export async function getClientOrdersHandler(req) {
                     status: true,
                     profilePicURL: true,
                     email: true,
-                    country: true
+                    country: true,
+                    seller: {
+                        select: {
+                            sellerID: true
+                        }
+                    }
                 }
             },
             package: {
@@ -116,7 +122,9 @@ export async function cancelClientOrderHandler(req) {
         }
 
         const order = await prisma.order.findUnique({
-            where: { orderID: req.params.id },
+            where: { 
+                orderID: req.params.id,
+            },
             select: { 
                 client: {
                     select: {
@@ -144,10 +152,9 @@ export async function cancelClientOrderHandler(req) {
                 }
             });
 
-            await tx.order.delete({
-                where: {
-                    orderID: req.params.id
-                }
+            await tx.order.update({
+                where: { orderID: req.params.id },
+                data: { status: "CANCELLED" }
             });
             
             if (order.client.notificationSettings.orders) {

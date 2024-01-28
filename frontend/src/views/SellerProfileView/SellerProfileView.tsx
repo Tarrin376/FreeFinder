@@ -17,10 +17,14 @@ import Reviews from "../../components/Review/Reviews";
 import { useWindowSize } from "src/hooks/useWindowSize";
 import SellerExperience from "src/components/Seller/SellerExperience";
 import UserStatusText from "src/components/Profile/UserStatus";
+import { AnimatePresence } from "framer-motion";
+import ReportSeller from "src/components/Seller/ReportSeller";
 
 function SellerProfileView() {
     const [sellerDetails, setSellerDetails] = useState<SellerProfile>();
+    const [reportSellerPopUp, setReportSellerPopUp] = useState<boolean>(false);
     const [errorMessage, setErrorMessage] = useState<string>("");
+
     const userContext = useContext(UserContext);
     const windowSize = useWindowSize();
     const location = useLocation();
@@ -43,12 +47,24 @@ function SellerProfileView() {
         })();
     }, [location.pathname]);
 
+    function openReportSellerPopUp(): void {
+        setReportSellerPopUp(true);
+    }
+
     if (!sellerDetails) {
         return <></>
     }
 
     return (
         <div className="overflow-y-scroll h-[calc(100vh-90px)]">
+            <AnimatePresence>
+                {reportSellerPopUp &&
+                <ReportSeller
+                    setReportSellerPopUp={setReportSellerPopUp}
+                    username={sellerDetails.user.username}
+                    sellerID={sellerDetails.sellerID}
+                />}
+            </AnimatePresence>
             <PageWrapper styles="p-[38px] pt-[58px]" locationStack={["Sellers", sellerDetails.user.username]}>
                 <div className="mb-5 border-b border-b-light-border-gray pb-7">
                     <div className="bg-transparent">
@@ -65,7 +81,7 @@ function SellerProfileView() {
                                 </div>
                                 <div className="overflow-hidden flex-grow">
                                     <div className="flex items-center gap-2">
-                                        <p title={sellerDetails.user.username}>
+                                        <p className="link" title={sellerDetails.user.username}>
                                             {sellerDetails.user.username}
                                         </p>
                                         <UserStatusText 
@@ -92,22 +108,24 @@ function SellerProfileView() {
                                 nextLevelXP={nextLevelXP}
                                 styles="min-w-[275px] flex-grow"
                             />
-                            {userContext.userData.username !== sellerDetails.user.username &&
-                            <SaveSeller 
-                                svgSize={27}
-                                sellerID={sellerDetails.sellerID}
-                                styles="self-start w-full flex justify-end"
-                            />}
                         </div>
                         <p>{sellerDetails.description}</p>
-                        <div className={`mt-5 flex gap-5 ${windowSize < 670 ? "flex-col" : "items-end justify-between"}`}>
+                        <div className={`mt-5 flex gap-5 relative ${windowSize < 670 ? "flex-col" : "items-center justify-between"}`}>
                             <ProfileSummary
                                 memberDate={sellerDetails.user.memberDate}
                                 styles={`${windowSize < 670 ? "flex-grow" : "w-[400px]"} bg-[#f8f8f8] p-3 rounded-[8px]`}
                             />
-                            <button className="red-btn w-[145px]">
-                                Report seller
-                            </button>
+                            <div className="flex flex-col justify-between">
+                                {userContext.userData.username !== sellerDetails.user.username &&
+                                <SaveSeller 
+                                    svgSize={27}
+                                    sellerID={sellerDetails.sellerID}
+                                    styles="w-full flex justify-end mb-3"
+                                />}
+                                <button className="red-btn w-[145px]" onClick={openReportSellerPopUp}>
+                                    Report seller
+                                </button>
+                            </div>
                         </div>
                     </div>
                     <div className="mt-7 pt-5 border-t border-t-light-border-gray">

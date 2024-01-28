@@ -9,6 +9,8 @@ import { capitalizeWord } from "src/utils/capitalizeWord";
 import CompleteOrderPopUp from "./CompleteOrderPopUp";
 import { AnimatePresence } from "framer-motion";
 import CancelOrderPopUp from "./CancelOrderPopUp";
+import { useNavigate } from "react-router-dom";
+import ReportSeller from "../Seller/ReportSeller";
 
 interface OrderProps {
     order: IOrder,
@@ -16,10 +18,14 @@ interface OrderProps {
 }
 
 function Order({ order, isClientOrder }: OrderProps) {
-    const timeRemaining = useCountdown(new Date(order.deliveryEndDate));
     const [dropdown, setDropdown] = useState<boolean>(false);
     const [completeOrderPopUp, setCompleteOrderPopUp] = useState<boolean>(false);
     const [cancelOrderPopUp, setCancelOrderPopUp] = useState<boolean>(false);
+    const [reportSellerPopUp, setReportSellerPopUp] = useState<boolean>(false);
+    const [remove, setRemove] = useState<boolean>(false);
+
+    const timeRemaining = useCountdown(new Date(order.deliveryEndDate));
+    const navigate = useNavigate();
 
     function toggleDropdown(): void {
         setDropdown((cur) => !cur);
@@ -33,12 +39,12 @@ function Order({ order, isClientOrder }: OrderProps) {
         setCancelOrderPopUp(true);
     }
 
-    function contactSeller(): void {
-
+    function openReportSellerPopUp(): void {
+        setReportSellerPopUp(true);
     }
 
-    function requestOrderCancel(): void {
-
+    function navigateToProfile(): void {
+        navigate(`/sellers/${order.user.seller.sellerID}`);
     }
 
     return (
@@ -60,6 +66,7 @@ function Order({ order, isClientOrder }: OrderProps) {
                 {cancelOrderPopUp &&
                 <CancelOrderPopUp 
                     setCancelOrderPopUp={setCancelOrderPopUp}
+                    setRemove={setRemove}
                     postID={order.package.post.postID}
                     packageType={order.package.type}
                     revisions={order.package.revisions}
@@ -71,27 +78,34 @@ function Order({ order, isClientOrder }: OrderProps) {
                         status: order.user.status
                     }}
                 />}
+                {reportSellerPopUp &&
+                <ReportSeller
+                    setReportSellerPopUp={setReportSellerPopUp}
+                    username={order.user.username}
+                    sellerID={order.user.seller.sellerID}
+                />}
             </AnimatePresence>
-            <div className="border border-light-border-gray bg-main-white w-full shadow-info-component rounded-[12px]">
+            {!remove && <div className="border border-light-border-gray bg-main-white w-full shadow-info-component rounded-[12px]">
                 <div className={`${dropdown ? "border-b border-light-border-gray" : ""} relative`}>
                     <div className="w-full bg-hover-light-gray py-[2px] flex items-center justify-center gap-3 
                     border-b border-light-border-gray rounded-t-[12px]">
-                        <p className="text-main-black">{timeRemaining}</p>
-                        {isClientOrder &&
-                        <button className="text-main-blue bg-transparent underline">
-                            Request extension
-                        </button>}
+                        <p className="text-main-black">
+                            {timeRemaining}
+                        </p>
                     </div>
                     <div className="w-full flex gap-5">
                         <div className="flex items-center gap-4 p-5 border-r border-light-gray min-w-[300px]">
                             <ProfilePicAndStatus
                                 profilePicURL={order.user.profilePicURL}
                                 size={55}
+                                action={navigateToProfile}
                                 username={order.user.username}
                                 statusRight={true}
                             />
                             <div>
-                                <p className="text-lg">{order.user.username}</p>
+                                <p className="text-lg link" onClick={navigateToProfile}>
+                                    {order.user.username}
+                                </p>
                                 <UserStatusText
                                     profileStatus={order.user.status} 
                                     username={order.user.username}
@@ -120,13 +134,14 @@ function Order({ order, isClientOrder }: OrderProps) {
                                 />
                             </div>
                             <div className="flex flex-col gap-3">
+                                {isClientOrder && 
                                 <button className="btn-primary bg-main-blue text-main-white"
-                                onClick={() => isClientOrder ? openCompleteOrderPopUp() : contactSeller()}>
-                                    {isClientOrder ? "Complete order" : "Contact seller"}
-                                </button>
-                                <button className="btn-primary red-btn"
-                                onClick={() => isClientOrder ? openCancelOrderPopUp() : requestOrderCancel()}>
-                                    {isClientOrder ? "Cancel order" : "Request order cancel"}
+                                onClick={openCompleteOrderPopUp}>
+                                    Complete order
+                                </button>}
+                                <button className="btn-primary red-btn" 
+                                onClick={() => isClientOrder ? openCancelOrderPopUp() : openReportSellerPopUp()}>
+                                    {isClientOrder ? "Cancel order" : "Report seller"}
                                 </button>
                             </div>
                         </div>
@@ -188,7 +203,7 @@ function Order({ order, isClientOrder }: OrderProps) {
                         </div>
                     </div>
                 </div>}
-            </div>
+            </div>}
         </>
     )
 }

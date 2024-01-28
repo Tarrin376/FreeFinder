@@ -20,8 +20,8 @@ function ProfilePicAndStatus(props: ProfilePicAndStatusProps) {
     const statusColour = status === UserStatus.ONLINE ? 'bg-green-500' : status === UserStatus.AWAY ? 
     'bg-orange-400' : status === UserStatus.BUSY ? 'bg-error-text' : 'bg-side-text-gray';
 
-    const defaultStatusStyles = `absolute rounded-full b
-    g-light-green border-2 border-main-white ${statusColour}`;
+    const defaultStatusStyles = `absolute rounded-full bg-light-green 
+    border-2 border-main-white ${statusColour}`;
 
     function handleAction(): void {
         if (props.action) {
@@ -45,7 +45,7 @@ function ProfilePicAndStatus(props: ProfilePicAndStatusProps) {
             style={{ width: `${props.size}px`, height: `${props.size}px` }}>
             </div> : 
             props.profilePicURL === "" ? 
-            <div className={`flex items-center justify-center rounded-full ${props.imgStyles}`} style={{ 
+            <div className={`flex items-center justify-center cursor-pointer rounded-full ${props.imgStyles}`} style={{ 
                 backgroundColor: generateLetterAvatar(props.username),
                 width: `${props.size}px`, 
                 height: `${props.size}px` 
@@ -56,7 +56,8 @@ function ProfilePicAndStatus(props: ProfilePicAndStatusProps) {
             </div> :
             <img 
                 src={props.profilePicURL} alt="" 
-                className={`rounded-full object-cover border border-light-gray bg-very-light-gray ${props.imgStyles}`}
+                className={`rounded-full cursor-pointer object-cover border 
+                border-light-gray bg-very-light-gray ${props.imgStyles}`}
                 style={{ width: `${props.size}px`, height: `${props.size}px` }}
             />}
         </div>

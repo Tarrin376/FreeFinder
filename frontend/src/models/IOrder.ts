@@ -25,6 +25,9 @@ export interface IOrder {
         status: UserStatus,
         profilePicURL: string,
         email: string,
-        country: string
+        country: string,
+        seller: {
+            sellerID: string
+        }
     }
 }

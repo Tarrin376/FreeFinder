@@ -8,7 +8,8 @@ export async function getOrdersHandler(req) {
     try {
         await checkUser(req.userData.userID, req.username);
         const where = {
-            clientID: req.userData.userID
+            clientID: req.userData.userID,
+            status: "ACTIVE"
         };
 
         const select = {
@@ -26,7 +27,12 @@ export async function getOrdersHandler(req) {
                             status: true,
                             profilePicURL: true,
                             email: true,
-                            country: true
+                            country: true,
+                            seller: {
+                                select: {
+                                    sellerID: true
+                                }
+                            }
                         }
                     }
                 }
