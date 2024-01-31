@@ -1,6 +1,6 @@
 import { IWorkType } from "./IWorkType"
 
-export type IJobCategory = {
+export interface IJobCategory {
     name: string,
     workTypes: IWorkType[]
 }

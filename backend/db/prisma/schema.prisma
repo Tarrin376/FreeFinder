@@ -75,15 +75,16 @@ model GroupMember {
 }
 
 model Message {
-    messageID    String        @id @default(uuid())
-    from         User          @relation(fields: [fromID], references: [userID], onDelete: Cascade)
-    fromID       String
-    group        MessageGroup  @relation(fields: [groupID], references: [groupID], onDelete: Cascade)
-    groupID      String
-    messageText  String
-    createdAt    DateTime      @default(now())
-    files        MessageFile[]
-    orderRequest OrderRequest?
+    messageID            String                @id @default(uuid())
+    from                 User                  @relation(fields: [fromID], references: [userID], onDelete: Cascade)
+    fromID               String
+    group                MessageGroup          @relation(fields: [groupID], references: [groupID], onDelete: Cascade)
+    groupID              String
+    messageText          String
+    createdAt            DateTime              @default(now())
+    files                MessageFile[]
+    orderRequest         OrderRequest?
+    completeOrderRequest CompleteOrderRequest?
 }
 
 model OrderRequest {
@@ -101,6 +102,16 @@ model OrderRequest {
     expires     DateTime
     subTotal    Decimal            @db.Decimal(12, 2)
     total       Decimal            @db.Decimal(12, 2)
+}
+
+model CompleteOrderRequest {
+    id        String                     @id @default(uuid())
+    message   Message                    @relation(fields: [messageID], references: [messageID], onDelete: Cascade)
+    messageID String                     @unique
+    order     Order                      @relation(fields: [orderID], references: [orderID], onDelete: Cascade)
+    orderID   String
+    status    CompleteOrderRequestStatus
+    expires   DateTime
 }
 
 model MessageFile {
@@ -234,18 +245,19 @@ model Review {
 }
 
 model Order {
-    orderID         String      @id @default(uuid())
-    client          User        @relation(fields: [clientID], references: [userID])
-    clientID        String
-    seller          Seller      @relation(fields: [sellerID], references: [sellerID])
-    sellerID        String
-    package         Package     @relation(fields: [packageID], references: [packageID])
-    packageID       String
-    createdAt       DateTime    @default(now())
-    status          OrderStatus
-    subTotal        Decimal     @db.Decimal(12, 2)
-    total           Decimal     @db.Decimal(12, 2)
-    deliveryEndDate DateTime
+    orderID              String                 @id @default(uuid())
+    client               User                   @relation(fields: [clientID], references: [userID])
+    clientID             String
+    seller               Seller                 @relation(fields: [sellerID], references: [sellerID])
+    sellerID             String
+    package              Package                @relation(fields: [packageID], references: [packageID])
+    packageID            String
+    createdAt            DateTime               @default(now())
+    status               OrderStatus
+    subTotal             Decimal                @db.Decimal(12, 2)
+    total                Decimal                @db.Decimal(12, 2)
+    deliveryEndDate      DateTime
+    completeOrderRequest CompleteOrderRequest[]
 }
 
 model SavedSeller {
@@ -299,4 +311,10 @@ enum OrderRequestStatus {
     DECLINED
     CANCELLED
     ACCEPTED
+}
+
+enum CompleteOrderRequestStatus {
+    COMPLETED
+    PENDING
+    DECLINED
 }

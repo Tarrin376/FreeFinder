@@ -88,16 +88,15 @@ function Message({ message, isLastMessage, sendingMessage, groupMembers, seller,
                             colour="#30ab4b"
                         />}
                         {message.orderRequest ?
-                            <OrderRequest 
+                        <OrderRequest 
                             message={message} 
                             seller={seller}
                             workType={workType}
                             groupID={groupID}
                             key={message.messageID}
-                        /> : 
-                        <div className={`${windowSize >= 515 ? "rounded-[13px]" : "!rounded-[13px]"} 
-                        p-[6px] px-3 ${isOwnMessage ? "rounded-tr-none bg-highlight self-end" : "bg-very-light-gray rounded-tl-none"} 
-                        ${message.orderRequest ? "!bg-main-blue w-full" : "w-fit"}`}>
+                        /> :
+                        <div className={`${windowSize >= 515 ? "rounded-[13px]" : "!rounded-[13px]"} w-fit p-[6px] px-3 
+                        ${isOwnMessage ? "rounded-tr-none bg-highlight self-end" : "bg-very-light-gray rounded-tl-none"}`}>
                             <Tags
                                 isOwnMessage={isOwnMessage}
                                 messageText={message.messageText}

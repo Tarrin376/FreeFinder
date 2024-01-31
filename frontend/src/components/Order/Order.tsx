@@ -57,6 +57,7 @@ function Order({ order, isClientOrder }: OrderProps) {
                     packageType={order.package.type}
                     revisions={order.package.revisions}
                     workType={order.package.post.workType.name}
+                    orderID={order.orderID}
                     seller={{
                         profilePicURL: order.user.profilePicURL,
                         username: order.user.username,

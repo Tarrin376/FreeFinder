@@ -153,7 +153,7 @@ export async function sendOrderRequestHandler(req) {
         });
 
         if (!seller) {
-            throw new DBError("Seller does not exist.", 400);
+            throw new DBError("Seller does not exist.", 404);
         }
 
         const user = await checkUser(req.userData.userID, req.username);
@@ -280,7 +280,8 @@ export async function sendOrderRequestHandler(req) {
                     data: {
                         userID: req.params.seller,
                         title: `New order request`,
-                        text: `${req.userData.username} has requested a ${req.params.packageType.toLowerCase()} package order for the service: ${pkg.postID}.`,
+                        text: `${req.userData.username} has requested a ${req.params.packageType.toLowerCase()} 
+                        package order for the service: ${pkg.postID}.`,
                     }
                 });
 

@@ -1,4 +1,4 @@
-export type IMessageFile = {
+export interface IMessageFile {
     url: string,
     name: string,
     fileType: string,

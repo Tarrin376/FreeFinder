@@ -39,12 +39,13 @@ function Notifications({ setUnreadNotifications, toggleNotifications, allRead }:
 
     return (
         <div className="flex-grow overflow-y-scroll" ref={pageRef}>
-            {allNotifications.map((notification: INotification) => {
+            {allNotifications.map((notification: INotification, index: number) => {
                 return (
                     <Notification
                         {...notification}
                         setUnreadNotifications={setUnreadNotifications}
                         allRead={allRead}
+                        isLastNotification={index === allNotifications.length - 1}
                         toggleNotifications={toggleNotifications}
                         key={notification.notificationID}
                     />

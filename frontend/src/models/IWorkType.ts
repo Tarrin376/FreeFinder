@@ -1,3 +1,3 @@
-export type IWorkType = {
+export interface IWorkType {
     name: string
 }

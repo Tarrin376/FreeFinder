@@ -1,6 +1,7 @@
 import { UserStatus } from "../enums/UserStatus";
 import { IMessageFile } from "./IMessageFile";
 import { IOrderRequest } from "./IOrderRequest";
+import { ICompleteOrderRequest } from "./ICompleteOrderRequest";
 
 export interface IMessage {
     from: {
@@ -13,5 +14,6 @@ export interface IMessage {
     createdAt: Date,
     messageID: string,
     groupID: string,
-    orderRequest?: IOrderRequest
+    orderRequest?: IOrderRequest,
+    completeOrderRequest?: ICompleteOrderRequest
 }

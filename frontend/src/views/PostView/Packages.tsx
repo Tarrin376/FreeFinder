@@ -26,13 +26,6 @@ function Packages({ packages, seller, workType, postID, hidden }: PackagesProps)
     const [requestOrderPopUp, setRequestOrderPopUp] = useState<boolean>(false);
     const [curPkg, setCurPkg] = useState<IPackage>();
     const windowSize = useWindowSize();
-    
-    useEffect(() => {
-        const basicPkg = packages.find((x) => x.type === PackageTypes.BASIC);
-        if (basicPkg) {
-            setCurPkg(basicPkg);
-        }
-    }, [packages]);
 
     function selectPackage(nextPackage: IPackage): void {
         setCurPkg(nextPackage);
@@ -48,6 +41,13 @@ function Packages({ packages, seller, workType, postID, hidden }: PackagesProps)
                 return packages[2].numOrders > Math.max(packages[0].numOrders, packages[1].numOrders);
         }
     }
+
+    useEffect(() => {
+        const basicPkg = packages.find((x) => x.type === PackageTypes.BASIC);
+        if (basicPkg) {
+            setCurPkg(basicPkg);
+        }
+    }, [packages]);
 
     return (
         <div className={`bg-main-white rounded-[12px] border border-light-border-gray 

@@ -2,6 +2,7 @@ import { Prisma } from '@prisma/client';
 import { DBError } from '../customErrors/DBError.js';
 import { prisma } from '../index.js';
 import { getPaginatedData } from '../utils/getPaginatedData.js';
+import { VALID_DURATION_DAYS } from '@freefinder/shared/dist/constants.js';
 
 export async function getClientOrdersHandler(req) {
     try {
@@ -186,6 +187,120 @@ export async function cancelClientOrderHandler(req) {
             throw err;
         } else if (err instanceof Prisma.PrismaClientKnownRequestError && err.code === "P2025") {
             throw new DBError("Seller or order not found.", 404);
+        } else {
+            throw new DBError("Something went wrong. Please try again later.", 500);
+        }
+    }
+    finally {
+        await prisma.$disconnect();
+    }
+}
+
+export async function sendCompleteOrderRequestHandler(req) {
+    try {
+        const seller = await prisma.seller.findUnique({ 
+            where: { sellerID: req.sellerID },
+            select: { 
+                user: {
+                    select: {
+                        userID: true,
+                        username: true
+                    }
+                }
+            }
+        });
+
+        const order = await prisma.order.findUnique({
+            where: { orderID: req.params.id },
+            select: {
+                sellerID: true,
+                client: {
+                    select: {
+                        notificationSettings: true,
+                        userID: true
+                    }
+                },
+                package: {
+                    select: {
+                        postID: true
+                    }
+                }
+            }
+        });
+
+        if (req.userData.userID != seller.user.userID || order.sellerID !== req.sellerID) {
+            throw new DBError("You are not authorized to perform this action.", 403);
+        }
+
+        const completedOrderRequest = await prisma.completeOrderRequest.findFirst({
+            where: {
+                orderID: req.params.id,
+                status: "PENDING"
+            }
+        });
+
+        if (completedOrderRequest != null) {
+            throw new DBError("You currently have a pending request. Please wait until the request expires or is declined by the client.", 400);
+        }
+
+        const messageGroup = await prisma.messageGroup.findUnique({
+            where: {
+                postID_creatorID: {
+                    postID: order.package.postID,
+                    creatorID: order.client.userID
+                }
+            },
+            select: {
+                groupID: true,
+                members: {
+                    select: {
+                        userID: true
+                    }
+                }
+            }
+        });
+
+        await prisma.$transaction(async (tx) => {
+            const date = new Date();
+            const expiryDate = new Date(date.setDate(date.getDate() + VALID_DURATION_DAYS));
+
+            await tx.message.create({
+                data: {
+                    fromID: seller.user.userID,
+                    messageText: `${seller.user.username} has opened a request to complete your order.`,
+                    groupID: messageGroup.groupID,
+                    completeOrderRequest: {
+                        create: {
+                            orderID: req.params.id,
+                            status: "PENDING",
+                            expires: expiryDate
+                        }
+                    }
+                }
+            });
+
+            await tx.groupMember.updateMany({
+                where: { groupID: messageGroup.groupID },
+                data: {
+                    unreadMessages: { increment: 1 }
+                }
+            });
+    
+            for (const memberID of messageGroup.members) {
+                await tx.user.update({
+                    where: { userID: memberID },
+                    data: {
+                        unreadMessages: { increment: 1 }
+                    }
+                });
+            }
+        });
+    }
+    catch (err) {
+        if (err instanceof DBError) {
+            throw err;
+        } else if (err instanceof Prisma.PrismaClientValidationError) {
+            throw new DBError("Missing required fields or fields provided are invalid.", 400);
         } else {
             throw new DBError("Something went wrong. Please try again later.", 500);
         }

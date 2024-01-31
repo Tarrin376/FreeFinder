@@ -1,28 +1,40 @@
 import PopUpWrapper from "src/wrappers/PopUpWrapper";
 import CheckBox from "../CheckBox";
-import { useState } from "react";
+import { useState, useContext } from "react";
 import Button from "../Button";
 import ErrorMessage from "../Error/ErrorMessage";
 import KeyPair from "../KeyPair";
 import PackageOverview from "../PackageOverview";
 import { PackageTypes } from "src/enums/PackageTypes";
 import { FoundUsers } from "src/types/FoundUsers";
+import axios, { AxiosError } from "axios";
+import { getAPIErrorMessage } from "src/utils/getAPIErrorMessage";
+import { UserContext } from "src/providers/UserProvider";
 
 interface CompleteOrderPopUpProps {
     setCompleteOrderPopUp: React.Dispatch<React.SetStateAction<boolean>>,
     postID: string,
     packageType: PackageTypes,
     revisions: string,
+    orderID: string,
     seller: Omit<FoundUsers[number], 'userID'>,
     workType: string
 }
 
-function CompleteOrderPopUp({ setCompleteOrderPopUp, postID, packageType, revisions, seller, workType }: CompleteOrderPopUpProps) {
+function CompleteOrderPopUp({ setCompleteOrderPopUp, postID, packageType, revisions, orderID, seller, workType }: CompleteOrderPopUpProps) {
+    const userContext = useContext(UserContext);
     const [checked, setChecked] = useState<boolean>(false);
     const [errorMessage, setErrorMessage] = useState<string>("");
 
     async function requestOrderCompletion(): Promise<string | undefined> {
-        return "";
+        try {
+            await axios.post<{ message: string }>
+            (`/api/sellers/${userContext.userData.seller?.sellerID}/orders/${orderID}/complete-order-requests`);
+        }
+        catch (err: any) {
+            const errorMessage = getAPIErrorMessage(err as AxiosError<{ message: string }>);
+            return errorMessage;
+        }
     }
 
     return (

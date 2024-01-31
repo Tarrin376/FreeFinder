@@ -31,6 +31,19 @@ export const messageProperties = {
             }
         }
     },
+    completeOrderRequest: {
+        select: {
+            status: true,
+            expires: true,
+            id: true,
+            order: {
+                select: {
+                    subTotal: true,
+                    total: true
+                }
+            }
+        }
+    },
     messageText: true,
     createdAt: true,
     messageID: true,
