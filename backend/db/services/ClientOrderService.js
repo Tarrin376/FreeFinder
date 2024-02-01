@@ -229,7 +229,7 @@ export async function sendCompleteOrderRequestHandler(req) {
         });
 
         if (req.userData.userID != seller.user.userID || order.sellerID !== req.sellerID) {
-            throw new DBError("You are not authorized to perform this action.", 403);
+            throw new DBError("You do not have authorization to perform this action.", 403);
         }
 
         const completedOrderRequest = await prisma.completeOrderRequest.findFirst({
@@ -267,7 +267,7 @@ export async function sendCompleteOrderRequestHandler(req) {
             await tx.message.create({
                 data: {
                     fromID: seller.user.userID,
-                    messageText: `${seller.user.username} has opened a request to complete your order.`,
+                    messageText: `The seller has opened a request to complete your order.`,
                     groupID: messageGroup.groupID,
                     completeOrderRequest: {
                         create: {
@@ -286,15 +286,51 @@ export async function sendCompleteOrderRequestHandler(req) {
                 }
             });
     
-            for (const memberID of messageGroup.members) {
+            for (const member of messageGroup.members) {
                 await tx.user.update({
-                    where: { userID: memberID },
+                    where: { userID: member.userID },
                     data: {
                         unreadMessages: { increment: 1 }
                     }
                 });
             }
         });
+    }
+    catch (err) {
+        if (err instanceof DBError) {
+            throw err;
+        } else if (err instanceof Prisma.PrismaClientValidationError) {
+            throw new DBError("Missing required fields or fields provided are invalid.", 400);
+        } else {
+            throw new DBError("Something went wrong. Please try again later.", 500);
+        }
+    }
+    finally {
+        await prisma.$disconnect();
+    }
+}
+
+export async function updateCompleteOrderRequestHandler(req) {
+    try {
+        if (req.body.status) {
+            const request = await prisma.completeOrderRequest.findUnique({
+                where: { id: req.params.requestID },
+                select: { status: true }
+            });
+
+            if (request == null) {
+                throw new DBError("Request does not exist.", 404);
+            }
+
+            if (request.status !== "PENDING") {
+                throw new DBError("Action has already been taken on this request.", 400);
+            }
+
+            await prisma.completeOrderRequest.update({
+                where: { id: req.params.requestID },
+                data: { status: req.body.status }
+            });
+        }
     }
     catch (err) {
         if (err instanceof DBError) {

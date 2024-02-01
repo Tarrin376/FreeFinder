@@ -136,8 +136,8 @@ function Order({ order, isClientOrder }: OrderProps) {
                             </div>
                             <div className="flex flex-col gap-3">
                                 {isClientOrder && 
-                                <button className="btn-primary bg-main-blue text-main-white"
-                                onClick={openCompleteOrderPopUp}>
+                                <button className="btn-primary bg-main-blue text-main-white 
+                                hover:bg-main-blue-hover" onClick={openCompleteOrderPopUp}>
                                     Complete order
                                 </button>}
                                 <button className="btn-primary red-btn" 

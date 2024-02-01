@@ -15,6 +15,9 @@ import { FoundUsers } from "../../types/FoundUsers";
 import DateOccurred from "../DateOccurred";
 import { useWindowSize } from "src/hooks/useWindowSize";
 import { MIN_DUAL_WIDTH } from "./MessagePreviews";
+import CompleteOrderRequest from "../Order/CompleteOrderRequest";
+import { IOrderRequest } from "src/models/IOrderRequest";
+import { ICompleteOrderRequest } from "src/models/ICompleteOrderRequest";
 
 interface MessageProps {
     message: IMessage,
@@ -89,10 +92,15 @@ function Message({ message, isLastMessage, sendingMessage, groupMembers, seller,
                         />}
                         {message.orderRequest ?
                         <OrderRequest 
-                            message={message} 
+                            message={message as IMessage & { orderRequest: IOrderRequest }} 
                             seller={seller}
                             workType={workType}
                             groupID={groupID}
+                            key={message.messageID}
+                        /> :
+                        message.completeOrderRequest ?
+                        <CompleteOrderRequest 
+                            message={message as IMessage & { completeOrderRequest: ICompleteOrderRequest }}
                             key={message.messageID}
                         /> :
                         <div className={`${windowSize >= 515 ? "rounded-[13px]" : "!rounded-[13px]"} w-fit p-[6px] px-3 

@@ -12,11 +12,12 @@ import { OrderRequestStatus } from "../../enums/OrderRequestStatus";
 import ErrorPopUp from "../Error/ErrorPopUp";
 import { AnimatePresence } from "framer-motion";
 import { parseDate } from "../../utils/parseDate";
-import { useCountdown } from "../../hooks/useCountdown";
 import { SendNotification } from "src/types/SendNotification";
+import { IOrderRequest } from "src/models/IOrderRequest";
+import ExpiresIn from "../ExpiresIn";
 
 interface OrderRequestProps {
-    message: IMessage,
+    message: IMessage & { orderRequest: IOrderRequest },
     seller: FoundUsers[number],
     workType: string,
     groupID: string,
@@ -24,17 +25,15 @@ interface OrderRequestProps {
 
 function OrderRequest({ message, seller, workType, groupID }: OrderRequestProps) {
     const [errorMessage, setErrorMessage] = useState<string>("");
-    const [status, setStatus] = useState<OrderRequestStatus>(message.orderRequest!.status);
+    const [status, setStatus] = useState<OrderRequestStatus>(message.orderRequest.status);
     const [loading, setLoading] = useState<boolean>(false);
-
     const userContext = useContext(UserContext);
-    const timeRemaining = useCountdown(new Date(message.orderRequest!.expires));
 
     async function updateOrderStatus(status: OrderRequestStatus): Promise<string | undefined> {
         try {
             setLoading(true);
             const resp = await axios.put<{ updatedMessage: IMessage, sockets: string[], notify: SendNotification | undefined, message: string }>
-            (`/api/users/${userContext.userData.username}/order-requests/${message.orderRequest?.id}`, {
+            (`/api/users/${userContext.userData.username}/order-requests/${message.orderRequest.id}`, {
                 status: status
             });
 
@@ -69,16 +68,16 @@ function OrderRequest({ message, seller, workType, groupID }: OrderRequestProps)
             case OrderRequestStatus.PENDING:
                 return "Pending";
             case OrderRequestStatus.ACCEPTED:
-                return `Accepted on ${parseDate(message.orderRequest!.actionTaken)}`;
+                return `Accepted on ${parseDate(message.orderRequest.actionTaken)}`;
             case OrderRequestStatus.CANCELLED:
-                return `Cancelled ${parseDate(message.orderRequest!.actionTaken)}`;
+                return `Cancelled ${parseDate(message.orderRequest.actionTaken)}`;
             default:
-                return `Declined on ${parseDate(message.orderRequest!.actionTaken)}`;
+                return `Declined on ${parseDate(message.orderRequest.actionTaken)}`;
         }
     }
 
     useEffect(() => {
-        setStatus(message.orderRequest!.status);
+        setStatus(message.orderRequest.status);
     }, [message.orderRequest]);
 
     return (
@@ -91,26 +90,24 @@ function OrderRequest({ message, seller, workType, groupID }: OrderRequestProps)
                 />}
             </AnimatePresence>
             <PackageOverview 
-                type={message.orderRequest!.package.type}
-                revisions={message.orderRequest!.package.revisions}
+                type={message.orderRequest.package.type}
+                revisions={message.orderRequest.package.revisions}
                 seller={seller}
                 workType={workType}
                 wrapperStyles="my-2 bg-main-white"
                 styles="mb-4"
             >
                 <OrderSummary 
-                    subTotal={message.orderRequest!.subTotal} 
-                    total={message.orderRequest!.total}
-                    deliveryTime={message.orderRequest!.package!.deliveryTime} 
+                    subTotal={message.orderRequest.subTotal} 
+                    total={message.orderRequest.total}
+                    deliveryTime={message.orderRequest.package.deliveryTime} 
                     styles="mt-4 pb-4 border-b border-light-border-gray"
                 />
                 {status === OrderRequestStatus.PENDING &&
-                <p className="text-[15px] mt-5">
-                    Expires:
-                    <span className="text-error-text text-[15px]">
-                        {` ${timeRemaining}`}
-                    </span>
-                </p>}
+                <ExpiresIn 
+                    expires={new Date(message.orderRequest.expires)} 
+                    styles="mt-5"
+                />}
                 <p className={`text-[15px] ${status === OrderRequestStatus.PENDING ? "mt-[2px]" : "mt-5"}`}>
                     Status:
                     <span className="text-[15px]" style={getOrderRequestStatusStyles(status)}>
