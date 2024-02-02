@@ -8,17 +8,16 @@ interface MessageSentProps {
 function MessageSent({ sendingMessage, colour }: MessageSentProps) {
     return (
         <div className="flex-shrink-0 h-[16px] w-[32px] relative">
-            <TickSvg
+            {!sendingMessage && <TickSvg
                 size={16}
                 colour={colour}
                 styles="absolute bottom-0 right-[9px]"
-            />
-            {!sendingMessage && 
+            />}
             <TickSvg
                 size={16}
                 colour={colour}
                 styles="absolute bottom-0 right-0"
-            />}
+            />
         </div>
     )
 }

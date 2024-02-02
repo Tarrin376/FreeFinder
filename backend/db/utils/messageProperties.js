@@ -39,7 +39,10 @@ export const messageProperties = {
             order: {
                 select: {
                     subTotal: true,
-                    total: true
+                    total: true,
+                    sellerID: true,
+                    orderID: true,
+                    clientID: true
                 }
             }
         }

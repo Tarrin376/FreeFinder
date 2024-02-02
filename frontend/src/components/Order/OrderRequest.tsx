@@ -17,13 +17,15 @@ import { IOrderRequest } from "src/models/IOrderRequest";
 import ExpiresIn from "../ExpiresIn";
 
 interface OrderRequestProps {
-    message: IMessage & { orderRequest: IOrderRequest },
     seller: FoundUsers[number],
     workType: string,
     groupID: string,
+    message: IMessage & { 
+        orderRequest: IOrderRequest 
+    }
 }
 
-function OrderRequest({ message, seller, workType, groupID }: OrderRequestProps) {
+function OrderRequest({ seller, workType, groupID, message }: OrderRequestProps) {
     const [errorMessage, setErrorMessage] = useState<string>("");
     const [status, setStatus] = useState<OrderRequestStatus>(message.orderRequest.status);
     const [loading, setLoading] = useState<boolean>(false);
@@ -81,7 +83,7 @@ function OrderRequest({ message, seller, workType, groupID }: OrderRequestProps)
     }, [message.orderRequest]);
 
     return (
-        <div className="border border-light-border-gray rounded-[13px] shadow-post w-full">
+        <div className="border border-light-border-gray rounded-[13px] shadow-post w-full overflow-hidden">
             <AnimatePresence>
                 {errorMessage !== "" &&
                 <ErrorPopUp
@@ -94,7 +96,7 @@ function OrderRequest({ message, seller, workType, groupID }: OrderRequestProps)
                 revisions={message.orderRequest.package.revisions}
                 seller={seller}
                 workType={workType}
-                wrapperStyles="my-2 bg-main-white"
+                wrapperStyles="bg-main-white"
                 styles="mb-4"
             >
                 <OrderSummary 

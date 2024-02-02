@@ -1,17 +1,16 @@
 import ActionsIcon from "../assets/actions.png";
-import { useState } from "react";
 import { AnimatePresence } from "framer-motion";
 import { motion } from "framer-motion";
 import OutsideClickHandler from "react-outside-click-handler";
 
 interface ActionsProps {
     children: React.ReactNode,
-    size: number
+    size: number,
+    toggleActions: boolean,
+    setToggleActions: React.Dispatch<React.SetStateAction<boolean>>
 }
 
-function Actions({ children, size }: ActionsProps) {
-    const [toggleActions, setToggleActions] = useState<boolean>(false);
-    
+function Actions({ children, size, toggleActions, setToggleActions }: ActionsProps) {
     return (
         <div className="relative z-10" style={{ width: `${size}px`, height: `${size}px` }}>
             <div className="w-full h-full hover:bg-hover-light-gray flex items-center justify-center rounded-full cursor-pointer" 

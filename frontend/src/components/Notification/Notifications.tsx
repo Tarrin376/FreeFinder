@@ -45,7 +45,6 @@ function Notifications({ setUnreadNotifications, toggleNotifications, allRead }:
                         {...notification}
                         setUnreadNotifications={setUnreadNotifications}
                         allRead={allRead}
-                        isLastNotification={index === allNotifications.length - 1}
                         toggleNotifications={toggleNotifications}
                         key={notification.notificationID}
                     />

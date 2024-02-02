@@ -3,6 +3,7 @@ import { DBError } from '../customErrors/DBError.js';
 import { prisma } from '../index.js';
 import { getPaginatedData } from '../utils/getPaginatedData.js';
 import { VALID_DURATION_DAYS } from '@freefinder/shared/dist/constants.js';
+import { giveSellerXP } from '../utils/giveSellerXP.js';
 
 export async function getClientOrdersHandler(req) {
     try {
@@ -146,6 +147,15 @@ export async function cancelClientOrderHandler(req) {
         });
 
         return await prisma.$transaction(async (tx) => {
+            const orderStatus = await tx.order.findUnique({
+                where: { orderID: req.params.id },
+                select: { status: true }
+            });
+            
+            if (orderStatus.status !== "ACTIVE") {
+                throw new DBError("Action has already been taken on this order.", 400);
+            }
+
             await tx.user.update({
                 where: { userID: order.client.userID },
                 data: {
@@ -312,24 +322,44 @@ export async function sendCompleteOrderRequestHandler(req) {
 
 export async function updateCompleteOrderRequestHandler(req) {
     try {
-        if (req.body.status) {
-            const request = await prisma.completeOrderRequest.findUnique({
-                where: { id: req.params.requestID },
-                select: { status: true }
-            });
-
-            if (request == null) {
-                throw new DBError("Request does not exist.", 404);
+        const order = await prisma.order.findUnique({
+            where: { orderID: req.params.id },
+            select: { 
+                clientID: true,
+                sellerID: true
             }
+        });
 
-            if (request.status !== "PENDING") {
-                throw new DBError("Action has already been taken on this request.", 400);
-            }
+        const request = await prisma.completeOrderRequest.findUnique({
+            where: { id: req.params.requestID },
+            select: { status: true }
+        });
+        
+        if (order == null) {
+            throw new DBError("Order does not exist.", 404);
+        } else if (request == null) {
+            throw new DBError("Request does not exist.", 404);
+        } else if (request.status !== "PENDING") {
+            throw new DBError("Action has already been taken on this request.", 400);
+        }
 
+        if ((order.clientID === req.userData.userID && req.body.status !== "CANCELLED") ||
+        (order.sellerID === req.sellerID && req.body.status === "CANCELLED")) {
             await prisma.completeOrderRequest.update({
                 where: { id: req.params.requestID },
                 data: { status: req.body.status }
             });
+    
+            if (req.body.status === "ACCEPTED") {
+                await prisma.order.update({
+                    where: { orderID: req.params.id },
+                    data: { status: "COMPLETED" }
+                });
+
+                await giveSellerXP(req.sellerID, 50);
+            }
+        } else {
+            throw new DBError("You do not have authorization to perform this action.", 403);
         }
     }
     catch (err) {

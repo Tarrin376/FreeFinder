@@ -173,7 +173,8 @@ function ChatBox({ seller, workType, groupID, groupMembers }: ChatBoxProps) {
 
             const files = await addMessageFiles(resp.data.newMessage.messageID);
             if (files.failed.length > 0) {
-                setErrorMessage(`Failed to upload ${files.failed.length} ${files.failed.length === 1 ? "file" : "files"}.`);
+                setErrorMessage(`Failed to upload ${files.failed.length} ${files.failed.length === 1 ? "file" : "files"}. 
+                Please verify that ${files.failed.length === 1 ? "the file format is supported" : "the file formats are supported"}.`);
             }
 
             const newMessage = {
@@ -196,18 +197,20 @@ function ChatBox({ seller, workType, groupID, groupMembers }: ChatBoxProps) {
 
     const addMessage = useCallback((message: IMessage, updateMessage: boolean): void => {
         if (updateMessage) {
-            dispatch({ newMessages: state.newMessages.map(x => {
-                if (x.messageID !== message.messageID) return x;
-                else return message;
-            }) });
+            dispatch({ 
+                newMessages: state.newMessages.map(x => {
+                    if (x.messageID !== message.messageID) return x;
+                    else return message;
+                }) 
+            });
         } else {
-            dispatch({ newMessages: [
-                message, 
-                ...state.newMessages
-            ] });
+            dispatch({ 
+                newMessages: [
+                    message, 
+                    ...state.newMessages
+                ] 
+            });
         }
-
-
     }, [state.newMessages]);
 
     function handleKeyDown(e: React.KeyboardEvent<HTMLInputElement>): void {
@@ -383,7 +386,7 @@ function ChatBox({ seller, workType, groupID, groupMembers }: ChatBoxProps) {
                                 uploadedFiles={state.uploadedFiles}
                                 removeFile={removeFile}
                             />}
-                            <p className="text-main-blue text-sm cursor-pointer" 
+                            <p className="text-main-blue text-sm cursor-pointer underline" 
                             onClick={() => setToggleSupportedFormats(true)}>
                                 Supported formats
                             </p>

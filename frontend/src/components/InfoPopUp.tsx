@@ -21,7 +21,7 @@ function InfoPopUp({ message, closePopUp, styles }: InfoPopUpProps) {
     return (
         <motion.div className={`${defaultStyles} ${styles}`} initial={{ opacity: 0, y: 200, x: '-50%' }} 
         animate={{ opacity: 1, y: 0,  x: '-50%' }} exit={{ opacity: 0, y: 200,  x: '-50%' }} transition={{ duration: 0.2 }}>
-            <p className="text-main-white flex-grow whitespace-normal">
+            <p className="text-main-white flex-grow whitespace-normal text-center">
                 {message}
             </p>
             <CloseSvg

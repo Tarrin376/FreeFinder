@@ -4,7 +4,7 @@ import { SERVICE_FEE } from "@freefinder/shared/dist/constants";
 interface OrderSummaryProps {
     subTotal: number,
     total: number,
-    deliveryTime: number,
+    deliveryTime?: number,
     styles?: string
 }
 
@@ -24,12 +24,14 @@ function OrderSummary({ subTotal, total, deliveryTime, styles }: OrderSummaryPro
             <SummaryItem
                 label="Total"
                 value={`£${total.toFixed(2)}`}
-                styles="pt-4 font-bold mb-2"
+                styles="pt-4 font-bold"
             />
+            {deliveryTime !== undefined &&
             <SummaryItem
                 label="Delivery time"
                 value={`${deliveryTime} ${deliveryTime === 1 ? "day" : "days"}`}
-            />
+                styles="mt-2"
+            />}
         </div>
     )
 }

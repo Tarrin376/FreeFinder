@@ -27,23 +27,21 @@ function CreateGroup({ setCreateGroupPopUp, seller, initialServiceID }: CreateGr
     const [addedUsers, setAddedUsers] = useState<FoundUsers>(seller ? [seller] : []);
     const [groupName, setGroupName] = useState<string>("");
     const [serviceID, setServiceID] = useState<string>(initialServiceID ?? "");
-    const [findSellerBtn, setFindSellerBtn] = useState<boolean>(false);
     const userContext = useContext(UserContext);
 
     function updateServiceID(e: React.ChangeEvent<HTMLInputElement>): void {
         setServiceID(e.target.value);
-        setFindSellerBtn(true);
     }
 
-    function validInputs() {
-        return addedUsers.length > 0 && groupName !== "" && serviceID !== "" && !findSellerBtn;
+    function validInputs(): boolean {
+        return addedUsers.length > 0 && groupName !== "" && serviceID !== "";
     }
 
     async function findSeller(): Promise<string | undefined> {
         try {
-            const resp = await axios.get<{ sellerSummary: FoundUsers[number], message: string }>(`/api/posts/${serviceID}/seller-summary`);
-            setAddedUsers((cur) => [resp.data.sellerSummary, ...cur.filter((user) => user.username !== resp.data.sellerSummary.username)]);
-            setFindSellerBtn(false);
+            const resp = await axios.get<{ sellerSummary: FoundUsers[number], message: string }>
+            (`/api/posts/${serviceID}/seller-summary`);
+            setAddedUsers([resp.data.sellerSummary]);
         }
         catch (err: any) {
             const errorMessage = getAPIErrorMessage(err as AxiosError<{ message: string }>);
@@ -89,9 +87,10 @@ function CreateGroup({ setCreateGroupPopUp, seller, initialServiceID }: CreateGr
                     placeholder="Enter service ID"
                     value={serviceID}
                     onChange={updateServiceID}
+                    maxLength={36}
                     disabled={initialServiceID !== undefined}
                 />
-                {findSellerBtn && serviceID !== "" &&
+                {serviceID !== "" && initialServiceID === undefined &&
                 <Button
                     action={findSeller}
                     completedText="Found seller"

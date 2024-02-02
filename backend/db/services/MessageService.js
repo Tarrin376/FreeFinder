@@ -32,6 +32,9 @@ export async function getMessagesHandler(req) {
                 if (message.orderRequest) {
                     message.orderRequest.subTotal = parseFloat(message.orderRequest.subTotal);
                     message.orderRequest.total = parseFloat(message.orderRequest.total);
+                } else if (message.completeOrderRequest) {
+                    message.completeOrderRequest.order.subTotal = parseFloat(message.completeOrderRequest.order.subTotal);
+                    message.completeOrderRequest.order.total = parseFloat(message.completeOrderRequest.order.total);
                 }
 
                 return message;

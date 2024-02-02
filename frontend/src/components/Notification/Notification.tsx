@@ -9,7 +9,6 @@ interface NotificationProps {
     text: string,
     createdAt: Date,
     unread: boolean,
-    isLastNotification: boolean,
     notificationID: string,
     navigateTo: string | null,
     xp: number,
@@ -46,7 +45,7 @@ function Notification(props: NotificationProps) {
     }
 
     return (
-        <div className={`p-4 ${!props.isLastNotification ? "border-b border-light-border-gray" : ""} transition-all duration-150 ease-linear
+        <div className={`p-4 border-b border-light-border-gray transition-all duration-150 ease-linear
         ${props.navigateTo ? "cursor-pointer hover:bg-light-bg-gray" : ""}`}
         onMouseEnter={markAsRead} onClick={navigateToPage}>
             <div className="flex items-center gap-[10px]">

@@ -1,13 +1,14 @@
-import { CompleteOrderRequestStatus } from "src/enums/CompleteOrderRequestStatus"
+import { OrderRequestStatus } from "src/enums/OrderRequestStatus";
 
 export interface ICompleteOrderRequest {
-    status: CompleteOrderRequestStatus,
+    status: OrderRequestStatus,
     expires: Date,
     id: string,
     order: {
-        select: {
-            subTotal: number,
-            total: number
-        }
+        subTotal: number,
+        total: number,
+        sellerID: string,
+        clientID: string
+        orderID: string
     }
 }

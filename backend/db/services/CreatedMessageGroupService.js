@@ -1,10 +1,10 @@
-import { deleteCloudinaryResource } from '../utils/deleteCloudinaryResource.js';
 import { Prisma } from '@prisma/client';
 import { DBError } from '../customErrors/DBError.js';
 import { checkUser } from '../utils/checkUser.js';
 import { prisma } from '../index.js';
 import { groupPreviewProperties } from '../utils/groupPreviewProperties.js';
 import { formatGroup } from '../utils/formatGroup.js';
+import { deleteMessageGroupFiles } from '../utils/deleteMessageGroupFiles.js';
 
 async function addMembers(members, group, tx, userID, username, createGroup) {
     let allMembers = [];
@@ -150,15 +150,15 @@ export async function deleteMessageGroupHandler(req) {
         });
 
         const pendingOrderRequest = await prisma.orderRequest.findFirst({
-            select: { 
-                userID: true,
-                total: true
-            },
             where: {
                 status: "PENDING",
                 message: {
                     groupID: req.params.groupID
                 }
+            },
+            select: { 
+                userID: true,
+                total: true
             }
         });
 
@@ -178,7 +178,7 @@ export async function deleteMessageGroupHandler(req) {
                 });
             }
 
-            if (pendingOrderRequest) {
+            if (pendingOrderRequest != null) {
                 await tx.user.update({
                     where: { userID: pendingOrderRequest.userID },
                     data: {
@@ -186,12 +186,9 @@ export async function deleteMessageGroupHandler(req) {
                     }
                 });
             }
-            
-            await tx.messageGroup.delete({
-                where: { groupID: req.params.groupID }
-            });
-    
-            await deleteCloudinaryResource(`FreeFinder/MessageFiles/${group.groupID}`, "raw", true);
+
+            await tx.messageGroup.delete({ where: { groupID: req.params.groupID } });
+            await deleteMessageGroupFiles(`FreeFinder/MessageFiles/${group.groupID}`);
         });
     }
     catch (err) {

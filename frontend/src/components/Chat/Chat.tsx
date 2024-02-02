@@ -37,6 +37,7 @@ function Chat({ group, setAllGroups, setGroupCount, setGroup }: ChatProps) {
     const [groupMembers, setGroupMembers] = useState<GroupPreview["members"]>(group.members);
     const [toggleAddUsersPopUp, setToggleAddUsersPopUp] = useState<boolean>(false);
     const [infoMessage, setInfoMessage] = useState<string>("");
+    const [toggleActions, setToggleActions] = useState<boolean>(false);
 
     const userContext = useContext(UserContext);
     const windowSize = useWindowSize();
@@ -80,6 +81,9 @@ function Chat({ group, setAllGroups, setGroupCount, setGroup }: ChatProps) {
             const errorMessage = getAPIErrorMessage(err as AxiosError<{ message: string }>);
             return errorMessage;
         }
+        finally {
+            setToggleActions(false);
+        }
     }
 
     async function leaveGroup(): Promise<string | undefined> {
@@ -90,6 +94,9 @@ function Chat({ group, setAllGroups, setGroupCount, setGroup }: ChatProps) {
         catch (err: any) {
             const errorMessage = getAPIErrorMessage(err as AxiosError<{ message: string }>);
             return errorMessage;
+        }
+        finally {
+            setToggleActions(false);
         }
     }
 
@@ -214,7 +221,7 @@ function Chat({ group, setAllGroups, setGroupCount, setGroup }: ChatProps) {
                         onClick={() => setToggleAddUsersPopUp(true)}
                         alt=""
                     />}
-                    <Actions size={45}>
+                    <Actions size={45} toggleActions={toggleActions} setToggleActions={setToggleActions}>
                         {windowSize < SHOW_SERVICE_ID_WIDTH &&
                         <ServiceID
                             data={group.postID}

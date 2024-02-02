@@ -105,12 +105,12 @@ model OrderRequest {
 }
 
 model CompleteOrderRequest {
-    id        String                     @id @default(uuid())
-    message   Message                    @relation(fields: [messageID], references: [messageID], onDelete: Cascade)
-    messageID String                     @unique
-    order     Order                      @relation(fields: [orderID], references: [orderID], onDelete: Cascade)
+    id        String             @id @default(uuid())
+    message   Message            @relation(fields: [messageID], references: [messageID], onDelete: Cascade)
+    messageID String             @unique
+    order     Order              @relation(fields: [orderID], references: [orderID], onDelete: Cascade)
     orderID   String
-    status    CompleteOrderRequestStatus
+    status    OrderRequestStatus
     expires   DateTime
 }
 
@@ -311,10 +311,4 @@ enum OrderRequestStatus {
     DECLINED
     CANCELLED
     ACCEPTED
-}
-
-enum CompleteOrderRequestStatus {
-    COMPLETED
-    PENDING
-    DECLINED
 }

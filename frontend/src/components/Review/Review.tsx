@@ -22,6 +22,7 @@ function Review({ reviewInfo, hideActions }: ReviewProps) {
     const [helpfulCount, setHelpfulCount] = useState<number>(reviewInfo._count.foundHelpful);
     const [toggled, setToggled] = useState<boolean>(false);
     const [allReviewsPopUp, setAllReviewsPopUp] = useState<boolean>(false);
+    const [toggleActions, setToggleActions] = useState<boolean>(false);
 
     async function markAsHelpful(): Promise<void> {
         try {
@@ -79,7 +80,7 @@ function Review({ reviewInfo, hideActions }: ReviewProps) {
                     <p>{reviewInfo.reviewer.username}</p>
                 </div>
                 {!hideActions &&
-                <Actions size={50}>
+                <Actions size={50} toggleActions={toggleActions} setToggleActions={setToggleActions}>
                     <p className="whitespace-nowrap link">
                         Flag inappropriate
                     </p>
