@@ -14,7 +14,7 @@ function MyOrdersView() {
     const pageRef = useRef<HTMLDivElement>(null);
     const cursor = useRef<string>();
 
-    const url = `/api/users/${userContext.userData.username}/orders/my-orders`;
+    const url = `/api/users/${userContext.userData.username}/orders`;
     const orders = usePaginateData<{}, IOrder, PaginationResponse<IOrder>>(pageRef, cursor, url, page, setPage, {});
 
     return (

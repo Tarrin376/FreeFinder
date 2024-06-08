@@ -36,7 +36,7 @@ function App() {
                                     <MyPostsView />
                                 </FilterPostsProvider>} 
                             />
-                            <Route path=":username?/my-orders" element={<MyOrdersView />} />
+                            <Route path=":username?/orders" element={<MyOrdersView />} />
                             <Route path=":username?/client-orders" element={<ClientOrdersView />} />
                             <Route path="posts/:id" element={<PostView />} />
                             <Route path="*" element={

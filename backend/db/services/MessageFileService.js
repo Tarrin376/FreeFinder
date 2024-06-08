@@ -7,7 +7,7 @@ import { uploadFile } from '../utils/uploadFile.js';
 
 export async function addMessageFileHandler(req) {
     try {
-        if (!req.file) {
+        if (req.file == null) {
             throw new DBError("File not provided.", 400);
         }
         
@@ -17,7 +17,7 @@ export async function addMessageFileHandler(req) {
             include: { files: true }
         });
 
-        if (!message) {
+        if (message == null) {
             throw new DBError("Message not found.", 404);
         }  else if (message.files.length === MAX_MESSAGE_FILE_UPLOADS) {
             throw new DBError(`You cannot send more than ${MAX_MESSAGE_FILE_UPLOADS} files in one message.`, 400);

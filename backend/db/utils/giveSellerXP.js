@@ -1,15 +1,15 @@
-import { prisma } from "../index.js";
 import { Prisma } from "@prisma/client";
 import { DBError } from "../customErrors/DBError.js";
 
-export async function giveSellerXP(sellerID, amount) {
+export async function giveSellerXP(sellerID, amount, tx) {
     try {
-        const seller = await prisma.seller.findUnique({
+        const seller = await tx.seller.findUnique({
             where: { sellerID: sellerID },
             select: { 
                 sellerXP: true,
                 sellerLevel: {
                     select: {
+                        name: true,
                         nextLevel: {
                             select: {
                                 xpRequired: true,
@@ -25,7 +25,7 @@ export async function giveSellerXP(sellerID, amount) {
             throw new DBError("Seller does not exist.", 404);
         }
     
-        const addSellerXP = await prisma.seller.update({
+        const addSellerXP = await tx.seller.update({
             where: { sellerID: sellerID },
             select: { sellerXP: true },
             data: {
@@ -33,9 +33,9 @@ export async function giveSellerXP(sellerID, amount) {
             }
         });
     
-        if (addSellerXP.sellerXP >= seller.sellerLevel.nextLevel.xpRequired) {
+        if (addSellerXP.sellerXP >= seller.sellerLevel.nextLevel.xpRequired && seller.sellerLevel.name !== "Guru") {
             const remainingXP = addSellerXP.sellerXP - seller.sellerLevel.nextLevel.xpRequired;
-            await prisma.seller.update({
+            await tx.seller.update({
                 where: { sellerID: sellerID },
                 data: {
                     sellerXP: remainingXP,

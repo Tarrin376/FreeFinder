@@ -41,7 +41,7 @@ async function addMembers(members, group, tx, userID, username, createGroup) {
                 data: {
                     userID: user.userID,
                     title: "Added to new group",
-                    text: `You were added into the group '${group.groupName}' by ${username}. Say hello to everyone!`
+                    text: `You were added into the group '${group.groupName}' by ${username}.`
                 }
             });
 
@@ -83,7 +83,7 @@ export async function createMessageGroupHandler(req) {
             }
         });
 
-        if (!post) {
+        if (post == null) {
             throw new DBError("Service does not exist or has been deleted.", 404);
         } else if (post.postedBy.userID === req.userData.userID) {
             throw new DBError("You cannot create a message group for your own service.", 400);
@@ -162,7 +162,7 @@ export async function deleteMessageGroupHandler(req) {
             }
         });
 
-        if (!group) {
+        if (group == null) {
             throw new DBError("Group does not exist.", 404);
         } else if (group.creatorID !== req.userData.userID) {
             throw new DBError("You are not the creator of this group.", 403);

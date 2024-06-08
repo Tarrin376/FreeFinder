@@ -15,8 +15,10 @@ async function checkCanReview(userID, postID, reviewID) {
                 }
             }
         });
-    
-        if (post.postedBy.userID === userID) {
+        
+        if (post == null) {
+            throw new DBError("Service not found.", 404);
+        } else if (post.postedBy.userID === userID) {
             return false;
         }
     
@@ -24,6 +26,10 @@ async function checkCanReview(userID, postID, reviewID) {
             where: { reviewID: reviewID },
             select: { reviewerID: true }
         });
+
+        if (review == null) {
+            throw new DBError("Review not found.", 404);
+        }
     
         return review.reviewerID !== userID;
     }

@@ -123,7 +123,7 @@ function Navbar() {
                     </>}
                     {userContext.userData.userID !== "" && windowSize >= 1200 &&
                     <>
-                        <li className="nav-item" onClick={(e) => goToPage(e, `${userContext.userData.username}/my-orders`)}>
+                        <li className="nav-item" onClick={(e) => goToPage(e, `${userContext.userData.username}/orders`)}>
                             My orders
                         </li>
                         <li>

@@ -3,7 +3,6 @@ import { DBError } from '../customErrors/DBError.js';
 import { prisma } from '../index.js';
 import { getPaginatedData } from '../utils/getPaginatedData.js';
 import { VALID_DURATION_DAYS } from '@freefinder/shared/dist/constants.js';
-import { giveSellerXP } from '../utils/giveSellerXP.js';
 
 export async function getClientOrdersHandler(req) {
     try {
@@ -11,8 +10,8 @@ export async function getClientOrdersHandler(req) {
             where: { sellerID: req.sellerID },
             select: { userID: true }
         });
-
-        if (req.userData.userID !== user.userID) {
+        
+        if (user == null || req.userData.userID !== user.userID) {
             throw new DBError("You are not authorized to perform this action.", 403);
         }
 
@@ -94,8 +93,6 @@ export async function getClientOrdersHandler(req) {
             throw err;
         } else if (err instanceof Prisma.PrismaClientValidationError) {
             throw new DBError("Missing required fields or fields provided are invalid.", 400);
-        } else if (err instanceof Prisma.PrismaClientKnownRequestError && err.code === "P2025") {
-            throw new DBError("Seller not found.", 404);
         } else {
             throw new DBError("Something went wrong. Please try again later.", 500);
         }
@@ -119,7 +116,7 @@ export async function cancelClientOrderHandler(req) {
             }
         });
 
-        if (req.userData.userID !== seller.user.userID) {
+        if (seller == null || req.userData.userID !== seller.user.userID) {
             throw new DBError("You are not authorized to perform this action.", 403);
         }
 
@@ -137,6 +134,7 @@ export async function cancelClientOrderHandler(req) {
                     }
                 },
                 total: true,
+                status: true,
                 package: {
                     select: {
                         type: true,
@@ -146,13 +144,12 @@ export async function cancelClientOrderHandler(req) {
             }
         });
 
+        if (order == null) {
+            throw new DBError("Order not found.", 404);
+        }
+
         return await prisma.$transaction(async (tx) => {
-            const orderStatus = await tx.order.findUnique({
-                where: { orderID: req.params.id },
-                select: { status: true }
-            });
-            
-            if (orderStatus.status !== "ACTIVE") {
+            if (order.status !== "ACTIVE") {
                 throw new DBError("Action has already been taken on this order.", 400);
             }
 
@@ -174,7 +171,7 @@ export async function cancelClientOrderHandler(req) {
                         userID: order.client.userID,
                         title: "Order cancellation",
                         text: `${seller.user.username} cancelled your ${order.package.type.toLowerCase()} package order for the service: ${order.package.postID}.`,
-                        navigateTo: `/${order.client.username}/my-orders`
+                        navigateTo: `/${order.client.username}/orders`
                     }
                 });
 
@@ -195,8 +192,8 @@ export async function cancelClientOrderHandler(req) {
     catch (err) {
         if (err instanceof DBError) {
             throw err;
-        } else if (err instanceof Prisma.PrismaClientKnownRequestError && err.code === "P2025") {
-            throw new DBError("Seller or order not found.", 404);
+        } else if (err instanceof Prisma.PrismaClientValidationError) {
+            throw new DBError("Missing required fields or fields provided are invalid.", 400);
         } else {
             throw new DBError("Something went wrong. Please try again later.", 500);
         }
@@ -238,7 +235,9 @@ export async function sendCompleteOrderRequestHandler(req) {
             }
         });
 
-        if (req.userData.userID != seller.user.userID || order.sellerID !== req.sellerID) {
+        if (order == null) {
+            throw new DBError("Order not found.", 404);
+        } else if (seller == null || req.userData.userID != seller.user.userID || order.sellerID !== req.sellerID) {
             throw new DBError("You do not have authorization to perform this action.", 403);
         }
 
@@ -269,6 +268,10 @@ export async function sendCompleteOrderRequestHandler(req) {
                 }
             }
         });
+
+        if (messageGroup == null) {
+            throw new DBError("Message group not found.", 404);
+        }
 
         await prisma.$transaction(async (tx) => {
             const date = new Date();
@@ -341,26 +344,14 @@ export async function updateCompleteOrderRequestHandler(req) {
             throw new DBError("Request does not exist.", 404);
         } else if (request.status !== "PENDING") {
             throw new DBError("Action has already been taken on this request.", 400);
-        }
-
-        if ((order.clientID === req.userData.userID && req.body.status !== "CANCELLED") ||
-        (order.sellerID === req.sellerID && req.body.status === "CANCELLED")) {
-            await prisma.completeOrderRequest.update({
-                where: { id: req.params.requestID },
-                data: { status: req.body.status }
-            });
-    
-            if (req.body.status === "ACCEPTED") {
-                await prisma.order.update({
-                    where: { orderID: req.params.id },
-                    data: { status: "COMPLETED" }
-                });
-
-                await giveSellerXP(req.sellerID, 50);
-            }
-        } else {
+        } else if (order.sellerID !== req.sellerID || req.body.status !== "CANCELLED") {
             throw new DBError("You do not have authorization to perform this action.", 403);
         }
+
+        await prisma.completeOrderRequest.update({
+            where: { id: req.params.requestID },
+            data: { status: req.body.status }
+        });
     }
     catch (err) {
         if (err instanceof DBError) {

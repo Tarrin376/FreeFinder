@@ -36,6 +36,9 @@ export async function getNotificationsHandler(req) {
             throw new DBError("Something went wrong. Please try again later.", 500);
         }
     }
+    finally {
+        await prisma.$disconnect();
+    }
 }
 
 export async function updateToReadHandler(req) {
@@ -75,6 +78,9 @@ export async function updateToReadHandler(req) {
             throw new DBError("Something went wrong. Please try again later.", 500);
         }
     }
+    finally {
+        await prisma.$disconnect();
+    }
 }
 
 export async function updateAllToReadHandler(req) {
@@ -98,5 +104,8 @@ export async function updateAllToReadHandler(req) {
         } else {
             throw new DBError("Something went wrong. Please try again later.", 500);
         }
+    }
+    finally {
+        await prisma.$disconnect();
     }
 }

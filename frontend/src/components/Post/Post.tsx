@@ -203,8 +203,7 @@ function Post({ postInfo, index, canRemove, count, styles }: PostProps) {
                         {postInfo.postedBy.sellerLevel.name}
                     </span>
                     {seconds < 60 * 60 * 24 && 
-                    <span className="bg-[#e6ebff] text-[#4169f7] border border-[#4169f7] 
-                    inline-block text-sm px-3 rounded-[6px]">
+                    <span className="bg-highlight text-[#4169f7] inline-block text-sm px-3 rounded-[6px]">
                         New
                     </span>}
                 </div>

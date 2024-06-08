@@ -485,7 +485,7 @@ export async function updateOrderRequestStatusHandler(req) {
                     data: {
                         ...notificationMessage,
                         userID: userID,
-                        navigateTo: `/${userID}/${userID === orderRequest.userID ? "my-orders" : "client-orders"}/`
+                        navigateTo: `/${userID}/${userID === orderRequest.userID ? "orders" : "client-orders"}/`
                     }
                 });
 

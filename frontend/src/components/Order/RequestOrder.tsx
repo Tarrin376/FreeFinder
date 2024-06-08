@@ -52,7 +52,7 @@ function RequestOrder({ curPkg, postID, seller, workType, setRequestOrderPopUp }
                 );
             }
 
-            if (resp.data.notify != null) {
+            if (resp.data.notify) {
                 userContext.socket?.emit("send-notification", resp.data.notify.notification, resp.data.notify.socketID);
             }
 
@@ -95,10 +95,10 @@ function RequestOrder({ curPkg, postID, seller, workType, setRequestOrderPopUp }
                     deliveryTime={curPkg.deliveryTime}
                 />
                 <CheckBox
-                    labelName="terms"
+                    labelName="terms (section 1)"
                     text={`I understand that the transaction amount will be held by FreeFinder until the order request 
                     has expired (${VALID_DURATION_DAYS} days) or is accepted by the seller. If the delivery window is exceeded, I am permitted 
-                    to cancel the order with or without notifying the seller.`}
+                    to cancel the order with or without notifying the seller. I agree to let FreeFinder provide the seller with my email address for contacting me.`}
                     styles="mt-5"
                     setChecked={setChecked}
                 />

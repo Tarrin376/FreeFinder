@@ -91,7 +91,7 @@ function NotificationSettings({ updateSection }: NotificationSettingsProps) {
                     toggle={state.rewards} 
                     updateToggle={(value: boolean) => updateNotificationSettings({ rewards: value })} 
                     title="Rewards"
-                    text="Let me know of any rewards that I have received, including seller xp and discount codes."
+                    text="Notify me of any rewards that I have received, including seller xp and discount codes."
                     styles="mt-4"
                 />
                 <ToggleSwitch 
@@ -105,7 +105,7 @@ function NotificationSettings({ updateSection }: NotificationSettingsProps) {
                     toggle={state.newReviews} 
                     updateToggle={(value: boolean) => updateNotificationSettings({ newReviews: value })} 
                     title="New reviews"
-                    text="Let me know when first time reviewers review my services."
+                    text="Let me know when a new review is made on one of my services."
                     styles="mt-4"
                 />
             </div>

@@ -10,6 +10,7 @@ import { getAPIErrorMessage } from "src/utils/getAPIErrorMessage";
 import OrderSummary from "./OrderSummary";
 import CheckMark from "../CheckMark";
 import { UserContext } from "src/providers/UserProvider";
+import { SendNotification } from "src/types/SendNotification";
 
 interface CompleteOrderRequestProps {
     message: IMessage & { 
@@ -22,12 +23,17 @@ function CompleteOrderRequest({ message }: CompleteOrderRequestProps) {
     const [errorMessage, setErrorMessage] = useState<string>("");
     const userContext = useContext(UserContext);
 
+    const clientURL = `/api/users/${userContext.userData.username}/orders/${message.completeOrderRequest.order.orderID}/complete-order-requests/${message.completeOrderRequest.id}`;
+    const sellerURL = `/api/sellers/${message.completeOrderRequest.order.sellerID}/orders/${message.completeOrderRequest.order.orderID}/complete-order-requests/${message.completeOrderRequest.id}`;
+
     async function completeOrder(): Promise<void> {
         try {
-            await axios.put<{ message: string }>
-            (`/api/sellers/${message.completeOrderRequest.order.sellerID}/orders/${message.completeOrderRequest.order.orderID}/complete-order-requests/${message.completeOrderRequest.id}`, {
-                status: OrderRequestStatus.ACCEPTED
-            });
+            const resp = await axios.put<{ notify?: SendNotification, message: string }>
+            (clientURL, { status: OrderRequestStatus.ACCEPTED });
+            
+            if (resp.data.notify) {
+                userContext.socket?.emit("send-notification", resp.data.notify.notification, resp.data.notify.socketID);
+            }
 
             setStatus(OrderRequestStatus.ACCEPTED);
         }
@@ -39,10 +45,12 @@ function CompleteOrderRequest({ message }: CompleteOrderRequestProps) {
 
     async function declineRequest(): Promise<void> {
         try {
-            await axios.put<{ message: string }>
-            (`/api/sellers/${message.completeOrderRequest.order.sellerID}/orders/${message.completeOrderRequest.order.orderID}/complete-order-requests/${message.completeOrderRequest.id}`, {
-                status: OrderRequestStatus.DECLINED
-            });
+            const resp = await axios.put<{ notify?: SendNotification, message: string }>
+            (clientURL, { status: OrderRequestStatus.DECLINED });
+
+            if (resp.data.notify) {
+                userContext.socket?.emit("send-notification", resp.data.notify.notification, resp.data.notify.socketID);
+            }
 
             setStatus(OrderRequestStatus.DECLINED);
         }
@@ -53,7 +61,14 @@ function CompleteOrderRequest({ message }: CompleteOrderRequestProps) {
     }
 
     async function cancelRequest(): Promise<void> {
-
+        try {
+            await axios.put<{ message: string }>(sellerURL, { status: OrderRequestStatus.CANCELLED });
+            setStatus(OrderRequestStatus.CANCELLED);
+        }
+        catch (err: any) {
+            const errorMessage = getAPIErrorMessage(err as AxiosError<{ message: string }>);
+            setErrorMessage(errorMessage);
+        }
     }
 
     return (
@@ -94,10 +109,10 @@ function CompleteOrderRequest({ message }: CompleteOrderRequestProps) {
                 </div>}
             </> :
             status === OrderRequestStatus.DECLINED ?
-            <p className="text-error-text">
-                The request to complete the order was declined by the client.
+            <p className="text-error-text text-center">
+                The request to complete the order was declined.
             </p> :
-            status === OrderRequestStatus.ACCEPTED &&
+            status === OrderRequestStatus.ACCEPTED ?
             <div>
                 <CheckMark 
                     size={70}
@@ -119,7 +134,10 @@ function CompleteOrderRequest({ message }: CompleteOrderRequestProps) {
                         Click here
                     </p>
                 </div>
-            </div>}
+            </div> :
+            <p className="text-error-text text-center">
+                The request to complete the order was cancelled by the seller.
+            </p>}
         </div>
     )
 }
