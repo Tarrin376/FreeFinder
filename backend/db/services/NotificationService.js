@@ -50,7 +50,7 @@ export async function updateToReadHandler(req) {
             select: { userID: true }
         });
 
-        if (!notification) {
+        if (notification == null) {
             throw new DBError("Notification not found.", 404);
         } else if (notification.userID !== req.userData.userID) {
             throw new DBError("You do not have permission to update this notification.", 403);

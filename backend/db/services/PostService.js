@@ -144,7 +144,7 @@ export async function createPostHandler(req) {
         if (err instanceof DBError) {
             throw err;
         } else if (err instanceof SyntaxError) {
-            throw new DBError("Invalid post data JSON provided.", 400);
+            throw new DBError("Invalid JSON post data provided.", 400);
         } else if (err instanceof Prisma.PrismaClientValidationError) {
             throw new DBError("Missing required fields or fields provided are invalid.", 400);
         } else if (err instanceof Prisma.PrismaClientKnownRequestError && err.code === "P2025") {
@@ -172,7 +172,7 @@ export async function deleteImageHandler(req) {
             }
         });
 
-        if (!post) {
+        if (post == null) {
             throw new DBError("Service does not exist or has been deleted.", 404);
         } else if (req.userData.userID !== post.postedBy.userID) {
             throw new DBError("You are not authorized to delete this image.", 403);
@@ -182,7 +182,10 @@ export async function deleteImageHandler(req) {
 
         return await prisma.$transaction(async (tx) => {
             await tx.postImage.delete({
-                where: { cloudinaryID: req.params.cloudinaryID }
+                where: { 
+                    cloudinaryID: req.params.cloudinaryID,
+                    postID: req.params.id
+                }
             });
 
             const updatedPost = await tx.post.findUnique({ 
@@ -209,6 +212,8 @@ export async function deleteImageHandler(req) {
     catch (err) {
         if (err instanceof DBError) {
             throw err;
+        } else if (err instanceof Prisma.PrismaClientKnownRequestError && err.code == "P2025") {
+            throw new DBError("The cloudinary ID for this image is not associated with the provided service ID.", 403);
         } else if (err instanceof Prisma.PrismaClientValidationError) {
             throw new DBError("Missing required fields or fields provided are invalid.", 400);
         } else {
@@ -234,13 +239,13 @@ export async function addImageHandler(req) {
             }
         });
         
-        if (!post) {
+        if (post == null) {
             throw new DBError("Service does not exist or has been deleted.", 404);
         } else if (req.userData.userID !== post.postedBy.userID) {
             throw new DBError("You are not authorized to add this image.", 403);
         } else if (post._count.images === MAX_SERVICE_IMAGE_UPLOADS) {
             throw new DBError(`You cannot have more than ${MAX_SERVICE_IMAGE_UPLOADS} images for one service.`, 400);
-        } else if (!req.file) {
+        } else if (req.file == null) {
             throw new DBError("Image file not specified.", 400);
         }
 
@@ -302,7 +307,7 @@ export async function getPostHandler(postID) {
             select: { ...postProperties }
         });
 
-        if (!postData) {
+        if (postData == null) {
             throw new DBError("Service does not exist or has been deleted.", 404);
         }
         
@@ -387,7 +392,7 @@ export async function updatePostHandler(req) {
                     }
                 });
             
-                if (!image) {
+                if (image == null) {
                     throw new DBError("Image not found.", 404);
                 } else if (req.userData.userID !== image.post.postedBy.userID) {
                     throw new DBError("You are not authorized to update this image.", 403);
@@ -488,10 +493,6 @@ export async function updatePostHandler(req) {
 
 export async function deletePostHandler(postID, userID) {
     try {
-        const post = await prisma.post.findUnique({ 
-            where: { postID: postID }
-        });
-
         const user = await prisma.user.findUnique({ 
             where: { userID: userID },
             select: {
@@ -503,10 +504,14 @@ export async function deletePostHandler(postID, userID) {
                 }
             }
         });
+
+        const post = await prisma.post.findUnique({ 
+            where: { postID: postID }
+        });
         
-        if (!user) {
+        if (user == null) {
             throw new DBError("User not found.", 404);
-        } else if (!post) {
+        } else if (post == null) {
             throw new DBError("Service does not exist or has been deleted.", 404);
         } else if (post.sellerID !== user.seller.sellerID) {
             throw new DBError("You do not have authorization to delete this post.", 403);
@@ -532,7 +537,7 @@ export async function deletePostHandler(postID, userID) {
                     const notification = await tx.notification.create({
                         select: notificationProperties,
                         data: {
-                            title: "A saved service has been deleted",
+                            title: "One of your saved services has been removed",
                             text: `${user.username} has permanently removed the service: ${post.postID}.`,
                             userID: savedPost.user.userID
                         }
@@ -566,7 +571,7 @@ export async function deletePostHandler(postID, userID) {
             throw new DBError("Missing required fields or fields provided are invalid.", 400);
         } else if (err instanceof Prisma.PrismaClientKnownRequestError && (err.code == "P2025" || err.code === "P2003")) {
             if (err.code === "P2025") throw new DBError("Service does not exist or has been deleted.", 404);
-            else throw new DBError("You must complete all remaining orders for this service.", 400);
+            else throw new DBError("You must complete all remaining orders before deleting this service.", 400);
         } else {
             throw new DBError("Something went wrong. Please try again later.", 500);
         }
@@ -685,7 +690,7 @@ export async function getSellerSummaryHandler(postID) {
             }
         });
 
-        if (!sellerSummary) {
+        if (sellerSummary == null) {
             throw new DBError("Service does not exist or has been deleted.", 404);
         }
 

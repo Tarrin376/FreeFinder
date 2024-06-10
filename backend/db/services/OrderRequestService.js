@@ -1,12 +1,13 @@
-import { OrderStatus, Prisma } from '@prisma/client';
+import { Prisma } from '@prisma/client';
 import { DBError } from '../customErrors/DBError.js';
 import { checkUser } from '../utils/checkUser.js';
 import { prisma } from '../index.js';
 import { messageProperties } from '../utils/messageProperties.js';
 import { SERVICE_FEE, VALID_DURATION_DAYS } from '@freefinder/shared/dist/constants.js';
 import { notificationProperties } from '../utils/notificationProperties.js';
+import { giveSellerXP } from '../utils/giveSellerXP.js';
 
-const FIRST_ORDER_REQ_XP = 100;
+const FIRST_ORDER_REQUEST_XP = 100;
 
 export async function createOrderHandler(req, tx) {
     try {
@@ -33,7 +34,7 @@ export async function createOrderHandler(req, tx) {
             }
         });
 
-        if (!orderRequest) {
+        if (orderRequest == null) {
             throw new DBError("Order request not found.", 404);
         } else if (orderRequest.seller.userID !== req.userData.userID) {
             throw new DBError("You are not authorized to accept this order request.", 403);
@@ -80,7 +81,7 @@ async function checkMessageGroup(postID, userID) {
         }
     });
 
-    if (!messageGroup) {
+    if (messageGroup == null) {
         throw new DBError("You must message the seller about this service before requesting an order.", 400);
     }
 
@@ -108,7 +109,7 @@ async function checkPackage(postID, type, sellerID) {
         }
     });
 
-    if (!pkg) {
+    if (pkg == null) {
         throw new DBError("Service or package does not exist.", 404);
     } else if (pkg.post.sellerID !== sellerID) {
         throw new DBError("This seller does not own this service.", 400);
@@ -131,7 +132,7 @@ async function checkOrderRequests(packageID, userID) {
         }
     });
 
-    if (orderRequest) {
+    if (orderRequest != null) {
         throw new DBError("You already have a pending order request for this package.", 400);
     }
 }
@@ -152,7 +153,7 @@ export async function sendOrderRequestHandler(req) {
             }
         });
 
-        if (!seller) {
+        if (seller == null) {
             throw new DBError("Seller does not exist.", 404);
         }
 
@@ -230,14 +231,14 @@ export async function sendOrderRequestHandler(req) {
 
             orderRequest.subTotal = parseFloat(orderRequest.subTotal);
             orderRequest.total = parseFloat(orderRequest.total);
-
             let firstOrderRequest = undefined;
+
             if (!seller.hadFirstOrderRequest) {
+                giveSellerXP(seller.sellerID, FIRST_ORDER_REQUEST_XP, tx);
                 await tx.seller.update({
                     where: { userID: req.params.seller },
                     data: { 
-                        hadFirstOrderRequest: true,
-                        sellerXP: { increment: FIRST_ORDER_REQ_XP }
+                        hadFirstOrderRequest: true
                     }
                 });
 
@@ -246,9 +247,9 @@ export async function sendOrderRequestHandler(req) {
                         select: notificationProperties,
                         data: {
                             userID: req.params.seller,
-                            title: `Congrats on your first order request!`,
+                            title: `You received your first order request!`,
                             text: `You received your first order request from ${req.userData.username}. Keep it up!`,
-                            xp: FIRST_ORDER_REQ_XP
+                            xp: FIRST_ORDER_REQUEST_XP
                         }
                     });
 
@@ -388,24 +389,28 @@ export async function updateOrderRequestStatusHandler(req) {
         await checkUser(req.userData.userID, req.username);
         const orderRequest = await getOrderRequest(req.params.id);
 
-        if (req.userData.userID !== orderRequest.seller.user.userID && req.userData.userID !== orderRequest.userID) {
-            throw new DBError("You are not authorized to update this order request.", 403);
-        } else if (!orderRequest) {
+        if (orderRequest == null) {
             throw new DBError("Order request not found.", 404);
+        } else if (req.userData.userID !== orderRequest.seller.user.userID && req.userData.userID !== orderRequest.userID) {
+            throw new DBError("You are not authorized to update this order request.", 403);
         } else if (orderRequest.status !== "PENDING") {
             throw new DBError("Action has already been taken on this order request.", 409);
         } else if (req.body.status === "PENDING") {
             throw new DBError("You cannot set the order request status to 'pending'.", 400);
         } else if (req.body.status === "CANCELLED" && req.userData.userID === orderRequest.seller.user.userID) {
-            throw new DBError("You cannot cancel your client's order request.", 400);
+            throw new DBError("You cannot cancel your client's order request.", 403);
         } else if (req.body.status !== "CANCELLED" && req.userData.userID === orderRequest.userID) {
-            throw new DBError("You cannot accept or decline your own order request.", 400);
+            throw new DBError("You cannot accept or decline your own order request.", 403);
         }
 
         const message = await prisma.message.findUnique({
             where: { messageID: orderRequest.messageID },
             select: { ...messageProperties }
         });
+
+        if (message == null) {
+            throw new DBError("Order request message not found.", 404);
+        }
 
         const members = await prisma.groupMember.findMany({
             where: { groupID: message.groupID },

@@ -71,7 +71,11 @@ export async function deleteSellerLevelHandler(req) {
         });
     }
     catch (err) {
-        throw new DBError("Something went wrong. Please try again later.", 500);
+        if (err instanceof Prisma.PrismaClientKnownRequestError && err.code === "P2025") {
+            throw new DBError("This seller level does not exist.", 404);
+        } else {
+            throw new DBError("Something went wrong. Please try again later.", 500);
+        }
     }
     finally {
         await prisma.$disconnect();

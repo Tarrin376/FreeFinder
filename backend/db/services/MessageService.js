@@ -96,6 +96,10 @@ export async function sendMessageHandler(req) {
             select: { groupName: true }
         });
 
+        if (group == null) {
+            throw new DBError("This group does not exist.", 404);
+        }
+
         return await prisma.$transaction(async (tx) => {
             const mentionedMembers = getMentionedMembers(members, req.body.message);
             const mentioned = [];

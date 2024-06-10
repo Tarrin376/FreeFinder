@@ -75,7 +75,9 @@ export async function registerUserHandler(userData) {
         });
     }
     catch (err) {
-        if (err instanceof Prisma.PrismaClientValidationError) {
+        if (err instanceof DBError) {
+            throw err;
+        } else if (err instanceof Prisma.PrismaClientValidationError) {
             throw new DBError("Missing required fields or fields provided are invalid.", 400);
         } else if (err instanceof Prisma.PrismaClientKnownRequestError && err.code === 'P2002') {
             throw new DBError("This username or email address is already taken.", 409)
@@ -110,7 +112,11 @@ export async function searchUsersHandler(search, take) {
         return users;
     }
     catch (err) {
-        throw new DBError("Something went wrong. Please try again later.", 500);
+        if (err instanceof Prisma.PrismaClientValidationError) {
+            throw new DBError("Missing required fields or fields provided are invalid.", 400);
+        } else {
+            throw new DBError("Something went wrong. Please try again later.", 500);
+        }
     }
     finally {
         await prisma.$disconnect();
@@ -119,7 +125,7 @@ export async function searchUsersHandler(search, take) {
 
 export async function authenticateUserHandler(usernameOrEmail, password) {
     try {
-        const res = await prisma.user.findFirst({
+        const userMatch = await prisma.user.findFirst({
             where: {
                 OR: [
                     { email: usernameOrEmail },
@@ -132,16 +138,16 @@ export async function authenticateUserHandler(usernameOrEmail, password) {
             }
         });
 
-        if (!res) {
+        if (userMatch == null) {
             throw new DBError("Email or username provided doesn't have any account linked to it.", 404);
         }
 
-        const passwordMatch = await bcrypt.compare(password, res.hash);
+        const passwordMatch = await bcrypt.compare(password, userMatch.hash);
         if (!passwordMatch) {
             throw new DBError("The password you entered is incorrect. Check that you entered it correctly.", 403)
         }
 
-        const { hash, ...filtered } = res;
+        const { hash, ...filtered } = userMatch;
         return filtered;
     }
     catch (err) {
@@ -163,16 +169,15 @@ export async function updateUserHandler(req) {
         await checkUser(req.userData.userID, req.username);
         let result = undefined;
 
-        if (!req.body.update) {
+        if (req.body.update == null) {
             throw new DBError("No updated user data was provided.", 400);
         }
 
         const update = typeof req.body.update === "string" ? JSON.parse(req.body.update) : req.body.update;
-        
         if (req.body.deleteProfilePic === "true") {
             await deleteCloudinaryResource(`FreeFinder/ProfilePictures/${req.userData.userID}`, "image");
             result = "";
-        } else if (req.file) {
+        } else if (req.file != null) {
             result = await uploadFile(req.file, `FreeFinder/ProfilePictures/${req.userData.userID}`, MAX_PROFILE_PIC_BYTES, true);
         }
 
@@ -332,6 +337,10 @@ export async function getBalanceHandler(req) {
             where: { userID: req.userData.userID },
             select: { balance: true }
         });
+
+        if (data == null) {
+            throw new DBError("User not found.", 404);
+        }
 
         return parseFloat(data.balance);
     }

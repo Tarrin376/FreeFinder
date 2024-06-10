@@ -89,7 +89,7 @@ export async function leaveMessageGroupHandler(req) {
         if (err instanceof DBError) {
             throw err;
         } else if (err instanceof Prisma.PrismaClientKnownRequestError && err.code === "P2025") {
-            throw new DBError("You are not in this group or the group does not exist.", 404);
+            throw new DBError("You are not in this group or it does not exist.", 404);
         } else if (err instanceof Prisma.PrismaClientValidationError) {
             throw new DBError("Missing required fields or fields provided are invalid.", 400);
         } else {
@@ -141,7 +141,7 @@ export async function clearUnreadMessagesHandler(req) {
     }
     catch (err) {
         if (err instanceof Prisma.PrismaClientKnownRequestError && err.code === "P2025") {
-            throw new DBError("You are not in this message group or it does not exist.", 404);
+            throw new DBError("You are not in this group or it does not exist.", 404);
         } else {
             throw new DBError("Something went wrong. Please try again later.", 500);
         }

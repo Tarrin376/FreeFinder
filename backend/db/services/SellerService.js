@@ -23,7 +23,7 @@ export async function findSeller(userID) {
             }
         });
 
-        if (!seller) {
+        if (seller == null) {
             const newSeller = await createSeller(userID);
             return newSeller;
         } else {
@@ -47,10 +47,6 @@ export async function findSeller(userID) {
 async function createSeller(id) {
     try {
         const newSeller = await prisma.sellerLevel.findFirst({ where: { xpRequired: 0 } });
-        if (!newSeller) {
-            throw new DBError("Newbie seller level does not exist.", 400);
-        }
-
         const seller = await prisma.seller.create({
             select: { 
                 ...userProperties.seller.select,
@@ -94,7 +90,9 @@ export async function updateSellerDetailsHandler(req) {
             select: { userID: true }
         });
 
-        if (req.userData.userID !== user.userID) {
+        if (user == null) {
+            throw new DBError("Seller does not exist.", 404);
+        } else if (req.userData.userID !== user.userID) {
             throw new DBError("You are not authorized to perform this action.", 403);
         } else if (req.body.description && req.body.description.length > MAX_SELLER_DESC_CHARS) {
             throw new DBError(`Seller description should not exceed ${MAX_SELLER_DESC_CHARS} characters.`, 400);
@@ -199,7 +197,7 @@ export async function getSellerDetailsHandler(sellerID) {
             }
         });
 
-        if (!sellerDetails) {
+        if (sellerDetails == null) {
             throw new DBError("Seller not found.", 404);
         } else {
             return sellerDetails;
@@ -208,6 +206,8 @@ export async function getSellerDetailsHandler(sellerID) {
     catch (err) {
         if (err instanceof DBError) {
             throw err;
+        } else if (err instanceof Prisma.PrismaClientValidationError) {
+            throw new DBError("Missing required fields or fields provided are invalid.", 400);
         } else {
             throw new DBError("Something went wrong. Please try again later.", 500);
         }
@@ -254,8 +254,8 @@ export async function getSellersHandler(search, limit, cursor) {
         return result;
     }
     catch (err) {
-        if (err instanceof Prisma.PrismaClientValidationError) {
-            throw new DBError("Missing required fields or fields provided are invalid.", 400);
+        if (err instanceof DBError) {
+            throw err;
         } else {
             throw new DBError("Something went wrong. Please try again later.", 500);
         }
@@ -331,8 +331,6 @@ export async function getReviewsHandler(req) {
     catch (err) {
         if (err instanceof DBError) {
             throw err;
-        } else if (err instanceof Prisma.PrismaClientValidationError) {
-            throw new DBError("Missing required fields or fields provided are invalid.", 400);
         } else {
             throw new DBError("Something went wrong. Please try again later.", 500);
         }

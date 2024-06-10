@@ -3,6 +3,7 @@ import { Prisma } from '@prisma/client';
 import { DBError } from "../customErrors/DBError.js";
 import { checkUser } from '../utils/checkUser.js';
 import { MAX_REVIEW_CHARS } from '@freefinder/shared/dist/constants.js';
+import { giveSellerXP } from '../utils/giveSellerXP.js';
 
 export async function createReviewHandler(req) {
     try {
@@ -15,6 +16,7 @@ export async function createReviewHandler(req) {
                 postedBy: {
                     select: {
                         userID: true,
+                        sellerID: true,
                         user: {
                             select: {
                                 notificationSettings: true,
@@ -26,7 +28,7 @@ export async function createReviewHandler(req) {
             }
         });
 
-        if (!post) {
+        if (post == null) {
             throw new DBError("Service does not exist or has been deleted.", 404);
         } else if (post.postedBy.userID === req.userData.userID) {
             throw new DBError("You cannot write a review of your own service.", 403);
@@ -40,8 +42,8 @@ export async function createReviewHandler(req) {
         const sellerCommunication = parseInt(req.body.sellerCommunication);
         const serviceDelivery = parseInt(req.body.serviceDelivery);
 
-        if (serviceAsDescribed > 5 || serviceAsDescribed < 1 || sellerCommunication > 5 
-            || sellerCommunication < 1 || serviceDelivery > 5 || serviceDelivery < 1) {
+        if (Math.min(serviceAsDescribed, sellerCommunication, serviceDelivery) < 1 
+        || Math.max(serviceAsDescribed, sellerCommunication, serviceDelivery) > 5) {
             throw new DBError("Ratings must be between 1 and 5.", 400);
         }
 
@@ -78,14 +80,9 @@ export async function createReviewHandler(req) {
                 }
             });
 
-            if (!oldReview && rating >= 3.5) {
+            if (oldReview == null && rating >= 3.5) {
                 const gainedXP = rating >= 4.7 ? 100 : rating >= 4 ? 50 : 25;
-                await tx.seller.update({
-                    where: { userID: post.postedBy.userID },
-                    data: {
-                        sellerXP: { increment: gainedXP }
-                    }
-                });
+                giveSellerXP(post.postedBy.sellerID, gainedXP, tx);
 
                 if (post.postedBy.user.notificationSettings.newReviews !== false) {
                     const notification = await tx.notification.create({
