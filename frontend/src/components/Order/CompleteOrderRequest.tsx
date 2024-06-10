@@ -11,6 +11,7 @@ import OrderSummary from "./OrderSummary";
 import CheckMark from "../CheckMark";
 import { UserContext } from "src/providers/UserProvider";
 import { SendNotification } from "src/types/SendNotification";
+import KeyPair from "../KeyPair";
 
 interface CompleteOrderRequestProps {
     message: IMessage & { 
@@ -116,15 +117,22 @@ function CompleteOrderRequest({ message }: CompleteOrderRequestProps) {
             <div>
                 <CheckMark 
                     size={70}
-                    styles="m-auto mb-2"
+                    styles="m-auto"
                 />
-                <h3>
-                    {`Congratulations! ${message.completeOrderRequest.order.clientID === userContext.userData.userID ? "Your" : "The"} order is now complete!`}
+                <h3 className="text-center mt-2 mb-3 text-[17px]">
+                    {`Your ${message.completeOrderRequest.order.clientID !== userContext.userData.userID ? "client" : ""} order is now complete!`}
                 </h3>
+                <KeyPair 
+                    itemKey="Order ID" 
+                    itemValue={message.completeOrderRequest.order.orderID} 
+                    textSize={15} 
+                    styles="text-side-text-gray mb-4"
+                />
                 <OrderSummary 
                     subTotal={message.completeOrderRequest.order.subTotal} 
-                    total={message.completeOrderRequest.order.total}
-                    styles="mt-4 pb-4 border-b border-light-border-gray"
+                    total={message.completeOrderRequest.order.clientID === userContext.userData.userID ? message.completeOrderRequest.order.total : message.completeOrderRequest.order.subTotal}
+                    onlyShowTotal={message.completeOrderRequest.order.clientID !== userContext.userData.userID}
+                    styles={`${message.completeOrderRequest.order.clientID === userContext.userData.userID ? "py-4" : "pb-4"} border-y border-light-border-gray`}
                 />
                 <div className="flex gap-2 mt-4 justify-between">
                     <p className="text-sm text-side-text-gray">

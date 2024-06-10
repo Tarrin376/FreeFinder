@@ -5,22 +5,26 @@ interface OrderSummaryProps {
     subTotal: number,
     total: number,
     deliveryTime?: number,
+    onlyShowTotal?: boolean,
     styles?: string
 }
 
-function OrderSummary({ subTotal, total, deliveryTime, styles }: OrderSummaryProps) {
+function OrderSummary({ subTotal, total, deliveryTime, onlyShowTotal, styles }: OrderSummaryProps) {
     return (
         <div className={styles}>
-            <SummaryItem
-                label="Subtotal"
-                value={`£${subTotal.toFixed(2)}`}
-                styles="mb-2"
-            />
-            <SummaryItem
-                label={`Service fee (${SERVICE_FEE * 100}%)`}
-                value={`£${(subTotal * SERVICE_FEE).toFixed(2)}`}
-                styles="pb-4 border-b border-light-border-gray"
-            />
+            {!onlyShowTotal && 
+            <>
+                <SummaryItem
+                    label="Subtotal"
+                    value={`£${subTotal.toFixed(2)}`}
+                    styles="mb-2"
+                />
+                <SummaryItem
+                    label={`Service fee (${SERVICE_FEE * 100}%)`}
+                    value={`£${(subTotal * SERVICE_FEE).toFixed(2)}`}
+                    styles="pb-4 border-b border-light-border-gray"
+                />
+            </>}
             <SummaryItem
                 label="Total"
                 value={`£${total.toFixed(2)}`}

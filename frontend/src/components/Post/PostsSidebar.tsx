@@ -36,7 +36,7 @@ function PostsSidebar({ loading, updatePostServicePopUp, dispatch, state, clearF
             />}
             <h2 className="text-[18px] mb-[22px]">
                 Filters
-                <span className="text-[15px] underline text-main-blue ml-2 cursor-pointer font-bold" 
+                <span className="text-[15px] underline text-main-blue ml-2 cursor-pointer" 
                 onClick={clearFilters}>
                     Clear all
                 </span>
