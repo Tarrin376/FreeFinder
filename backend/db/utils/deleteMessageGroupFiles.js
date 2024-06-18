@@ -15,6 +15,8 @@ export async function deleteMessageGroupFiles(url) {
         await cloudinary.api.delete_folder(url);
     }
     catch (err) {
-        throw new DBError(err.error.message, err.error.http_code || 500);
+        if (err.error.http_code !== 404) {
+            throw new DBError(err.error.message, err.error.http_code || 500);
+        }
     }
 }

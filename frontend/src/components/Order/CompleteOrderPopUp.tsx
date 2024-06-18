@@ -38,13 +38,13 @@ function CompleteOrderPopUp({ setCompleteOrderPopUp, postID, packageType, revisi
     }
 
     return (
-        <PopUpWrapper setIsOpen={setCompleteOrderPopUp} title="Complete order">
+        <PopUpWrapper setIsOpen={setCompleteOrderPopUp} title="Finish order">
             <div>
                 {errorMessage !== "" && 
                 <ErrorMessage 
                     message={errorMessage} 
                     setErrorMessage={setErrorMessage} 
-                    title="Unable to complete order"
+                    title="Unable to finish order"
                 />}
                 <KeyPair
                     itemKey="Service ID"
@@ -61,7 +61,7 @@ function CompleteOrderPopUp({ setCompleteOrderPopUp, postID, packageType, revisi
                 />
                 <CheckBox
                     labelName="terms"
-                    text="After the completion of this order, the client will be notified and asked whether they believe that
+                    text="After this order is filled, the client will be notified and asked whether they believe that
                     the service has been fulfilled. If they agree that the service was delivered, you will receive your
                     compensation within the next few hours. However, if the client disagrees with the quality of your
                     service, please discuss the issues with the client and notify support if you believe that the client
@@ -72,13 +72,13 @@ function CompleteOrderPopUp({ setCompleteOrderPopUp, postID, packageType, revisi
             </div>
             <Button
                 action={requestOrderCompletion}
-                defaultText="Complete order"
-                loadingText="Requesting order completion"
+                defaultText="Finish order"
+                loadingText="Sending request to finish order"
                 styles={`main-btn ${checked ? "" : "invalid-button"}`}
                 textStyles="text-main-white"
                 setErrorMessage={setErrorMessage}
                 loadingSvgSize={28}
-                completedText="Order completion request sent"
+                completedText="Request sent"
                 keepErrorMessage={true}
                 whenComplete={() => setCompleteOrderPopUp(false)}
             />

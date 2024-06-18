@@ -138,7 +138,7 @@ function Order({ order, isClientOrder }: OrderProps) {
                                 {isClientOrder && 
                                 <button className="btn-primary bg-main-blue text-main-white 
                                 hover:bg-main-blue-hover" onClick={openCompleteOrderPopUp}>
-                                    Complete order
+                                    Finish order
                                 </button>}
                                 <button className="btn-primary red-btn" 
                                 onClick={() => isClientOrder ? openCancelOrderPopUp() : openReportSellerPopUp()}>

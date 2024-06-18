@@ -16,12 +16,11 @@ interface ProfilePicAndStatusProps {
 
 function ProfilePicAndStatus(props: ProfilePicAndStatusProps) {
     const status = useUserStatus(props.username, props.profileStatus);
-    
+
     const statusColour = status === UserStatus.ONLINE ? 'bg-green-500' : status === UserStatus.AWAY ? 
     'bg-orange-400' : status === UserStatus.BUSY ? 'bg-error-text' : 'bg-side-text-gray';
 
-    const defaultStatusStyles = `absolute rounded-full bg-light-green 
-    border-2 border-main-white ${statusColour}`;
+    const defaultStatusStyles = `absolute rounded-full border-2 border-main-white ${statusColour}`;
 
     function handleAction(): void {
         if (props.action) {

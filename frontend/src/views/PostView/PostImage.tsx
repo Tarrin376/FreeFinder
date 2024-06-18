@@ -1,7 +1,6 @@
 import { IPostImage } from "../../models/IPostImage";
 import { useRef, useState } from "react";
 import axios, { AxiosError } from "axios";
-import { PostPage } from "../../types/PostPage";
 import { useLocation } from "react-router-dom";
 import { getAPIErrorMessage } from "../../utils/getAPIErrorMessage";
 import { AnimatePresence } from "framer-motion";
@@ -10,6 +9,7 @@ import ErrorPopUp from "../../components/Error/ErrorPopUp";
 import LoadingSvg from "../../components/LoadingSvg";
 import { PostViewState } from "./PostView";
 import { compressImage } from "src/utils/compressImage";
+import { ExtendedPostPage } from "./PostView";
 
 interface PostImageProps {
     images: IPostImage[],
@@ -45,7 +45,7 @@ function PostImage(props: PostImageProps) {
             formData.append("file", compressedImage);
             formData.append("imageURL", props.images[props.index].url);
 
-            const resp = await axios.put<{ post: PostPage, message: string }>(`/api${location.pathname}`, formData, {
+            const resp = await axios.put<{ post: ExtendedPostPage, message: string }>(`/api${location.pathname}`, formData, {
                 headers: { 'Content-Type': 'multipart/form-data' }
             });
             
@@ -62,7 +62,7 @@ function PostImage(props: PostImageProps) {
     async function removeImage(): Promise<void> {
         try {
             setRemovingImage(true);
-            const resp = await axios.delete<{ updatedPost: PostPage, message: string }>
+            const resp = await axios.delete<{ updatedPost: ExtendedPostPage, message: string }>
             (`/api${location.pathname}/${props.images[props.index].cloudinaryID}`);
 
             props.dispatch({

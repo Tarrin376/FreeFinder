@@ -97,7 +97,7 @@ function CompleteOrderRequest({ message }: CompleteOrderRequestProps) {
                 <div className="flex gap-4 justify-between">
                     <button className="btn-primary bg-main-blue text-main-white w-1/2 hover:bg-main-blue-hover"
                     onClick={completeOrder}>
-                        Complete order
+                        Finish order
                     </button>
                     <button className="red-btn w-1/2" onClick={declineRequest}>
                         Decline request
@@ -111,7 +111,7 @@ function CompleteOrderRequest({ message }: CompleteOrderRequestProps) {
             </> :
             status === OrderRequestStatus.DECLINED ?
             <p className="text-error-text text-center">
-                The request to complete the order was declined.
+                The request to finish the order was declined.
             </p> :
             status === OrderRequestStatus.ACCEPTED ?
             <div>
@@ -120,7 +120,7 @@ function CompleteOrderRequest({ message }: CompleteOrderRequestProps) {
                     styles="m-auto"
                 />
                 <h3 className="text-center mt-2 mb-3 text-[17px]">
-                    {`Your ${message.completeOrderRequest.order.clientID !== userContext.userData.userID ? "client" : ""} order is now complete!`}
+                    {`${message.completeOrderRequest.order.clientID !== userContext.userData.userID ? "This" : "Your"} order has been filled!`}
                 </h3>
                 <KeyPair 
                     itemKey="Order ID" 
@@ -144,7 +144,7 @@ function CompleteOrderRequest({ message }: CompleteOrderRequestProps) {
                 </div>
             </div> :
             <p className="text-error-text text-center">
-                The request to complete the order was cancelled by the seller.
+                The request to finish the order was cancelled by the seller.
             </p>}
         </div>
     )

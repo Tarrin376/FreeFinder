@@ -5,6 +5,8 @@ import { prisma } from '../index.js';
 import { getPaginatedData } from '../utils/getPaginatedData.js';
 import { giveSellerXP } from '../utils/giveSellerXP.js';
 
+const ORDER_COMPLETED_XP = 50;
+
 export async function getOrdersHandler(req) {
     try {
         await checkUser(req.userData.userID, req.username);
@@ -101,13 +103,13 @@ function getNotificationMessage(status, user, orderID) {
     switch (status) {
         case "ACCEPTED":
             return {
-                title: "Request to complete order accepted",
-                text: `${user} accepted your request to complete the order: ${orderID}.`
+                title: "Request to finish order accepted",
+                text: `${user} accepted your request to finish the order: ${orderID}.`
             };
         case "DECLINED":
             return {
-                title: "Request to complete order declined",
-                text: `${user} declined your request to complete the order: ${orderID}.`
+                title: "Request to finish order declined",
+                text: `${user} declined your request to finish the order: ${orderID}.`
             };
         default:
             throw new DBError(`Unknown order request status: ${status}.`, 400);
@@ -174,14 +176,15 @@ export async function updateCompleteOrderRequestHandler(req) {
                     }
                 });
     
-                await giveSellerXP(order.sellerID, 50, tx);
+                await giveSellerXP(order.sellerID, ORDER_COMPLETED_XP, tx);
             }
 
             if (order.seller.user.notificationSettings.orders !== false) {
                 const notification = await tx.notification.create({
                     data: {
                         ...notificationMessage,
-                        userID: order.seller.user.userID
+                        userID: order.seller.user.userID,
+                        xp: ORDER_COMPLETED_XP
                     }
                 });
 

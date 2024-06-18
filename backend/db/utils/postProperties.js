@@ -11,6 +11,15 @@ export const postProperties = {
                     userID: true
                 }
             },
+            _count: {
+                select: {
+                    orders: {
+                        where: {
+                            status: "COMPLETED"
+                        }
+                    }
+                }
+            },
             rating: true,
             description: true,
             summary: true,

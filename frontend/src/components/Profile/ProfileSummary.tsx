@@ -4,10 +4,11 @@ import ProfileSummaryItem from "./ProfileSummaryItem";
 
 interface ProfileSummaryProps {
     memberDate: Date,
+    ordersFilled: number,
     styles?: string
 }
 
-function ProfileSummary({ memberDate, styles }: ProfileSummaryProps) {
+function ProfileSummary({ memberDate, ordersFilled, styles }: ProfileSummaryProps) {
     const defaultStyles = `flex flex-col gap-2`;
 
     return (
@@ -19,8 +20,8 @@ function ProfileSummary({ memberDate, styles }: ProfileSummaryProps) {
             />
             <ProfileSummaryItem
                 image={StarGrayIcon}
-                itemKey="Clients served"
-                itemValue={"6"}
+                itemKey="Orders filled"
+                itemValue={ordersFilled.toString()}
             />
         </div>
     )

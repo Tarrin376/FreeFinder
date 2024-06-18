@@ -138,6 +138,15 @@ export async function getSellerDetailsHandler(sellerID) {
                 sellerID: sellerID
             },
             select: {
+                _count: {
+                    select: {
+                        orders: {
+                            where: {
+                                status: "COMPLETED"
+                            }
+                        }
+                    }
+                },
                 rating: true,
                 sellerID: true,
                 sellerXP: true,

@@ -27,12 +27,20 @@ import { useWindowSize } from "src/hooks/useWindowSize";
 import ReviewsAndPackages from "./ReviewsAndPackages";
 import InfoPopUp from "src/components/InfoPopUp";
 
+export type ExtendedPostPage = PostPage & {
+    postedBy: PostPage["postedBy"] & {
+        _count: {
+            orders: number
+        }
+    }
+}
+
 export type PostViewState = {
     about: string,
     title: string,
     aboutToggle: boolean,
     titleToggle: boolean,
-    postData: PostPage | undefined,
+    postData: ExtendedPostPage | undefined,
     index: number,
     addingImage: boolean
 }
@@ -75,7 +83,7 @@ function PostView() {
 
     async function updatePost(data: Partial<{ title: string, about: string }>) {
         try {
-            const resp = await axios.put<{ post: PostPage, message: string }>(`/api${location.pathname}`, { update: data });
+            const resp = await axios.put<{ post: ExtendedPostPage, message: string }>(`/api${location.pathname}`, { update: data });
             dispatch({ postData: resp.data.post });
             setErrorMessage("");
         }
@@ -98,7 +106,7 @@ function PostView() {
             const formData = new FormData();
             formData.append("file", compressedImage);
 
-            const resp = await axios.post<{ updatedPost: PostPage, message: string }>
+            const resp = await axios.post<{ updatedPost: ExtendedPostPage, message: string }>
             (`/api${location.pathname}`, formData, {
                 headers: { 'Content-Type': 'multipart/form-data' }
             });
@@ -144,7 +152,7 @@ function PostView() {
     useEffect(() => {
         (async (): Promise<void> => {
             try {
-                const resp = await axios.get<{ post: PostPage, message: string }>(`/api${location.pathname}`);
+                const resp = await axios.get<{ post: ExtendedPostPage, message: string }>(`/api${location.pathname}`);
                 dispatch({
                     postData: resp.data.post,
                     about: resp.data.post.about,
@@ -164,7 +172,7 @@ function PostView() {
         }
     }, [state.addingImage]);
 
-    if (!state.postData) {
+    if (state.postData == null) {
         return (
             <></>
         );
@@ -333,6 +341,7 @@ function PostView() {
                             summary={state.postData.postedBy.summary}
                             country={state.postData.postedBy.user.country}
                             memberDate={state.postData.postedBy.user.memberDate}
+                            ordersFilled={state.postData.postedBy._count.orders}
                             rating={state.postData.postedBy.rating}
                             languages={state.postData.postedBy.languages}
                             skills={state.postData.postedBy.skills}

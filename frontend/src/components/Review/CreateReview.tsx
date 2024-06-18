@@ -110,8 +110,8 @@ function CreateReview({ postID, sellerID, hidden }: CreateReviewProps) {
                 completedText="Review submitted"
                 defaultText="Submit review"
                 loadingText="Submitting review"
-                styles={`side-btn h-[48px] w-full mt-6 ${hidden ? "invalid-button" : ""}`}
-                textStyles={hidden ? "text-disabled-gray" : "text-main-blue"}
+                styles={`side-btn h-[48px] w-full mt-6 ${hidden || userContext.userData.username === "" ? "invalid-button" : ""}`}
+                textStyles={hidden || userContext.userData.username === "" ? "text-disabled-gray" : "text-main-blue"}
                 setErrorMessage={setErrorMessage}
                 loadingSvgSize={28}
                 loadingSvgColour="#4169f7"

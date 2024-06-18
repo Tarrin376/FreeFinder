@@ -280,7 +280,7 @@ export async function sendCompleteOrderRequestHandler(req) {
             await tx.message.create({
                 data: {
                     fromID: seller.user.userID,
-                    messageText: `The seller has opened a request to complete your order.`,
+                    messageText: `The seller has opened a request to finish your order.`,
                     groupID: messageGroup.groupID,
                     completeOrderRequest: {
                         create: {

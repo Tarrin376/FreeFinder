@@ -51,7 +51,7 @@ function SellerProfileView() {
         setReportSellerPopUp(true);
     }
 
-    if (!sellerDetails) {
+    if (sellerDetails == null) {
         return <></>
     }
 
@@ -113,6 +113,7 @@ function SellerProfileView() {
                         <div className={`mt-5 flex gap-5 relative ${windowSize < 670 ? "flex-col" : "items-center justify-between"}`}>
                             <ProfileSummary
                                 memberDate={sellerDetails.user.memberDate}
+                                ordersFilled={sellerDetails._count.orders}
                                 styles={`${windowSize < 670 ? "flex-grow" : "w-[400px]"} bg-[#f8f8f8] p-3 rounded-[8px]`}
                             />
                             <div className="flex flex-col justify-between">

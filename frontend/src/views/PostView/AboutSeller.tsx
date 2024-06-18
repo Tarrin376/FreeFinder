@@ -20,6 +20,7 @@ interface AboutSellerProps {
     summary: string,
     country: string,
     memberDate: Date,
+    ordersFilled: number,
     rating: number,
     languages: string[],
     skills: string[],
@@ -90,6 +91,7 @@ function AboutSeller(props: AboutSellerProps) {
                 {props.description !== "" && <p>{props.description}</p>}
                 <ProfileSummary 
                     memberDate={props.memberDate}
+                    ordersFilled={props.ordersFilled}
                     styles="mt-4 mb-4"
                 />
                 <p>Seller speaks</p>

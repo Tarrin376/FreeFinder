@@ -12,6 +12,9 @@ export type SellerProfile = {
     languages: string[],
     skills: string[],
     sellerLevel: ISellerLevel,
+    _count: {
+        orders: number
+    },
     user: {
         profilePicURL: string,
         status: UserStatus,

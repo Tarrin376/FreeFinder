@@ -82,7 +82,7 @@ export async function createReviewHandler(req) {
 
             if (oldReview == null && rating >= 3.5) {
                 const gainedXP = rating >= 4.7 ? 100 : rating >= 4 ? 50 : 25;
-                giveSellerXP(post.postedBy.sellerID, gainedXP, tx);
+                await giveSellerXP(post.postedBy.sellerID, gainedXP, tx);
 
                 if (post.postedBy.user.notificationSettings.newReviews !== false) {
                     const notification = await tx.notification.create({
