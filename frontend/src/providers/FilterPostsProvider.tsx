@@ -168,6 +168,7 @@ function FilterPostsProvider({ children, urlPrefix }: FilterPostsProviderProps) 
         if (windowSize < 1015) {
             posts.resetState();
         }
+    // eslint-disable-next-line react-hooks/exhaustive-deps
     }, [state.sort]);
     
     return (
