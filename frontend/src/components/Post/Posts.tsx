@@ -1,6 +1,6 @@
 import { useContext, memo } from 'react';
 import { IPost } from '../../models/IPost';
-import Post from './Post';
+import PostCard from './PostCard';
 import PostSkeleton from '../../skeletons/PostSkeleton';
 import PostsWrapper from '../../wrappers/PostsWrapper';
 import NoResultsFound from '../NoResultsFound';
@@ -40,7 +40,7 @@ function Posts({ noResultsFoundTitle, posts, loading, count, canRemove, title }:
             <PostsWrapper>
                 {posts.map((post: IPost, index: number) => {
                     return (
-                        <Post
+                        <PostCard
                             postInfo={post} 
                             index={index}
                             canRemove={canRemove}

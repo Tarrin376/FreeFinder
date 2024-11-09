@@ -7,11 +7,20 @@ import { PaginationResponse } from '../types/PaginateResponse';
 
 export const limit = 20;
 
-export function usePaginateData<T1, T2, T3 extends PaginationResponse<T2>>(
-    pageRef: React.RefObject<HTMLDivElement>, curCursor: React.MutableRefObject<string | undefined>, url: string, 
-    page: { value: number }, setPage: React.Dispatch<React.SetStateAction<{ value: number }>>, args: T1, reverseScroll?: boolean,
-    cb?: (value: T3) => void)
-: PaginateData<T2> {
+export function usePaginateData<
+    T1, 
+    T2, 
+    T3 extends PaginationResponse<T2>
+>(
+    pageRef: React.RefObject<HTMLDivElement>,
+    curCursor: React.MutableRefObject<string | undefined>,
+    url: string,
+    page: { value: number },
+    setPage: React.Dispatch<React.SetStateAction<{ value: number }>>,
+    args: T1,
+    reverseScroll?: boolean,
+    callback?: (value: T3) => void
+): PaginateData<T2> {
     const reachedBottom = useRef<boolean>(false);
     const total = useRef<number>(0);
     const [loading, setLoading] = useState<boolean>(false);
@@ -47,8 +56,8 @@ export function usePaginateData<T1, T2, T3 extends PaginationResponse<T2>>(
                     limit: limit
                 });
 
-                if (cb) {
-                    cb(resp.data);
+                if (callback) {
+                    callback(resp.data);
                 }
 
                 setData((state) => [...state, ...resp.data.next]);

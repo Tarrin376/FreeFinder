@@ -22,7 +22,7 @@ frontend/npm-debug.log*
 frontend/yarn-debug.log*
 frontend/yarn-error.log*
 
-backend/db/node_modules
+backend/node_modules
 # Keep environment variables out of version control
-backend/db/.env
-backend/db/prisma/migrations
+backend/.env
+backend/prisma/migrations

@@ -6,7 +6,7 @@ import { useState, useEffect } from "react";
 import Button from "../../components/Button";
 import axios, { AxiosError } from "axios";
 import { getAPIErrorMessage } from "../../utils/getAPIErrorMessage";
-import TextEditor from "../../components/TextEditor/TextEditor";
+import TextEditor from "../../components/TextEditor";
 import { PostPage } from "../../types/PostPage";
 import MatchedResults from "../../components/MatchedResults";
 import OutsideClickHandler from "react-outside-click-handler";

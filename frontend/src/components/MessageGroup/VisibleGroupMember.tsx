@@ -1,7 +1,7 @@
 import ProfilePicAndStatus from "../Profile/ProfilePicAndStatus";
 import CloseSvg from "../CloseSvg";
 import { useWindowSize } from "src/hooks/useWindowSize";
-import { MIN_DUAL_WIDTH } from "../Message/MessagePreviews";
+import { MIN_DUAL_WIDTH } from "../../views/LiveChat/LiveChat";
 import { useContext } from "react";
 import { UserContext } from "src/providers/UserProvider";
 

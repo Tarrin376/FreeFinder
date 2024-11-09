@@ -14,7 +14,7 @@ import OrderRequest from "../Order/OrderRequest";
 import { FoundUsers } from "../../types/FoundUsers";
 import DateOccurred from "../DateOccurred";
 import { useWindowSize } from "src/hooks/useWindowSize";
-import { MIN_DUAL_WIDTH } from "./MessagePreviews";
+import { MIN_DUAL_WIDTH } from "../../views/LiveChat/LiveChat";
 import CompleteOrderRequest from "../Order/CompleteOrderRequest";
 import { IOrderRequest } from "src/models/IOrderRequest";
 import { ICompleteOrderRequest } from "src/models/ICompleteOrderRequest";

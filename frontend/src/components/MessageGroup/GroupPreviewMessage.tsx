@@ -2,7 +2,7 @@ import { GroupPreview } from "../../types/GroupPreview";
 import ProfilePicAndStatus from "../Profile/ProfilePicAndStatus";
 import { useContext, useEffect, useCallback, useState } from "react";
 import { UserContext } from "../../providers/UserProvider";
-import Typing from "../Chat/Typing";
+import Typing from "../Typing";
 import { useUsersTyping } from "../../hooks/useUsersTyping";
 import { IMessage } from "../../models/IMessage";
 import { getTime } from "../../utils/getTime";
@@ -12,7 +12,7 @@ import axios from "axios";
 import { IUser } from "src/models/IUser";
 import Count from "../Count";
 import { useWindowSize } from "src/hooks/useWindowSize";
-import { MIN_DUAL_WIDTH } from "../Message/MessagePreviews";
+import { MIN_DUAL_WIDTH } from "../../views/LiveChat/LiveChat";
 
 interface GroupPreviewMessageProps {
     group: GroupPreview,

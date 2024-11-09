@@ -1,6 +1,6 @@
 import { useState, useContext, useRef } from 'react';
-import SignUp from '../components/Account/SignUp';
-import LogIn from '../components/Account/LogIn';
+import SignUp from '../views/SignUp/SignUp';
+import LogIn from '../views/LogIn/LogIn';
 import AccountCreated from '../components/Account/AccountCreated';
 import { IUserContext, UserContext } from '../providers/UserProvider';
 import { Outlet } from 'react-router-dom';

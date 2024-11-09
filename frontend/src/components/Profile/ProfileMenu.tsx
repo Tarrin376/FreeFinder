@@ -10,7 +10,7 @@ import ChangeSellerDetails from "../Seller/ChangeSellerDetails";
 import { AnimatePresence } from "framer-motion";
 import AccountBalance from "../Account/AccountBalance";
 import ChatIcon from "../../assets/chat.png";
-import MessagePreviews from "../Message/MessagePreviews";
+import LiveChat from "../../views/LiveChat/LiveChat";
 import Count from "../Count";
 import { GroupPreview } from "src/types/GroupPreview";
 import { IMessage } from "src/models/IMessage";
@@ -116,7 +116,7 @@ function ProfileMenu({ logout }: ProfileMenuProps) {
                 {updateSellerProfilePopUp && <ChangeSellerDetails setSellerProfilePopUp={setUpdateSellerProfilePopUp} />}
                 {balancePopUp && <AccountBalance setBalancePopUp={setBalancePopUp} />}
                 {messagesPopUp && 
-                <MessagePreviews 
+                <LiveChat 
                     group={group}
                     setGroup={setGroup}
                     setMessagesPopUp={setMessagesPopUp} 

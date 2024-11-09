@@ -17,6 +17,7 @@ function Notifications({ setUnreadNotifications, toggleNotifications, allRead }:
 
     const pageRef = useRef<HTMLDivElement>(null);
     const cursor = useRef<string>();
+    
     const url = `/api/users/${userContext.userData.username}/notifications/all`;
     const notifications = usePaginateData<{}, INotification, PaginationResponse<INotification>>(pageRef, cursor, url, page, setPage, {});
     const [allNotifications, setAllNotifications] = useState<INotification[]>([]);
@@ -39,7 +40,7 @@ function Notifications({ setUnreadNotifications, toggleNotifications, allRead }:
 
     return (
         <div className="flex-grow overflow-y-scroll" ref={pageRef}>
-            {allNotifications.map((notification: INotification, index: number) => {
+            {allNotifications.map((notification: INotification) => {
                 return (
                     <Notification
                         {...notification}

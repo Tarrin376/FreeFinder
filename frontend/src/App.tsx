@@ -1,16 +1,16 @@
-import HomeView from './views/HomeView/HomeView';
+import HomeView from './views/Home/HomeView';
 import Navbar from './layouts/Navbar';
 import { BrowserRouter, Routes, Route } from 'react-router-dom';
 import UserProvider from './providers/UserProvider';
-import SavedServicesView from './views/SavedServicesView/SavedServicesView';
-import ErrorView from './views/ErrorView/ErrorView';
-import MyPostsView from './views/MyPostsView/MyPostsView';
-import PostView from './views/PostView/PostView';
+import SavedServices from './views/SavedServices/SavedServices';
+import ErrorView from './views/Error/ErrorView';
+import MyPosts from './views/MyPosts/MyPosts';
+import Post from './views/Post/Post';
 import FilterPostsProvider from './providers/FilterPostsProvider';
 import BrowseAllView from './views/BrowseAll/BrowseAllView';
-import SellerProfileView from './views/SellerProfileView/SellerProfileView';
-import MyOrdersView from './views/MyOrdersView/MyOrdersView';
-import ClientOrdersView from './views/ClientOrdersView/ClientOrdersView';
+import SellerProfile from './views/SellerProfile/SellerProfile';
+import MyOrders from './views/MyOrders/MyOrders';
+import ClientOrdersView from './views/ClientOrders/ClientOrdersView';
 
 function App() {
     return (
@@ -20,10 +20,10 @@ function App() {
                     <Routes>
                         <Route path="/" element={<Navbar />}>
                             <Route index element={<HomeView />} />
-                            <Route path="sellers/:username" element={<SellerProfileView />} />
+                            <Route path="sellers/:username" element={<SellerProfile />} />
                             <Route path=":username?/saved/posts" element={
                                 <FilterPostsProvider key={`saved`} urlPrefix="/users">
-                                    <SavedServicesView />
+                                    <SavedServices />
                                 </FilterPostsProvider>} 
                             />
                             <Route path="posts/all" element={
@@ -33,12 +33,12 @@ function App() {
                             />
                             <Route path=":username?/posts" element={
                                 <FilterPostsProvider key={`my-posts`} urlPrefix="/users">
-                                    <MyPostsView />
+                                    <MyPosts />
                                 </FilterPostsProvider>} 
                             />
-                            <Route path=":username?/orders" element={<MyOrdersView />} />
+                            <Route path=":username?/orders" element={<MyOrders />} />
                             <Route path=":username?/client-orders" element={<ClientOrdersView />} />
-                            <Route path="posts/:id" element={<PostView />} />
+                            <Route path="posts/:id" element={<Post />} />
                             <Route path="*" element={
                                 <ErrorView 
                                     title="404" 

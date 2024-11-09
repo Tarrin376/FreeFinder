@@ -1,5 +1,5 @@
 import { FailedUpload } from "src/types/FailedUploaded";
-import UploadedImage from "src/components/File/UploadedImage";
+import UploadedImage from "src/components/UploadedImage";
 import Button from "src/components/Button";
 
 interface FailedUploadsProps {
