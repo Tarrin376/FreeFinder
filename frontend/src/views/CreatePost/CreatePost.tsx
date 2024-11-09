@@ -6,7 +6,7 @@ import Package from './Package';
 import { IPackage } from '../../models/IPackage';
 import axios, { AxiosError } from "axios";
 import { getAPIErrorMessage } from "../../utils/getAPIErrorMessage";
-import { FailedUpload } from '../../types/FailedUploaded';
+import { FailedUpload } from '../../types/FailedUpload';
 import { UserContext } from '../../providers/UserProvider';
 import { PackageTypes } from '../../enums/PackageTypes';
 import { CreatePostSections } from '../../enums/CreatePostSections';

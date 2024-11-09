@@ -8,8 +8,7 @@ import SendIcon from "../../../assets/send.png";
 import { AnimatePresence } from "framer-motion";
 import ErrorPopUp from "../../../components/Error/ErrorPopUp";
 import { PaginationResponse } from "../../../types/PaginateResponse";
-import Typing from "../../../components/Typing";
-import { useUsersTyping } from "../../../hooks/useUsersTyping";
+import UsersTyping from "../../../components/UsersTyping";
 import AttachIcon from "../../../assets/attach.png";
 import EmojiIcon from "../../../assets/emoji.png";
 import EmojiPicker from "emoji-picker-react";
@@ -18,7 +17,7 @@ import AttachFiles from "../../../components/File/AttachFiles";
 import UploadedFiles from "../../../components/File/UploadedFiles";
 import { GroupPreview } from "../../../types/GroupPreview";
 import TagSuggestions from "../../../components/TagSuggestions";
-import { FailedUpload } from "../../../types/FailedUploaded";
+import { FailedUpload } from "../../../types/FailedUpload";
 import { IMessageFile } from "../../../models/IMessageFile";
 import SupportedFileFormats from "../../../components/File/SupportedFileFormats";
 import { MatchedMembers } from "../../../types/MatchedMembers";
@@ -29,24 +28,13 @@ import { SendNotification } from "src/types/SendNotification";
 import { useWindowSize } from "src/hooks/useWindowSize";
 import { MIN_DUAL_WIDTH } from "../LiveChat";
 import { compressImage } from "src/utils/compressImage";
+import { ChatBoxState } from "../../../types/ChatBoxState";
 
 interface ChatBoxProps {
     seller: FoundUsers[number],
     workType: string,
     groupID: string,
     groupMembers: GroupPreview["members"]
-}
-
-export type ChatBoxState = {
-    sendingMessage: boolean,
-    toggleEmojiPicker: boolean,
-    toggleAttachFiles: boolean,
-    toggleTagSuggestions: boolean,
-    tag: string,
-    newMessages: IMessage[],
-    uploadedFiles: File[],
-    failedUploads: FailedUpload[],
-    matchedMembers: MatchedMembers
 }
 
 const INITIAL_STATE: ChatBoxState = {
@@ -82,7 +70,6 @@ function ChatBox({ seller, workType, groupID, groupMembers }: ChatBoxProps) {
 
     const messages = usePaginateData<{}, IMessage, PaginationResponse<IMessage>>(pageRef, cursor, url, page, setPage, {}, true);
     const selectedIndex = useArrowNavigation<MatchedMembers[number]>(suggestionsRef, inputRef, state.matchedMembers, 53, TAG_SUGGESTIONS_HEIGHT);
-    const usersTyping = useUsersTyping(groupID);
     const windowSize = useWindowSize();
 
     async function addMessageFiles(messageID: string): Promise<{ failed: FailedUpload[], succeeded: IMessageFile[] }> {
@@ -193,8 +180,7 @@ function ChatBox({ seller, workType, groupID, groupMembers }: ChatBoxProps) {
     }
 
     function handleKeyDown(e: React.KeyboardEvent<HTMLInputElement>): void {
-        if ((e.key === "Enter" && !state.toggleTagSuggestions) || e.key === "ArrowLeft" 
-            || e.key === "ArrowRight" || !inputRef.current) {
+        if ((e.key === "Enter" && !state.toggleTagSuggestions) || e.key === "ArrowLeft" || e.key === "ArrowRight" || !inputRef.current) {
             dispatch({ toggleTagSuggestions: false });
             return;
         }
@@ -204,17 +190,17 @@ function ChatBox({ seller, workType, groupID, groupMembers }: ChatBoxProps) {
             return;
         }
         
-        const pos = inputRef.current.selectionStart || 0;
+        const cursorPosition = inputRef.current.selectionStart || 0;
         userContext.socket?.emit("typing-message", userContext.userData.username, groupID);
 
-        if (e.key === "@" && (inputRef.current.value === "" || inputRef.current.value[pos - 1] === " ")) {
+        if (e.key === "@" && (inputRef.current.value === "" || inputRef.current.value[cursorPosition - 1] === " ")) {
             dispatch({ toggleTagSuggestions: true });
             return;
         } else if (e.key === " ") {
             dispatch({ toggleTagSuggestions: false, tag: "" });
             return;
-        } else if (e.key === "Backspace" && inputRef.current.value !== "" && inputRef.current.value[pos - 1] === "@"
-            && (inputRef.current.value.length === 1 || inputRef.current.value[pos - 2] !== "@")) {
+        } else if (e.key === "Backspace" && inputRef.current.value !== "" && inputRef.current.value[cursorPosition - 1] === "@"
+            && (inputRef.current.value.length === 1 || inputRef.current.value[cursorPosition - 2] !== "@")) {
             dispatch({ toggleTagSuggestions: false });
             return;
         }
@@ -360,9 +346,7 @@ function ChatBox({ seller, workType, groupID, groupMembers }: ChatBoxProps) {
                         suggestionsRef={suggestionsRef}
                     />}
                 </AnimatePresence>
-                <div className="mb-2">
-                    <Typing usersTyping={usersTyping} />
-                </div>
+                <UsersTyping groupID={groupID} styles="mb-2" />
                 <form className="search-bar w-full items-center" onSubmit={sendMessage}>
                     <input 
                         className="focus:outline-none placeholder-search-text bg-transparent mb-3 w-full"

@@ -48,22 +48,22 @@ function LiveChat({ setMessagesPopUp, group, setGroup, setGlobalUnreadMessages }
 
     const showNewGroup = useCallback((group: GroupPreview) => {
         userContext.socket?.emit("join-message-group", group.groupID);
-        setAllGroups((cur) => [group, ...cur]);
-        setGroupCount((cur) => cur + 1);
+        setAllGroups((allGroups) => [group, ...allGroups]);
+        setGroupCount((groupCount) => groupCount + 1);
     }, [userContext.socket]);
 
     const updateMembers = useCallback((members: GroupPreview["members"], id: string) => {
         if (id === group?.groupID) {
-            setGroup((cur) => {
-                if (!cur) return cur;
+            setGroup((group) => {
+                if (!group) return group;
                 return {
-                    ...cur,
+                    ...group,
                     members: members
                 };
             });
         }
 
-        setAllGroups((cur) => cur.map((group: GroupPreview) => {
+        setAllGroups((allGroups) => allGroups.map((group: GroupPreview) => {
             if (group.groupID === id) {
                 return {
                     ...group,
@@ -84,6 +84,7 @@ function LiveChat({ setMessagesPopUp, group, setGroup, setGlobalUnreadMessages }
         if (!group && allGroups.length > 0 && windowSize >= 835) {
             setGroup(allGroups[0]);
         }
+    // eslint-disable-next-line react-hooks/exhaustive-deps
     }, [group, allGroups, setGroup]);
 
     useEffect(() => {

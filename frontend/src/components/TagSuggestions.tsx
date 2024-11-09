@@ -3,7 +3,7 @@ import { getMatchedResults } from "../utils/getMatchedResults";
 import { GroupPreview } from "../types/GroupPreview";
 import ProfilePicAndStatus from "./Profile/ProfilePicAndStatus";
 import HighlightedSubstring from "./HighlightedSubstring";
-import { ChatBoxState } from "../views/LiveChat/CurrentGroupChat/ChatBox";
+import { ChatBoxState } from "../types/ChatBoxState";
 import { MatchedMembers } from "../types/MatchedMembers";
 import { TAG_SUGGESTIONS_HEIGHT } from "../views/LiveChat/CurrentGroupChat/ChatBox";
 

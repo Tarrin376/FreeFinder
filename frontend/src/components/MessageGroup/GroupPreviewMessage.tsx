@@ -2,8 +2,7 @@ import { GroupPreview } from "../../types/GroupPreview";
 import ProfilePicAndStatus from "../Profile/ProfilePicAndStatus";
 import { useContext, useEffect, useCallback, useState } from "react";
 import { UserContext } from "../../providers/UserProvider";
-import Typing from "../Typing";
-import { useUsersTyping } from "../../hooks/useUsersTyping";
+import UsersTyping from "../UsersTyping";
 import { IMessage } from "../../models/IMessage";
 import { getTime } from "../../utils/getTime";
 import MessageSent from "../Message/MessageSent";
@@ -28,10 +27,9 @@ function GroupPreviewMessage({ group, selectedGroup, action, setGlobalUnreadMess
     const [unreadMessages, setUnreadMessages] = useState<number>(group.members.find((member) => {
         return member.user.username === userContext.userData.username
     })!.unreadMessages);
-
-    const usersTyping = useUsersTyping(group.groupID);
-    const windowSize = useWindowSize();
+    
     const isOwnMessage = lastMessage && lastMessage.from.username === userContext.userData.username;
+    const windowSize = useWindowSize();
 
     const clearUnreadMessages = useCallback(async (): Promise<void> => {
         try {
@@ -99,14 +97,12 @@ function GroupPreviewMessage({ group, selectedGroup, action, setGlobalUnreadMess
                         </span>}
                     </div>
                     <div className="flex items-center justify-between gap-[5px]">
-                        {usersTyping.length > 0 ?
-                        <div className="mt-[4px]">
-                            <Typing 
-                                usersTyping={usersTyping}
-                                textStyles="!text-sm"
-                                dotStyles="w-[4px] h-[4px]"
-                            />
-                        </div> : 
+                        <UsersTyping 
+                            groupID={group.groupID}
+                            textStyles="!text-sm"
+                            dotStyles="w-[4px] h-[4px]"
+                            styles="mt-[4px]"
+                        />
                         <div className="flex justify-between items-center overflow-hidden">
                             <div className="flex-grow overflow-hidden">
                                 {!lastMessage ? 
@@ -124,7 +120,7 @@ function GroupPreviewMessage({ group, selectedGroup, action, setGlobalUnreadMess
                                     styles="text-ellipsis whitespace-nowrap overflow-hidden"
                                 />}
                             </div>
-                        </div>}
+                        </div>
                         {unreadMessages > 0 ? 
                         <Count 
                             value={unreadMessages} 

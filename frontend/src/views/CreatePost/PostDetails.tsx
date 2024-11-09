@@ -1,7 +1,7 @@
 import PopUpWrapper from "../../wrappers/PopUpWrapper";
 import ErrorMessage from "../../components/Error/ErrorMessage";
 import { CreatePostSections } from "../../enums/CreatePostSections";
-import { FailedUpload } from "../../types/FailedUploaded";
+import { FailedUpload } from "../../types/FailedUpload";
 import { useState, useEffect } from "react";
 import Button from "../../components/Button";
 import axios, { AxiosError } from "axios";

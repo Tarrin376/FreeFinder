@@ -1,4 +1,4 @@
-import { FailedUpload } from "src/types/FailedUploaded";
+import { FailedUpload } from "src/types/FailedUpload";
 import UploadedImage from "src/components/UploadedImage";
 import Button from "src/components/Button";
 

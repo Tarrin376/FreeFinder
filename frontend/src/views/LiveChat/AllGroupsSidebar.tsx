@@ -2,7 +2,7 @@ import GroupPreviewMessage from "../../components/MessageGroup/GroupPreviewMessa
 import { GroupPreview } from "../../types/GroupPreview";
 import { memo } from "react";
 
-interface AllGroupsSidebarProps {
+interface AllGroupsProps {
     allGroups: GroupPreview[],
     pageRef: React.RefObject<HTMLDivElement>,
     group: GroupPreview | undefined,
@@ -10,7 +10,7 @@ interface AllGroupsSidebarProps {
     setGlobalUnreadMessages: React.Dispatch<React.SetStateAction<number>>
 }
 
-function AllGroupsSidebar({ allGroups, pageRef, group, setGroup, setGlobalUnreadMessages }: AllGroupsSidebarProps) {
+function AllGroups({ allGroups, pageRef, group, setGroup, setGlobalUnreadMessages }: AllGroupsProps) {
     function updateMessageGroup(nextGroup: GroupPreview) {
         setGroup(nextGroup);
     }
@@ -32,4 +32,4 @@ function AllGroupsSidebar({ allGroups, pageRef, group, setGroup, setGlobalUnread
     )
 }
 
-export default memo(AllGroupsSidebar);
+export default memo(AllGroups);
