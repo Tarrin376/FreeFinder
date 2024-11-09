@@ -8,7 +8,7 @@ import { AnimatePresence } from "framer-motion";
 import { usePaginateData } from "../../hooks/usePaginateData";
 import { GroupPreview } from "../../types/GroupPreview";
 import { PaginationResponse } from "../../types/PaginateResponse";
-import CurrentGroupChat from "./CurrentGroupChat/CurrentGroupChat";
+import SelectedGroupChat from "./SelectedGroupChat/SelectedGroupChat";
 import AllGroupsSidebar from "./AllGroupsSidebar";
 import { useWindowSize } from "src/hooks/useWindowSize";
 
@@ -141,7 +141,7 @@ function LiveChat({ setMessagesPopUp, group, setGroup, setGlobalUnreadMessages }
                     {(windowSize >= MIN_DUAL_WIDTH || group) &&
                     <>
                         {group ? 
-                        <CurrentGroupChat 
+                        <SelectedGroupChat 
                             group={group}
                             setAllGroups={setAllGroups}
                             setGroupCount={setGroupCount}

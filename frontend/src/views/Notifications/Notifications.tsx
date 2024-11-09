@@ -1,14 +1,14 @@
 import SidePopUpWrapper from "src/wrappers/SidePopUpWrapper";
-import SettingsIcon from "../assets/settings.png";
+import SettingsIcon from "../../assets/settings.png";
 import { NotificationSections } from "src/enums/NotificationSections";
 import { useState, useContext } from "react";
-import Notifications from "../components/Notification/Notifications";
-import NotificationSettings from "../components/Notification/NotificationSettings";
+import NotificationsList from "./NotificationsList";
+import NotificationSettings from "./NotificationSettings";
 import { AnimatePresence } from "framer-motion";
 import axios, { AxiosError } from "axios";
 import { UserContext } from "src/providers/UserProvider";
 import { getAPIErrorMessage } from "src/utils/getAPIErrorMessage";
-import ErrorPopUp from "../components/Error/ErrorPopUp";
+import ErrorPopUp from "../../components/Error/ErrorPopUp";
 import MessageSent from "src/components/Message/MessageSent";
 
 interface NotificationsWrapperProps {
@@ -16,7 +16,7 @@ interface NotificationsWrapperProps {
     setUnreadNotifications: React.Dispatch<React.SetStateAction<number>>
 }
 
-function NotificationsWrapper({ toggleNotifications, setUnreadNotifications }: NotificationsWrapperProps) {
+function Notifications({ toggleNotifications, setUnreadNotifications }: NotificationsWrapperProps) {
     const [section, setSection] = useState<NotificationSections>(NotificationSections.allNotifications);
     const [errorMessage, setErrorMessage] = useState<string>("");
     const [allRead, setAllRead] = useState<boolean>(false);
@@ -70,7 +70,7 @@ function NotificationsWrapper({ toggleNotifications, setUnreadNotifications }: N
                         />}
                     </AnimatePresence>
                     {section === NotificationSections.allNotifications && 
-                    <Notifications
+                    <NotificationsList
                         setUnreadNotifications={setUnreadNotifications}
                         toggleNotifications={toggleNotifications}
                         allRead={allRead}
@@ -86,4 +86,4 @@ function NotificationsWrapper({ toggleNotifications, setUnreadNotifications }: N
     )
 }
 
-export default NotificationsWrapper;
+export default Notifications;

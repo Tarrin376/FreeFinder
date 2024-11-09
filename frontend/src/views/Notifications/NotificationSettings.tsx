@@ -1,13 +1,13 @@
-import ToggleSwitch from "../ToggleSwitch";
+import ToggleSwitch from "../../components/ToggleSwitch";
 import { useReducer, useContext, useState } from "react";
 import { motion } from "framer-motion";
-import CloseSvg from "../CloseSvg";
+import CloseSvg from "../../components/CloseSvg";
 import { NotificationSections } from "src/enums/NotificationSections";
 import { UserContext } from "src/providers/UserProvider";
 import { fetchUpdatedUser } from "src/utils/fetchUpdatedUser";
 import { TNotificationSettings } from "src/types/TNotificationSettings";
 import { getAPIErrorMessage } from "src/utils/getAPIErrorMessage";
-import ErrorPopUp from "../Error/ErrorPopUp";
+import ErrorPopUp from "../../components/Error/ErrorPopUp";
 import { AxiosError } from "axios";
 import { AnimatePresence } from "framer-motion";
 

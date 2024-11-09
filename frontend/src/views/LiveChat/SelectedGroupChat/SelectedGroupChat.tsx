@@ -21,7 +21,7 @@ import { MIN_DUAL_WIDTH } from "../LiveChat";
 import VisibleGroupMember from "../../../components/MessageGroup/VisibleGroupMember";
 import OutsideClickHandler from "react-outside-click-handler";
 
-interface CurrentGroupChatProps {
+interface SelectedGroupChatProps {
     group: GroupPreview,
     setAllGroups: React.Dispatch<React.SetStateAction<GroupPreview[]>>,
     setGroupCount: React.Dispatch<React.SetStateAction<number>>,
@@ -31,7 +31,7 @@ interface CurrentGroupChatProps {
 const VISIBLE_MEMBERS = 2;
 const SHOW_SERVICE_ID_WIDTH = 575;
 
-function CurrentGroupChat({ group, setAllGroups, setGroupCount, setGroup }: CurrentGroupChatProps) {
+function SelectedGroupChat({ group, setAllGroups, setGroupCount, setGroup }: SelectedGroupChatProps) {
     const [toggleGroupMembers, setToggleGroupMembers] = useState<boolean>(false);
     const [errorMessage, setErrorMessage] = useState<string>("");
     const [groupMembers, setGroupMembers] = useState<GroupPreview["members"]>(group.members);
@@ -274,4 +274,4 @@ function CurrentGroupChat({ group, setAllGroups, setGroupCount, setGroup }: Curr
     )
 }
 
-export default CurrentGroupChat;
+export default SelectedGroupChat;

@@ -14,7 +14,7 @@ import LiveChat from "../../views/LiveChat/LiveChat";
 import Count from "../Count";
 import { GroupPreview } from "src/types/GroupPreview";
 import { IMessage } from "src/models/IMessage";
-import NotificationsWrapper from "../../wrappers/NotificationsWrapper";
+import Notifications from "../../views/Notifications/Notifications";
 import NavDropdown from "../Dropdown/NavDropdown";
 import DropdownElement from "../Dropdown/DropdownElement";
 import { useWindowSize } from "src/hooks/useWindowSize";
@@ -143,7 +143,7 @@ function ProfileMenu({ logout }: ProfileMenuProps) {
                     </div>
                     <AnimatePresence>
                         {notificationsPopUp && 
-                        <NotificationsWrapper 
+                        <Notifications 
                             toggleNotifications={toggleNotifications} 
                             setUnreadNotifications={setUnreadNotifications}
                         />}

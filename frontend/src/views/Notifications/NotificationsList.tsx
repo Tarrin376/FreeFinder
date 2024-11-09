@@ -5,13 +5,13 @@ import { useState, useRef, useContext, useEffect, useCallback } from "react";
 import { UserContext } from "src/providers/UserProvider";
 import Notification from "./Notification";
 
-interface NotificationsProps {
+interface NotificationsListProps {
     setUnreadNotifications: React.Dispatch<React.SetStateAction<number>>,
     toggleNotifications: () => void,
     allRead: boolean
 }
 
-function Notifications({ setUnreadNotifications, toggleNotifications, allRead }: NotificationsProps) {
+function NotificationsList({ setUnreadNotifications, toggleNotifications, allRead }: NotificationsListProps) {
     const userContext = useContext(UserContext);
     const [page, setPage] = useState<{ value: number }>({ value: 1 });
 
@@ -55,4 +55,4 @@ function Notifications({ setUnreadNotifications, toggleNotifications, allRead }:
     )
 }
 
-export default Notifications;
+export default NotificationsList;

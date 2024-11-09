@@ -50,8 +50,8 @@ export function useToggleAwayStatus(): void {
             (async () => {
                 try {
                     const now = Date.now();
-                    if ((now - lastActive.current) / 1000 >= AWAY_TRIGGER_DURATION && userContext.userData.status !== UserStatus.OFFLINE &&
-                    userContext.userData.status !== UserStatus.AWAY) {
+                    if ((now - lastActive.current) / 1000 >= AWAY_TRIGGER_DURATION && 
+                    ![UserStatus.OFFLINE, UserStatus.AWAY].includes(userContext.userData.status)) {
                         const setToAway = await axios.put<{ userData: IUser, message: string }>
                         (`/api/users/${userContext.userData.username}`, { 
                             update: {
@@ -64,7 +64,7 @@ export function useToggleAwayStatus(): void {
                     }
                 }
                 catch (_: any) {
-                    // Ignore failure setting user status to away and try again every 5 seconds.
+                    // Ignore failure setting user status to away and try again every 10 seconds.
                 }
             })();
         }, 10000);
