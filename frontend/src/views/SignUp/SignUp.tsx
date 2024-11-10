@@ -3,7 +3,7 @@ import { useState, useReducer } from 'react';
 import ErrorMessage from "../../components/Error/ErrorMessage";
 import axios, { AxiosError } from "axios";
 import { getAPIErrorMessage } from "../../utils/getAPIErrorMessage";
-import Button from "../../components/Button";
+import Button from "../../components/ui/Button";
 import CountriesDropdown from "../../components/Dropdown/CountriesDropdown";
 import { EMAIL_REGEX, MAX_EMAIL_LENGTH } from "@freefinder/shared/dist/constants";
 import Validator from "@freefinder/shared/dist/validator";

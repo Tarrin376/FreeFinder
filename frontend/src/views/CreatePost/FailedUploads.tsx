@@ -1,6 +1,6 @@
 import { FailedUpload } from "src/types/FailedUpload";
-import UploadedImage from "src/components/UploadedImage";
-import Button from "src/components/Button";
+import UploadedImage from "src/views/CreatePost/UploadedImage";
+import Button from "../../components/ui/Button";
 
 interface FailedUploadsProps {
     ignoreUpload: (upload: FailedUpload) => void,

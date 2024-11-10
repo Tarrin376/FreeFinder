@@ -12,7 +12,7 @@ import { RatingAverages } from "../../types/RatingAverages";
 import { StarCounts } from "../../types/StarCounts";
 import Rating from "./Rating";
 import { useWindowSize } from "src/hooks/useWindowSize";
-import Arrow from "../Arrow";
+import Arrow from "../ui/Arrow";
 
 interface ReviewsProps {
     url: string,

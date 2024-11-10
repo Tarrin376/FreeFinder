@@ -6,26 +6,26 @@ import AboutSeller from "./AboutSeller";
 import axios, { AxiosError } from "axios";
 import { getAPIErrorMessage } from "../../utils/getAPIErrorMessage";
 import PageWrapper from "../../wrappers/PageWrapper";
-import Carousel from "../../components/Carousel";
+import Carousel from "../../components/ui/Carousel";
 import parse from "html-react-parser";
 import { useNavigate } from "react-router-dom";
 import { UserContext } from "../../providers/UserProvider";
-import TextEditor from "../../components/TextEditor";
+import TextEditor from "../../components/TextEditor/TextEditor";
 import { ABOUT_SERVICE_LIMIT, SERVICE_TITLE_LIMIT } from "@freefinder/shared/dist/constants";
 import PostImage from "./PostImage";
 import ErrorPopUp from "../../components/Error/ErrorPopUp";
 import { AnimatePresence } from "framer-motion";
-import LoadingSvg from "../../components/LoadingSvg";
+import LoadingSvg from "../../components/svg/LoadingSvg";
 import Reviews from "../../components/Review/Reviews";
 import StarSvg from "../../components/Review/StarSvg";
-import ServiceID from "../../components/ServiceID";
+import ServiceID from "../../components/common/ServiceID";
 import { MAX_SERVICE_IMAGE_UPLOADS } from "@freefinder/shared/dist/constants";
-import { compressImage } from "src/utils/compressImage";
-import { IPostImage } from "src/models/IPostImage";
-import { useTimeCreated } from "src/hooks/useTimeCreated";
-import { useWindowSize } from "src/hooks/useWindowSize";
+import { compressImage } from "../../utils/compressImage";
+import { IPostImage } from "../../models/IPostImage";
+import { useTimeCreated } from "../../hooks/useTimeCreated";
+import { useWindowSize } from "../../hooks/useWindowSize";
 import ReviewsAndPackages from "./ReviewsAndPackages";
-import InfoPopUp from "src/components/InfoPopUp";
+import InfoPopUp from "../../components/common/InfoPopUp";
 
 export type ExtendedPostPage = PostPage & {
     postedBy: PostPage["postedBy"] & {

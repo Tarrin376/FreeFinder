@@ -5,8 +5,8 @@ import { IUserContext, UserContext } from "../../providers/UserProvider";
 import axios, { AxiosError } from "axios";
 import { IUser } from "../../models/IUser";
 import { getAPIErrorMessage } from "../../utils/getAPIErrorMessage";
-import Button from "../../components/Button";
-import { UserStatus } from "src/enums/UserStatus";
+import Button from "../../components/ui/Button";
+import { UserStatus } from "../../enums/UserStatus";
 import { MAX_PASS_LENGTH, MAX_EMAIL_LENGTH, MAX_USERNAME_LENGTH } from "@freefinder/shared/dist/constants";
 
 interface LogInProps {

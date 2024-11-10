@@ -4,7 +4,7 @@ import CountriesDropdown from "../../components/Dropdown/CountriesDropdown";
 import { fetchUpdatedUser } from "../../utils/fetchUpdatedUser";
 import { getAPIErrorMessage } from "../../utils/getAPIErrorMessage";
 import { AxiosError } from "axios";
-import Button from "../../components/Button";
+import Button from "../../components/ui/Button";
 import { UserContext } from '../../providers/UserProvider';
 import Validator from "@freefinder/shared/dist/validator";
 import TextBoxErrorMessage from 'src/components/Error/TextBoxErrorMessage';

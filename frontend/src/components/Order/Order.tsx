@@ -1,7 +1,7 @@
 import { IOrder } from "src/models/IOrder";
 import ProfilePicAndStatus from "../Profile/ProfilePicAndStatus";
 import UserStatusText from "../Profile/UserStatus";
-import KeyPair from "../KeyPair";
+import KeyPair from "../common/KeyPair";
 import { useCountdown } from "src/hooks/useCountdown";
 import DropdownIconElement from "../Dropdown/DropdownIcon";
 import { useState } from "react";

@@ -1,7 +1,7 @@
 import { GroupPreview } from "../../types/GroupPreview";
 import { FoundUsers } from "../../types/FoundUsers";
 import { IMessage } from "../../models/IMessage";
-import Message from "./Message";
+import Message from "../../components/Message/Message";
 import { memo } from "react";
 
 interface MessagesProps {

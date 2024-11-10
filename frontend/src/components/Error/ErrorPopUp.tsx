@@ -1,5 +1,5 @@
 import { useCallback } from "react";
-import InfoPopUp from "../InfoPopUp";
+import InfoPopUp from "../common/InfoPopUp";
 
 interface ErrorPopUpProps {
     setErrorMessage: React.Dispatch<React.SetStateAction<string>>,

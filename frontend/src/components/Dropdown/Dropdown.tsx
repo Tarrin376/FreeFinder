@@ -1,4 +1,4 @@
-import SidePopUpWrapper from "src/wrappers/SidePopUpWrapper";
+import SidePopUpWrapper from "../../wrappers/SidePopUpWrapper";
 
 interface DropdownProps {
     toggleDropdown: () => void,

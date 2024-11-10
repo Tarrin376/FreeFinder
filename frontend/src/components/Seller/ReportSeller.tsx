@@ -3,7 +3,7 @@ import ErrorMessage from "../Error/ErrorMessage";
 import { UserContext } from "src/providers/UserProvider";
 import { useState, useContext } from "react";
 import { getAPIErrorMessage } from "src/utils/getAPIErrorMessage";
-import Button from "../Button";
+import Button from "../ui/Button";
 import axios, { AxiosError } from "axios";
 
 interface ReportSellerProps {

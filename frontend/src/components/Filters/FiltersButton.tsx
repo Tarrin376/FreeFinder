@@ -1,5 +1,5 @@
 import FilterIcon from "../../assets/filter.png";
-import Count from "../Count";
+import Count from "../common/Count";
 
 interface FiltersButtonProps {
     toggleFiltersPopUp: () => void,

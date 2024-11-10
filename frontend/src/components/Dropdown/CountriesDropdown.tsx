@@ -1,6 +1,6 @@
 import { useFetchCountries } from "../../hooks/useFetchCountries";
 import { Country } from '../../types/Country';
-import FilterBoxWrapper from "src/wrappers/FilterBoxWrapper";
+import FilterBoxWrapper from "../../wrappers/FilterBoxWrapper";
 
 interface CountriesDropdownProps {
     country: string,

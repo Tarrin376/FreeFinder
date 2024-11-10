@@ -3,7 +3,7 @@ import { useContext, useState, useRef, useEffect, useCallback } from "react";
 import { UserContext } from "../../providers/UserProvider";
 import AllMessagesIcon from "../../assets/AllMessages.png";
 import AddGroupIcon from "../../assets/AddGroup.png";
-import CreateGroup from "../../components/MessageGroup/CreateGroup";
+import CreateGroup from "../../components/ChatGroup/CreateGroup";
 import { AnimatePresence } from "framer-motion";
 import { usePaginateData } from "../../hooks/usePaginateData";
 import { GroupPreview } from "../../types/GroupPreview";

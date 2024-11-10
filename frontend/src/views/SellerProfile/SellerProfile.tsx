@@ -10,15 +10,15 @@ import { sellerLevelTextStyles } from "../../utils/sellerLevelTextStyles";
 import PostCard from "../../components/Post/PostCard";
 import { IPost } from "../../models/IPost";
 import ProfileSummary from "../../components/Profile/ProfileSummary";
-import Options from "../../components/Options";
+import Options from "../../components/common/Options";
 import SaveSeller from "../../components/Seller/SaveSeller";
 import { UserContext } from "../../providers/UserProvider";
 import Reviews from "../../components/Review/Reviews";
-import { useWindowSize } from "src/hooks/useWindowSize";
-import SellerExperience from "src/components/Seller/SellerExperience";
-import UserStatusText from "src/components/Profile/UserStatus";
+import { useWindowSize } from "../../hooks/useWindowSize";
+import SellerExperience from "../../components/Seller/SellerExperience";
+import UserStatusText from "../../components/Profile/UserStatus";
 import { AnimatePresence } from "framer-motion";
-import ReportSeller from "src/components/Seller/ReportSeller";
+import ReportSeller from "../../components/Seller/ReportSeller";
 
 function SellerProfile() {
     const [sellerDetails, setSellerDetails] = useState<SellerProfileDetails>();

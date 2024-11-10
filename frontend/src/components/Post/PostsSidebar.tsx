@@ -3,7 +3,7 @@ import AddIcon from "../../assets/add.png";
 import { useContext } from "react";
 import { UserContext } from "src/providers/UserProvider";
 import { FilterPostsProviderState } from "src/providers/FilterPostsProvider";
-import Filters from "../Filters/Filters";
+import AllFilters from "../Filters/AllFilters";
 
 interface PostsSidebarProps {
     loading: boolean,
@@ -43,7 +43,7 @@ function PostsSidebar({ loading, updatePostServicePopUp, dispatch, state, clearF
             </h2>
             <div className="overflow-y-scroll pr-[8px]" style={{ maxHeight: userContext.userData.seller ? 
             "calc(100vh - 483px)" : "calc(100% - 175px)" }}>
-                <Filters 
+                <AllFilters 
                     loading={loading}
                     dispatch={dispatch}
                     state={state}

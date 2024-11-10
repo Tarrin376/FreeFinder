@@ -1,7 +1,7 @@
 import { useState, useContext, memo } from 'react';
 import Posts from '../../components/Post/Posts';
 import { FilterPostsContext } from '../../providers/FilterPostsProvider';
-import { IPost } from 'src/models/IPost';
+import { IPost } from '../../models/IPost';
 
 interface SavedServicesProps {
     posts?: IPost[] | undefined,

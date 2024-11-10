@@ -4,7 +4,7 @@ import { EMAIL_REGEX } from '@freefinder/shared/dist/constants';
 import { fetchUpdatedUser } from "../../utils/fetchUpdatedUser";
 import { getAPIErrorMessage } from "../../utils/getAPIErrorMessage";
 import { AxiosError } from "axios";
-import Button from "../../components/Button";
+import Button from "../../components/ui/Button";
 import { UserContext } from '../../providers/UserProvider';
 import TextBoxErrorMessage from 'src/components/Error/TextBoxErrorMessage';
 

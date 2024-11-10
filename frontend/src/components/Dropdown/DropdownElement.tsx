@@ -1,4 +1,4 @@
-import { NavElement } from "src/types/NavElement";
+import { NavElement } from "../../types/NavElement";
 
 interface DropdownElementProps {
     text: string,

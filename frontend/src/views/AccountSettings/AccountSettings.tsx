@@ -8,9 +8,9 @@ import ChangePassword from "./ChangePassword";
 import DangerZone from "./DangerZone";
 import { UserContext } from "../../providers/UserProvider";
 import ChangeProfilePicture from "../../components/Profile/ChangeProfilePicture";
-import KeyPair from "src/components/KeyPair";
+import KeyPair from "src/components/common/KeyPair";
 import { AccountSections } from "src/enums/AccountSections";
-import Selection from "src/components/Selection";
+import Selection from "src/components/common/Selection";
 import { useWindowSize } from "src/hooks/useWindowSize";
 import { ClientOrdersSections } from "src/enums/ClientOrdersSections";
 

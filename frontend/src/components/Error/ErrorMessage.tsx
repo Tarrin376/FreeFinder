@@ -1,5 +1,5 @@
 import ErrorIcon from '../../assets/warning.png';
-import CloseSvg from '../CloseSvg';
+import CloseSvg from '../svg/CloseSvg';
 
 interface ErrorMessageProps {
     message: string,

@@ -1,4 +1,4 @@
-import GroupPreviewMessage from "../../components/MessageGroup/GroupPreviewMessage";
+import GroupPreviewMessage from "../../components/ChatGroup/GroupPreviewMessage";
 import { GroupPreview } from "../../types/GroupPreview";
 import { memo } from "react";
 

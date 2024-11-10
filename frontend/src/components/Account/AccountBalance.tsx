@@ -1,11 +1,11 @@
 import PopUpWrapper from "../../wrappers/PopUpWrapper";
-import Price from "../Price";
+import Price from "../common/Price";
 import { useState, useEffect, useContext } from "react";
 import axios, { AxiosError } from "axios";
 import { UserContext } from "../../providers/UserProvider";
 import ErrorMessage from "../Error/ErrorMessage";
 import { getAPIErrorMessage } from "../../utils/getAPIErrorMessage";
-import Button from "../Button";
+import Button from "../ui/Button";
 import { MAX_DEPOSIT } from "@freefinder/shared/dist/constants";
 
 interface AccountBalanceProps {

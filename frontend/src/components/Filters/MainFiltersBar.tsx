@@ -1,7 +1,7 @@
 import SearchIcon from "../../assets/search.png";
-import Price from "../Price";
+import Price from "../common/Price";
 import { MAX_SERVICE_PRICE } from "@freefinder/shared/dist/constants";
-import SortBy from "../SortBy";
+import SortBy from "../common/SortBy";
 import NavDropdown from "../Dropdown/NavDropdown";
 import { FilterPostsProviderState } from "src/providers/FilterPostsProvider";
 import { useWindowSize } from "src/hooks/useWindowSize";

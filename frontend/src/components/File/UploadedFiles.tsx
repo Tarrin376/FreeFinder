@@ -1,4 +1,4 @@
-import CloseSvg from "../CloseSvg";
+import CloseSvg from "../svg/CloseSvg";
 import File from "./File";
 
 interface UploadedFilesProps {

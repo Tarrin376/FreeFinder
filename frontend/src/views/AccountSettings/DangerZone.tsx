@@ -3,7 +3,7 @@ import ErrorMessage from "../../components/Error/ErrorMessage";
 import { INITIAL_STATE } from "../../providers/UserProvider";
 import axios, { AxiosError } from "axios";
 import { getAPIErrorMessage } from "../../utils/getAPIErrorMessage";
-import Button from "../../components/Button";
+import Button from "../../components/ui/Button";
 import { UserContext } from '../../providers/UserProvider';
 
 function DangerZone({ setSettingsPopUp }: { setSettingsPopUp: React.Dispatch<React.SetStateAction<boolean>> }) {

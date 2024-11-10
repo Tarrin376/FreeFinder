@@ -4,7 +4,7 @@ import { UserContext } from "../../providers/UserProvider";
 import ErrorPopUp from "../Error/ErrorPopUp";
 import { getAPIErrorMessage } from "../../utils/getAPIErrorMessage";
 import { AnimatePresence } from "framer-motion";
-import Button from "../Button";
+import Button from "../ui/Button";
 import Rating from "./Rating";
 import { MAX_REVIEW_CHARS } from "@freefinder/shared/dist/constants";
 import { useWindowSize } from "src/hooks/useWindowSize";

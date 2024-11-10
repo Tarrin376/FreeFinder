@@ -1,6 +1,6 @@
 import { useState, memo } from 'react';
 import Posts from '../../components/Post/Posts';
-import { IPost } from 'src/models/IPost';
+import { IPost } from '../../models/IPost';
 
 interface MyPostsProps {
     posts?: IPost[] | undefined,

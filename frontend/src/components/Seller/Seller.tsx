@@ -1,5 +1,5 @@
 import ProfilePicAndStatus from "../Profile/ProfilePicAndStatus";
-import HighlightedSubstring from "../HighlightedSubstring";
+import HighlightedSubstring from "../common/HighlightedSubstring";
 import { sellerLevelTextStyles } from "../../utils/sellerLevelTextStyles";
 import { SellerOptions } from "../../enums/SellerOptions";
 import SaveSeller from "./SaveSeller";

@@ -9,7 +9,7 @@ import { AnimatePresence } from "framer-motion";
 import axios, { AxiosError } from "axios";
 import Rating from "./Rating";
 import AllReviews from "./AllReviews";
-import Actions from "../Actions";
+import Actions from "../common/Actions";
 
 interface ReviewProps {
     reviewInfo: IReview,

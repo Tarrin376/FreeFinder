@@ -1,24 +1,24 @@
 import ProfilePicAndStatus from "../../../components/Profile/ProfilePicAndStatus";
 import ChatBox from "./ChatBox";
 import { GroupPreview } from "../../../types/GroupPreview";
-import GroupMembers from "../../../components/MessageGroup/GroupMembers";
+import GroupMembers from "../../../components/ChatGroup/GroupMembers";
 import { useState, useContext, useEffect, useCallback } from "react";
 import { AnimatePresence } from "framer-motion";
 import ErrorPopUp from "../../../components/Error/ErrorPopUp";
 import axios, { AxiosError } from "axios";
 import { UserContext } from "../../../providers/UserProvider";
 import { getAPIErrorMessage } from "../../../utils/getAPIErrorMessage";
-import Actions from "../../../components/Actions";
-import Button from "../../../components/Button";
+import Actions from "../../../components/common/Actions";
+import Button from "../../../components/ui/Button";
 import AddUserIcon from "../../../assets/AddGroup.png";
-import AddUsersToGroup from "../../../components/MessageGroup/AddUsersToGroup";
-import ServiceID from "../../../components/ServiceID";
+import AddUsersToGroup from "../../../components/ChatGroup/AddUsersToGroup";
+import ServiceID from "../../../components/common/ServiceID";
 import { useWindowSize } from "src/hooks/useWindowSize";
-import Arrow from "../../../components/Arrow";
-import GroupMembersCount from "../../../components/MessageGroup/GroupMembersCount";
-import InfoPopUp from "../../../components/InfoPopUp";
+import Arrow from "../../../components/ui/Arrow";
+import GroupMembersCount from "../../../components/ChatGroup/GroupMembersCount";
+import InfoPopUp from "../../../components/common/InfoPopUp";
 import { MIN_DUAL_WIDTH } from "../LiveChat";
-import VisibleGroupMember from "../../../components/MessageGroup/VisibleGroupMember";
+import VisibleGroupMember from "../../../components/ChatGroup/VisibleGroupMember";
 import OutsideClickHandler from "react-outside-click-handler";
 
 interface SelectedGroupChatProps {

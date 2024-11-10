@@ -1,11 +1,11 @@
 import { IMessage } from "../../models/IMessage";
 import { FoundUsers } from "../../types/FoundUsers";
-import PackageOverview from "../PackageOverview";
+import PackageOverview from "../common/PackageOverview";
 import { useContext, useState, useEffect } from "react";
 import { UserContext } from "../../providers/UserProvider";
 import OrderSummary from "./OrderSummary";
 import { getOrderRequestStatusStyles } from "../../utils/getOrderRequestStatusStyles";
-import Button from "../Button";
+import Button from "../ui/Button";
 import axios, { AxiosError } from "axios";
 import { getAPIErrorMessage } from "../../utils/getAPIErrorMessage";
 import { OrderRequestStatus } from "../../enums/OrderRequestStatus";
@@ -14,7 +14,7 @@ import { AnimatePresence } from "framer-motion";
 import { parseDate } from "../../utils/parseDate";
 import { SendNotification } from "src/types/SendNotification";
 import { IOrderRequest } from "src/models/IOrderRequest";
-import ExpiresIn from "../ExpiresIn";
+import ExpiresIn from "../common/ExpiresIn";
 
 interface OrderRequestProps {
     seller: FoundUsers[number],

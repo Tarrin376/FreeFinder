@@ -1,17 +1,17 @@
 import { ICompleteOrderRequest } from "src/models/ICompleteOrderRequest";
 import { IMessage } from "src/models/IMessage";
 import { OrderRequestStatus } from "src/enums/OrderRequestStatus";
-import ExpiresIn from "../ExpiresIn";
+import ExpiresIn from "../common/ExpiresIn";
 import axios, { AxiosError } from "axios";
 import ErrorPopUp from "../Error/ErrorPopUp";
 import { AnimatePresence } from "framer-motion";
 import { useState, useContext } from "react";
 import { getAPIErrorMessage } from "src/utils/getAPIErrorMessage";
 import OrderSummary from "./OrderSummary";
-import CheckMark from "../CheckMark";
+import CheckMarkSvg from "../svg/CheckMarkSvg";
 import { UserContext } from "src/providers/UserProvider";
 import { SendNotification } from "src/types/SendNotification";
-import KeyPair from "../KeyPair";
+import KeyPair from "../common/KeyPair";
 
 interface CompleteOrderRequestProps {
     message: IMessage & { 
@@ -115,7 +115,7 @@ function CompleteOrderRequest({ message }: CompleteOrderRequestProps) {
             </p> :
             status === OrderRequestStatus.ACCEPTED ?
             <div>
-                <CheckMark 
+                <CheckMarkSvg 
                     size={70}
                     styles="m-auto"
                 />

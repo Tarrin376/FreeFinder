@@ -1,4 +1,4 @@
-import TickSvg from "../TickSvg";
+import TickSvg from "../svg/TickSvg";
 
 interface MessageSentProps {
     sendingMessage: boolean,

@@ -1,12 +1,12 @@
-import PageWrapper from "src/wrappers/PageWrapper";
+import PageWrapper from "../../wrappers/PageWrapper";
 import { useState, useRef, useContext } from "react";
-import { usePaginateData } from "src/hooks/usePaginateData";
-import { IOrder } from "src/models/IOrder";
-import { PaginationResponse } from "src/types/PaginateResponse";
-import { UserContext } from "src/providers/UserProvider";
-import Order from "src/components/Order/Order";
-import PaginationScrollInfo from "src/components/PaginationScrollInfo";
-import NoResultsFound from "src/components/NoResultsFound";
+import { usePaginateData } from "../../hooks/usePaginateData";
+import { IOrder } from "../../models/IOrder";
+import { PaginationResponse } from "../../types/PaginateResponse";
+import { UserContext } from "../../providers/UserProvider";
+import Order from "../../components/Order/Order";
+import PaginationScrollInfo from "../../components/common/PaginationScrollInfo";
+import NoResultsFound from "../../components/Error/NoResultsFound";
 
 function MyOrders() {
     const userContext = useContext(UserContext);

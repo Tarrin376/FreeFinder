@@ -3,7 +3,7 @@ import { UserContext } from "../../providers/UserProvider";
 import axios, { AxiosError } from "axios";
 import { getAPIErrorMessage } from "../../utils/getAPIErrorMessage";
 import { actionFinished } from "../../utils/actionFinished";
-import Save from "../Save";
+import Save from "../common/Save";
 import ErrorPopUp from "../Error/ErrorPopUp";
 import { AnimatePresence } from "framer-motion";
 

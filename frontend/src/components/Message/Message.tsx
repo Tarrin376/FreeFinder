@@ -5,14 +5,14 @@ import ProfilePicAndStatus from "../Profile/ProfilePicAndStatus";
 import { getTime } from "../../utils/getTime";
 import MessageSent from "./MessageSent";
 import { GroupPreview } from "../../types/GroupPreview";
-import Tags from "../Tags";
+import UserTags from "../UserTags/UserTags";
 import { IMessageFile } from "../../models/IMessageFile";
 import ErrorPopUp from "../Error/ErrorPopUp";
 import { AnimatePresence } from "framer-motion";
 import MessageFile from "./MessageFile";
 import OrderRequest from "../Order/OrderRequest";
 import { FoundUsers } from "../../types/FoundUsers";
-import DateOccurred from "../DateOccurred";
+import DateOccurred from "../common/DateOccurred";
 import { useWindowSize } from "src/hooks/useWindowSize";
 import { MIN_DUAL_WIDTH } from "../../views/LiveChat/LiveChat";
 import CompleteOrderRequest from "../Order/CompleteOrderRequest";
@@ -105,7 +105,7 @@ function Message({ message, isLastMessage, sendingMessage, groupMembers, seller,
                         /> :
                         <div className={`${windowSize >= 515 ? "rounded-[13px]" : "!rounded-[13px]"} w-fit p-[6px] px-3 
                         ${isOwnMessage ? "rounded-tr-none bg-highlight self-end" : "bg-very-light-gray rounded-tl-none"}`}>
-                            <Tags
+                            <UserTags
                                 isOwnMessage={isOwnMessage}
                                 messageText={message.messageText}
                                 groupMembers={groupMembers}

@@ -3,10 +3,10 @@ import { IPost } from '../../models/IPost';
 import PostCard from './PostCard';
 import PostSkeleton from '../../skeletons/PostSkeleton';
 import PostsWrapper from '../../wrappers/PostsWrapper';
-import NoResultsFound from '../NoResultsFound';
+import NoResultsFound from '../Error/NoResultsFound';
 import { FilterPostsContext } from '../../providers/FilterPostsProvider';
 import PageWrapper from '../../wrappers/PageWrapper';
-import PaginationScrollInfo from '../PaginationScrollInfo';
+import PaginationScrollInfo from '../common/PaginationScrollInfo';
 import { limit } from '../../hooks/usePaginateData';
 import { CanRemovePost } from '../../types/CanRemovePost';
 

@@ -1,6 +1,6 @@
 import PopUpWrapper from "src/wrappers/PopUpWrapper";
 import { FilterPostsProviderState } from "src/providers/FilterPostsProvider";
-import Filters from "./Filters";
+import AllFilters from "./AllFilters";
 import { useState } from "react";
 import MessageSent from "../Message/MessageSent";
 
@@ -33,7 +33,7 @@ function FiltersPopUp(props: FiltersPopUpProps) {
 
     return (
         <PopUpWrapper title="Filters" setIsOpen={props.toggleFiltersPopUp} styles="h-[650px]">
-            <Filters 
+            <AllFilters 
                 loading={props.loading}
                 dispatch={props.dispatch}
                 state={props.state}

@@ -1,5 +1,5 @@
 import HomeView from './views/Home/HomeView';
-import Navbar from './layouts/Navbar';
+import Navbar from './components/layout/Navbar';
 import { BrowserRouter, Routes, Route } from 'react-router-dom';
 import UserProvider from './providers/UserProvider';
 import SavedServices from './views/SavedServices/SavedServices';

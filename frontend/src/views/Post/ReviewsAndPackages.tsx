@@ -1,8 +1,8 @@
 import Packages from "./Packages";
-import CreateReview from "src/components/Review/CreateReview";
+import CreateReview from "../../components/Review/CreateReview";
 import { PostState } from "./Post";
-import { scrollIntoView } from "src/utils/scrollIntoView";
-import { useWindowSize } from "src/hooks/useWindowSize";
+import { scrollIntoView } from "../../utils/scrollIntoView";
+import { useWindowSize } from "../../hooks/useWindowSize";
 
 interface ReviewsAndPackagesProps {
     state: PostState,

@@ -5,8 +5,8 @@ import { IOrder } from "src/models/IOrder";
 import { PaginationResponse } from "src/types/PaginateResponse";
 import { UserContext } from "src/providers/UserProvider";
 import Order from "src/components/Order/Order";
-import PaginationScrollInfo from "src/components/PaginationScrollInfo";
-import NoResultsFound from "src/components/NoResultsFound";
+import PaginationScrollInfo from "src/components/common/PaginationScrollInfo";
+import NoResultsFound from "src/components/Error/NoResultsFound";
 
 function ClientOrdersView() {
     const userContext = useContext(UserContext);

@@ -1,5 +1,5 @@
 import ProfilePicAndStatus from "../../components/Profile/ProfilePicAndStatus";
-import Options from "../../components/Options";
+import Options from "../../components/common/Options";
 import { sellerLevelTextStyles } from "../../utils/sellerLevelTextStyles";
 import ProfileSummary from "../../components/Profile/ProfileSummary";
 import SaveSeller from "../../components/Seller/SaveSeller";
@@ -7,8 +7,8 @@ import { useNavigate } from "react-router-dom";
 import { useContext, useState } from "react";
 import { UserContext } from "../../providers/UserProvider";
 import { UserStatus } from "../../enums/UserStatus";
-import { useWindowSize } from "src/hooks/useWindowSize";
-import ReportSeller from "src/components/Seller/ReportSeller";
+import { useWindowSize } from "../../hooks/useWindowSize";
+import ReportSeller from "../../components/Seller/ReportSeller";
 import { AnimatePresence } from "framer-motion";
 
 interface AboutSellerProps {

@@ -6,7 +6,7 @@ import Seller from "./Seller";
 import { useNavigate } from "react-router-dom";
 import SellerSkeleton from "../../skeletons/SellerSkeleton";
 import { limit } from "../../hooks/usePaginateData";
-import PaginationScrollInfo from "../PaginationScrollInfo";
+import PaginationScrollInfo from "../common/PaginationScrollInfo";
 import { SellerOptions } from "../../enums/SellerOptions";
 import { AnimatePresence } from "framer-motion";
 import ErrorPopUp from "../Error/ErrorPopUp";

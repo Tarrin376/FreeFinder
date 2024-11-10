@@ -1,4 +1,3 @@
-
 interface PostWrapperProps {
     children?: React.ReactNode,
 }

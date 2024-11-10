@@ -1,7 +1,7 @@
 import PopUpWrapper from "../../wrappers/PopUpWrapper";
 import FileTypeIcon from "./FileTypeIcon";
 import { SUPPORTED_FILE_FORMATS } from "@freefinder/shared/dist/constants";
-import TickSvg from "../TickSvg";
+import TickSvg from "../svg/TickSvg";
 
 interface SupportedFileFormatsProps {
     setToggleSupportedFormats: React.Dispatch<React.SetStateAction<boolean>>

@@ -1,10 +1,10 @@
 import PopUpWrapper from "src/wrappers/PopUpWrapper";
-import CheckBox from "../CheckBox";
+import CheckBox from "../ui/CheckBox";
 import { useState, useContext } from "react";
-import Button from "../Button";
+import Button from "../ui/Button";
 import ErrorMessage from "../Error/ErrorMessage";
-import KeyPair from "../KeyPair";
-import PackageOverview from "../PackageOverview";
+import KeyPair from "../common/KeyPair";
+import PackageOverview from "../common/PackageOverview";
 import { PackageTypes } from "src/enums/PackageTypes";
 import { FoundUsers } from "src/types/FoundUsers";
 import { UserContext } from "src/providers/UserProvider";

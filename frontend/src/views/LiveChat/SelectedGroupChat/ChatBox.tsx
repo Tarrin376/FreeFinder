@@ -8,7 +8,7 @@ import SendIcon from "../../../assets/send.png";
 import { AnimatePresence } from "framer-motion";
 import ErrorPopUp from "../../../components/Error/ErrorPopUp";
 import { PaginationResponse } from "../../../types/PaginateResponse";
-import UsersTyping from "../../../components/UsersTyping";
+import UsersTyping from "../../../components/Message/UsersTyping";
 import AttachIcon from "../../../assets/attach.png";
 import EmojiIcon from "../../../assets/emoji.png";
 import EmojiPicker from "emoji-picker-react";
@@ -16,7 +16,7 @@ import { motion } from "framer-motion";
 import AttachFiles from "../../../components/File/AttachFiles";
 import UploadedFiles from "../../../components/File/UploadedFiles";
 import { GroupPreview } from "../../../types/GroupPreview";
-import TagSuggestions from "../../../components/TagSuggestions";
+import UserTagSuggestions from "../../../components/UserTags/UserTagSuggestions";
 import { FailedUpload } from "../../../types/FailedUpload";
 import { IMessageFile } from "../../../models/IMessageFile";
 import SupportedFileFormats from "../../../components/File/SupportedFileFormats";
@@ -336,7 +336,7 @@ function ChatBox({ seller, workType, groupID, groupMembers }: ChatBoxProps) {
                         setErrorMessage={setErrorMessage}
                     />}
                     {state.toggleTagSuggestions &&
-                    <TagSuggestions 
+                    <UserTagSuggestions 
                         groupMembers={groupMembers} 
                         tag={state.tag}
                         inputRef={inputRef}

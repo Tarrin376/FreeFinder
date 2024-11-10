@@ -1,6 +1,6 @@
-import CloseSvg from '../components/CloseSvg';
+import CloseSvg from '../components/svg/CloseSvg';
 import { motion } from 'framer-motion';
-import { useWindowSize } from 'src/hooks/useWindowSize';
+import { useWindowSize } from '../hooks/useWindowSize';
 
 interface PopUpWrapperProps {
     setIsOpen: (val: boolean) => void,

@@ -6,9 +6,9 @@ import { getAPIErrorMessage } from "../../utils/getAPIErrorMessage";
 import { AnimatePresence } from "framer-motion";
 import { motion } from "framer-motion";
 import ErrorPopUp from "../../components/Error/ErrorPopUp";
-import LoadingSvg from "../../components/LoadingSvg";
+import LoadingSvg from "../../components/svg/LoadingSvg";
 import { PostState } from "./Post";
-import { compressImage } from "src/utils/compressImage";
+import { compressImage } from "../../utils/compressImage";
 import { ExtendedPostPage } from "./Post";
 
 interface PostImageProps {
